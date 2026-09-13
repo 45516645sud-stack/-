@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../collection_map/presentation/map_screen.dart';
 import '../data/item_recognition_repository.dart';
 import '../domain/item_category.dart';
 import '../domain/item_model.dart';
@@ -152,9 +153,10 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
           const SizedBox(height: 32),
           FilledButton.icon(
             onPressed: () {
-              // TODO(3단계): 현재 위치 기반 가장 가까운 수거함 지도 화면으로 이동.
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('3단계에서 수거함 지도와 연결될 예정입니다.')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MapScreen(categoryFilter: item.category),
+                ),
               );
             },
             icon: const Icon(Icons.map_outlined),
