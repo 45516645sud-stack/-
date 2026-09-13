@@ -1,6 +1,7 @@
 import Busboy from "busboy";
 import type { Request } from "firebase-functions/v2/https";
 import { onRequest } from "firebase-functions/v2/https";
+import { AppCheckError, verifyAppCheck } from "./app_check";
 import { buildBatteryResult } from "./battery_info";
 import { classifyImage } from "./classify_image";
 import { extractPillFeatures, lookupPill, mfdsApiKey } from "./pill_lookup";
@@ -46,6 +47,15 @@ export const identifyItem = onRequest(
   async (req, res) => {
     if (req.method !== "POST") {
       res.status(405).json({ error: "POST 요청만 지원합니다." });
+      return;
+    }
+
+    try {
+      await verifyAppCheck(req);
+    } catch (error) {
+      const message = error instanceof AppCheckError ? error.message : "App Check 인증에 실패했습니다.";
+      console.warn("identifyItem App Check verification failed", message);
+      res.status(401).json({ matched: false, error: message });
       return;
     }
 

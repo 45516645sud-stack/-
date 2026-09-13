@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../core/constants/api_constants.dart';
@@ -28,11 +29,22 @@ class HttpItemRecognitionRepository implements ItemRecognitionRepository {
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('image', image.path));
 
+    final appCheckToken = await FirebaseAppCheck.instance.getToken();
+    if (appCheckToken != null) {
+      request.headers['X-Firebase-AppCheck'] = appCheckToken;
+    }
+
     try {
       final streamedResponse = await _client.send(request).timeout(
             const Duration(seconds: 20),
           );
       final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 401) {
+        throw const ItemRecognitionException(
+          '보안 인증에 실패했습니다. 앱을 최신 버전으로 업데이트하거나 다시 설치해 주세요.',
+        );
+      }
 
       if (response.statusCode != 200) {
         throw ItemRecognitionException(
