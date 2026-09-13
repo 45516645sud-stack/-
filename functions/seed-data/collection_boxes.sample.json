@@ -1,0 +1,42 @@
+[
+  {
+    "id": "sample-gangnam-1",
+    "name": "강남역 2번 출구 폐의약품 수거함",
+    "address": "서울 강남구 강남대로 396 (강남역 2번 출구)",
+    "latitude": 37.498095,
+    "longitude": 127.02761,
+    "categories": ["pill"]
+  },
+  {
+    "id": "sample-cityhall-1",
+    "name": "서울시청 앞 폐건전지 수거함",
+    "address": "서울 중구 세종대로 110 (서울특별시청)",
+    "latitude": 37.566295,
+    "longitude": 126.977945,
+    "categories": ["battery"]
+  },
+  {
+    "id": "sample-yeoksam-1",
+    "name": "역삼동 주민센터 수거함",
+    "address": "서울 강남구 역삼로 220 (역삼1동 주민센터)",
+    "latitude": 37.500637,
+    "longitude": 127.036721,
+    "categories": ["pill", "battery"]
+  },
+  {
+    "id": "sample-hongdae-1",
+    "name": "홍대입구역 인근 약국 수거함",
+    "address": "서울 마포구 양화로 160 (홍대입구역 9번 출구 인근)",
+    "latitude": 37.556907,
+    "longitude": 126.923755,
+    "categories": ["pill"]
+  },
+  {
+    "id": "sample-jamsil-1",
+    "name": "잠실동 주민센터 수거함",
+    "address": "서울 송파구 올림픽로 240 (잠실동 주민센터)",
+    "latitude": 37.513272,
+    "longitude": 127.100477,
+    "categories": ["pill", "battery"]
+  }
+]
