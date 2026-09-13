@@ -4,6 +4,8 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 import '../../../services/location_service.dart';
 import '../../item_info/domain/item_category.dart';
+import '../../navigation_deeplink/domain/navigation_target.dart';
+import '../../navigation_deeplink/presentation/navigation_app_picker.dart';
 import '../application/nearby_box_calculator.dart';
 import '../data/collection_box_repository.dart';
 import '../domain/collection_box.dart';
@@ -78,6 +80,8 @@ class _MapScreenState extends State<MapScreen> {
 
   void _showBoxSheet(NearbyBox nearbyBox) {
     final box = nearbyBox.box;
+    // 길찾기 시트를 열 때 사용할 MapScreen 자체의 context (바텀시트가 닫혀도 유효함).
+    final screenContext = context;
     showModalBottomSheet(
       context: context,
       builder: (context) => Padding(
@@ -107,9 +111,14 @@ class _MapScreenState extends State<MapScreen> {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  // TODO(4단계): 카카오내비/T맵 딥링크로 이 수거함까지 길 안내 시작.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('4단계에서 내비게이션 딥링크와 연결될 예정입니다.')),
+                  Navigator.of(context).pop();
+                  showNavigationAppPicker(
+                    screenContext,
+                    NavigationTarget(
+                      name: box.name,
+                      latitude: box.latitude,
+                      longitude: box.longitude,
+                    ),
                   );
                 },
                 icon: const Icon(Icons.navigation),
