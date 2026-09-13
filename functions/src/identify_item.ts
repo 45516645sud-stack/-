@@ -1,17 +1,18 @@
-import * as Busboy from "busboy";
+import Busboy from "busboy";
+import type { Request } from "firebase-functions/v2/https";
 import { onRequest } from "firebase-functions/v2/https";
 import { buildBatteryResult } from "./battery_info";
 import { classifyImage } from "./classify_image";
 import { extractPillFeatures, lookupPill, mfdsApiKey } from "./pill_lookup";
 import { IdentifyResult } from "./types";
 
-function readMultipartImage(req: import("express").Request): Promise<Buffer> {
+function readMultipartImage(req: Request): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const busboy = Busboy({ headers: req.headers });
+    const busboy = Busboy({ headers: req.headers as Record<string, string> });
     const chunks: Buffer[] = [];
     let found = false;
 
-    busboy.on("file", (_name, file) => {
+    busboy.on("file", (_name: string, file: NodeJS.ReadableStream) => {
       found = true;
       file.on("data", (chunk: Buffer) => chunks.push(chunk));
     });
@@ -42,11 +43,26 @@ export const identifyItem = onRequest(
       const category = await classifyImage(imageBuffer);
 
       let result: IdentifyResult;
-      if (category === "battery") {
-        result = buildBatteryResult();
-      } else {
-        const features = await extractPillFeatures(imageBuffer);
-        result = await lookupPill(features);
+      switch (category) {
+        case "battery":
+          result = buildBatteryResult();
+          break;
+        case "pill": {
+          const features = await extractPillFeatures(imageBuffer);
+          result = await lookupPill(features);
+          break;
+        }
+        default:
+          // 약/건전지 어느 쪽으로도 판별되지 않은 경우: 잘못된 검색을 시도하는 대신
+          // 재촬영을 안내한다.
+          result = {
+            matched: false,
+            category: "unknown",
+            name: "",
+            description: "",
+            disposalSteps: [],
+            precautions: [],
+          };
       }
 
       res.status(200).json(result);

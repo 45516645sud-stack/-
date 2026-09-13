@@ -10,6 +10,7 @@
     "deploy": "firebase deploy --only functions"
   },
   "dependencies": {
+    "@google-cloud/vision": "^4.3.2",
     "axios": "^1.7.2",
     "busboy": "^1.6.0",
     "firebase-admin": "^12.1.0",

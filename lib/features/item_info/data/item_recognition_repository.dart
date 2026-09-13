@@ -43,9 +43,13 @@ class HttpItemRecognitionRepository implements ItemRecognitionRepository {
       final body = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
       if (body['matched'] == false) {
-        throw const ItemRecognitionException(
-          '일치하는 정보를 찾지 못했습니다. 각인·색상이 잘 보이도록 다시 촬영해 주세요.',
-        );
+        final category = body['category'] as String?;
+        final message = switch (category) {
+          'pill' => '알약 각인이 잘 보이도록 가까이서 다시 촬영해 주세요.',
+          'battery' => '건전지 정보를 확인하지 못했습니다. 다시 촬영해 주세요.',
+          _ => '약 또는 건전지가 잘 보이도록 다시 촬영해 주세요.',
+        };
+        throw ItemRecognitionException(message);
       }
 
       return ItemModel.fromJson(body);
