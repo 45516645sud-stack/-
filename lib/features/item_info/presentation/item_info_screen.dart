@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../collection_map/presentation/map_screen.dart';
 import '../data/item_recognition_repository.dart';
-import '../domain/item_category.dart';
 import '../domain/item_model.dart';
 import '../domain/item_recognition_exception.dart';
 

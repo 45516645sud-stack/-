@@ -2,3 +2,7 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 .firebase/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/

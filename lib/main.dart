@@ -20,8 +20,8 @@ Future<void> main() async {
   // 온 요청인지 App Check로 검증한다. 디버그 빌드는 콘솔에 등록한 디버그
   // 토큰으로 통과시킨다: https://firebase.google.com/docs/app-check/flutter/debug-provider
   await FirebaseAppCheck.instance.activate(
-    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
+    providerAndroid: kDebugMode ? const AndroidDebugProvider() : const AndroidPlayIntegrityProvider(),
+    providerApple: kDebugMode ? const AppleDebugProvider() : const AppleAppAttestProvider(),
   );
 
   AuthRepository.initialize(appKey: ApiConstants.kakaoJavaScriptKey);

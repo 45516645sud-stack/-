@@ -8,7 +8,6 @@ import '../../navigation_deeplink/domain/navigation_target.dart';
 import '../../navigation_deeplink/presentation/navigation_app_picker.dart';
 import '../application/nearby_box_calculator.dart';
 import '../data/collection_box_repository.dart';
-import '../domain/collection_box.dart';
 
 enum _MapScreenStatus { loading, error, ready }
 
