@@ -1,11 +1,6 @@
-import axios from "axios";
-import { defineSecret } from "firebase-functions/params";
-import { nearestKoreanColorName } from "./color_map";
-import { IdentifyResult } from "./types";
-import { visionClient } from "./vision_client";
-
-// 공공데이터포털 "의약품 낱알식별정보" 서비스키. `firebase functions:secrets:set MFDS_API_KEY`로 등록한다.
-export const mfdsApiKey = defineSecret("MFDS_API_KEY");
+import { nearestKoreanColorName } from "./color_map.ts";
+import { IdentifyResult } from "./types.ts";
+import { VisionAnnotations } from "./vision.ts";
 
 const MFDS_ENDPOINT =
   "http://apis.data.go.kr/1471000/MdcinGrnIdntfcInfoService02/getMdcinGrnIdntfcInfoList02";
@@ -17,24 +12,17 @@ interface PillFeatures {
 }
 
 /**
- * 사진에서 각인 문자(OCR)와 대표 색상을 추출한다.
+ * Vision API 결과에서 각인 문자(OCR)와 대표 색상을 추출한다.
  *
  * 한계: 알약 각인은 매우 작고 대비가 낮아 범용 OCR 정확도가 떨어질 수 있다.
  * 모양(drug_shape)은 별도 분류 모델 없이는 신뢰도 있게 추정하기 어려워
- * 이번 연동에서는 시도하지 않는다 — 필요 시 Vertex AI 커스텀 모델로 보강할 것.
+ * 이번 연동에서는 시도하지 않는다.
  */
-export async function extractPillFeatures(imageBuffer: Buffer): Promise<PillFeatures> {
-  const [textResult, propsResult] = await Promise.all([
-    visionClient.textDetection({ image: { content: imageBuffer } }),
-    visionClient.imageProperties({ image: { content: imageBuffer } }),
-  ]);
-
-  const rawText = textResult[0]?.fullTextAnnotation?.text ?? "";
-  const printFront = normalizeImprintText(rawText);
-
-  const dominantColor = propsResult[0]?.imagePropertiesAnnotation?.dominantColors
-    ?.colors?.[0]?.color;
-  const colorClass1 = dominantColor ? nearestKoreanColorName(dominantColor) : undefined;
+export function extractPillFeatures(annotations: VisionAnnotations): PillFeatures {
+  const printFront = normalizeImprintText(annotations.ocrText);
+  const colorClass1 = annotations.dominantColor
+    ? nearestKoreanColorName(annotations.dominantColor)
+    : undefined;
 
   return {
     printFront: printFront || undefined,
@@ -51,42 +39,47 @@ function normalizeImprintText(text: string): string {
     .slice(0, 10);
 }
 
-export async function lookupPill(features: PillFeatures): Promise<IdentifyResult> {
+export async function lookupPill(features: PillFeatures, mfdsApiKey: string): Promise<IdentifyResult> {
   if (!features.printFront) {
     return buildNoMatch();
   }
 
   // 각인+색상으로 먼저 검색하고, 결과가 없으면 색상 조건을 빼고 각인만으로 재시도한다.
-  const withColor = await queryMfds({
+  const withColor = await queryMfds(mfdsApiKey, {
     print_front: features.printFront,
     color_class1: features.colorClass1,
   });
   if (withColor) return withColor;
 
   if (features.colorClass1) {
-    const withoutColor = await queryMfds({ print_front: features.printFront });
+    const withoutColor = await queryMfds(mfdsApiKey, { print_front: features.printFront });
     if (withoutColor) return withoutColor;
   }
 
   return buildNoMatch();
 }
 
-async function queryMfds(params: {
-  print_front: string;
-  color_class1?: string;
-}): Promise<IdentifyResult | null> {
-  const response = await axios.get(MFDS_ENDPOINT, {
-    params: {
-      serviceKey: mfdsApiKey.value(),
-      type: "json",
-      numOfRows: 1,
-      pageNo: 1,
-      ...params,
-    },
-    timeout: 8000,
-  });
+async function queryMfds(
+  mfdsApiKey: string,
+  params: { print_front: string; color_class1?: string },
+): Promise<IdentifyResult | null> {
+  const url = new URL(MFDS_ENDPOINT);
+  url.searchParams.set("serviceKey", mfdsApiKey);
+  url.searchParams.set("type", "json");
+  url.searchParams.set("numOfRows", "1");
+  url.searchParams.set("pageNo", "1");
+  url.searchParams.set("print_front", params.print_front);
+  if (params.color_class1) {
+    url.searchParams.set("color_class1", params.color_class1);
+  }
 
-  const item = response.data?.body?.items?.[0];
+  const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  if (!response.ok) {
+    throw new Error(`식약처 API 오류 (${response.status})`);
+  }
+
+  const data = await response.json();
+  const item = data?.body?.items?.[0];
   if (!item) return null;
 
   return {

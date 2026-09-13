@@ -16,9 +16,7 @@ dependencies:
   geolocator: ^13.0.1
   kakao_map_plugin: ^1.0.0
   url_launcher: ^6.3.0
-  firebase_core: ^4.14.0
-  firebase_app_check: ^0.4.7
-  cloud_firestore: ^6.9.0
+  supabase_flutter: ^2.17.2
 
 dev_dependencies:
   flutter_test:

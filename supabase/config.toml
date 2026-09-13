@@ -1,0 +1,7 @@
+project_id = "hzomhheyccapnzuwtzxh"
+
+[functions.identify-item]
+# 새 publishable/secret 키 체계는 JWT 형식이 아니라 플랫폼 기본 verify_jwt와
+# 호환되지 않는다. 대신 함수 코드(auth.ts)에서 Authorization 토큰이 실제
+# Supabase 세션인지 직접 검증한다.
+verify_jwt = false

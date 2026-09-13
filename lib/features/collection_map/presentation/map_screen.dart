@@ -26,7 +26,7 @@ class _MapScreenState extends State<MapScreen> {
   static const double _searchRadiusMeters = 5000;
 
   final LocationService _locationService = LocationService();
-  final CollectionBoxRepository _boxRepository = FirestoreCollectionBoxRepository();
+  final CollectionBoxRepository _boxRepository = SupabaseCollectionBoxRepository();
   final NearbyBoxCalculator _calculator = const NearbyBoxCalculator();
 
   _MapScreenStatus _status = _MapScreenStatus.loading;

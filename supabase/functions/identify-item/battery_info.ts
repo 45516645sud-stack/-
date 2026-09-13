@@ -1,4 +1,4 @@
-import { IdentifyResult } from "./types";
+import { IdentifyResult } from "./types.ts";
 
 // 건전지는 개별 API 조회가 필요 없어 고정 안내 데이터를 사용한다.
 export function buildBatteryResult(): IdentifyResult {

@@ -20,14 +20,15 @@ class CollectionBox {
   /// 이 수거함이 받는 품목 종류. 예: [pill], [battery], [pill, battery].
   final List<ItemCategory> categories;
 
-  factory CollectionBox.fromFirestore(String id, Map<String, dynamic> data) {
+  /// Supabase `collection_boxes` 테이블의 한 행(Map)을 도메인 모델로 변환한다.
+  factory CollectionBox.fromRow(Map<String, dynamic> row) {
     return CollectionBox(
-      id: id,
-      name: data['name'] as String? ?? '수거함',
-      address: data['address'] as String? ?? '',
-      latitude: (data['latitude'] as num).toDouble(),
-      longitude: (data['longitude'] as num).toDouble(),
-      categories: ((data['categories'] as List<dynamic>?) ?? const ['pill', 'battery'])
+      id: row['id'] as String,
+      name: row['name'] as String? ?? '수거함',
+      address: row['address'] as String? ?? '',
+      latitude: (row['latitude'] as num).toDouble(),
+      longitude: (row['longitude'] as num).toDouble(),
+      categories: ((row['categories'] as List<dynamic>?) ?? const ['pill', 'battery'])
           .map((e) => ItemCategory.fromApiValue(e as String))
           .toList(),
     );
