@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../item_info/presentation/item_info_screen.dart';
+
 /// 촬영한 사진을 확인하고, 재촬영하거나 인식 단계로 넘길지 선택하는 화면.
 class PhotoPreviewScreen extends StatelessWidget {
   const PhotoPreviewScreen({super.key, required this.imagePath});
@@ -31,8 +33,11 @@ class PhotoPreviewScreen extends StatelessWidget {
                     ),
                     FilledButton.icon(
                       onPressed: () {
-                        // TODO(2단계): 이 사진을 식약처 알약 식별 API로 전송하고
-                        // item_info 화면으로 인식 결과를 넘기는 로직을 연결한다.
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ItemInfoScreen(imagePath: imagePath),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.check),
                       label: const Text('이 사진 사용'),
