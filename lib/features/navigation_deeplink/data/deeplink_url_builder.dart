@@ -11,6 +11,8 @@ import '../domain/navigation_target.dart';
 /// - 카카오내비: `kakaonavi-sdk://navigate?appkey=...&apiver=1.0&param={...}`
 ///   (카카오 디벨로퍼스 공식 스킴, appkey는 네이티브 앱 키)
 /// - T맵: iOS `tmap://route?rGoName=&rGoX=&rGoY=`, Android `tmap://route?goalname=&goalx=&goaly=`
+/// - 네이버지도: `nmap://route/car?dlat=&dlng=&dname=&appname=`
+///   (appname은 필수 파라미터 — 호출하는 앱의 applicationId/Bundle Identifier)
 class DeeplinkUrlBuilder {
   const DeeplinkUrlBuilder();
 
@@ -18,6 +20,8 @@ class DeeplinkUrlBuilder {
   static const String _kakaoNaviAndroidPackage = 'com.locnall.KimGiSa';
   static const String _tmapIosStoreUrl = 'https://apps.apple.com/kr/app/id431589174';
   static const String _tmapAndroidPackage = 'com.skt.tmap.ku';
+  static const String _naverMapIosStoreUrl = 'https://apps.apple.com/kr/app/id311867728';
+  static const String _naverMapAndroidPackage = 'com.nhn.android.nmap';
 
   Uri appUri(NavigationApp app, NavigationTarget target) {
     switch (app) {
@@ -25,6 +29,8 @@ class DeeplinkUrlBuilder {
         return _kakaoNaviUri(target);
       case NavigationApp.tmap:
         return _tmapUri(target);
+      case NavigationApp.naverMap:
+        return _naverMapUri(target);
     }
   }
 
@@ -39,6 +45,10 @@ class DeeplinkUrlBuilder {
         return Platform.isIOS
             ? Uri.parse(_tmapIosStoreUrl)
             : Uri.parse('https://play.google.com/store/apps/details?id=$_tmapAndroidPackage');
+      case NavigationApp.naverMap:
+        return Platform.isIOS
+            ? Uri.parse(_naverMapIosStoreUrl)
+            : Uri.parse('https://play.google.com/store/apps/details?id=$_naverMapAndroidPackage');
     }
   }
 
@@ -69,6 +79,18 @@ class DeeplinkUrlBuilder {
     }
     return Uri.parse(
       'tmap://route?goalname=$encodedName&goalx=${target.longitude}&goaly=${target.latitude}',
+    );
+  }
+
+  Uri _naverMapUri(NavigationTarget target) {
+    final encodedName = Uri.encodeComponent(target.name);
+    final encodedAppName = Uri.encodeComponent(ApiConstants.naverMapAppName);
+    return Uri.parse(
+      'nmap://route/car'
+      '?dlat=${target.latitude}'
+      '&dlng=${target.longitude}'
+      '&dname=$encodedName'
+      '&appname=$encodedAppName',
     );
   }
 }
