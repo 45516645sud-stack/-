@@ -6,17 +6,28 @@ import { classifyImage } from "./classify_image";
 import { extractPillFeatures, lookupPill, mfdsApiKey } from "./pill_lookup";
 import { IdentifyResult } from "./types";
 
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 인증 없는 공개 엔드포인트이므로 업로드 크기를 제한해 남용을 줄인다.
+
 function readMultipartImage(req: Request): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const busboy = Busboy({ headers: req.headers as Record<string, string> });
+    const busboy = Busboy({
+      headers: req.headers as Record<string, string>,
+      limits: { fileSize: MAX_IMAGE_BYTES },
+    });
     const chunks: Buffer[] = [];
     let found = false;
+    let tooLarge = false;
 
     busboy.on("file", (_name: string, file: NodeJS.ReadableStream) => {
       found = true;
       file.on("data", (chunk: Buffer) => chunks.push(chunk));
+      file.on("limit", () => {
+        tooLarge = true;
+        reject(new Error(`이미지 파일이 너무 큽니다. (최대 ${MAX_IMAGE_BYTES / 1024 / 1024}MB)`));
+      });
     });
     busboy.on("finish", () => {
+      if (tooLarge) return;
       if (!found) {
         reject(new Error("이미지 파일이 요청에 없습니다."));
         return;
