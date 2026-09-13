@@ -27,9 +27,9 @@ class PermissionDeniedView extends StatelessWidget {
               onPressed: onRetry,
               child: const Text('권한 다시 요청'),
             ),
-            TextButton(
+            const TextButton(
               onPressed: openAppSettings,
-              child: const Text('앱 설정에서 직접 허용', style: TextStyle(color: Colors.white70)),
+              child: Text('앱 설정에서 직접 허용', style: TextStyle(color: Colors.white70)),
             ),
           ],
         ),

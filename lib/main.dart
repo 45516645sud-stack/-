@@ -14,15 +14,24 @@ late List<CameraDescription> availableCamerasList;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  // Firebase 프로젝트 연결(firebase_options.dart)이나 App Check 등록이 아직
+  // 안 되어 있어도 카메라·정보 표시 같은 나머지 화면은 뜰 수 있어야 하므로,
+  // 이 초기화 실패로 앱 전체가 흰 화면에서 멈추지 않게 막는다. 이후 이 두
+  // 서비스에 실제로 의존하는 기능(App Check가 붙는 identifyItem 호출,
+  // Firestore 조회)은 각자의 화면에서 이미 별도로 에러를 처리한다.
+  try {
+    await Firebase.initializeApp();
 
-  // identifyItem 백엔드가 유료 API(Vision, 식약처)를 호출하므로, 정식 앱에서
-  // 온 요청인지 App Check로 검증한다. 디버그 빌드는 콘솔에 등록한 디버그
-  // 토큰으로 통과시킨다: https://firebase.google.com/docs/app-check/flutter/debug-provider
-  await FirebaseAppCheck.instance.activate(
-    providerAndroid: kDebugMode ? const AndroidDebugProvider() : const AndroidPlayIntegrityProvider(),
-    providerApple: kDebugMode ? const AppleDebugProvider() : const AppleAppAttestProvider(),
-  );
+    // identifyItem 백엔드가 유료 API(Vision, 식약처)를 호출하므로, 정식 앱에서
+    // 온 요청인지 App Check로 검증한다. 디버그 빌드는 콘솔에 등록한 디버그
+    // 토큰으로 통과시킨다: https://firebase.google.com/docs/app-check/flutter/debug-provider
+    await FirebaseAppCheck.instance.activate(
+      providerAndroid: kDebugMode ? const AndroidDebugProvider() : const AndroidPlayIntegrityProvider(),
+      providerApple: kDebugMode ? const AppleDebugProvider() : const AppleAppAttestProvider(),
+    );
+  } catch (e) {
+    debugPrint('Firebase 초기화 실패 (firebase_options 설정을 확인하세요): $e');
+  }
 
   AuthRepository.initialize(appKey: ApiConstants.kakaoJavaScriptKey);
 

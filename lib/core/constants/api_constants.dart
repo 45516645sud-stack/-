@@ -17,7 +17,8 @@ class ApiConstants {
   static const String kakaoNativeAppKey = '<YOUR_KAKAO_NATIVE_APP_KEY>';
 
   /// 네이버 지도 딥링크(nmap://)의 필수 파라미터 appname에 넣을 값.
-  /// Android는 applicationId, iOS는 Bundle Identifier와 동일해야 한다
-  /// (아직 flutter create로 네이티브 프로젝트를 생성하지 않아 값이 정해지지 않음 — 생성 후 맞춰서 채울 것).
-  static const String naverMapAppName = '<YOUR_APP_ID_OR_BUNDLE_ID>';
+  /// Android는 applicationId, iOS는 Bundle Identifier와 반드시 같아야 하므로
+  /// 플랫폼별로 분리한다 (android/app/build.gradle.kts, ios Info.plist와 동일하게 유지할 것).
+  static const String androidApplicationId = 'com.ecodisposal.eco_disposal_app';
+  static const String iosBundleId = 'com.ecodisposal.ecoDisposalApp';
 }

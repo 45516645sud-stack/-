@@ -84,7 +84,8 @@ class DeeplinkUrlBuilder {
 
   Uri _naverMapUri(NavigationTarget target) {
     final encodedName = Uri.encodeComponent(target.name);
-    final encodedAppName = Uri.encodeComponent(ApiConstants.naverMapAppName);
+    final appName = Platform.isIOS ? ApiConstants.iosBundleId : ApiConstants.androidApplicationId;
+    final encodedAppName = Uri.encodeComponent(appName);
     return Uri.parse(
       'nmap://route/car'
       '?dlat=${target.latitude}'
