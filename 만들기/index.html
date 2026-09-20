@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>박람회 찾기</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>🎪 전국 박람회 찾기</h1>
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="박람회 이름, 지역으로 검색"
+      />
+    </header>
+
+    <main class="site-main">
+      <p id="result-count" class="result-count"></p>
+      <ul id="fair-list" class="fair-list"></ul>
+      <p id="empty-message" class="empty-message" hidden>
+        검색 결과가 없습니다.
+      </p>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
