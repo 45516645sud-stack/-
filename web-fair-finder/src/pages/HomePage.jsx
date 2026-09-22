@@ -4,6 +4,7 @@ import FilterPanel from '../components/FilterPanel.jsx';
 import FairList from '../components/FairList.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorBanner from '../components/ErrorBanner.jsx';
+import AiSearchBox from '../components/AiSearchBox.jsx';
 import { fetchFairs, feeCategory } from '../api/tourApi.js';
 import { SAMPLE_FAIRS } from '../data/sampleFairs.js';
 import { categorizeFair } from '../data/categories.js';
@@ -61,6 +62,14 @@ export default function HomePage() {
         <h1>전국 박람회를 한눈에</h1>
         <p>카테고리, 지역, 무료/유료 조건으로 나에게 맞는 박람회를 찾아보세요.</p>
       </section>
+
+      <AiSearchBox
+        onResult={(result) => {
+          setCategory(result.category);
+          setKeyword(result.keyword);
+          setSubmittedKeyword(result.keyword);
+        }}
+      />
 
       <FilterPanel
         keyword={keyword}
