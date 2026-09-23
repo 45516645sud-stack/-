@@ -3,27 +3,267 @@
   <head>
     <base target="_top" />
     <meta charset="UTF-8" />
-    <?!= include('Stylesheet'); ?>
+    <style>
+      :root {
+        --bg: #f5f3fb;
+        --surface: #ffffff;
+        --surface-2: #edeafb;
+        --border: #e2ddf5;
+        --ink: #1c1a2e;
+        --ink-muted: #6d6a86;
+        --accent: #5b3df0;
+        --accent-strong: #4327c9;
+        --accent-ink: #ffffff;
+        --gold: #b8791a;
+        --gold-soft: #fbeed2;
+        --shadow: 0 1px 2px rgba(28,20,60,.04), 0 8px 24px -8px rgba(28,20,60,.16);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: -apple-system, 'Apple SD Gothic Neo', 'Segoe UI', sans-serif;
+        padding-inline: 20px;
+      }
+      h1, h2, h3 { text-wrap: balance; }
+      .wrap { max-width: 1040px; margin: 0 auto; }
+
+      .masthead { padding-block: 40px 24px; border-bottom: 1px solid var(--border); }
+      .masthead h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; line-height: 1.15; margin: 0 0 12px; }
+      .masthead h1 em { font-style: normal; color: var(--accent-strong); }
+      .masthead p { color: var(--ink-muted); font-size: 1rem; max-width: 46ch; line-height: 1.6; margin: 0 0 24px; }
+
+      .search-row { max-width: 560px; }
+      .search-field {
+        display: flex; align-items: center; gap: 10px;
+        background: var(--surface); border: 1.5px solid var(--border);
+        border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow);
+      }
+      .search-field:focus-within { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 1px; }
+      .search-field .ico { color: var(--ink-muted); }
+      .search-field input { border: none; outline: none; background: transparent; color: var(--ink); font: inherit; font-size: .96rem; width: 100%; }
+
+      .filters { padding-block: 18px 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+      .chip {
+        font: inherit; font-size: .84rem; font-weight: 600; color: var(--ink-muted);
+        background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+        padding: 7px 14px; cursor: pointer; white-space: nowrap;
+      }
+      .chip:hover { border-color: var(--accent); color: var(--ink); }
+      .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+      .filters-divider { width: 1px; align-self: stretch; background: var(--border); margin-inline: 4px; }
+      select.chip { appearance: none; }
+
+      .result-count { color: var(--ink-muted); font-size: .82rem; margin: 18px 2px 14px; }
+      .result-count b { color: var(--ink); font-weight: 700; }
+
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px; padding-bottom: 60px; }
+      .card {
+        text-align: left; font: inherit; color: inherit; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 16px; padding: 18px; cursor: pointer;
+        box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
+      }
+      .card:hover { border-color: var(--accent); }
+      .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .card-icon { flex: none; width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; font-size: 1.25rem; background: var(--surface-2); }
+      .fee-tag { flex: none; font-size: .72rem; font-weight: 700; padding: 4px 9px; border-radius: 999px; }
+      .fee-tag.free { background: var(--gold-soft); color: var(--gold); }
+      .fee-tag.paid { background: var(--surface-2); color: var(--ink-muted); }
+      .card h3 { font-size: 1.05rem; font-weight: 700; line-height: 1.35; margin: 0; }
+      .card .meta { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; color: var(--ink-muted); }
+      .card .category-label { font-size: .72rem; font-weight: 700; color: var(--accent-strong); }
+
+      .empty { text-align: center; padding: 60px 20px; color: var(--ink-muted); }
+
+      .overlay { position: fixed; inset: 0; background: rgba(15,12,30,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+      @media (min-width: 640px) { .overlay { align-items: center; padding: 24px; } }
+      .sheet {
+        background: var(--surface); width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto;
+        border-radius: 20px 20px 0 0; padding: 26px 24px 28px; box-shadow: var(--shadow); position: relative;
+      }
+      @media (min-width: 640px) { .sheet { border-radius: 20px; padding: 30px; } }
+      .sheet-close {
+        position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%;
+        border: 1px solid var(--border); background: var(--surface-2); color: var(--ink-muted);
+        display: grid; place-items: center; cursor: pointer; font: inherit;
+      }
+      .sheet .category-label { font-size: .74rem; font-weight: 700; color: var(--accent-strong); background: var(--surface-2); border-radius: 999px; padding: 4px 12px; display: inline-block; margin-bottom: 12px; }
+      .sheet h2 { font-size: 1.35rem; font-weight: 800; margin: 0 0 18px; padding-right: 30px; }
+      .sheet dl { display: grid; grid-template-columns: 64px 1fr; gap: 10px 14px; margin: 0 0 20px; font-size: .92rem; }
+      .sheet dt { color: var(--ink-muted); }
+      .sheet dd { margin: 0; }
+      .sheet .overview { font-size: .92rem; line-height: 1.7; border-top: 1px solid var(--border); padding-top: 18px; }
+    </style>
   </head>
   <body>
-    <header class="site-header">
-      <h1>🎪 전국 박람회 찾기</h1>
-      <input
-        type="search"
-        id="search-input"
-        class="search-input"
-        placeholder="박람회 이름, 지역으로 검색"
-      />
-    </header>
+    <div class="wrap">
+      <header class="masthead">
+        <h1>전국의 <em>박람회</em>를<br>한자리에서 찾아보세요</h1>
+        <p>카테고리, 요금 조건으로 걸러보고 카드를 눌러 상세 정보를 확인해보세요.</p>
+        <div class="search-row">
+          <label class="search-field">
+            <span class="ico">🔍</span>
+            <input id="search" type="search" placeholder="박람회 이름이나 지역으로 검색" autocomplete="off">
+          </label>
+        </div>
+      </header>
 
-    <main class="site-main">
-      <p id="result-count" class="result-count"></p>
-      <ul id="fair-list" class="fair-list"></ul>
-      <p id="empty-message" class="empty-message" hidden>
-        검색 결과가 없습니다.
-      </p>
-    </main>
+      <nav class="filters">
+        <div id="category-chips"></div>
+        <div class="filters-divider"></div>
+        <select id="fee-select" class="chip">
+          <option value="">요금 전체</option>
+          <option value="free">무료</option>
+          <option value="paid">유료</option>
+        </select>
+      </nav>
 
-    <?!= include('JavaScript'); ?>
+      <p class="result-count" id="result-count"></p>
+      <main id="grid" class="grid"></main>
+    </div>
+
+    <div id="overlay-root"></div>
+
+    <script>
+    (function () {
+      var FAIRS = [
+        { id: 1, title: '서울 국제 뷰티산업 박람회', category: 'beauty', region: '서울', place: '코엑스', start: '2026.03.05', end: '2026.03.08', fee: '무료', tel: '02-1234-5678', overview: '국내외 화장품·미용 브랜드가 한자리에 모이는 뷰티 산업 박람회. 신제품 전시와 뷰티 트렌드 세미나가 함께 열립니다.', icon: '💄' },
+        { id: 2, title: '대한민국 유아교육 박람회', category: 'baby', region: '부산', place: '벡스코', start: '2026.03.12', end: '2026.03.15', fee: '5,000원 (어린이 무료)', tel: '051-1234-5678', overview: '유아용품, 교육 콘텐츠, 놀이 시설 등 육아·교육 전 분야를 아우르는 가족 단위 박람회.', icon: '🧸' },
+        { id: 3, title: '스마트팩토리 산업기술 박람회', category: 'industry', region: '경기', place: '킨텍스', start: '2026.03.20', end: '2026.03.23', fee: '유료 (사전등록 무료)', tel: '031-1234-5678', overview: '스마트 팩토리, 로봇, 자동화 설비 등 첨단 산업 기술을 소개하는 국내 최대 규모의 산업 박람회.', icon: '⚙️' },
+        { id: 4, title: '푸드위크 식품 박람회', category: 'food', region: '서울', place: '롯데월드몰', start: '2026.04.01', end: '2026.04.04', fee: '무료', tel: '02-2345-6789', overview: '국내외 식품 기업의 신제품과 트렌드를 만나볼 수 있는 식품 전문 박람회.', icon: '🍜' },
+        { id: 5, title: '웨딩 & 라이프스타일 박람회', category: 'life', region: '부산', place: '벡스코', start: '2026.04.10', end: '2026.04.12', fee: '10,000원', tel: '051-2345-6789', overview: '예비 신랑신부를 위한 웨딩홀, 스튜디오, 인테리어 브랜드가 참가하는 라이프스타일 박람회.', icon: '💍' },
+        { id: 6, title: '창업&프랜차이즈 취업박람회', category: 'job', region: '대구', place: '엑스코', start: '2026.04.15', end: '2026.04.17', fee: '무료', tel: '053-1234-5678', overview: '예비 창업자와 구직자를 위한 프랜차이즈 상담, 채용 정보를 제공하는 취업·창업 박람회.', icon: '💼' },
+        { id: 7, title: '서울 국제 도서·문구 박람회', category: 'culture', region: '서울', place: '코엑스', start: '2026.05.02', end: '2026.05.05', fee: '무료', tel: '02-3456-7890', overview: '출판사, 문구 브랜드, 작가 사인회가 함께하는 문화·예술 박람회.', icon: '📚' },
+        { id: 8, title: '스마트IT & 로봇 박람회', category: 'it', region: '인천', place: '송도컨벤시아', start: '2026.05.12', end: '2026.05.14', fee: '유료 (20,000원)', tel: '032-1234-5678', overview: 'AI, 로봇, 디지털 전환 솔루션을 선보이는 IT·테크 전문 박람회.', icon: '🤖' }
+      ];
+
+      var CATEGORIES = [
+        { key: 'all', label: '전체' },
+        { key: 'it', label: 'IT·테크' },
+        { key: 'beauty', label: '뷰티·미용' },
+        { key: 'baby', label: '유아·교육' },
+        { key: 'food', label: '푸드·식품' },
+        { key: 'job', label: '취업·창업' },
+        { key: 'life', label: '웨딩·라이프' },
+        { key: 'culture', label: '문화·예술' },
+        { key: 'industry', label: '산업·무역' }
+      ];
+      var CATEGORY_LABEL = {};
+      CATEGORIES.forEach(function (c) { CATEGORY_LABEL[c.key] = c.label; });
+
+      var state = { q: '', category: 'all', fee: '' };
+
+      var chipsEl = document.getElementById('category-chips');
+      var searchEl = document.getElementById('search');
+      var feeEl = document.getElementById('fee-select');
+      var gridEl = document.getElementById('grid');
+      var countEl = document.getElementById('result-count');
+      var overlayRoot = document.getElementById('overlay-root');
+
+      function feeCategory(fee) {
+        if (!fee) return 'unknown';
+        if (fee.indexOf('유료') > -1 || /\d/.test(fee)) return 'paid';
+        if (fee.indexOf('무료') > -1) return 'free';
+        return 'unknown';
+      }
+
+      function renderChips() {
+        chipsEl.innerHTML = '';
+        CATEGORIES.forEach(function (c) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'chip';
+          btn.textContent = c.label;
+          btn.setAttribute('aria-pressed', String(state.category === c.key));
+          btn.addEventListener('click', function () {
+            state.category = c.key;
+            renderChips();
+            renderGrid();
+          });
+          chipsEl.appendChild(btn);
+        });
+      }
+
+      function matches(fair) {
+        if (state.category !== 'all' && fair.category !== state.category) return false;
+        if (state.fee && feeCategory(fair.fee) !== state.fee) return false;
+        var q = state.q.trim();
+        if (q && fair.title.indexOf(q) === -1 && fair.region.indexOf(q) === -1) return false;
+        return true;
+      }
+
+      function cardHtml(fair) {
+        var tagClass = feeCategory(fair.fee) === 'paid' ? 'paid' : 'free';
+        return (
+          '<button type="button" class="card" data-id="' + fair.id + '">' +
+            '<div class="card-top">' +
+              '<div class="card-icon">' + fair.icon + '</div>' +
+              '<span class="fee-tag ' + tagClass + '">' + fair.fee + '</span>' +
+            '</div>' +
+            '<div>' +
+              '<div class="category-label">' + CATEGORY_LABEL[fair.category] + '</div>' +
+              '<h3>' + fair.title + '</h3>' +
+            '</div>' +
+            '<div class="meta">' +
+              '<span>🗓 ' + fair.start + ' ~ ' + fair.end + '</span>' +
+              '<span>📍 ' + fair.region + ' · ' + fair.place + '</span>' +
+            '</div>' +
+          '</button>'
+        );
+      }
+
+      function renderGrid() {
+        var results = FAIRS.filter(matches);
+        countEl.innerHTML = '총 <b>' + results.length + '</b>건';
+
+        if (results.length === 0) {
+          gridEl.innerHTML = '<div class="empty" style="grid-column:1/-1">일치하는 박람회가 없어요. 검색어나 필터를 조정해보세요.</div>';
+          return;
+        }
+
+        gridEl.innerHTML = results.map(cardHtml).join('');
+        Array.prototype.forEach.call(gridEl.querySelectorAll('.card'), function (el) {
+          el.addEventListener('click', function () {
+            openDetail(Number(el.getAttribute('data-id')));
+          });
+        });
+      }
+
+      function openDetail(id) {
+        var fair = FAIRS.filter(function (f) { return f.id === id; })[0];
+        if (!fair) return;
+
+        overlayRoot.innerHTML =
+          '<div class="overlay" id="overlay">' +
+            '<div class="sheet">' +
+              '<button type="button" class="sheet-close" id="sheet-close">✕</button>' +
+              '<span class="category-label">' + CATEGORY_LABEL[fair.category] + '</span>' +
+              '<h2>' + fair.title + '</h2>' +
+              '<dl>' +
+                '<dt>기간</dt><dd>' + fair.start + ' ~ ' + fair.end + '</dd>' +
+                '<dt>장소</dt><dd>' + fair.region + ' · ' + fair.place + '</dd>' +
+                '<dt>요금</dt><dd>' + fair.fee + '</dd>' +
+                '<dt>문의</dt><dd>' + fair.tel + '</dd>' +
+              '</dl>' +
+              '<p class="overview">' + fair.overview + '</p>' +
+            '</div>' +
+          '</div>';
+
+        var overlay = document.getElementById('overlay');
+        function close() { overlayRoot.innerHTML = ''; document.removeEventListener('keydown', onKey); }
+        function onKey(e) { if (e.key === 'Escape') close(); }
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+        document.getElementById('sheet-close').addEventListener('click', close);
+        document.addEventListener('keydown', onKey);
+      }
+
+      searchEl.addEventListener('input', function (e) { state.q = e.target.value; renderGrid(); });
+      feeEl.addEventListener('change', function (e) { state.fee = e.target.value; renderGrid(); });
+
+      renderChips();
+      renderGrid();
+    })();
+    </script>
   </body>
 </html>
