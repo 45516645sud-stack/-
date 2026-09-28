@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Primary Meta Tags -->
+<title>통합박람회</title>
+<meta name="title" content="통합박람회">
+<meta name="description" content="전국 박람회 일정을 한곳에서 확인하세요. 지역, 카테고리, 무료·유료로 골라 보고, 가고 싶은 곳을 적으면 AI가 딱 맞는 박람회를 찾아드려요.">
+<meta name="keywords" content="박람회, 박람회 일정, 전국 박람회, 무료 박람회, 코엑스 박람회, 킨텍스 박람회, 벡스코 박람회, 엑스포">
+<meta name="author" content="정문경">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#efe8da">
+<link rel="canonical" href="https://expomoa.com/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://expomoa.com/">
+<meta property="og:title" content="통합박람회">
+<meta property="og:description" content="전국 박람회 일정을 한곳에서 확인하세요. 지역, 카테고리, 무료·유료로 골라 보고, 가고 싶은 곳을 적으면 AI가 딱 맞는 박람회를 찾아드려요.">
+<meta property="og:site_name" content="엑스포 모아">
+<meta property="og:locale" content="ko_KR">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://expomoa.com/">
+<meta name="twitter:title" content="통합박람회">
+<meta name="twitter:description" content="전국 박람회 일정을 한곳에서 확인하세요. 지역, 카테고리, 무료·유료로 골라 보고, 가고 싶은 곳을 적으면 AI가 딱 맞는 박람회를 찾아드려요.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "엑스포 모아",
+  "url": "https://expomoa.com/",
+  "description": "전국 박람회 일정을 한곳에서 확인하세요. 지역, 카테고리, 무료·유료로 골라 보고, 가고 싶은 곳을 적으면 AI가 딱 맞는 박람회를 찾아드려요.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://expomoa.com/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Geist:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+<style>
+/* ------------------------------------------------------------------
+   AIIairs — 전국 박람회 통합 일정
+   한 장의 인쇄된 일정표처럼: 종이(bg) 위에 흰 시트(surface), 잉크, 헤어라인.
+   색은 다섯 개 기본축 + 파생 두 개(--hair, --wash)만 쓴다.
+   모서리 0, 그림자 없음, 애니메이션·트랜지션 없음.
+------------------------------------------------------------------- */
+:root{
+  --bg:#efe8da;
+  --surface:#ffffff;
+  --ink:#14110f;
+  --accent:#c2410c;
+  --muted:#6e6357;
+  /* 파생 1: muted 35% over bg — 헤어라인 전용 */
+  --hair:#c2b9ac;
+  /* 파생 2: ink 5% over bg — 호버 면 */
+  --wash:#e4ddd0;
+
+  --f-display:"Fraunces","Pretendard Variable","Pretendard",serif;
+  --f-body:"Geist","Pretendard Variable","Pretendard",system-ui,sans-serif;
+
+  /* 1.2 비율 스케일 */
+  --s-2:.694rem; --s-1:.833rem; --s0:1rem; --s1:1.2rem; --s2:1.44rem;
+  --s3:1.728rem; --s4:2.074rem; --s5:2.488rem; --s6:2.986rem; --s7:3.583rem; --s8:4.3rem;
+
+  --pad:32px;
+  --gap:24px;
+  --col-date:5.5rem;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--f-body);font-size:var(--s0);line-height:1.6;
+  font-synthesis:none;word-break:keep-all;overflow-wrap:anywhere;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+::selection{background:var(--ink);color:var(--bg)}
+[hidden]{display:none!important}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.wrap{max-width:1320px;margin:0 auto;padding:0 var(--pad)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap)}
+
+.skip{position:absolute;left:-999px;top:0;background:var(--ink);color:var(--bg);padding:8px 12px;z-index:10}
+.skip:focus{left:8px;top:8px}
+
+/* ---------- Masthead ---------- */
+.mast{border-bottom:1px solid var(--ink)}
+.mast-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:18px}
+.brand{display:flex;align-items:baseline;gap:14px;color:inherit;text-decoration:none}
+.brand-word{font-family:var(--f-display);font-size:var(--s3);font-weight:600;letter-spacing:-.02em;line-height:1;font-variation-settings:"opsz" 144}
+.brand-sub{font-size:var(--s-1);color:var(--muted)}
+.mast-meta{margin:0;font-size:var(--s-1);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.mast-meta b{color:var(--ink);font-weight:500}
+
+/* 카테고리 레일 — 상단 고정 목차 */
+.rail{border-top:1px solid var(--hair)}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;overflow-x:auto;scrollbar-width:none}
+.rail ol::-webkit-scrollbar{display:none}
+.rail li{flex:0 0 auto;border-right:1px solid var(--hair)}
+.rail li:first-child{border-left:1px solid var(--hair)}
+.rail button{
+  display:grid;grid-template-columns:auto auto;column-gap:10px;align-items:baseline;
+  background:none;border:0;padding:12px 16px 13px;text-align:left;white-space:nowrap;
+}
+.rail .r-no{font-family:var(--f-display);font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+.rail .r-name{font-size:var(--s0);font-weight:500}
+.rail .r-count{grid-column:2;font-size:var(--s-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.rail button:hover{background:var(--wash)}
+.rail button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.rail button[aria-pressed="true"] .r-no,
+.rail button[aria-pressed="true"] .r-count{color:var(--hair)}
+.rail button[aria-pressed="true"] .r-no{color:var(--accent)}
+.rail button:disabled{cursor:default;color:var(--hair)}
+.rail button:disabled .r-no,.rail button:disabled .r-count{color:var(--hair)}
+.rail button:disabled:hover{background:none}
+
+/* ---------- Intro ---------- */
+.intro{padding-top:64px;padding-bottom:64px;row-gap:40px;align-items:end}
+.lede{grid-column:1 / span 7}
+.eyebrow{margin:0 0 20px;font-family:var(--f-display);font-style:italic;font-size:var(--s1);color:var(--muted);font-weight:400}
+.eyebrow span{color:var(--accent);font-style:normal}
+h1{
+  margin:0;font-family:var(--f-display);font-weight:600;
+  font-size:var(--s7);line-height:1.18;letter-spacing:-.035em;
+}
+.figures{margin:48px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--ink)}
+.figures div{padding:12px 16px 0 0;border-right:1px solid var(--hair);padding-left:16px}
+.figures div:first-child{padding-left:0}
+.figures div:last-child{border-right:0}
+.figures dt{font-size:var(--s-1);color:var(--muted)}
+.figures dd{margin:2px 0 0;font-family:var(--f-display);font-size:var(--s6);font-weight:300;line-height:1.05;font-variant-numeric:lining-nums tabular-nums;font-variation-settings:"opsz" 144}
+.figures .is-accent dd{color:var(--accent)}
+
+/* 말로 찾기 */
+.ask{grid-column:8 / span 5;background:var(--surface);border:1px solid var(--ink);padding:24px}
+.ask-label{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;font-size:var(--s1)}
+.ask-label em{font-family:var(--f-display);font-weight:400;font-size:var(--s-1);color:var(--muted)}
+.ask-help{margin:6px 0 16px;font-size:var(--s-1);color:var(--muted);line-height:1.55}
+.ask textarea{
+  display:block;width:100%;resize:vertical;min-height:96px;
+  border:0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  background:transparent;padding:14px 0;font-size:var(--s1);line-height:1.5;border-radius:0;
+}
+.ask textarea::placeholder{color:var(--muted);opacity:.8}
+.ask textarea:focus{outline:0;border-bottom-color:var(--accent)}
+.ask-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px}
+.ask-hint{font-size:var(--s-2);color:var(--muted)}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;border:1px solid var(--ink);
+  background:var(--ink);color:var(--bg);padding:10px 18px;font-weight:500;border-radius:0;
+}
+.btn:hover{background:var(--accent);border-color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn-sm{padding:7px 12px;font-size:var(--s-1)}
+.arrow{font-family:var(--f-display)}
+.examples{margin-top:22px;padding-top:14px;border-top:1px solid var(--hair)}
+.examples p{margin:0 0 8px;font-size:var(--s-2);color:var(--muted)}
+.examples ul{list-style:none;margin:0;padding:0}
+.examples li + li{border-top:1px solid var(--hair)}
+.examples button{
+  display:flex;width:100%;justify-content:space-between;gap:12px;
+  background:none;border:0;padding:8px 0;text-align:left;font-size:var(--s-1);
+}
+.examples button::after{content:"↗";font-family:var(--f-display);color:var(--muted)}
+.examples button:hover{color:var(--accent)}
+.examples button:hover::after{color:var(--accent)}
+
+/* ---------- Body: filters + schedule ---------- */
+.body{padding-bottom:96px;align-items:start}
+.filters{grid-column:1 / span 3}
+.schedule{grid-column:4 / span 9;min-width:0}
+
+.filters details{border-top:1px solid var(--ink)}
+.filters summary{
+  list-style:none;display:flex;justify-content:space-between;align-items:baseline;
+  padding:14px 0 12px;font-weight:600;cursor:pointer;
+}
+.filters summary::-webkit-details-marker{display:none}
+.filters summary .sum-state{font-weight:400;font-size:var(--s-1);color:var(--muted)}
+.filters summary .sum-state b{color:var(--accent);font-weight:500}
+fieldset{border:0;margin:0;padding:16px 0 20px;border-top:1px solid var(--hair);min-width:0}
+legend{padding:0;margin-bottom:10px;font-size:var(--s-1);color:var(--muted);float:left;width:100%}
+legend + *{clear:both}
+
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--ink)}
+.seg label{position:relative;text-align:center;padding:7px 4px;font-size:var(--s-1);cursor:pointer;border-right:1px solid var(--ink)}
+.seg label:last-child{border-right:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:hover{background:var(--wash)}
+.seg label:has(input:checked){background:var(--ink);color:var(--bg)}
+.seg label:has(input:focus-visible){outline:1px solid var(--accent);outline-offset:2px}
+
+.checks{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
+.check{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:var(--s-1);cursor:pointer}
+.check input{
+  appearance:none;-webkit-appearance:none;margin:0;flex:0 0 auto;
+  width:13px;height:13px;border:1px solid var(--ink);border-radius:0;background:var(--surface);
+}
+.check input:checked{background:var(--ink);box-shadow:inset 0 0 0 2px var(--surface)}
+.check .n{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums}
+.check:has(input:disabled){color:var(--hair);cursor:default}
+.check:has(input:disabled) input{border-color:var(--hair)}
+.check:has(input:disabled) .n{color:var(--hair)}
+
+.periods{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+.periods label{position:relative;flex:1 0 33.333%;text-align:center;padding:7px 4px;font-size:var(--s-1);cursor:pointer;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);white-space:nowrap}
+.periods label.wide{flex-basis:50%}
+.periods input{position:absolute;opacity:0;pointer-events:none}
+.periods label:hover{background:var(--wash)}
+.periods label:has(input:checked){background:var(--ink);color:var(--bg)}
+.periods label:has(input:focus-visible){outline:1px solid var(--accent);outline-offset:-3px}
+.periods small{font-size:var(--s-2);color:var(--muted)}
+.periods label:has(input:checked) small{color:var(--hair)}
+
+.filter-end{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--hair)}
+.linkish{background:none;border:0;padding:0;font-size:var(--s-1);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.linkish:hover{color:var(--accent)}
+
+/* 해석 패널 */
+.interp{border:1px solid var(--ink);background:var(--bg);margin-bottom:24px}
+.interp-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 20px;border-bottom:1px solid var(--hair)}
+.interp-head p{margin:0;font-size:var(--s-1);color:var(--muted)}
+.interp-q{margin:0;padding:18px 20px 4px;font-size:var(--s2);font-weight:500;line-height:1.4;letter-spacing:-.01em}
+.interp-q .qm{font-family:var(--f-display);color:var(--accent);font-weight:400}
+.interp dl{margin:0;padding:10px 20px 18px;display:grid;grid-template-columns:6.5rem 1fr;row-gap:6px;column-gap:16px;font-size:var(--s-1)}
+.interp dt{color:var(--muted)}
+.interp dd{margin:0}
+.interp .none{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--ink);background:var(--surface);padding:2px 10px;font-size:var(--s-1);border-radius:0}
+.chip:hover{background:var(--ink);color:var(--bg)}
+.interp-note{margin:0;padding:12px 20px;border-top:1px solid var(--hair);font-size:var(--s-1);color:var(--muted)}
+
+/* 일정 시트 */
+.sheet-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-top:1px solid var(--ink);padding:14px 0 12px}
+.sheet-head h2{margin:0;font-size:var(--s1);font-weight:600}
+.sheet-head p{margin:0;font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+.sheet-head p b{color:var(--ink);font-weight:500}
+.sheet{background:var(--surface);border:1px solid var(--ink)}
+
+.group + .group{border-top:1px solid var(--ink)}
+.group-h{
+  display:grid;grid-template-columns:var(--col-date) minmax(0,1fr) auto;column-gap:20px;align-items:baseline;
+  padding:26px 20px 12px;border-bottom:1px solid var(--ink);margin:0;font-weight:inherit;
+}
+.g-big{font-family:var(--f-display);font-size:var(--s6);font-weight:300;line-height:1;font-variant-numeric:lining-nums;font-variation-settings:"opsz" 144;letter-spacing:-.02em}
+.g-big.word{font-style:italic;font-size:var(--s5)}
+.g-label{display:flex;flex-direction:column;gap:2px}
+.g-label b{font-weight:600;font-size:var(--s1)}
+.g-label i{font-family:var(--f-display);font-size:var(--s-1);color:var(--muted)}
+.g-count{font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+
+.fairs{list-style:none;margin:0;padding:0}
+.fair + .fair{border-top:1px solid var(--hair)}
+.row{
+  display:grid;
+  grid-template-columns:var(--col-date) minmax(0,1fr) 7rem 8.5rem 5.5rem;
+  column-gap:20px;align-items:start;
+  width:100%;background:none;border:0;padding:18px 20px;text-align:left;
+}
+.row:hover{background:var(--wash)}
+.row:focus-visible{outline-offset:-2px}
+.c-date{display:flex;flex-direction:column;line-height:1.2;font-variant-numeric:tabular-nums}
+.d-top{font-size:var(--s-2);color:var(--muted)}
+.d-day{font-family:var(--f-display);font-size:var(--s4);font-weight:400;line-height:1.05;font-variant-numeric:lining-nums tabular-nums;font-variation-settings:"opsz" 72}
+.d-end{font-size:var(--s-2);color:var(--muted)}
+.c-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.title{font-size:var(--s1);font-weight:600;line-height:1.35;letter-spacing:-.01em}
+.venue{font-size:var(--s-1);color:var(--muted)}
+.why{font-size:var(--s-1);color:var(--accent)}
+.meta{display:contents}
+.c-cat,.c-status,.c-fee{font-size:var(--s-1);padding-top:4px;font-variant-numeric:tabular-nums}
+.c-cat{color:var(--ink)}
+.c-status{color:var(--muted);white-space:nowrap}
+.c-status.live{color:var(--ink)}
+.c-status.live::before{content:"";display:inline-block;width:7px;height:7px;background:var(--accent);margin-right:7px;vertical-align:1px}
+.c-fee{text-align:right}
+.c-fee.free{color:var(--accent);font-weight:600}
+.fair.is-past .row{color:var(--muted)}
+.fair.is-past .title{font-weight:500}
+.fair.is-open .row{background:var(--surface)}
+.fair.is-open .d-day{color:var(--accent)}
+.fair.is-open .title{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+
+.detail{padding:0 20px 24px calc(20px + var(--col-date) + 20px)}
+.detail p{margin:0 0 16px;max-width:38em;line-height:1.7}
+.detail dl{margin:0 0 20px;display:grid;grid-template-columns:5rem 1fr;column-gap:16px;row-gap:4px;font-size:var(--s-1);border-top:1px solid var(--hair);padding-top:12px;max-width:38em}
+.detail dt{color:var(--muted)}
+.detail dd{margin:0}
+.detail .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.detail .done{font-size:var(--s-1);color:var(--accent)}
+
+.empty{padding:56px 20px;text-align:center}
+.empty b{display:block;font-family:var(--f-display);font-weight:300;font-style:italic;font-size:var(--s5);line-height:1.1;margin-bottom:10px}
+.empty p{margin:0 0 18px;color:var(--muted);font-size:var(--s-1)}
+
+/* ---------- Footer ---------- */
+.foot{border-top:1px solid var(--ink)}
+.foot .wrap{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);padding-top:22px;padding-bottom:40px;font-size:var(--s-1);color:var(--muted)}
+.foot .f-brand{grid-column:1 / span 4;color:var(--ink);font-family:var(--f-display);font-size:var(--s1);font-weight:600}
+.foot .f-note{grid-column:5 / span 5;margin:0}
+.foot .f-end{grid-column:10 / span 3;margin:0;text-align:right}
+
+noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);background:var(--surface)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .lede{grid-column:1 / -1}
+  .ask{grid-column:1 / -1}
+  .intro{padding-top:48px;padding-bottom:48px}
+  .filters{grid-column:1 / span 4}
+  .schedule{grid-column:5 / span 8}
+  .row{grid-template-columns:var(--col-date) minmax(0,1fr) 5.5rem;row-gap:4px}
+  .meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;grid-column:3;grid-row:1}
+  .c-cat{order:2;color:var(--muted)}
+  .c-status{order:3}
+  .c-fee{order:1;padding-top:4px}
+  .c-cat,.c-status{padding-top:0;text-align:right}
+}
+@media (max-width:820px){
+  :root{--pad:16px;--gap:16px;--col-date:3.6rem}
+  .filters,.schedule{grid-column:1 / -1}
+  .filters{margin-bottom:24px}
+  .filters details:not([open]){border-bottom:1px solid var(--ink)}
+  .filters summary::after{content:"+";font-family:var(--f-display);font-size:var(--s1);font-weight:400;margin-left:12px}
+  .filters details[open] summary::after{content:"−"}
+  .filters summary{justify-content:flex-start}
+  .filters summary .sum-state{margin-left:auto}
+  h1{font-size:var(--s5)}
+  .figures{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .figures div:nth-child(2){border-right:0}
+  .figures div:nth-child(3){padding-left:0}
+  .figures div:nth-child(n+3){border-top:1px solid var(--hair);margin-top:12px}
+  .figures dd{font-size:var(--s5)}
+  .mast-top{flex-direction:column;align-items:flex-start;gap:6px}
+  .mast-meta{text-align:left}
+  .brand-sub{display:none}
+  .row{grid-template-columns:var(--col-date) minmax(0,1fr);column-gap:14px;padding:16px}
+  .meta{grid-column:2;grid-row:2;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:6px}
+  .c-fee,.c-cat,.c-status{padding-top:0;text-align:left}
+  .c-fee{order:3}
+  .c-cat{order:1}
+  .c-status{order:2}
+  .group-h{grid-template-columns:var(--col-date) minmax(0,1fr) auto;column-gap:14px;padding:22px 16px 10px}
+  .g-big{font-size:var(--s4)}
+  .g-big.word{font-size:var(--s3)}
+  .detail{padding:0 16px 22px calc(16px + var(--col-date) + 14px)}
+  .interp dl{grid-template-columns:5rem 1fr}
+  .foot .f-brand,.foot .f-note,.foot .f-end{grid-column:1 / -1;text-align:left;margin-bottom:8px}
+  .ask{padding:18px}
+  .ask-hint{display:none}
+}
+@media (max-width:420px){
+  .detail{padding-left:16px}
+  .rail button{padding:10px 12px 11px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#schedule">일정 바로가기</a>
+<noscript><p>일정표와 검색은 JavaScript가 켜져 있어야 보여요.</p></noscript>
+
+<header class="mast">
+  <div class="wrap mast-top">
+    <a class="brand" href="./" aria-label="AIIairs 처음으로">
+      <span class="brand-word">AIIairs</span>
+      <span class="brand-sub">전국 박람회 통합 일정</span>
+    </a>
+    <p class="mast-meta" id="mastMeta"></p>
+  </div>
+  <nav class="wrap" aria-label="카테고리">
+    <div class="rail"><ol id="rail"></ol></div>
+  </nav>
+</header>
+
+<main>
+  <section class="wrap grid intro" aria-labelledby="h1">
+    <div class="lede">
+      <p class="eyebrow">Index of Fairs <span>/</span> <span id="season"></span></p>
+      <h1 id="h1">전국의 박람회를<br>한 장의 일정표로.</h1>
+      <dl class="figures" id="figures"></dl>
+    </div>
+
+    <form class="ask" id="askForm" role="search" autocomplete="off">
+      <label class="ask-label" for="askInput">취향으로 찾기 <em>Ask in your words</em></label>
+      <p class="ask-help">카테고리를 몰라도 괜찮아요. 가고 싶은 분위기나 목적을 한 문장으로 적으면, 문장을 읽고 맞는 박람회와 분야를 골라드려요.</p>
+      <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 아이랑 부산에서 무료로 갈 만한 곳"></textarea>
+      <div class="ask-foot">
+        <span class="ask-hint">Enter 찾기 · Shift+Enter 줄바꿈</span>
+        <button class="btn" type="submit">찾아보기 <span class="arrow" aria-hidden="true">→</span></button>
+      </div>
+      <div class="examples">
+        <p>이렇게 적어도 돼요</p>
+        <ul>
+          <li><button type="button" data-example="혼자 조용히 영감 받을 수 있는 곳">혼자 조용히 영감 받을 수 있는 곳</button></li>
+          <li><button type="button" data-example="여자친구랑 맛있는 거 먹으면서 데이트하고 싶어요">여자친구랑 맛있는 거 먹으면서 데이트</button></li>
+          <li><button type="button" data-example="이직 준비 중인데 서울에서 도움 될 만한 행사">이직 준비 중, 서울에서 도움 될 만한 행사</button></li>
+          <li><button type="button" data-example="이번 주말 강아지랑 무료로">이번 주말 강아지랑 무료로</button></li>
+        </ul>
+      </div>
+    </form>
+  </section>
+
+  <section class="wrap grid body" aria-label="박람회 일정">
+    <aside class="filters" aria-label="상세 설정">
+      <details id="filterBox" open>
+        <summary>상세 설정 <span class="sum-state" id="sumState"></span></summary>
+
+        <fieldset>
+          <legend>관람료</legend>
+          <div class="seg" id="costSeg">
+            <label><input type="radio" name="cost" value="all" checked> 전체</label>
+            <label><input type="radio" name="cost" value="free"> 무료만</label>
+            <label><input type="radio" name="cost" value="paid"> 유료만</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>지역 <span class="vh">(여러 곳 선택 가능)</span></legend>
+          <div class="checks" id="regionList"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>기간</legend>
+          <div class="periods" id="periodList"></div>
+        </fieldset>
+
+        <div class="filter-end">
+          <label class="check"><input type="checkbox" id="pastToggle"> 지난 박람회도 보기</label>
+          <button type="button" class="linkish" id="resetBtn">초기화</button>
+        </div>
+      </details>
+    </aside>
+
+    <div class="schedule" id="schedule" tabindex="-1">
+      <section class="interp" id="interp" hidden aria-live="polite"></section>
+      <div class="sheet-head">
+        <h2 id="sheetTitle">전체 일정</h2>
+        <p id="sheetCount" aria-live="polite"></p>
+      </div>
+      <div class="sheet" id="sheet"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="f-brand">AIIairs</span>
+    <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.</p>
+    <p class="f-end">전국 박람회 통합 일정</p>
+  </div>
+</footer>
+
+<!--
+  박람회 데이터. 실제 서비스에서는 이 블록을 수집 파이프라인/API 결과로 교체한다.
+  아래 항목은 레이아웃과 검색 동작을 보여주기 위한 예시 일정이며 실제 행사가 아니다.
+  fee: 0 = 무료, 숫자 = 현장 일반 관람료(원)
+  tags: 취향 검색이 참고하는 성격 태그
+-->
+<script type="application/json" id="fair-data">
+[
+ {"id":"tea-culture","t":"서울 차 문화전","cat":"food","region":"서울","venue":"코엑스 B홀","s":"2026-09-17","e":"2026-09-20","fee":10000,"tags":["조용한","시식","혼자","영감"],"d":"녹차부터 보이차, 다구와 도자기까지. 시음 부스를 천천히 돌며 차 한 잔씩 맛볼 수 있는 조용한 박람회."},
+ {"id":"coffee-dessert","t":"서울 커피 & 디저트 페어","cat":"food","region":"서울","venue":"코엑스 A홀","s":"2026-09-24","e":"2026-09-27","fee":15000,"tags":["데이트","시식","쇼핑","활기","친구"],"d":"로스터리 120곳과 디저트 브랜드가 한자리에. 원두 시음과 한정 디저트 구매가 중심이다."},
+ {"id":"suwon-furniture","t":"수원 가구 & 리빙 박람회","cat":"living","region":"경기","venue":"수원메쎄","s":"2026-09-24","e":"2026-09-30","fee":0,"tags":["쇼핑","가족"],"d":"가구 공장 직판과 신혼·이사 수요를 위한 리빙 브랜드 할인전. 상담 부스가 많아 평일 방문이 여유롭다."},
+ {"id":"living-design-week","t":"리빙 디자인 위크","cat":"living","region":"서울","venue":"코엑스 A·B홀","s":"2026-09-25","e":"2026-10-04","fee":12000,"note":"온라인 사전등록 시 무료","tags":["영감","데이트","쇼핑","사진"],"d":"디자이너 가구, 조명, 오브제를 공간 단위로 연출한 전시. 올해 주제는 '느린 집'. 테마관은 사진 촬영이 자유롭다."},
+ {"id":"busan-pet","t":"부산 반려동물 박람회","cat":"pet","region":"부산","venue":"벡스코 제1전시장","s":"2026-10-02","e":"2026-10-04","fee":0,"note":"사전등록 필수, 반려견 동반 가능","tags":["가족","쇼핑","체험","활기"],"d":"사료·용품 할인과 수의사 상담, 어질리티 체험존. 반려견과 함께 입장할 수 있다."},
+ {"id":"ilsan-kids","t":"일산 베이비 & 키즈 페어","cat":"family","region":"경기","venue":"킨텍스 제2전시장","s":"2026-10-08","e":"2026-10-11","fee":0,"tags":["가족","아이","쇼핑","체험"],"d":"임신·출산·육아 용품 전시와 놀이 체험관. 수유실과 유모차 대여소가 전시장 안에 있다."},
+ {"id":"robotics-show","t":"국제 로보틱스 & AI 쇼","cat":"tech","region":"경기","venue":"킨텍스 제1전시장","s":"2026-10-14","e":"2026-10-16","fee":20000,"note":"업계 종사자 사전등록 시 무료","tags":["비즈니스","영감","체험"],"d":"협동 로봇, 물류 자동화, 생성형 AI 솔루션을 다루는 산업 전시. 컨퍼런스 세션이 함께 열린다."},
+ {"id":"indie-book","t":"서울 독립출판 북페어","cat":"culture","region":"서울","venue":"세텍 제2전시실","s":"2026-10-16","e":"2026-10-18","fee":5000,"tags":["조용한","영감","혼자","데이트","쇼핑"],"d":"독립출판사와 1인 작가 200팀이 직접 책을 소개하고 판매한다. 작가와 대화하며 천천히 고르는 분위기."},
+ {"id":"daegu-beauty","t":"대구 뷰티 엑스포","cat":"beauty","region":"대구","venue":"엑스코 서관","s":"2026-10-22","e":"2026-10-24","fee":0,"tags":["쇼핑","체험","친구","활기"],"d":"화장품·헤어·네일 브랜드 체험과 샘플링. 퍼스널 컬러 진단 부스는 오전에 마감되는 편이다."},
+ {"id":"jeju-camping","t":"제주 여행 & 캠핑 페어","cat":"travel","region":"제주","venue":"ICC JEJU","s":"2026-10-23","e":"2026-10-25","fee":0,"tags":["야외","가족","쇼핑","체험"],"d":"캠핑 장비 전시와 제주 로컬 여행 상품. 야외 광장에서 텐트 설치 체험을 할 수 있다."},
+ {"id":"youth-jobs","t":"청년 일자리 박람회","cat":"career","region":"서울","venue":"aT센터 제1전시장","s":"2026-10-28","e":"2026-10-29","fee":0,"tags":["배움","비즈니스"],"d":"기업 채용관 150곳, 현장 면접, 이력서 첨삭과 증명사진 촬영. 이직 상담 부스도 따로 있다."},
+ {"id":"arch-interior","t":"건축 & 인테리어 산업전","cat":"industry","region":"경기","venue":"킨텍스 제1전시장","s":"2026-10-29","e":"2026-11-01","fee":10000,"tags":["비즈니스","영감"],"d":"자재, 창호, 시공 기술 중심의 B2B 전시. 주말에는 리모델링 상담을 받으려는 일반 관람객도 많다."},
+ {"id":"gwangju-craft","t":"광주 공예 & 디자인 페어","cat":"art","region":"광주","venue":"김대중컨벤션센터","s":"2026-10-30","e":"2026-11-03","fee":8000,"tags":["영감","조용한","쇼핑","체험"],"d":"도자, 목공, 금속 공예가의 작업을 보고 살 수 있는 페어. 주말 원데이 클래스는 현장 선착순."},
+ {"id":"wine-spirits","t":"서울 와인 & 스피릿 쇼","cat":"food","region":"서울","venue":"코엑스 C홀","s":"2026-11-05","e":"2026-11-07","fee":30000,"note":"만 19세 이상 입장","tags":["데이트","시식","친구","활기"],"d":"와인, 위스키, 전통주 수입사와 양조장이 참가하는 시음 박람회. 입장권에 시음 잔이 포함된다."},
+ {"id":"daejeon-science","t":"대전 사이언스 테크 페어","cat":"tech","region":"대전","venue":"대전컨벤션센터","s":"2026-11-06","e":"2026-11-08","fee":0,"tags":["가족","아이","체험","배움"],"d":"연구소와 대학이 참여하는 과학기술 체험 전시. 드론 조종, 로봇 코딩 교실이 아이들에게 인기다."},
+ {"id":"busan-marine","t":"부산 마린 레저 쇼","cat":"travel","region":"부산","venue":"벡스코 제2전시장","s":"2026-11-12","e":"2026-11-15","fee":10000,"tags":["야외","영감","사진","데이트"],"d":"요트, 서핑, 낚시 장비와 해양 레저 상품. 수영만 계류장에서 요트 승선 체험을 신청할 수 있다."},
+ {"id":"wedding-autumn","t":"서울 웨딩 페어","cat":"family","region":"서울","venue":"세텍 제1전시실","s":"2026-11-14","e":"2026-11-15","fee":0,"note":"예비부부 사전등록 시 사은품","tags":["데이트","쇼핑"],"d":"스튜디오·드레스·메이크업 상담과 예물, 혼수 가전 할인. 둘이 함께 상담을 받는 구성이다."},
+ {"id":"incheon-logistics","t":"인천 스마트 물류 산업전","cat":"industry","region":"인천","venue":"송도컨벤시아","s":"2026-11-18","e":"2026-11-20","fee":0,"note":"사전등록 필수","tags":["비즈니스","배움"],"d":"항만·공항 물류, 창고 자동화, 콜드체인 기술. 바이어 상담회와 업계 세미나가 함께 열린다."},
+ {"id":"handmade-vintage","t":"핸드메이드 & 빈티지 마켓","cat":"art","region":"경기","venue":"수원메쎄","s":"2026-11-20","e":"2026-11-22","fee":6000,"tags":["쇼핑","데이트","체험","사진"],"d":"수공예 작가와 빈티지 셀러 300팀이 여는 마켓. 가죽, 향초, 도자기 만들기 체험 부스가 있다."},
+ {"id":"illust-market","t":"서울 일러스트 & 드로잉 마켓","cat":"art","region":"서울","venue":"코엑스 D홀","s":"2026-11-26","e":"2026-11-29","fee":12000,"tags":["영감","쇼핑","혼자","사진"],"d":"일러스트레이터와 캐릭터 작가의 원화, 굿즈, 드로잉 라이브. 첫날 오전이 가장 붐빈다."},
+ {"id":"changwon-outdoor","t":"창원 캠핑 & 아웃도어 쇼","cat":"travel","region":"경남","venue":"창원컨벤션센터","s":"2026-11-27","e":"2026-11-29","fee":5000,"tags":["야외","가족","쇼핑"],"d":"동계 캠핑 장비와 차박 용품 중심. 신제품 체험과 현장 할인이 많다."},
+ {"id":"gyeongju-local","t":"경주 전통주 & 로컬푸드 박람회","cat":"food","region":"경북","venue":"경주화백컨벤션센터","s":"2026-12-04","e":"2026-12-06","fee":0,"tags":["시식","조용한","쇼핑","가족"],"d":"경북 양조장의 전통주 시음과 지역 농가 식품 판매. 한옥 마을 여행과 묶어 가기 좋다."},
+ {"id":"admission-fair","t":"대입 진로 박람회","cat":"career","region":"서울","venue":"코엑스 B홀","s":"2026-12-10","e":"2026-12-13","fee":0,"tags":["배움","가족"],"d":"대학 130여 곳이 참가하는 정시 상담 박람회. 학과별 상담은 현장 번호표로 운영된다."},
+ {"id":"seoul-pet-winter","t":"서울 펫 페어 겨울","cat":"pet","region":"서울","venue":"세텍 제1·2전시실","s":"2026-12-11","e":"2026-12-13","fee":8000,"note":"반려동물 동반 가능","tags":["쇼핑","활기","친구","가족"],"d":"겨울 옷, 수제 간식, 캣타워까지. 고양이 전용관과 입양 상담 부스가 따로 운영된다."},
+ {"id":"baking-fair","t":"겨울 베이킹 & 디저트 페어","cat":"food","region":"부산","venue":"벡스코 제1전시장","s":"2026-12-17","e":"2026-12-20","fee":10000,"tags":["데이트","시식","쇼핑","체험"],"d":"제과 재료와 베이커리 브랜드, 크리스마스 케이크 클래스. 연말 선물용 디저트를 미리 사기 좋다."},
+ {"id":"indie-game","t":"인디 게임 쇼케이스","cat":"tech","region":"경기","venue":"킨텍스 제2전시장","s":"2026-12-18","e":"2026-12-20","fee":15000,"tags":["친구","활기","체험","영감"],"d":"국내 인디 개발사 80곳의 신작 시연. 개발자와 직접 이야기하며 플레이해 볼 수 있다."},
+ {"id":"beauty-fashion-week","t":"뷰티 & 패션 위크 서울","cat":"beauty","region":"서울","venue":"코엑스 A홀","s":"2027-01-08","e":"2027-01-10","fee":10000,"tags":["쇼핑","영감","친구","사진"],"d":"디자이너 브랜드 팝업과 뷰티 신제품 체험. 스타일링 상담 부스는 예약제로 운영된다."},
+ {"id":"jeonbuk-craft","t":"전북 로컬 크래프트 페어","cat":"art","region":"전북","venue":"새만금컨벤션센터","s":"2027-01-15","e":"2027-01-17","fee":0,"tags":["조용한","영감","체험","가족"],"d":"한지, 부채, 옻칠 등 전북 공예 장인의 작업 시연과 판매. 한산해서 오래 머물기 좋다."},
+ {"id":"baby-newyear","t":"서울 베이비 페어 신년","cat":"family","region":"서울","venue":"세텍 제1전시실","s":"2027-01-21","e":"2027-01-24","fee":0,"tags":["가족","아이","쇼핑"],"d":"새해 출산 준비물과 유아 가구, 교육 교구. 카시트 장착 상담이 무료로 제공된다."},
+ {"id":"daegu-photo","t":"대구 사진 & 영상 장비전","cat":"art","region":"대구","venue":"엑스코 동관","s":"2027-01-28","e":"2027-01-31","fee":5000,"tags":["사진","영감","체험","혼자"],"d":"카메라, 렌즈, 조명 장비 체험과 사진가 강연. 모델 촬영존에서 신제품을 직접 써 볼 수 있다."},
+ {"id":"travel-expo","t":"서울 여행 박람회","cat":"travel","region":"서울","venue":"코엑스 C·D홀","s":"2027-02-04","e":"2027-02-07","fee":8000,"note":"사전등록 시 무료","tags":["야외","데이트","가족","쇼핑"],"d":"국내외 관광청과 여행사 300곳. 현장 한정 항공권과 숙박 특가를 노리는 사람이 많다."},
+ {"id":"startup-day","t":"스타트업 투자 네트워킹 데이","cat":"industry","region":"서울","venue":"aT센터 제2전시장","s":"2027-02-17","e":"2027-02-18","fee":0,"note":"사전등록 필수","tags":["비즈니스","배움","영감"],"d":"초기 스타트업 IR 피칭과 투자사 상담, 창업자 네트워킹 세션. 명함을 넉넉히 챙길 것."},
+ {"id":"daejeon-book","t":"대전 북 & 굿즈 페어","cat":"culture","region":"대전","venue":"대전컨벤션센터","s":"2027-02-19","e":"2027-02-21","fee":0,"tags":["조용한","쇼핑","가족","혼자"],"d":"지역 서점과 출판사, 문구 브랜드가 함께 여는 책 축제. 어린이 그림책 낭독 시간이 있다."},
+ {"id":"incheon-garden","t":"인천 홈 & 가드닝 페어","cat":"living","region":"인천","venue":"송도컨벤시아","s":"2027-02-25","e":"2027-02-28","fee":5000,"tags":["조용한","쇼핑","가족","체험"],"d":"실내 식물, 화분, 베란다 정원 용품. 봄맞이 분갈이 체험과 식물 처방 상담이 열린다."}
+]
+</script>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------------- 기준 데이터 ---------------- */
+  const CATS = [
+    { key: 'food',     ko: '식음료' },
+    { key: 'living',   ko: '리빙·인테리어' },
+    { key: 'family',   ko: '웨딩·육아' },
+    { key: 'culture',  ko: '도서·문화' },
+    { key: 'art',      ko: '아트·공예' },
+    { key: 'tech',     ko: '테크·IT' },
+    { key: 'career',   ko: '취업·교육' },
+    { key: 'travel',   ko: '여행·레저' },
+    { key: 'pet',      ko: '반려동물' },
+    { key: 'beauty',   ko: '뷰티·패션' },
+    { key: 'industry', ko: '산업·비즈니스' }
+  ];
+  const CAT = Object.fromEntries(CATS.map(c => [c.key, c]));
+  const REGIONS = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '경북', '경남', '전북', '제주'];
+  const WD = ['일', '월', '화', '수', '목', '금', '토'];
+  const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DAY = 86400000;
+  const ORIGIN = 'https://expomoa.com/';
+
+  const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const pad = n => String(n).padStart(2, '0');
+  const now = new Date();
+  const TODAY = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const FAIRS = JSON.parse(document.getElementById('fair-data').textContent).map(f => ({
+    ...f,
+    start: parseDate(f.s),
+    end: parseDate(f.e),
+    free: f.fee === 0
+  }));
+  const BY_ID = new Map(FAIRS.map(f => [f.id, f]));
+
+  const isPast = f => f.end < TODAY;
+  const isLive = f => f.start <= TODAY && f.end >= TODAY;
+  const overlaps = (f, a, b) => f.start <= b && f.end >= a;
+
+  /* ---------------- 기간 ---------------- */
+  function weekend(offsetWeeks) {
+    const d = TODAY.getDay();
+    const sat = d === 0 ? addDays(TODAY, -1) : addDays(TODAY, 6 - d);
+    const s = addDays(sat, offsetWeeks * 7);
+    return [s, addDays(s, 1)];
+  }
+  function monthRange(key) { // "2026-10"
+    const [y, m] = key.split('-').map(Number);
+    return [new Date(y, m - 1, 1), new Date(y, m, 0)];
+  }
+  function periodRange(p) {
+    if (p === 'weekend') return weekend(0);
+    if (p === 'nextweekend') return weekend(1);
+    if (p.startsWith('m:')) return monthRange(p.slice(2));
+    return null;
+  }
+  const monthKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+  const MONTHS = (() => {
+    const last = FAIRS.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
+    const out = [];
+    let d = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+    while (d <= last && out.length < 6) { out.push(monthKey(d)); d = new Date(d.getFullYear(), d.getMonth() + 1, 1); }
+    return out;
+  })();
+  function periodLabel(p) {
+    if (p === 'all') return '전체 기간';
+    if (p === 'weekend') return '이번 주말';
+    if (p === 'nextweekend') return '다음 주말';
+    const [y, m] = p.slice(2).split('-').map(Number);
+    return y === TODAY.getFullYear() ? `${m}월` : `${String(y).slice(2)}년 ${m}월`;
+  }
+
+  /* ---------------- 상태 ---------------- */
+  const state = {
+    cat: 'all',
+    cost: 'all',
+    regions: new Set(),
+    period: 'all',
+    past: false,
+    query: '',
+    interp: null,
+    openId: null
+  };
+
+  /* ---------------- 취향 해석기 ----------------
+     문장에서 분위기·목적·분야 단서를 읽고, 지역·시기·비용은 설정값으로 옮긴다.
+     서버 없이 동작하도록 사전 기반으로 구성했다. interpret()만 교체하면
+     외부 언어 모델 응답(같은 형태의 객체)으로 바꿔 끼울 수 있다. */
+  const LEXICON = [
+    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서'], tags: ['데이트'], cats: { food: 1, art: 1, culture: .5 } },
+    { label: '아이와 함께', w: ['아이랑','아이와','아이들','아기','애기','아들','딸','유아','키즈','어린이','초등','육아','애들'], tags: ['아이', '가족'], cats: { family: 1.5 } },
+    { label: '가족 나들이', w: ['가족','부모님','엄마','아빠','온가족','나들이'], tags: ['가족'], cats: {} },
+    { label: '혼자', w: ['혼자','나홀로','혼박','홀로'], tags: ['혼자', '조용한'], cats: {} },
+    { label: '조용한', w: ['조용','차분','한적','고요','여유','느긋','힐링','쉬고','쉬러','휴식','천천히','한산'], tags: ['조용한'], cats: {} },
+    { label: '영감', w: ['영감','아이디어','자극','감각','트렌드','인사이트','새로운것','창작','감성'], tags: ['영감'], cats: { art: 1, living: .5 } },
+    { label: '먹거리', w: ['먹','맛','시식','음식','디저트','빵','커피','카페','미식','달달','간식','요리','베이킹'], tags: ['시식'], cats: { food: 2 } },
+    { label: '술·시음', w: ['와인','맥주','위스키','전통주','칵테일','막걸리','시음','술한잔','술마시'], tags: ['시식'], cats: { food: 2 } },
+    { label: '쇼핑', w: ['쇼핑','구매','득템','할인','장보','사고싶','지르','특가','싸게'], tags: ['쇼핑'], cats: {} },
+    { label: '체험', w: ['체험','직접','만들어','만들기','해보','원데이','클래스','놀거리'], tags: ['체험'], cats: {} },
+    { label: '활기찬', w: ['신나','활기','북적','재밌','재미','핫한','힙한','친구'], tags: ['활기', '친구'], cats: {} },
+    { label: '비즈니스', w: ['비즈니스','거래','바이어','네트워킹','사업','창업','투자','스타트업','업계','명함','인맥','협업','영업'], latin: ['b2b'], tags: ['비즈니스'], cats: { industry: 2, tech: .5 } },
+    { label: '커리어', w: ['취업','취준','이직','채용','진로','입시','자격증','면접','커리어','대학','일자리','구직','입사'], tags: ['배움'], cats: { career: 2 } },
+    { label: '배움', w: ['공부','배우','배움','강연','세미나','컨퍼런스','지식','교양'], tags: ['배움'], cats: { career: .5, culture: .5 } },
+    { label: '집 꾸미기', w: ['인테리어','가구','이사','신혼집','살림','자취','집꾸미','집들이','새집','수납','조명','리빙'], tags: [], cats: { living: 2 } },
+    { label: '식물·정원', w: ['식물','가드닝','정원','화분','베란다','꽃'], tags: [], cats: { living: 2 } },
+    { label: '결혼 준비', w: ['결혼','웨딩','신혼','예비부부','스드메','혼수','예신','예랑','상견례'], tags: [], cats: { family: 2 } },
+    { label: '반려동물', w: ['강아지','고양이','반려','펫','댕댕','냥이','멍멍','애견','애묘','집사'], tags: [], cats: { pet: 2 } },
+    { label: '책', w: ['책','독서','출판','작가','문학','북페어','서점','글쓰기','문구','그림책'], strip: ['산책'], tags: [], cats: { culture: 2 } },
+    { label: '기술', w: ['기술','로봇','인공지능','게임','개발','코딩','과학','전자','가젯','테크','드론','전기차'], latin: ['ai','it','vr','ar'], tags: [], cats: { tech: 2 } },
+    { label: '여행·야외', w: ['여행','캠핑','아웃도어','바다','휴가','레저','등산','낚시','요트','차박','떠나','서핑'], tags: ['야외'], cats: { travel: 2 } },
+    { label: '뷰티·패션', w: ['화장','뷰티','피부','패션','옷','스타일','향수','메이크업','코디','헤어','네일'], tags: [], cats: { beauty: 2 } },
+    { label: '예술·공예', w: ['예술','미술','그림','일러스트','공예','작품','전시','드로잉','핸드메이드','빈티지','디자인','도자기','굿즈'], tags: ['영감'], cats: { art: 2 } },
+    { label: '사진', w: ['사진','카메라','촬영','영상','인스타'], tags: ['사진'], cats: { art: .5 } },
+    { label: '산업', w: ['건축','건설','산업','물류','제조','공장','자동화','장비','시공'], tags: ['비즈니스'], cats: { industry: 2 } }
+  ];
+  const REGION_ALIAS = {
+    '서울': ['서울','강남','코엑스','삼성동','양재','세텍','학여울'],
+    '경기': ['경기','일산','고양','킨텍스','수원','메쎄','판교','성남'],
+    '인천': ['인천','송도'],
+    '부산': ['부산','해운대','벡스코','센텀'],
+    '대구': ['대구','엑스코'],
+    '대전': ['대전','유성'],
+    '광주': ['광주','김대중컨벤션'],
+    '경북': ['경북','경주','포항'],
+    '경남': ['경남','창원'],
+    '전북': ['전북','군산','전주','새만금'],
+    '제주': ['제주']
+  };
+  const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없','0원'];
+  const PAID_WORDS = ['유료'];
+
+  function interpret(raw) {
+    const lower = raw.toLowerCase();
+    const t = lower.replace(/\s+/g, '');
+    const hits = [];
+    for (const e of LEXICON) {
+      let text = t;
+      if (e.strip) for (const s of e.strip) text = text.split(s).join('');
+      const words = e.w.filter(w => text.includes(w));
+      if (e.latin) for (const w of e.latin) if (new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(lower)) words.push(w.toUpperCase());
+      if (words.length) hits.push({ ...e, words });
+    }
+    const regions = REGIONS.filter(r => REGION_ALIAS[r].some(a => t.includes(a)));
+
+    let period = null;
+    if (/다음주말|담주말|다음주주말/.test(t)) period = 'nextweekend';
+    else if (/주말/.test(t)) period = 'weekend';
+    else {
+      let target = null;
+      const m = t.match(/(\d{1,2})월/);
+      if (m) {
+        const mm = Number(m[1]);
+        if (mm >= 1 && mm <= 12) {
+          const y = mm - 1 < TODAY.getMonth() ? TODAY.getFullYear() + 1 : TODAY.getFullYear();
+          target = `${y}-${pad(mm)}`;
+        }
+      } else if (/이번달|이달/.test(t)) target = monthKey(TODAY);
+      else if (/다음달|담달/.test(t)) target = monthKey(new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 1));
+      else if (/연말|크리스마스/.test(t)) target = `${TODAY.getFullYear()}-12`;
+      else if (/새해|연초/.test(t)) target = `${TODAY.getFullYear() + 1}-01`;
+      if (target) period = 'm:' + target;
+    }
+
+    let cost = null;
+    if (FREE_WORDS.some(w => t.includes(w))) cost = 'free';
+    else if (PAID_WORDS.some(w => t.includes(w))) cost = 'paid';
+
+    const catWeight = {};
+    for (const h of hits) for (const [k, v] of Object.entries(h.cats)) catWeight[k] = (catWeight[k] || 0) + v;
+    const suggested = Object.entries(catWeight).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k);
+
+    return { raw, hits, regions, period, cost, suggested };
+  }
+
+  function scoreFair(f, it) {
+    let score = 0;
+    const why = [];
+    for (const h of it.hits) {
+      let s = (h.cats[f.cat] || 0) * 3;
+      for (const tag of h.tags) if (f.tags.includes(tag)) s += 2;
+      if (s > 0) { score += s; why.push(h.label); }
+    }
+    return { score, why };
+  }
+
+  /* ---------------- 필터 ---------------- */
+  function passes(f, skip) {
+    if (!state.past && isPast(f)) return false;
+    if (skip !== 'cost') {
+      if (state.cost === 'free' && !f.free) return false;
+      if (state.cost === 'paid' && f.free) return false;
+    }
+    if (skip !== 'region' && state.regions.size && !state.regions.has(f.region)) return false;
+    if (skip !== 'period' && state.period !== 'all') {
+      const r = periodRange(state.period);
+      if (r && !overlaps(f, r[0], r[1])) return false;
+    }
+    if (skip !== 'cat' && state.cat !== 'all' && f.cat !== state.cat) return false;
+    return true;
+  }
+
+  /* ---------------- DOM ---------------- */
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const won = n => n === 0 ? '무료' : `${n.toLocaleString('ko-KR')}원`;
+  const md = d => `${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
+
+  function renderMast() {
+    const d = TODAY;
+    $('mastMeta').innerHTML =
+      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b> 기준`;
+    const upcoming = FAIRS.filter(f => !isPast(f));
+    const first = upcoming.reduce((m, f) => (f.start < m ? f.start : m), upcoming[0] ? upcoming[0].start : TODAY);
+    const lastD = upcoming.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
+    $('season').textContent = `${first.getFullYear()}.${pad(first.getMonth() + 1)} — ${lastD.getFullYear()}.${pad(lastD.getMonth() + 1)}`;
+    const live = FAIRS.filter(isLive).length;
+    const soon = FAIRS.filter(f => f.start > TODAY).length;
+    const free = upcoming.filter(f => f.free).length;
+    const regions = new Set(upcoming.map(f => f.region)).size;
+    $('figures').innerHTML = [
+      ['지금 열리는 중', live, true],
+      ['예정된 박람회', soon],
+      ['무료로 갈 수 있는 곳', free],
+      ['지역', regions]
+    ].map(([k, v, a]) => `<div${a ? ' class="is-accent"' : ''}><dt>${k}</dt><dd>${pad(v)}</dd></div>`).join('');
+  }
+
+  function renderRail() {
+    const pool = FAIRS.filter(f => passes(f, 'cat'));
+    const count = k => (k === 'all' ? pool.length : pool.filter(f => f.cat === k).length);
+    const items = [{ key: 'all', ko: '전체' }, ...CATS];
+    $('rail').innerHTML = items.map((c, i) => {
+      const n = count(c.key);
+      const on = state.cat === c.key;
+      return `<li><button type="button" data-cat="${c.key}" aria-pressed="${on}"${n === 0 && !on ? ' disabled' : ''}>` +
+        `<span class="r-no">${i === 0 ? '—' : pad(i)}</span><span class="r-name">${c.ko}</span>` +
+        `<span class="r-count">${n}건</span></button></li>`;
+    }).join('');
+  }
+
+  function renderRegions() {
+    const pool = FAIRS.filter(f => passes(f, 'region'));
+    $('regionList').innerHTML = REGIONS.map(r => {
+      const n = pool.filter(f => f.region === r).length;
+      const on = state.regions.has(r);
+      return `<label class="check"><input type="checkbox" value="${r}"${on ? ' checked' : ''}${n === 0 && !on ? ' disabled' : ''}> ${r}<span class="n">${n}</span></label>`;
+    }).join('');
+  }
+
+  function renderPeriods() {
+    const opts = ['all', 'weekend', 'nextweekend', ...MONTHS.map(m => 'm:' + m)];
+    if (!opts.includes(state.period)) opts.push(state.period);
+    $('periodList').innerHTML = opts.map(p => {
+      const wide = p === 'all' || p === 'weekend' || p === 'nextweekend';
+      let sub = '';
+      if (p === 'weekend' || p === 'nextweekend') { const [a, b] = periodRange(p); sub = ` <small>${md(a)}–${md(b).slice(3)}</small>`; }
+      return `<label${wide && p !== 'all' ? ' class="wide"' : ''}${p === 'all' ? ' style="flex-basis:100%"' : ''}>` +
+        `<input type="radio" name="period" value="${p}"${state.period === p ? ' checked' : ''}> ${periodLabel(p)}${sub}</label>`;
+    }).join('');
+  }
+
+  function renderSummary() {
+    const n = (state.cost !== 'all') + (state.regions.size > 0) + (state.period !== 'all') + state.past;
+    $('sumState').innerHTML = n ? `<b>${n}</b>개 적용 중` : '적용 없음';
+    document.querySelectorAll('#costSeg input').forEach(i => { i.checked = i.value === state.cost; });
+    $('pastToggle').checked = state.past;
+  }
+
+  function statusOf(f) {
+    if (isPast(f)) return { cls: '', text: '종료' };
+    if (isLive(f)) {
+      const left = Math.round((f.end - TODAY) / DAY);
+      return { cls: 'live', text: left === 0 ? '오늘 마감' : `진행 중 · ${left}일 남음` };
+    }
+    const dd = Math.round((f.start - TODAY) / DAY);
+    return { cls: '', text: dd === 1 ? '내일 시작' : `D-${dd}` };
+  }
+
+  function rowHTML(f, why) {
+    const st = statusOf(f);
+    const sameMonth = f.start.getMonth() === f.end.getMonth();
+    const endTxt = f.s === f.e ? '하루' : `— ${sameMonth ? pad(f.end.getDate()) : md(f.end)} ${WD[f.end.getDay()]}`;
+    const open = state.openId === f.id;
+    const cls = ['fair', isPast(f) ? 'is-past' : '', open ? 'is-open' : ''].join(' ').trim();
+    return `<li class="${cls}" id="fair-${f.id}">` +
+      `<button type="button" class="row" data-id="${f.id}" aria-expanded="${open}" aria-controls="detail-${f.id}">` +
+        `<span class="c-date"><span class="d-top">${f.start.getMonth() + 1}월 ${WD[f.start.getDay()]}</span>` +
+        `<span class="d-day">${pad(f.start.getDate())}</span><span class="d-end">${endTxt}</span></span>` +
+        `<span class="c-main"><span class="title">${esc(f.t)}</span>` +
+        `<span class="venue">${esc(f.region)} · ${esc(f.venue)}</span>` +
+        (why && why.length ? `<span class="why">맞는 이유 — ${why.map(esc).join(' · ')}</span>` : '') +
+        `</span>` +
+        `<span class="meta"><span class="c-cat">${CAT[f.cat].ko}</span>` +
+        `<span class="c-status ${st.cls}">${st.text}</span>` +
+        `<span class="c-fee${f.free ? ' free' : ''}">${won(f.fee)}</span></span>` +
+      `</button>` +
+      `<div class="detail" id="detail-${f.id}"${open ? '' : ' hidden'}>` +
+        `<p>${esc(f.d)}</p>` +
+        `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${md(f.end)} (${WD[f.end.getDay()]})</dd>` +
+        `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
+        `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
+        `<dt>분류</dt><dd>${CAT[f.cat].ko}</dd></dl>` +
+        `<div class="actions">` +
+          `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
+          `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
+          (state.cat !== f.cat ? `<button type="button" class="linkish" data-act="cat" data-cat="${f.cat}">${CAT[f.cat].ko} 더 보기</button>` : '') +
+          `<span class="done" role="status" data-done="${f.id}"></span>` +
+        `</div>` +
+      `</div></li>`;
+  }
+
+  function groupHTML(big, isWord, label, sub, list, whyMap) {
+    return `<section class="group"><h3 class="group-h"><span class="g-big${isWord ? ' word' : ''}">${big}</span>` +
+      `<span class="g-label"><b>${label}</b><i>${sub}</i></span><span class="g-count">${list.length}건</span></h3>` +
+      `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul></section>`;
+  }
+
+  function renderInterp(it, matchedCount, fellBack) {
+    const box = $('interp');
+    if (!it) { box.hidden = true; box.innerHTML = ''; return; }
+    const nothing = !it.hits.length && !it.regions.length && !it.period && !it.cost;
+    const signals = it.hits.length
+      ? it.hits.map(h => `${esc(h.label)} <span class="none">(${h.words.map(esc).join(', ')})</span>`).join(' · ')
+      : '<span class="none">따로 찾지 못함</span>';
+    const sug = it.suggested.length
+      ? `<div class="chips">${it.suggested.map(k => `<button type="button" class="chip" data-act="cat" data-cat="${k}">${CAT[k].ko}</button>`).join('')}</div>`
+      : '<span class="none">—</span>';
+    let note = '';
+    if (nothing) note = '문장에서 단서를 찾지 못했어요. “아이랑 주말에”, “무료로 조용히”, “이직 준비”처럼 누구와, 언제, 무엇을 하고 싶은지 적어보세요.';
+    else if (fellBack) note = '분위기까지 딱 맞는 곳은 없어서, 지역·시기·비용 조건에 맞는 일정을 날짜순으로 보여드려요.';
+    else if (it.hits.length) note = `잘 맞는 순서로 ${matchedCount}곳을 골랐어요. 분야를 누르면 그 분야 전체 일정으로 넘어가요.`;
+    box.innerHTML =
+      `<div class="interp-head"><p>이렇게 읽었어요</p><button type="button" class="linkish" data-act="clear">검색 지우기</button></div>` +
+      `<p class="interp-q"><span class="qm">“</span>${esc(it.raw)}<span class="qm">”</span></p>` +
+      (nothing ? '' :
+      `<dl><dt>분위기·목적</dt><dd>${signals}</dd>` +
+      `<dt>지역</dt><dd>${it.regions.length ? it.regions.join(', ') : '<span class="none">전국</span>'}</dd>` +
+      `<dt>시기</dt><dd>${it.period ? periodLabel(it.period) : '<span class="none">언제든</span>'}</dd>` +
+      `<dt>관람료</dt><dd>${it.cost === 'free' ? '무료만' : it.cost === 'paid' ? '유료만' : '<span class="none">상관없음</span>'}</dd>` +
+      `<dt>추천 분야</dt><dd>${sug}</dd></dl>`) +
+      (note ? `<p class="interp-note">${note}</p>` : '');
+    box.hidden = false;
+  }
+
+  function renderList() {
+    const pool = FAIRS.filter(f => passes(f));
+    const it = state.interp;
+    let html = '';
+    let shown = pool.length;
+    let matched = 0, fellBack = false;
+
+    if (it && it.hits.length) {
+      const scored = pool.map(f => ({ f, ...scoreFair(f, it) })).filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score || a.f.start - b.f.start);
+      matched = scored.length;
+      if (scored.length) {
+        const whyMap = new Map(scored.map(x => [x.f.id, x.why]));
+        html = groupHTML('Fit', true, '취향에 맞는 순서', 'ranked by fit', scored.map(x => x.f), whyMap);
+        shown = scored.length;
+        $('sheetTitle').textContent = '맞춤 결과';
+      } else {
+        fellBack = true;
+      }
+    }
+
+    if (!html) {
+      $('sheetTitle').textContent = state.cat === 'all' ? '전체 일정' : `${CAT[state.cat].ko} 일정`;
+      const live = pool.filter(isLive).sort((a, b) => a.end - b.end);
+      const next = pool.filter(f => f.start > TODAY).sort((a, b) => a.start - b.start);
+      const past = pool.filter(isPast).sort((a, b) => b.start - a.start);
+      if (live.length) html += groupHTML('Now', true, '지금 열리는 중', '마감이 가까운 순', live);
+      const byMonth = new Map();
+      for (const f of next) { const k = monthKey(f.start); if (!byMonth.has(k)) byMonth.set(k, []); byMonth.get(k).push(f); }
+      for (const [k, list] of byMonth) {
+        const [y, m] = k.split('-').map(Number);
+        html += groupHTML(pad(m), false, `${m}월`, `${MONTH_EN[m - 1]} ${y}`, list);
+      }
+      if (past.length) html += groupHTML('Past', true, '지난 박람회', '최근 순', past);
+    }
+
+    if (!pool.length) {
+      html = `<div class="empty"><b>Nothing here.</b><p>지금 조건에 맞는 박람회가 없어요. 지역이나 기간을 조금 넓혀보세요.</p>` +
+        `<button type="button" class="btn btn-ghost btn-sm" data-act="reset">조건 초기화</button></div>`;
+      shown = 0;
+    }
+
+    $('sheet').innerHTML = html;
+    $('sheetCount').innerHTML = `<b>${shown}</b>건${state.past ? '' : ' · 지난 일정 제외'}`;
+    renderInterp(it, matched, fellBack);
+  }
+
+  function render() {
+    renderRail();
+    renderRegions();
+    renderPeriods();
+    renderSummary();
+    renderList();
+    syncURL();
+  }
+
+  /* ---------------- URL ---------------- */
+  function syncURL() {
+    const p = new URLSearchParams();
+    if (state.query) p.set('q', state.query);
+    if (state.cat !== 'all') p.set('cat', state.cat);
+    if (state.openId) p.set('id', state.openId);
+    const qs = p.toString();
+    const url = location.pathname + (qs ? '?' + qs : '');
+    if (url !== location.pathname + location.search) history.replaceState(null, '', url);
+  }
+  function shareURL(id) {
+    const base = /^https?:$/.test(location.protocol) ? location.origin + location.pathname : ORIGIN;
+    return `${base}?id=${encodeURIComponent(id)}`;
+  }
+
+  /* ---------------- 동작 ---------------- */
+  function runQuery(text) {
+    const q = text.trim().slice(0, 200);
+    if (!q) { clearQuery(); return; }
+    const it = interpret(q);
+    state.query = q;
+    state.interp = it;
+    state.cat = 'all';
+    state.openId = null;
+    state.regions = new Set(it.regions);
+    state.period = it.period || 'all';
+    state.cost = it.cost || 'all';
+    render();
+    $('schedule').focus({ preventScroll: true });
+    $('schedule').scrollIntoView({ block: 'start' });
+  }
+  function clearQuery() {
+    state.query = '';
+    state.interp = null;
+    $('askInput').value = '';
+    resetFilters(false);
+  }
+  function resetFilters(keepQuery) {
+    state.cost = 'all';
+    state.regions = new Set();
+    state.period = 'all';
+    state.past = false;
+    state.cat = 'all';
+    if (!keepQuery) { state.query = ''; state.interp = null; }
+    render();
+  }
+  function setCat(k, scroll) {
+    state.cat = k;
+    state.query = '';
+    state.interp = null;
+    state.openId = null;
+    render();
+    if (scroll) $('schedule').scrollIntoView({ block: 'start' });
+  }
+
+  function toggleFair(id) {
+    state.openId = state.openId === id ? null : id;
+    document.querySelectorAll('.fair').forEach(li => {
+      const on = li.id === `fair-${state.openId}`;
+      li.classList.toggle('is-open', on);
+      li.querySelector('.row').setAttribute('aria-expanded', on);
+      li.querySelector('.detail').hidden = !on;
+    });
+    syncURL();
+  }
+
+  function icsEscape(s) { return String(s).replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\n/g, '\\n'); }
+  const ymd = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+  function downloadICS(f) {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const lines = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AIIairs//Fair Index//KO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:${f.id}@expomoa.com`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${ymd(f.start)}`,
+      `DTEND;VALUE=DATE:${ymd(addDays(f.end, 1))}`,
+      `SUMMARY:${icsEscape(f.t)}`,
+      `LOCATION:${icsEscape(`${f.venue}, ${f.region}`)}`,
+      `DESCRIPTION:${icsEscape(`${f.d}\n관람료: ${won(f.fee)}${f.note ? ` (${f.note})` : ''}`)}`,
+      `URL:${shareURL(f.id)}`,
+      'END:VEVENT', 'END:VCALENDAR'
+    ];
+    const blob = new Blob([lines.join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${f.id}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    say(f.id, '캘린더 파일을 받았어요');
+  }
+  async function copyLink(f) {
+    const url = shareURL(f.id);
+    try {
+      await navigator.clipboard.writeText(url);
+      say(f.id, '링크를 복사했어요');
+    } catch {
+      window.prompt('아래 링크를 복사하세요', url);
+    }
+  }
+  function say(id, msg) {
+    const el = document.querySelector(`[data-done="${CSS.escape(id)}"]`);
+    if (el) el.textContent = msg;
+  }
+
+  /* ---------------- 이벤트 ---------------- */
+  $('rail').addEventListener('click', e => {
+    const b = e.target.closest('button[data-cat]');
+    if (b && !b.disabled) setCat(b.dataset.cat, false);
+  });
+
+  $('askForm').addEventListener('submit', e => { e.preventDefault(); runQuery($('askInput').value); });
+  $('askInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('askForm').requestSubmit(); }
+  });
+  document.querySelector('.examples').addEventListener('click', e => {
+    const b = e.target.closest('button[data-example]');
+    if (!b) return;
+    $('askInput').value = b.dataset.example;
+    runQuery(b.dataset.example);
+  });
+
+  $('costSeg').addEventListener('change', e => { state.cost = e.target.value; state.openId = null; render(); });
+  $('regionList').addEventListener('change', e => {
+    const v = e.target.value;
+    if (e.target.checked) state.regions.add(v); else state.regions.delete(v);
+    state.openId = null;
+    render();
+  });
+  $('periodList').addEventListener('change', e => { state.period = e.target.value; state.openId = null; render(); });
+  $('pastToggle').addEventListener('change', e => { state.past = e.target.checked; render(); });
+  $('resetBtn').addEventListener('click', () => resetFilters(true));
+
+  document.addEventListener('click', e => {
+    const row = e.target.closest('.row[data-id]');
+    if (row) { toggleFair(row.dataset.id); return; }
+    const act = e.target.closest('[data-act]');
+    if (!act) return;
+    const f = act.dataset.id && BY_ID.get(act.dataset.id);
+    switch (act.dataset.act) {
+      case 'ics': if (f) downloadICS(f); break;
+      case 'copy': if (f) copyLink(f); break;
+      case 'cat': setCat(act.dataset.cat, true); break;
+      case 'clear': clearQuery(); break;
+      case 'reset': resetFilters(false); break;
+    }
+  });
+
+  // 넓은 화면에서는 상세 설정을 항상 펼쳐 둔다.
+  const wide = window.matchMedia('(min-width: 821px)');
+  const box = $('filterBox');
+  const syncBox = () => { box.open = wide.matches; };
+  syncBox();
+  wide.addEventListener('change', syncBox);
+  box.querySelector('summary').addEventListener('click', e => { if (wide.matches) e.preventDefault(); });
+
+  /* ---------------- 시작 ---------------- */
+  renderMast();
+  const params = new URLSearchParams(location.search);
+  const qp = params.get('q');
+  const cp = params.get('cat');
+  const ip = params.get('id');
+  if (cp && CAT[cp]) state.cat = cp;
+  if (ip && BY_ID.has(ip)) {
+    state.openId = ip;
+    if (isPast(BY_ID.get(ip))) state.past = true;
+  }
+  if (qp) {
+    $('askInput').value = qp;
+    runQuery(qp);
+  } else {
+    render();
+    if (state.openId) document.getElementById(`fair-${state.openId}`).scrollIntoView({ block: 'center' });
+  }
+})();
+</script>
+</body>
+</html>
