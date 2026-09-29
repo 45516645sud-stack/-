@@ -160,7 +160,7 @@ h1{
 .ask.is-compact{padding:16px 18px}
 .ask.is-compact .ask-help,.ask.is-compact .examples,.ask.is-compact .ask-hint,.ask.is-compact .ask-label em{display:none}
 .ask.is-compact .ask-body{display:flex;margin-top:12px;border:1px solid var(--ink)}
-.ask.is-compact textarea{flex:1;min-width:0;min-height:0;height:46px;resize:none;border:0;padding:11px 12px;font-size:var(--s0);line-height:1.5;white-space:nowrap;overflow:hidden}
+.ask.is-compact textarea{flex:1;min-width:0;min-height:46px;height:46px;resize:none;border:0;padding:11px 12px;font-size:var(--s0);line-height:1.5;overflow:hidden}
 .ask.is-compact textarea:focus{outline:1px solid var(--accent);outline-offset:-1px}
 .ask.is-compact .ask-foot{margin:0}
 .ask.is-compact .btn{height:100%;border-width:0 0 0 1px}
@@ -492,6 +492,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .dlg h2{font-size:var(--s3)}
 }
 @media (max-width:560px){
+  /* 휴대폰 간략 검색: 입력칸을 한 줄 전체로, 버튼은 그 아래 */
+  .ask.is-compact .ask-body{flex-direction:column}
+  .ask.is-compact textarea{flex:none}
+  .ask.is-compact .btn{width:100%;justify-content:center;border-width:1px 0 0;padding:11px 18px}
   .cards{grid-template-columns:minmax(0,1fr)}
   .card-btn{min-height:12.5rem}
   .sheet-head{flex-wrap:wrap}
@@ -548,7 +552,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       </div>
       <p class="ask-help">카테고리를 몰라도 괜찮아요. 가고 싶은 분위기나 목적을 한 문장으로 적으면, 문장을 읽고 맞는 박람회·공연과 분야를 골라드려요.</p>
       <div class="ask-body">
-        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 아이랑 부산에서 무료로 갈 만한 곳"></textarea>
+        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 아이랑 무료로" data-ph-compact="예) 이번 주말 아이랑 무료로" data-ph-full="예) 이번 주말 아이랑 부산에서 무료로 갈 만한 곳"></textarea>
         <div class="ask-foot">
           <span class="ask-hint">Enter 찾기 · Shift+Enter 줄바꿈</span>
           <button class="btn" type="submit">찾아보기 <span class="arrow" aria-hidden="true">→</span></button>
@@ -1528,9 +1532,21 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const compact = size !== 'full';
     askForm.classList.toggle('is-compact', compact);
     askForm.querySelectorAll('.ask-size button').forEach(b => b.setAttribute('aria-pressed', b.dataset.size === (compact ? 'compact' : 'full')));
-    $('askInput').rows = compact ? 1 : 3;
+    const input = $('askInput');
+    input.rows = compact ? 1 : 3;
+    input.placeholder = compact ? input.dataset.phCompact : input.dataset.phFull;
+    fitAsk();
     try { localStorage.setItem('aiiairs.ask', compact ? 'compact' : 'full'); } catch { /* 저장 불가 환경 */ }
   }
+  // 간략 보기에서는 글이 잘리지 않도록 입력칸이 줄 수만큼 늘어난다.
+  function fitAsk() {
+    const input = $('askInput');
+    if (!askForm.classList.contains('is-compact')) { input.style.height = ''; return; }
+    input.style.height = 'auto';
+    input.style.height = `${Math.max(46, input.scrollHeight)}px`;
+  }
+  $('askInput').addEventListener('input', fitAsk);
+  window.addEventListener('resize', fitAsk);
   askForm.querySelector('.ask-size').addEventListener('click', e => {
     const b = e.target.closest('button[data-size]');
     if (!b) return;
