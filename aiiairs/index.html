@@ -112,7 +112,7 @@ button{cursor:pointer}
 .rail{border-top:1px solid var(--hair)}
 .rail ol{list-style:none;margin:0;padding:0;display:flex;overflow-x:auto;scrollbar-width:none}
 .rail ol::-webkit-scrollbar{display:none}
-.rail li{flex:0 0 auto;border-right:1px solid var(--hair)}
+.rail li{flex:1 0 auto;border-right:1px solid var(--hair)}
 .rail li:first-child{border-left:1px solid var(--hair)}
 .rail button{
   display:grid;grid-template-columns:auto auto;column-gap:10px;align-items:baseline;
@@ -641,6 +641,16 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { key: 'stage',    ko: '공연·소극장', en: 'Stage' }
   ];
   const CAT = Object.fromEntries(CATS.map(c => [c.key, c]));
+  // 상단 메뉴는 비슷한 분류를 묶은 다섯 분야로만 보여준다. 카드에는 세부 분류가 그대로 남는다.
+  const GROUPS = [
+    { key: 'life',    ko: '생활·취향', hint: '먹거리 · 리빙 · 뷰티', cats: ['food', 'living', 'beauty'] },
+    { key: 'family',  ko: '가족·반려', hint: '웨딩 · 육아 · 반려동물', cats: ['family', 'pet'] },
+    { key: 'culture', ko: '문화·공연', hint: '책 · 예술 · 소극장', cats: ['culture', 'art', 'stage'] },
+    { key: 'travel',  ko: '여행·레저', hint: '여행 · 캠핑 · 바다', cats: ['travel'] },
+    { key: 'work',    ko: '일·배움',   hint: '취업 · 기술 · 비즈니스', cats: ['career', 'tech', 'industry'] }
+  ];
+  const GROUP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
+  const GROUP_OF = Object.fromEntries(GROUPS.flatMap(g => g.cats.map(c => [c, g.key])));
   const REGIONS = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '경북', '경남', '전북', '제주'];
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
   const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -797,7 +807,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
     const catWeight = {};
     for (const h of hits) for (const [k, v] of Object.entries(h.cats)) catWeight[k] = (catWeight[k] || 0) + v;
-    const suggested = Object.entries(catWeight).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k);
+    const groupWeight = {};
+    for (const [k, v] of Object.entries(catWeight)) groupWeight[GROUP_OF[k]] = (groupWeight[GROUP_OF[k]] || 0) + v;
+    const suggested = Object.entries(groupWeight).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
 
     return { raw, hits, regions, period, cost, suggested };
   }
@@ -829,7 +841,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       const r = periodRange(state.period);
       if (r && !overlaps(f, r[0], r[1])) return false;
     }
-    if (skip !== 'cat' && state.cat !== 'all' && f.cat !== state.cat) return false;
+    if (skip !== 'cat' && state.cat !== 'all' && GROUP_OF[f.cat] !== state.cat) return false;
     return true;
   }
 
@@ -861,14 +873,14 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   function renderRail() {
     const pool = FAIRS.filter(f => passes(f, 'cat'));
-    const count = k => (k === 'all' ? pool.length : pool.filter(f => f.cat === k).length);
-    const items = [{ key: 'all', ko: '전체' }, ...CATS];
+    const count = k => (k === 'all' ? pool.length : pool.filter(f => GROUP_OF[f.cat] === k).length);
+    const items = [{ key: 'all', ko: '전체', hint: '모든 분야' }, ...GROUPS];
     $('rail').innerHTML = items.map((c, i) => {
       const n = count(c.key);
       const on = state.cat === c.key;
       return `<li><button type="button" data-cat="${c.key}" aria-pressed="${on}"${n === 0 && !on ? ' disabled' : ''}>` +
         `<span class="r-no">${i === 0 ? '—' : pad(i)}</span><span class="r-name">${c.ko}</span>` +
-        `<span class="r-count">${n}건</span></button></li>`;
+        `<span class="r-count">${n}건 · ${c.hint}</span></button></li>`;
     }).join('');
   }
 
@@ -933,7 +945,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${md(f.end)} (${WD[f.end.getDay()]})</dd>` +
         `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
         `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
-        `<dt>분류</dt><dd>${CAT[f.cat].ko}</dd></dl>` +
+        `<dt>분류</dt><dd>${GROUP[GROUP_OF[f.cat]].ko} · ${CAT[f.cat].ko}</dd></dl>` +
         actionsHTML(f) +
       `</div></li>`;
   }
@@ -942,7 +954,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     return `<div class="actions">` +
       `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
       `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
-      (state.cat !== f.cat ? `<button type="button" class="linkish" data-act="cat" data-cat="${f.cat}">${CAT[f.cat].ko} 더 보기</button>` : '') +
+      (state.cat !== GROUP_OF[f.cat] ? `<button type="button" class="linkish" data-act="cat" data-cat="${GROUP_OF[f.cat]}">${GROUP[GROUP_OF[f.cat]].ko} 더 보기</button>` : '') +
       `<span class="done" role="status" data-done="${f.id}"></span>` +
     `</div>`;
   }
@@ -1057,7 +1069,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       ? it.hits.map(h => `${esc(h.label)} <span class="none">(${h.words.map(esc).join(', ')})</span>`).join(' · ')
       : '<span class="none">따로 찾지 못함</span>';
     const sug = it.suggested.length
-      ? `<div class="chips">${it.suggested.map(k => `<button type="button" class="chip" data-act="cat" data-cat="${k}">${CAT[k].ko}</button>`).join('')}</div>`
+      ? `<div class="chips">${it.suggested.map(k => `<button type="button" class="chip" data-act="cat" data-cat="${k}">${GROUP[k].ko}</button>`).join('')}</div>`
       : '<span class="none">—</span>';
     let note = '';
     if (nothing) note = '문장에서 단서를 찾지 못했어요. “아이랑 주말에”, “무료로 조용히”, “이직 준비”처럼 누구와, 언제, 무엇을 하고 싶은지 적어보세요.';
@@ -1098,7 +1110,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
 
     if (!html) {
-      $('sheetTitle').textContent = state.cat === 'all' ? '전체 일정' : `${CAT[state.cat].ko} 일정`;
+      $('sheetTitle').textContent = state.cat === 'all' ? '전체 일정' : `${GROUP[state.cat].ko} 일정`;
       const live = pool.filter(isLive).sort((a, b) => a.end - b.end);
       const next = pool.filter(f => f.start > TODAY).sort((a, b) => a.start - b.start);
       const past = pool.filter(isPast).sort((a, b) => b.start - a.start);
@@ -1334,7 +1346,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const qp = params.get('q');
   const cp = params.get('cat');
   const ip = params.get('id');
-  if (cp && CAT[cp]) state.cat = cp;
+  if (cp && GROUP[cp]) state.cat = cp;
+  else if (cp && GROUP_OF[cp]) state.cat = GROUP_OF[cp];
   if (ip && BY_ID.has(ip)) {
     state.openId = ip;
     if (isPast(BY_ID.get(ip))) state.past = true;
