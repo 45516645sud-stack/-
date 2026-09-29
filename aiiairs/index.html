@@ -307,9 +307,10 @@ legend + *{clear:both}
 .cards{list-style:none;margin:0 -1px -1px 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .card{border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);min-width:0}
 .card-btn{
-  position:relative;display:flex;flex-direction:column;width:100%;aspect-ratio:4 / 5;
-  background:var(--surface);border:0;padding:22px 22px 20px;text-align:left;overflow:hidden;
+  position:relative;display:flex;width:100%;aspect-ratio:4 / 5;
+  background:var(--surface);border:0;padding:0;text-align:left;overflow:hidden;
 }
+.card-text{display:flex;flex-direction:column;flex:1;min-width:0;padding:22px 22px 20px}
 .card-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:var(--s-1)}
 .card-cat{display:inline-flex;align-items:baseline;gap:8px}
 .card-cat::before{content:"";width:7px;height:7px;background:var(--accent);flex:0 0 auto;transform:translateY(-1px)}
@@ -375,7 +376,7 @@ legend + *{clear:both}
 .group-body{background:var(--wash);padding:14px 20px 20px;border-top:1px solid var(--hair)}
 .group-h[data-fold]{border-bottom:0}
 .group-body .cards{margin:0;border-top:1px solid var(--hair);border-left:1px solid var(--hair)}
-.group-body .card-btn{padding:18px 18px 16px}
+.group-body .card-text{padding:18px 18px 16px}
 .group-body .card-title{font-size:var(--s2)}
 .group-body .fairs{border:1px solid var(--hair);background:var(--surface)}
 .g-peek{margin-top:4px;font-size:var(--s-1);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -482,7 +483,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .foot .f-brand,.foot .f-note,.foot .f-end{grid-column:1 / -1;text-align:left;margin-bottom:8px}
   .ask{padding:18px}
   .ask-hint{display:none}
-  .card-btn{aspect-ratio:auto;min-height:15rem;padding:18px 16px 16px}
+  .card-btn{aspect-ratio:auto;min-height:15rem}
+  .card-text,.group-body .card-text{padding:18px 16px 16px}
   .card-title{font-size:var(--s2)}
   .dlg-inner{grid-template-columns:1fr}
   .dlg-poster{aspect-ratio:auto;height:min(52vh,26rem);border-right:0;border-bottom:1px solid var(--ink)}
@@ -493,6 +495,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .cards{grid-template-columns:minmax(0,1fr)}
   .card-btn{min-height:12.5rem}
   .sheet-head{flex-wrap:wrap}
+}
+/* 터치 기기: 마우스를 올릴 수 없으니 포스터를 카드 왼쪽 썸네일로 늘 보여준다 */
+@media (hover:none){
+  .card-btn,.group-body .card-btn{aspect-ratio:auto;min-height:0}
+  .card-poster{display:block;position:relative;inset:auto;order:-1;flex:0 0 36%;max-width:9.5rem;aspect-ratio:4 / 5;align-self:flex-start;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);margin-bottom:-1px}
+  .card-text,.group-body .card-text{padding:12px 14px 12px}
+  .card-top{flex-direction:column;gap:2px}
+  .card-title,.group-body .card-title{margin-top:8px;font-size:var(--s1)}
+  .card-foot{flex-direction:column;align-items:flex-start;gap:2px;padding-top:10px}
+  .card-date{font-size:var(--s0)}
+  .card-venue{text-align:left;font-weight:500;color:var(--muted)}
 }
 @media (max-width:420px){
   .detail{padding-left:16px}
@@ -1166,12 +1179,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const endTxt = f.s === f.e ? '' : ` – ${sameYear ? md(f.end) : `${f.end.getFullYear()}.${md(f.end)}`}`;
     return `<li class="card${isPast(f) ? ' is-past' : ''}">` +
       `<button type="button" class="card-btn" data-card="${f.id}" aria-haspopup="dialog">` +
-        `<span class="card-top"><span class="card-cat">${CAT[f.cat].ko}</span>` +
+        `<span class="card-text"><span class="card-top"><span class="card-cat">${CAT[f.cat].ko}</span>` +
         `<span class="card-state">${f.free ? '<span class="free">무료</span> · ' : ''}${st.text}</span></span>` +
         `<span class="card-title">${esc(f.t)}</span>` +
         (why && why.length ? `<span class="card-why">${why.map(esc).join(' · ')}</span>` : '') +
         `<span class="card-foot"><span class="card-date">${f.start.getFullYear()}.${md(f.start)}${endTxt}</span>` +
-        `<span class="card-venue">${esc(f.venue)}</span></span>` +
+        `<span class="card-venue">${esc(f.venue)}</span></span></span>` +
         `<span class="card-poster" aria-hidden="true">${posterHTML(f)}</span>` +
       `</button></li>`;
   }
