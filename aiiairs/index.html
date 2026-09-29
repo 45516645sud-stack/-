@@ -727,7 +727,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function renderMast() {
     const d = TODAY;
     $('mastMeta').innerHTML =
-      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b> 기준`;
+      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b> 기준 · 예시 일정`;
     const upcoming = FAIRS.filter(f => !isPast(f));
     const first = upcoming.reduce((m, f) => (f.start < m ? f.start : m), upcoming[0] ? upcoming[0].start : TODAY);
     const lastD = upcoming.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
