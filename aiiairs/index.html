@@ -149,7 +149,21 @@ h1{
 
 /* 말로 찾기 */
 .ask{grid-column:8 / span 5;background:var(--surface);border:1px solid var(--ink);padding:24px}
-.ask-label{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;font-size:var(--s1)}
+.ask-head{display:flex;align-items:center;gap:14px}
+.ask-label{flex:1;display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-weight:600;font-size:var(--s1)}
+.ask-size{display:flex;border:1px solid var(--ink)}
+.ask-size button{width:28px;height:26px;background:none;border:0;padding:0;font-family:var(--f-display);font-size:var(--s1);line-height:1}
+.ask-size button + button{border-left:1px solid var(--ink)}
+.ask-size button:hover{background:var(--wash)}
+.ask-size button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* 간략 보기: 한 줄 입력 + 버튼 */
+.ask.is-compact{padding:16px 18px}
+.ask.is-compact .ask-help,.ask.is-compact .examples,.ask.is-compact .ask-hint,.ask.is-compact .ask-label em{display:none}
+.ask.is-compact .ask-body{display:flex;margin-top:12px;border:1px solid var(--ink)}
+.ask.is-compact textarea{flex:1;min-width:0;min-height:0;height:46px;resize:none;border:0;padding:11px 12px;font-size:var(--s0);line-height:1.5;white-space:nowrap;overflow:hidden}
+.ask.is-compact textarea:focus{outline:1px solid var(--accent);outline-offset:-1px}
+.ask.is-compact .ask-foot{margin:0}
+.ask.is-compact .btn{height:100%;border-width:0 0 0 1px}
 .ask-label em{font-family:var(--f-display);font-weight:400;font-size:var(--s-1);color:var(--muted)}
 .ask-help{margin:6px 0 16px;font-size:var(--s-1);color:var(--muted);line-height:1.55}
 .ask textarea{
@@ -467,13 +481,21 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       <dl class="figures" id="figures"></dl>
     </div>
 
-    <form class="ask" id="askForm" role="search" autocomplete="off">
-      <label class="ask-label" for="askInput">취향으로 찾기 <em>Ask in your words</em></label>
+    <form class="ask is-compact" id="askForm" role="search" autocomplete="off">
+      <div class="ask-head">
+        <label class="ask-label" for="askInput">취향으로 찾기 <em>Ask in your words</em></label>
+        <div class="ask-size" role="group" aria-label="검색창 크기">
+          <button type="button" data-size="full" aria-pressed="false" aria-label="크게 보기" title="크게 보기">+</button>
+          <button type="button" data-size="compact" aria-pressed="true" aria-label="간단히 보기" title="간단히 보기">_</button>
+        </div>
+      </div>
       <p class="ask-help">카테고리를 몰라도 괜찮아요. 가고 싶은 분위기나 목적을 한 문장으로 적으면, 문장을 읽고 맞는 박람회와 분야를 골라드려요.</p>
-      <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 아이랑 부산에서 무료로 갈 만한 곳"></textarea>
-      <div class="ask-foot">
-        <span class="ask-hint">Enter 찾기 · Shift+Enter 줄바꿈</span>
-        <button class="btn" type="submit">찾아보기 <span class="arrow" aria-hidden="true">→</span></button>
+      <div class="ask-body">
+        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 아이랑 부산에서 무료로 갈 만한 곳"></textarea>
+        <div class="ask-foot">
+          <span class="ask-hint">Enter 찾기 · Shift+Enter 줄바꿈</span>
+          <button class="btn" type="submit">찾아보기 <span class="arrow" aria-hidden="true">→</span></button>
+        </div>
       </div>
       <div class="examples">
         <p>이렇게 적어도 돼요</p>
@@ -553,40 +575,40 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 -->
 <script type="application/json" id="fair-data">
 [
- {"id":"tea-culture","t":"서울 차 문화전","cat":"food","region":"서울","venue":"코엑스 B홀","s":"2026-09-17","e":"2026-09-20","fee":10000,"tags":["조용한","시식","혼자","영감"],"d":"녹차부터 보이차, 다구와 도자기까지. 시음 부스를 천천히 돌며 차 한 잔씩 맛볼 수 있는 조용한 박람회."},
- {"id":"coffee-dessert","t":"서울 커피 & 디저트 페어","cat":"food","region":"서울","venue":"코엑스 A홀","s":"2026-09-24","e":"2026-09-27","fee":15000,"tags":["데이트","시식","쇼핑","활기","친구"],"d":"로스터리 120곳과 디저트 브랜드가 한자리에. 원두 시음과 한정 디저트 구매가 중심이다."},
- {"id":"suwon-furniture","t":"수원 가구 & 리빙 박람회","cat":"living","region":"경기","venue":"수원메쎄","s":"2026-09-24","e":"2026-09-30","fee":0,"tags":["쇼핑","가족"],"d":"가구 공장 직판과 신혼·이사 수요를 위한 리빙 브랜드 할인전. 상담 부스가 많아 평일 방문이 여유롭다."},
- {"id":"living-design-week","t":"리빙 디자인 위크","cat":"living","region":"서울","venue":"코엑스 A·B홀","s":"2026-09-25","e":"2026-10-04","fee":12000,"note":"온라인 사전등록 시 무료","tags":["영감","데이트","쇼핑","사진"],"d":"디자이너 가구, 조명, 오브제를 공간 단위로 연출한 전시. 올해 주제는 '느린 집'. 테마관은 사진 촬영이 자유롭다."},
- {"id":"busan-pet","t":"부산 반려동물 박람회","cat":"pet","region":"부산","venue":"벡스코 제1전시장","s":"2026-10-02","e":"2026-10-04","fee":0,"note":"사전등록 필수, 반려견 동반 가능","tags":["가족","쇼핑","체험","활기"],"d":"사료·용품 할인과 수의사 상담, 어질리티 체험존. 반려견과 함께 입장할 수 있다."},
- {"id":"ilsan-kids","t":"일산 베이비 & 키즈 페어","cat":"family","region":"경기","venue":"킨텍스 제2전시장","s":"2026-10-08","e":"2026-10-11","fee":0,"tags":["가족","아이","쇼핑","체험"],"d":"임신·출산·육아 용품 전시와 놀이 체험관. 수유실과 유모차 대여소가 전시장 안에 있다."},
- {"id":"robotics-show","t":"국제 로보틱스 & AI 쇼","cat":"tech","region":"경기","venue":"킨텍스 제1전시장","s":"2026-10-14","e":"2026-10-16","fee":20000,"note":"업계 종사자 사전등록 시 무료","tags":["비즈니스","영감","체험"],"d":"협동 로봇, 물류 자동화, 생성형 AI 솔루션을 다루는 산업 전시. 컨퍼런스 세션이 함께 열린다."},
- {"id":"indie-book","t":"서울 독립출판 북페어","cat":"culture","region":"서울","venue":"세텍 제2전시실","s":"2026-10-16","e":"2026-10-18","fee":5000,"tags":["조용한","영감","혼자","데이트","쇼핑"],"d":"독립출판사와 1인 작가 200팀이 직접 책을 소개하고 판매한다. 작가와 대화하며 천천히 고르는 분위기."},
- {"id":"daegu-beauty","t":"대구 뷰티 엑스포","cat":"beauty","region":"대구","venue":"엑스코 서관","s":"2026-10-22","e":"2026-10-24","fee":0,"tags":["쇼핑","체험","친구","활기"],"d":"화장품·헤어·네일 브랜드 체험과 샘플링. 퍼스널 컬러 진단 부스는 오전에 마감되는 편이다."},
- {"id":"jeju-camping","t":"제주 여행 & 캠핑 페어","cat":"travel","region":"제주","venue":"ICC JEJU","s":"2026-10-23","e":"2026-10-25","fee":0,"tags":["야외","가족","쇼핑","체험"],"d":"캠핑 장비 전시와 제주 로컬 여행 상품. 야외 광장에서 텐트 설치 체험을 할 수 있다."},
- {"id":"youth-jobs","t":"청년 일자리 박람회","cat":"career","region":"서울","venue":"aT센터 제1전시장","s":"2026-10-28","e":"2026-10-29","fee":0,"tags":["배움","비즈니스"],"d":"기업 채용관 150곳, 현장 면접, 이력서 첨삭과 증명사진 촬영. 이직 상담 부스도 따로 있다."},
- {"id":"arch-interior","t":"건축 & 인테리어 산업전","cat":"industry","region":"경기","venue":"킨텍스 제1전시장","s":"2026-10-29","e":"2026-11-01","fee":10000,"tags":["비즈니스","영감"],"d":"자재, 창호, 시공 기술 중심의 B2B 전시. 주말에는 리모델링 상담을 받으려는 일반 관람객도 많다."},
- {"id":"gwangju-craft","t":"광주 공예 & 디자인 페어","cat":"art","region":"광주","venue":"김대중컨벤션센터","s":"2026-10-30","e":"2026-11-03","fee":8000,"tags":["영감","조용한","쇼핑","체험"],"d":"도자, 목공, 금속 공예가의 작업을 보고 살 수 있는 페어. 주말 원데이 클래스는 현장 선착순."},
- {"id":"wine-spirits","t":"서울 와인 & 스피릿 쇼","cat":"food","region":"서울","venue":"코엑스 C홀","s":"2026-11-05","e":"2026-11-07","fee":30000,"note":"만 19세 이상 입장","tags":["데이트","시식","친구","활기"],"d":"와인, 위스키, 전통주 수입사와 양조장이 참가하는 시음 박람회. 입장권에 시음 잔이 포함된다."},
- {"id":"daejeon-science","t":"대전 사이언스 테크 페어","cat":"tech","region":"대전","venue":"대전컨벤션센터","s":"2026-11-06","e":"2026-11-08","fee":0,"tags":["가족","아이","체험","배움"],"d":"연구소와 대학이 참여하는 과학기술 체험 전시. 드론 조종, 로봇 코딩 교실이 아이들에게 인기다."},
- {"id":"busan-marine","t":"부산 마린 레저 쇼","cat":"travel","region":"부산","venue":"벡스코 제2전시장","s":"2026-11-12","e":"2026-11-15","fee":10000,"tags":["야외","영감","사진","데이트"],"d":"요트, 서핑, 낚시 장비와 해양 레저 상품. 수영만 계류장에서 요트 승선 체험을 신청할 수 있다."},
- {"id":"wedding-autumn","t":"서울 웨딩 페어","cat":"family","region":"서울","venue":"세텍 제1전시실","s":"2026-11-14","e":"2026-11-15","fee":0,"note":"예비부부 사전등록 시 사은품","tags":["데이트","쇼핑"],"d":"스튜디오·드레스·메이크업 상담과 예물, 혼수 가전 할인. 둘이 함께 상담을 받는 구성이다."},
- {"id":"incheon-logistics","t":"인천 스마트 물류 산업전","cat":"industry","region":"인천","venue":"송도컨벤시아","s":"2026-11-18","e":"2026-11-20","fee":0,"note":"사전등록 필수","tags":["비즈니스","배움"],"d":"항만·공항 물류, 창고 자동화, 콜드체인 기술. 바이어 상담회와 업계 세미나가 함께 열린다."},
- {"id":"handmade-vintage","t":"핸드메이드 & 빈티지 마켓","cat":"art","region":"경기","venue":"수원메쎄","s":"2026-11-20","e":"2026-11-22","fee":6000,"tags":["쇼핑","데이트","체험","사진"],"d":"수공예 작가와 빈티지 셀러 300팀이 여는 마켓. 가죽, 향초, 도자기 만들기 체험 부스가 있다."},
- {"id":"illust-market","t":"서울 일러스트 & 드로잉 마켓","cat":"art","region":"서울","venue":"코엑스 D홀","s":"2026-11-26","e":"2026-11-29","fee":12000,"tags":["영감","쇼핑","혼자","사진"],"d":"일러스트레이터와 캐릭터 작가의 원화, 굿즈, 드로잉 라이브. 첫날 오전이 가장 붐빈다."},
- {"id":"changwon-outdoor","t":"창원 캠핑 & 아웃도어 쇼","cat":"travel","region":"경남","venue":"창원컨벤션센터","s":"2026-11-27","e":"2026-11-29","fee":5000,"tags":["야외","가족","쇼핑"],"d":"동계 캠핑 장비와 차박 용품 중심. 신제품 체험과 현장 할인이 많다."},
- {"id":"gyeongju-local","t":"경주 전통주 & 로컬푸드 박람회","cat":"food","region":"경북","venue":"경주화백컨벤션센터","s":"2026-12-04","e":"2026-12-06","fee":0,"tags":["시식","조용한","쇼핑","가족"],"d":"경북 양조장의 전통주 시음과 지역 농가 식품 판매. 한옥 마을 여행과 묶어 가기 좋다."},
- {"id":"admission-fair","t":"대입 진로 박람회","cat":"career","region":"서울","venue":"코엑스 B홀","s":"2026-12-10","e":"2026-12-13","fee":0,"tags":["배움","가족"],"d":"대학 130여 곳이 참가하는 정시 상담 박람회. 학과별 상담은 현장 번호표로 운영된다."},
- {"id":"seoul-pet-winter","t":"서울 펫 페어 겨울","cat":"pet","region":"서울","venue":"세텍 제1·2전시실","s":"2026-12-11","e":"2026-12-13","fee":8000,"note":"반려동물 동반 가능","tags":["쇼핑","활기","친구","가족"],"d":"겨울 옷, 수제 간식, 캣타워까지. 고양이 전용관과 입양 상담 부스가 따로 운영된다."},
- {"id":"baking-fair","t":"겨울 베이킹 & 디저트 페어","cat":"food","region":"부산","venue":"벡스코 제1전시장","s":"2026-12-17","e":"2026-12-20","fee":10000,"tags":["데이트","시식","쇼핑","체험"],"d":"제과 재료와 베이커리 브랜드, 크리스마스 케이크 클래스. 연말 선물용 디저트를 미리 사기 좋다."},
- {"id":"indie-game","t":"인디 게임 쇼케이스","cat":"tech","region":"경기","venue":"킨텍스 제2전시장","s":"2026-12-18","e":"2026-12-20","fee":15000,"tags":["친구","활기","체험","영감"],"d":"국내 인디 개발사 80곳의 신작 시연. 개발자와 직접 이야기하며 플레이해 볼 수 있다."},
- {"id":"beauty-fashion-week","t":"뷰티 & 패션 위크 서울","cat":"beauty","region":"서울","venue":"코엑스 A홀","s":"2027-01-08","e":"2027-01-10","fee":10000,"tags":["쇼핑","영감","친구","사진"],"d":"디자이너 브랜드 팝업과 뷰티 신제품 체험. 스타일링 상담 부스는 예약제로 운영된다."},
- {"id":"jeonbuk-craft","t":"전북 로컬 크래프트 페어","cat":"art","region":"전북","venue":"새만금컨벤션센터","s":"2027-01-15","e":"2027-01-17","fee":0,"tags":["조용한","영감","체험","가족"],"d":"한지, 부채, 옻칠 등 전북 공예 장인의 작업 시연과 판매. 한산해서 오래 머물기 좋다."},
- {"id":"baby-newyear","t":"서울 베이비 페어 신년","cat":"family","region":"서울","venue":"세텍 제1전시실","s":"2027-01-21","e":"2027-01-24","fee":0,"tags":["가족","아이","쇼핑"],"d":"새해 출산 준비물과 유아 가구, 교육 교구. 카시트 장착 상담이 무료로 제공된다."},
- {"id":"daegu-photo","t":"대구 사진 & 영상 장비전","cat":"art","region":"대구","venue":"엑스코 동관","s":"2027-01-28","e":"2027-01-31","fee":5000,"tags":["사진","영감","체험","혼자"],"d":"카메라, 렌즈, 조명 장비 체험과 사진가 강연. 모델 촬영존에서 신제품을 직접 써 볼 수 있다."},
- {"id":"travel-expo","t":"서울 여행 박람회","cat":"travel","region":"서울","venue":"코엑스 C·D홀","s":"2027-02-04","e":"2027-02-07","fee":8000,"note":"사전등록 시 무료","tags":["야외","데이트","가족","쇼핑"],"d":"국내외 관광청과 여행사 300곳. 현장 한정 항공권과 숙박 특가를 노리는 사람이 많다."},
- {"id":"startup-day","t":"스타트업 투자 네트워킹 데이","cat":"industry","region":"서울","venue":"aT센터 제2전시장","s":"2027-02-17","e":"2027-02-18","fee":0,"note":"사전등록 필수","tags":["비즈니스","배움","영감"],"d":"초기 스타트업 IR 피칭과 투자사 상담, 창업자 네트워킹 세션. 명함을 넉넉히 챙길 것."},
- {"id":"daejeon-book","t":"대전 북 & 굿즈 페어","cat":"culture","region":"대전","venue":"대전컨벤션센터","s":"2027-02-19","e":"2027-02-21","fee":0,"tags":["조용한","쇼핑","가족","혼자"],"d":"지역 서점과 출판사, 문구 브랜드가 함께 여는 책 축제. 어린이 그림책 낭독 시간이 있다."},
- {"id":"incheon-garden","t":"인천 홈 & 가드닝 페어","cat":"living","region":"인천","venue":"송도컨벤시아","s":"2027-02-25","e":"2027-02-28","fee":5000,"tags":["조용한","쇼핑","가족","체험"],"d":"실내 식물, 화분, 베란다 정원 용품. 봄맞이 분갈이 체험과 식물 처방 상담이 열린다."}
+ {"id":"tea-culture","art":"img/tea-culture.webp","t":"서울 차 문화전","cat":"food","region":"서울","venue":"코엑스 B홀","s":"2026-09-17","e":"2026-09-20","fee":10000,"tags":["조용한","시식","혼자","영감"],"d":"녹차부터 보이차, 다구와 도자기까지. 시음 부스를 천천히 돌며 차 한 잔씩 맛볼 수 있는 조용한 박람회."},
+ {"id":"coffee-dessert","art":"img/coffee-dessert.webp","t":"서울 커피 & 디저트 페어","cat":"food","region":"서울","venue":"코엑스 A홀","s":"2026-09-24","e":"2026-09-27","fee":15000,"tags":["데이트","시식","쇼핑","활기","친구"],"d":"로스터리 120곳과 디저트 브랜드가 한자리에. 원두 시음과 한정 디저트 구매가 중심이다."},
+ {"id":"suwon-furniture","art":"img/suwon-furniture.webp","t":"수원 가구 & 리빙 박람회","cat":"living","region":"경기","venue":"수원메쎄","s":"2026-09-24","e":"2026-09-30","fee":0,"tags":["쇼핑","가족"],"d":"가구 공장 직판과 신혼·이사 수요를 위한 리빙 브랜드 할인전. 상담 부스가 많아 평일 방문이 여유롭다."},
+ {"id":"living-design-week","art":"img/living-design-week.webp","t":"리빙 디자인 위크","cat":"living","region":"서울","venue":"코엑스 A·B홀","s":"2026-09-25","e":"2026-10-04","fee":12000,"note":"온라인 사전등록 시 무료","tags":["영감","데이트","쇼핑","사진"],"d":"디자이너 가구, 조명, 오브제를 공간 단위로 연출한 전시. 올해 주제는 '느린 집'. 테마관은 사진 촬영이 자유롭다."},
+ {"id":"busan-pet","art":"img/busan-pet.webp","t":"부산 반려동물 박람회","cat":"pet","region":"부산","venue":"벡스코 제1전시장","s":"2026-10-02","e":"2026-10-04","fee":0,"note":"사전등록 필수, 반려견 동반 가능","tags":["가족","쇼핑","체험","활기"],"d":"사료·용품 할인과 수의사 상담, 어질리티 체험존. 반려견과 함께 입장할 수 있다."},
+ {"id":"ilsan-kids","art":"img/ilsan-kids.webp","t":"일산 베이비 & 키즈 페어","cat":"family","region":"경기","venue":"킨텍스 제2전시장","s":"2026-10-08","e":"2026-10-11","fee":0,"tags":["가족","아이","쇼핑","체험"],"d":"임신·출산·육아 용품 전시와 놀이 체험관. 수유실과 유모차 대여소가 전시장 안에 있다."},
+ {"id":"robotics-show","art":"img/robotics-show.webp","t":"국제 로보틱스 & AI 쇼","cat":"tech","region":"경기","venue":"킨텍스 제1전시장","s":"2026-10-14","e":"2026-10-16","fee":20000,"note":"업계 종사자 사전등록 시 무료","tags":["비즈니스","영감","체험"],"d":"협동 로봇, 물류 자동화, 생성형 AI 솔루션을 다루는 산업 전시. 컨퍼런스 세션이 함께 열린다."},
+ {"id":"indie-book","art":"img/indie-book.webp","t":"서울 독립출판 북페어","cat":"culture","region":"서울","venue":"세텍 제2전시실","s":"2026-10-16","e":"2026-10-18","fee":5000,"tags":["조용한","영감","혼자","데이트","쇼핑"],"d":"독립출판사와 1인 작가 200팀이 직접 책을 소개하고 판매한다. 작가와 대화하며 천천히 고르는 분위기."},
+ {"id":"daegu-beauty","art":"img/daegu-beauty.webp","t":"대구 뷰티 엑스포","cat":"beauty","region":"대구","venue":"엑스코 서관","s":"2026-10-22","e":"2026-10-24","fee":0,"tags":["쇼핑","체험","친구","활기"],"d":"화장품·헤어·네일 브랜드 체험과 샘플링. 퍼스널 컬러 진단 부스는 오전에 마감되는 편이다."},
+ {"id":"jeju-camping","art":"img/jeju-camping.webp","t":"제주 여행 & 캠핑 페어","cat":"travel","region":"제주","venue":"ICC JEJU","s":"2026-10-23","e":"2026-10-25","fee":0,"tags":["야외","가족","쇼핑","체험"],"d":"캠핑 장비 전시와 제주 로컬 여행 상품. 야외 광장에서 텐트 설치 체험을 할 수 있다."},
+ {"id":"youth-jobs","art":"img/youth-jobs.webp","t":"청년 일자리 박람회","cat":"career","region":"서울","venue":"aT센터 제1전시장","s":"2026-10-28","e":"2026-10-29","fee":0,"tags":["배움","비즈니스"],"d":"기업 채용관 150곳, 현장 면접, 이력서 첨삭과 증명사진 촬영. 이직 상담 부스도 따로 있다."},
+ {"id":"arch-interior","art":"img/arch-interior.webp","t":"건축 & 인테리어 산업전","cat":"industry","region":"경기","venue":"킨텍스 제1전시장","s":"2026-10-29","e":"2026-11-01","fee":10000,"tags":["비즈니스","영감"],"d":"자재, 창호, 시공 기술 중심의 B2B 전시. 주말에는 리모델링 상담을 받으려는 일반 관람객도 많다."},
+ {"id":"gwangju-craft","art":"img/gwangju-craft.webp","t":"광주 공예 & 디자인 페어","cat":"art","region":"광주","venue":"김대중컨벤션센터","s":"2026-10-30","e":"2026-11-03","fee":8000,"tags":["영감","조용한","쇼핑","체험"],"d":"도자, 목공, 금속 공예가의 작업을 보고 살 수 있는 페어. 주말 원데이 클래스는 현장 선착순."},
+ {"id":"wine-spirits","art":"img/wine-spirits.webp","t":"서울 와인 & 스피릿 쇼","cat":"food","region":"서울","venue":"코엑스 C홀","s":"2026-11-05","e":"2026-11-07","fee":30000,"note":"만 19세 이상 입장","tags":["데이트","시식","친구","활기"],"d":"와인, 위스키, 전통주 수입사와 양조장이 참가하는 시음 박람회. 입장권에 시음 잔이 포함된다."},
+ {"id":"daejeon-science","art":"img/daejeon-science.webp","t":"대전 사이언스 테크 페어","cat":"tech","region":"대전","venue":"대전컨벤션센터","s":"2026-11-06","e":"2026-11-08","fee":0,"tags":["가족","아이","체험","배움"],"d":"연구소와 대학이 참여하는 과학기술 체험 전시. 드론 조종, 로봇 코딩 교실이 아이들에게 인기다."},
+ {"id":"busan-marine","art":"img/busan-marine.webp","t":"부산 마린 레저 쇼","cat":"travel","region":"부산","venue":"벡스코 제2전시장","s":"2026-11-12","e":"2026-11-15","fee":10000,"tags":["야외","영감","사진","데이트"],"d":"요트, 서핑, 낚시 장비와 해양 레저 상품. 수영만 계류장에서 요트 승선 체험을 신청할 수 있다."},
+ {"id":"wedding-autumn","art":"img/wedding-autumn.webp","t":"서울 웨딩 페어","cat":"family","region":"서울","venue":"세텍 제1전시실","s":"2026-11-14","e":"2026-11-15","fee":0,"note":"예비부부 사전등록 시 사은품","tags":["데이트","쇼핑"],"d":"스튜디오·드레스·메이크업 상담과 예물, 혼수 가전 할인. 둘이 함께 상담을 받는 구성이다."},
+ {"id":"incheon-logistics","art":"img/incheon-logistics.webp","t":"인천 스마트 물류 산업전","cat":"industry","region":"인천","venue":"송도컨벤시아","s":"2026-11-18","e":"2026-11-20","fee":0,"note":"사전등록 필수","tags":["비즈니스","배움"],"d":"항만·공항 물류, 창고 자동화, 콜드체인 기술. 바이어 상담회와 업계 세미나가 함께 열린다."},
+ {"id":"handmade-vintage","art":"img/handmade-vintage.webp","t":"핸드메이드 & 빈티지 마켓","cat":"art","region":"경기","venue":"수원메쎄","s":"2026-11-20","e":"2026-11-22","fee":6000,"tags":["쇼핑","데이트","체험","사진"],"d":"수공예 작가와 빈티지 셀러 300팀이 여는 마켓. 가죽, 향초, 도자기 만들기 체험 부스가 있다."},
+ {"id":"illust-market","art":"img/illust-market.webp","t":"서울 일러스트 & 드로잉 마켓","cat":"art","region":"서울","venue":"코엑스 D홀","s":"2026-11-26","e":"2026-11-29","fee":12000,"tags":["영감","쇼핑","혼자","사진"],"d":"일러스트레이터와 캐릭터 작가의 원화, 굿즈, 드로잉 라이브. 첫날 오전이 가장 붐빈다."},
+ {"id":"changwon-outdoor","art":"img/changwon-outdoor.webp","t":"창원 캠핑 & 아웃도어 쇼","cat":"travel","region":"경남","venue":"창원컨벤션센터","s":"2026-11-27","e":"2026-11-29","fee":5000,"tags":["야외","가족","쇼핑"],"d":"동계 캠핑 장비와 차박 용품 중심. 신제품 체험과 현장 할인이 많다."},
+ {"id":"gyeongju-local","art":"img/gyeongju-local.webp","t":"경주 전통주 & 로컬푸드 박람회","cat":"food","region":"경북","venue":"경주화백컨벤션센터","s":"2026-12-04","e":"2026-12-06","fee":0,"tags":["시식","조용한","쇼핑","가족"],"d":"경북 양조장의 전통주 시음과 지역 농가 식품 판매. 한옥 마을 여행과 묶어 가기 좋다."},
+ {"id":"admission-fair","art":"img/admission-fair.webp","t":"대입 진로 박람회","cat":"career","region":"서울","venue":"코엑스 B홀","s":"2026-12-10","e":"2026-12-13","fee":0,"tags":["배움","가족"],"d":"대학 130여 곳이 참가하는 정시 상담 박람회. 학과별 상담은 현장 번호표로 운영된다."},
+ {"id":"seoul-pet-winter","art":"img/seoul-pet-winter.webp","t":"서울 펫 페어 겨울","cat":"pet","region":"서울","venue":"세텍 제1·2전시실","s":"2026-12-11","e":"2026-12-13","fee":8000,"note":"반려동물 동반 가능","tags":["쇼핑","활기","친구","가족"],"d":"겨울 옷, 수제 간식, 캣타워까지. 고양이 전용관과 입양 상담 부스가 따로 운영된다."},
+ {"id":"baking-fair","art":"img/baking-fair.webp","t":"겨울 베이킹 & 디저트 페어","cat":"food","region":"부산","venue":"벡스코 제1전시장","s":"2026-12-17","e":"2026-12-20","fee":10000,"tags":["데이트","시식","쇼핑","체험"],"d":"제과 재료와 베이커리 브랜드, 크리스마스 케이크 클래스. 연말 선물용 디저트를 미리 사기 좋다."},
+ {"id":"indie-game","art":"img/indie-game.webp","t":"인디 게임 쇼케이스","cat":"tech","region":"경기","venue":"킨텍스 제2전시장","s":"2026-12-18","e":"2026-12-20","fee":15000,"tags":["친구","활기","체험","영감"],"d":"국내 인디 개발사 80곳의 신작 시연. 개발자와 직접 이야기하며 플레이해 볼 수 있다."},
+ {"id":"beauty-fashion-week","art":"img/beauty-fashion-week.webp","t":"뷰티 & 패션 위크 서울","cat":"beauty","region":"서울","venue":"코엑스 A홀","s":"2027-01-08","e":"2027-01-10","fee":10000,"tags":["쇼핑","영감","친구","사진"],"d":"디자이너 브랜드 팝업과 뷰티 신제품 체험. 스타일링 상담 부스는 예약제로 운영된다."},
+ {"id":"jeonbuk-craft","art":"img/jeonbuk-craft.webp","t":"전북 로컬 크래프트 페어","cat":"art","region":"전북","venue":"새만금컨벤션센터","s":"2027-01-15","e":"2027-01-17","fee":0,"tags":["조용한","영감","체험","가족"],"d":"한지, 부채, 옻칠 등 전북 공예 장인의 작업 시연과 판매. 한산해서 오래 머물기 좋다."},
+ {"id":"baby-newyear","art":"img/baby-newyear.webp","t":"서울 베이비 페어 신년","cat":"family","region":"서울","venue":"세텍 제1전시실","s":"2027-01-21","e":"2027-01-24","fee":0,"tags":["가족","아이","쇼핑"],"d":"새해 출산 준비물과 유아 가구, 교육 교구. 카시트 장착 상담이 무료로 제공된다."},
+ {"id":"daegu-photo","art":"img/daegu-photo.webp","t":"대구 사진 & 영상 장비전","cat":"art","region":"대구","venue":"엑스코 동관","s":"2027-01-28","e":"2027-01-31","fee":5000,"tags":["사진","영감","체험","혼자"],"d":"카메라, 렌즈, 조명 장비 체험과 사진가 강연. 모델 촬영존에서 신제품을 직접 써 볼 수 있다."},
+ {"id":"travel-expo","art":"img/travel-expo.webp","t":"서울 여행 박람회","cat":"travel","region":"서울","venue":"코엑스 C·D홀","s":"2027-02-04","e":"2027-02-07","fee":8000,"note":"사전등록 시 무료","tags":["야외","데이트","가족","쇼핑"],"d":"국내외 관광청과 여행사 300곳. 현장 한정 항공권과 숙박 특가를 노리는 사람이 많다."},
+ {"id":"startup-day","art":"img/startup-day.webp","t":"스타트업 투자 네트워킹 데이","cat":"industry","region":"서울","venue":"aT센터 제2전시장","s":"2027-02-17","e":"2027-02-18","fee":0,"note":"사전등록 필수","tags":["비즈니스","배움","영감"],"d":"초기 스타트업 IR 피칭과 투자사 상담, 창업자 네트워킹 세션. 명함을 넉넉히 챙길 것."},
+ {"id":"daejeon-book","art":"img/daejeon-book.webp","t":"대전 북 & 굿즈 페어","cat":"culture","region":"대전","venue":"대전컨벤션센터","s":"2027-02-19","e":"2027-02-21","fee":0,"tags":["조용한","쇼핑","가족","혼자"],"d":"지역 서점과 출판사, 문구 브랜드가 함께 여는 책 축제. 어린이 그림책 낭독 시간이 있다."},
+ {"id":"incheon-garden","art":"img/incheon-garden.webp","t":"인천 홈 & 가드닝 페어","cat":"living","region":"인천","venue":"송도컨벤시아","s":"2027-02-25","e":"2027-02-28","fee":5000,"tags":["조용한","쇼핑","가족","체험"],"d":"실내 식물, 화분, 베란다 정원 용품. 봄맞이 분갈이 체험과 식물 처방 상담이 열린다."}
 ]
 </script>
 
@@ -924,58 +946,43 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (line) out.push(line);
     return out;
   }
+  // 배경 조합: 팔레트 안에서만. 오브젝트 뒤에 기하 도형 하나만 둔다.
   const LAYOUTS = [
-    { bg: 'var(--accent)', title: 'var(--surface)', meta: 'var(--ink)' },
-    { bg: 'var(--ink)', title: 'var(--bg)', meta: 'var(--muted)' },
-    { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)' },
-    { bg: 'var(--surface)', title: 'var(--ink)', meta: 'var(--muted)' },
-    { bg: 'var(--ink)', title: 'var(--surface)', meta: 'var(--hair)' },
-    { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)' }
+    { bg: 'var(--accent)', title: 'var(--surface)', meta: 'var(--ink)', shape: 'circle', fill: 'var(--ink)' },
+    { bg: 'var(--ink)', title: 'var(--bg)', meta: 'var(--muted)', shape: 'rings', fill: 'var(--accent)' },
+    { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'square', fill: 'var(--accent)' },
+    { bg: 'var(--surface)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'slope', fill: 'var(--accent)' },
+    { bg: 'var(--ink)', title: 'var(--surface)', meta: 'var(--hair)', shape: 'bars', fill: 'var(--accent)' },
+    { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'circle', fill: 'var(--ink)' }
   ];
   function posterHTML(f) {
     if (f.img) return `<img src="${esc(f.img)}" alt="" loading="lazy">`;
     const seed = hash(f.id);
     const r = rng(seed);
-    const k = seed % LAYOUTS.length;
-    const L = LAYOUTS[k];
-    const lines = wrapTitle(f.t, 8).slice(0, 4);
-    const fs = lines.length > 3 ? 36 : 42;
+    const L = LAYOUTS[seed % LAYOUTS.length];
+    const lines = wrapTitle(f.t, 8).slice(0, 3);
+    const fs = lines.length > 2 ? 36 : 42;
     const date = `${pad(f.start.getMonth() + 1)}.${pad(f.start.getDate())}`;
+    const end = f.s === f.e ? '' : ` — ${pad(f.end.getMonth() + 1)}.${pad(f.end.getDate())}`;
+    // 오브젝트 자리: 오른쪽 아래. 제목 줄 수에 따라 조금 내려간다.
+    const size = 250;
+    const ox = 118 + Math.round(r() * 20);
+    const oy = lines.length > 2 ? 206 : 186;
+    const cx = ox + size / 2, cy = oy + size / 2;
     let deco = '';
-    let num = '';
-    const numStyle = 'font-family:var(--f-display);font-weight:300;font-variant-numeric:lining-nums';
-    if (k === 0) {
-      deco = `<circle cx="300" cy="380" r="178" fill="var(--ink)"/>`;
-      num = `<text x="24" y="474" fill="var(--surface)" font-size="92" style="${numStyle}">${date}</text>`;
-    } else if (k === 1) {
-      for (let i = 0; i < 7; i++) {
-        const w = 90 + Math.round(r() * 290);
-        deco += `<rect x="0" y="${210 + i * 34}" width="${w}" height="18" fill="${i % 3 === 2 ? 'var(--muted)' : 'var(--accent)'}"/>`;
-      }
-      num = `<text x="376" y="474" text-anchor="end" fill="var(--surface)" font-size="72" style="${numStyle}">${date}</text>`;
-    } else if (k === 2) {
-      deco = `<rect x="332" y="24" width="44" height="44" fill="var(--accent)"/>`;
-      num = `<text x="-14" y="486" fill="var(--ink)" font-size="300" style="${numStyle};letter-spacing:-12px">${pad(f.start.getDate())}</text>` +
-        `<text x="376" y="474" text-anchor="end" fill="var(--accent)" font-size="26" style="${numStyle}">${MONTH_EN[f.start.getMonth()]}</text>`;
-    } else if (k === 3) {
-      const y = 170 + Math.round(r() * 80);
-      deco = `<polygon points="0,500 400,${y} 400,500" fill="var(--accent)"/>`;
-      num = `<text x="24" y="474" fill="var(--ink)" font-size="84" style="${numStyle}">${date}</text>`;
-    } else if (k === 4) {
-      const cx = 120 + Math.round(r() * 180);
-      for (let i = 0; i < 7; i++) deco += `<circle cx="${cx}" cy="360" r="${36 + i * 30}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
-      num = `<text x="24" y="474" fill="var(--surface)" font-size="72" style="${numStyle}">${date}</text>`;
-    } else {
-      let x = 0;
-      while (x < 400) { const w = 2 + Math.round(r() * 10); deco += `<rect x="${x}" y="230" width="${w}" height="270" fill="var(--ink)"/>`; x += w + 4 + Math.round(r() * 12); }
-      deco += `<rect x="24" y="352" width="236" height="124" fill="var(--accent)"/>`;
-      num = `<text x="40" y="450" fill="var(--surface)" font-size="76" style="${numStyle}">${date}</text>`;
-    }
+    if (L.shape === 'circle') deco = `<circle cx="${cx + 10}" cy="${cy + 6}" r="150" fill="${L.fill}"/>`;
+    else if (L.shape === 'rings') for (let i = 0; i < 6; i++) deco += `<circle cx="${cx}" cy="${cy}" r="${70 + i * 30}" fill="none" stroke="${L.fill}" stroke-width="2"/>`;
+    else if (L.shape === 'square') deco = `<rect x="${ox + 40}" y="${oy + 10}" width="230" height="230" fill="${L.fill}"/>`;
+    else if (L.shape === 'slope') deco = `<polygon points="0,500 400,${230 + Math.round(r() * 60)} 400,500" fill="${L.fill}"/>`;
+    else for (let i = 0; i < 6; i++) deco += `<rect x="${ox - 40 + Math.round(r() * 60)}" y="${oy + 20 + i * 38}" width="${160 + Math.round(r() * 120)}" height="16" fill="${L.fill}"/>`;
+    const shadow = `<ellipse cx="${cx}" cy="${oy + size - 8}" rx="${size * 0.32}" ry="10" fill="var(--ink)" opacity=".22"/>`;
+    const obj = f.art ? `<image href="${esc(f.art)}" x="${ox}" y="${oy}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet"/>` : '';
     const meta = `<text x="24" y="42" fill="${L.meta}" font-size="13" style="font-family:var(--f-body);letter-spacing:2px">${esc(CAT[f.cat].en.toUpperCase())} — ${esc(f.region)}</text>`;
     const title = lines.map((l, i) =>
       `<text x="24" y="${96 + i * (fs + 8)}" fill="${L.title}" font-size="${fs}" style="font-family:var(--f-body);font-weight:700;letter-spacing:-1px">${esc(l)}</text>`).join('');
+    const num = `<text x="24" y="476" fill="${L.title}" font-size="30" style="font-family:var(--f-display);font-weight:400;font-variant-numeric:lining-nums tabular-nums">${date}${end}</text>`;
     return `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${esc(f.t)} 포스터">` +
-      `<rect width="400" height="500" fill="${L.bg}"/>${deco}${meta}${title}${num}</svg>`;
+      `<rect width="400" height="500" fill="${L.bg}"/>${deco}${f.art ? shadow : ''}${obj}${meta}${title}${num}</svg>`;
   }
 
   function cardHTML(f, why) {
@@ -1272,6 +1279,22 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     try { localStorage.setItem('aiiairs.view', v); } catch { /* 저장 불가 환경 */ }
     render();
   }
+  const askForm = $('askForm');
+  function setAskSize(size) {
+    const compact = size !== 'full';
+    askForm.classList.toggle('is-compact', compact);
+    askForm.querySelectorAll('.ask-size button').forEach(b => b.setAttribute('aria-pressed', b.dataset.size === (compact ? 'compact' : 'full')));
+    $('askInput').rows = compact ? 1 : 3;
+    try { localStorage.setItem('aiiairs.ask', compact ? 'compact' : 'full'); } catch { /* 저장 불가 환경 */ }
+  }
+  askForm.querySelector('.ask-size').addEventListener('click', e => {
+    const b = e.target.closest('button[data-size]');
+    if (!b) return;
+    setAskSize(b.dataset.size);
+    $('askInput').focus();
+  });
+  setAskSize((() => { try { return localStorage.getItem('aiiairs.ask') || 'compact'; } catch { return 'compact'; } })());
+
   const dlgEl = $('fairDialog');
   dlgEl.addEventListener('click', e => { if (e.target === dlgEl) closeDialog(); });
   dlgEl.addEventListener('close', () => {
