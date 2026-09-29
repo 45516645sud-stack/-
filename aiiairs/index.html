@@ -371,6 +371,13 @@ legend + *{clear:both}
 .group-h[data-fold]{cursor:pointer}
 .group-h[data-fold]:hover{background:var(--wash)}
 .group.is-folded .group-h{border-bottom:0}
+/* 펼친 달: 일정은 달 칸 안쪽으로 한 단계 들여 놓는다 */
+.group-body{background:var(--wash);padding:14px 20px 20px;border-top:1px solid var(--hair)}
+.group-h[data-fold]{border-bottom:0}
+.group-body .cards{margin:0;border-top:1px solid var(--hair);border-left:1px solid var(--hair)}
+.group-body .card-btn{padding:18px 18px 16px}
+.group-body .card-title{font-size:var(--s2)}
+.group-body .fairs{border:1px solid var(--hair);background:var(--surface)}
 .g-peek{margin-top:4px;font-size:var(--s-1);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .g-label{min-width:0}
 
@@ -470,6 +477,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .g-big{font-size:var(--s4)}
   .g-big.word{font-size:var(--s3)}
   .detail{padding:0 16px 22px calc(16px + var(--col-date) + 14px)}
+  .group-body{padding:10px 12px 14px}
   .interp dl{grid-template-columns:5rem 1fr}
   .foot .f-brand,.foot .f-note,.foot .f-end{grid-column:1 / -1;text-align:left;margin-bottom:8px}
   .ask{padding:18px}
@@ -1205,9 +1213,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<span class="g-side"><span class="g-count">${list.length}건</span>` +
       `<button type="button" class="fold" aria-expanded="${open}" aria-label="${esc(label)} ${open ? '접기' : '펼치기'}">${open ? '−' : '+'}</button></span></h3>` +
       (open
-        ? (state.view === 'card'
+        ? `<div class="group-body">` + (state.view === 'card'
           ? `<ul class="cards">${list.map(f => cardHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`
-          : `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`)
+          : `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`) + `</div>`
         : '') +
       `</section>`;
   }
