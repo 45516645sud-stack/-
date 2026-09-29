@@ -233,15 +233,43 @@ legend + *{clear:both}
 .check:has(input:disabled) input{border-color:var(--hair)}
 .check:has(input:disabled) .n{color:var(--hair)}
 
-.periods{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
-.periods label{position:relative;flex:1 0 33.333%;text-align:center;padding:7px 4px;font-size:var(--s-1);cursor:pointer;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);white-space:nowrap}
-.periods label.wide{flex-basis:50%}
-.periods input{position:absolute;opacity:0;pointer-events:none}
-.periods label:hover{background:var(--wash)}
-.periods label:has(input:checked){background:var(--ink);color:var(--bg)}
-.periods label:has(input:focus-visible){outline:1px solid var(--accent);outline-offset:-3px}
-.periods small{font-size:var(--s-2);color:var(--muted)}
-.periods label:has(input:checked) small{color:var(--hair)}
+/* 기간: 빠른 선택 + 시작·종료일 */
+.period{position:relative}
+.presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.presets button{border:1px solid var(--ink);background:transparent;padding:8px 0;font-size:var(--s-1);border-radius:0}
+.presets button:hover{background:var(--wash)}
+.presets button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.range{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px;margin-top:8px}
+.range-dash{color:var(--muted)}
+.date{
+  display:flex;align-items:center;gap:8px;min-width:0;border:1px solid var(--hair);background:var(--surface);
+  padding:9px 10px;font-size:var(--s-1);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;border-radius:0;
+}
+.date svg{width:14px;height:14px;flex:0 0 auto;color:var(--muted)}
+.date:hover{border-color:var(--ink)}
+.date[aria-expanded="true"]{border-color:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+.date.is-idle span{color:var(--muted)}
+.range-note{margin:8px 0 0;font-size:var(--s-2);color:var(--muted)}
+.range-note b{color:var(--ink);font-weight:500}
+.cal{position:absolute;left:0;right:0;top:calc(100% - 14px);z-index:5;background:var(--surface);border:1px solid var(--ink);padding:12px 12px 10px}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.cal-head b{font-family:var(--f-display);font-weight:400;font-size:var(--s1);font-variant-numeric:lining-nums tabular-nums}
+.cal-head button{width:30px;height:30px;border:1px solid var(--hair);background:none;font-family:var(--f-display);font-size:var(--s1);line-height:1}
+.cal-head button:hover{border-color:var(--ink)}
+.cal-which{margin:0 0 8px;font-size:var(--s-2);color:var(--muted);text-align:center}
+.cal-which b{color:var(--accent);font-weight:600}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-grid .wd{font-size:var(--s-2);color:var(--muted);text-align:center;padding:2px 0 6px}
+.cal-grid button{position:relative;aspect-ratio:1;border:0;background:none;padding:0;font-size:var(--s-1);font-variant-numeric:tabular-nums;border-radius:0}
+.cal-grid button:hover{background:var(--wash)}
+.cal-grid button.in-range{background:var(--wash)}
+.cal-grid button.is-edge{background:var(--ink);color:var(--bg)}
+.cal-grid button.is-today{box-shadow:inset 0 0 0 1px var(--accent)}
+.cal-grid button.has-event::after{content:"";position:absolute;left:50%;bottom:3px;width:4px;height:4px;margin-left:-2px;background:var(--accent)}
+.cal-grid button.is-edge.has-event::after{background:var(--bg)}
+.cal-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--hair);font-size:var(--s-2);color:var(--muted)}
+.cal-foot i{font-style:normal}
+.cal-foot i::before{content:"";display:inline-block;width:4px;height:4px;background:var(--accent);margin-right:6px;vertical-align:2px}
 
 .filter-end{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--hair)}
 .linkish{background:none;border:0;padding:0;font-size:var(--s-1);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
@@ -528,9 +556,27 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
           <div class="checks" id="regionList"></div>
         </fieldset>
 
-        <fieldset>
+        <fieldset class="period" id="periodBox">
           <legend>기간</legend>
-          <div class="periods" id="periodList"></div>
+          <div class="presets" id="presets" role="group" aria-label="빠른 기간 선택">
+            <button type="button" data-preset="1m" aria-pressed="false">1개월</button>
+            <button type="button" data-preset="3m" aria-pressed="false">3개월</button>
+            <button type="button" data-preset="6m" aria-pressed="false">6개월</button>
+            <button type="button" data-preset="1y" aria-pressed="false">1년</button>
+          </div>
+          <div class="range">
+            <button type="button" class="date" id="fromBtn" data-pick="from" aria-haspopup="dialog" aria-expanded="false" aria-label="시작일 고르기">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5"/><path d="M1.5 6.5h13M5 1.5v3M11 1.5v3"/></svg>
+              <span id="fromTxt"></span>
+            </button>
+            <span class="range-dash" aria-hidden="true">–</span>
+            <button type="button" class="date" id="toBtn" data-pick="to" aria-haspopup="dialog" aria-expanded="false" aria-label="종료일 고르기">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5"/><path d="M1.5 6.5h13M5 1.5v3M11 1.5v3"/></svg>
+              <span id="toTxt"></span>
+            </button>
+          </div>
+          <p class="range-note" id="rangeNote"></p>
+          <div class="cal" id="cal" role="dialog" aria-label="날짜 고르기" hidden></div>
         </fieldset>
 
         <div class="filter-end">
@@ -693,13 +739,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     return null;
   }
   const monthKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
-  const MONTHS = (() => {
-    const last = FAIRS.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
-    const out = [];
-    let d = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-    while (d <= last && out.length < 6) { out.push(monthKey(d)); d = new Date(d.getFullYear(), d.getMonth() + 1, 1); }
-    return out;
-  })();
   function periodLabel(p) {
     if (p === 'all') return '전체 기간';
     if (p === 'weekend') return '이번 주말';
@@ -713,7 +752,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     cat: 'all',
     cost: 'all',
     regions: new Set(),
-    period: 'all',
+    period: 'all',      // 'all' | '1m' | '3m' | '6m' | '1y' | 'custom'
+    from: null,
+    to: null,
     past: false,
     query: '',
     interp: null,
@@ -838,7 +879,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
     if (skip !== 'region' && state.regions.size && !state.regions.has(f.region)) return false;
     if (skip !== 'period' && state.period !== 'all') {
-      const r = periodRange(state.period);
+      const r = bounds();
       if (r && !overlaps(f, r[0], r[1])) return false;
     }
     if (skip !== 'cat' && state.cat !== 'all' && GROUP_OF[f.cat] !== state.cat) return false;
@@ -893,16 +934,107 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }).join('');
   }
 
+  /* ---------------- 기간 선택 ---------------- */
+  const dkey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const PRESET_MONTHS = { '1m': 1, '3m': 3, '6m': 6, '1y': 12 };
+  const LAST = FAIRS.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
+  const FIRST = FAIRS.reduce((m, f) => (f.start < m ? f.start : m), TODAY);
+  const START_DAYS = new Set(FAIRS.map(f => dkey(f.start)));
+  const dot = d => `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
+  const sameDay = (a, b) => a && b && a.getTime() === b.getTime();
+  function bounds() {
+    if (state.period === 'all') return null;
+    if (state.period === 'custom') return [state.from, state.to];
+    const n = PRESET_MONTHS[state.period];
+    return [TODAY, addDays(new Date(TODAY.getFullYear(), TODAY.getMonth() + n, TODAY.getDate()), -1)];
+  }
+  // 화면에 보이는 시작·종료일. 전체 기간이면 일정이 있는 범위를 보여준다.
+  function shownRange() {
+    return bounds() || [state.past ? FIRST : TODAY, LAST];
+  }
+  const cal = { pick: null, view: null };
+
   function renderPeriods() {
-    const opts = ['all', 'weekend', 'nextweekend', ...MONTHS.map(m => 'm:' + m)];
-    if (!opts.includes(state.period)) opts.push(state.period);
-    $('periodList').innerHTML = opts.map(p => {
-      const wide = p === 'all' || p === 'weekend' || p === 'nextweekend';
-      let sub = '';
-      if (p === 'weekend' || p === 'nextweekend') { const [a, b] = periodRange(p); sub = ` <small>${md(a)}–${md(b).slice(3)}</small>`; }
-      return `<label${wide && p !== 'all' ? ' class="wide"' : ''}${p === 'all' ? ' style="flex-basis:100%"' : ''}>` +
-        `<input type="radio" name="period" value="${p}"${state.period === p ? ' checked' : ''}> ${periodLabel(p)}${sub}</label>`;
-    }).join('');
+    document.querySelectorAll('#presets button').forEach(b => b.setAttribute('aria-pressed', b.dataset.preset === state.period));
+    const [a, b] = shownRange();
+    const idle = state.period === 'all';
+    $('fromTxt').textContent = dot(a);
+    $('toTxt').textContent = dot(b);
+    $('fromBtn').classList.toggle('is-idle', idle);
+    $('toBtn').classList.toggle('is-idle', idle);
+    const days = Math.round((b - a) / DAY) + 1;
+    $('rangeNote').innerHTML = idle
+      ? '전체 기간을 보고 있어요. 날짜를 눌러 직접 고를 수 있어요.'
+      : `<b>${md(a)} – ${md(b)}</b> · ${days}일 동안 열리는 행사`;
+    $('fromBtn').setAttribute('aria-expanded', cal.pick === 'from');
+    $('toBtn').setAttribute('aria-expanded', cal.pick === 'to');
+    renderCal();
+  }
+
+  function renderCal() {
+    const box = $('cal');
+    if (!cal.pick) { box.hidden = true; box.innerHTML = ''; return; }
+    const v = cal.view;
+    const [a, b] = shownRange();
+    const first = new Date(v.getFullYear(), v.getMonth(), 1);
+    const count = new Date(v.getFullYear(), v.getMonth() + 1, 0).getDate();
+    let cells = WD.map(w => `<span class="wd">${w}</span>`).join('');
+    for (let i = 0; i < first.getDay(); i++) cells += '<span></span>';
+    for (let d = 1; d <= count; d++) {
+      const day = new Date(v.getFullYear(), v.getMonth(), d);
+      const cls = [
+        day > a && day < b ? 'in-range' : '',
+        sameDay(day, a) || sameDay(day, b) ? 'is-edge' : '',
+        sameDay(day, TODAY) ? 'is-today' : '',
+        START_DAYS.has(dkey(day)) ? 'has-event' : ''
+      ].filter(Boolean).join(' ');
+      cells += `<button type="button" class="${cls}" data-day="${dkey(day)}" aria-label="${v.getMonth() + 1}월 ${d}일 ${WD[day.getDay()]}요일${START_DAYS.has(dkey(day)) ? ', 행사 시작' : ''}">${d}</button>`;
+    }
+    box.innerHTML =
+      `<div class="cal-head"><button type="button" data-cal="prev" aria-label="이전 달">‹</button>` +
+      `<b>${v.getFullYear()}. ${pad(v.getMonth() + 1)}</b>` +
+      `<button type="button" data-cal="next" aria-label="다음 달">›</button></div>` +
+      `<p class="cal-which"><b>${cal.pick === 'from' ? '시작일' : '종료일'}</b>을 골라주세요</p>` +
+      `<div class="cal-grid">${cells}</div>` +
+      `<div class="cal-foot"><i>행사 시작일</i><button type="button" class="linkish" data-cal="close">닫기</button></div>`;
+    box.hidden = false;
+  }
+
+  function openCal(which) {
+    if (cal.pick === which) { closeCal(); return; }
+    const [a, b] = shownRange();
+    const d = which === 'from' ? a : b;
+    cal.pick = which;
+    cal.view = new Date(d.getFullYear(), d.getMonth(), 1);
+    renderPeriods();
+    const edge = $('cal').querySelector('.is-edge') || $('cal').querySelector('[data-day]');
+    if (edge) edge.focus();
+  }
+  function closeCal(focusBack) {
+    const which = cal.pick;
+    cal.pick = null;
+    renderPeriods();
+    if (focusBack && which) $(which === 'from' ? 'fromBtn' : 'toBtn').focus();
+  }
+  function pickDay(key) {
+    const d = parseDate(key);
+    let [a, b] = shownRange();
+    if (cal.pick === 'from') { a = d; if (b < d) b = d; }
+    else { b = d; if (d < a) a = d; }
+    state.period = 'custom';
+    state.from = a;
+    state.to = b;
+    state.openId = null;
+    if (cal.pick === 'from') {
+      // 시작일을 고르면 바로 종료일 고르기로 넘어간다.
+      cal.pick = 'to';
+      cal.view = new Date(a.getFullYear(), a.getMonth(), 1);
+    } else {
+      cal.pick = null;
+    }
+    render();
+    if (cal.pick) { const el = $('cal').querySelector(`[data-day="${dkey(a)}"]`) || $('cal').querySelector('[data-day]'); if (el) el.focus(); }
+    else $('toBtn').focus();
   }
 
   function renderSummary() {
@@ -1170,7 +1302,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     state.cat = 'all';
     state.openId = null;
     state.regions = new Set(it.regions);
-    state.period = it.period || 'all';
+    if (it.period) {
+      const [a, b] = periodRange(it.period);
+      state.period = 'custom';
+      state.from = a;
+      state.to = b;
+    } else state.period = 'all';
     state.cost = it.cost || 'all';
     render();
     $('schedule').focus({ preventScroll: true });
@@ -1186,6 +1323,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     state.cost = 'all';
     state.regions = new Set();
     state.period = 'all';
+    cal.pick = null;
     state.past = false;
     state.cat = 'all';
     if (!keepQuery) { state.query = ''; state.interp = null; }
@@ -1276,7 +1414,32 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     state.openId = null;
     render();
   });
-  $('periodList').addEventListener('change', e => { state.period = e.target.value; state.openId = null; render(); });
+  $('presets').addEventListener('click', e => {
+    const b = e.target.closest('button[data-preset]');
+    if (!b) return;
+    state.period = state.period === b.dataset.preset ? 'all' : b.dataset.preset;
+    state.openId = null;
+    cal.pick = null;
+    render();
+  });
+  $('fromBtn').addEventListener('click', () => openCal('from'));
+  $('toBtn').addEventListener('click', () => openCal('to'));
+  $('cal').addEventListener('click', e => {
+    const day = e.target.closest('[data-day]');
+    if (day) { pickDay(day.dataset.day); return; }
+    const c = e.target.closest('[data-cal]');
+    if (!c) return;
+    if (c.dataset.cal === 'close') { closeCal(true); return; }
+    cal.view = new Date(cal.view.getFullYear(), cal.view.getMonth() + (c.dataset.cal === 'next' ? 1 : -1), 1);
+    renderCal();
+    const nav = $('cal').querySelector(`[data-cal="${c.dataset.cal}"]`);
+    if (nav) nav.focus();
+  });
+  $('cal').addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); closeCal(true); } });
+  document.addEventListener('click', e => {
+    // 달력은 누를 때마다 다시 그려지므로, 원래 눌린 경로로 바깥 클릭인지 판단한다.
+    if (cal.pick && !e.composedPath().includes($('periodBox'))) closeCal(false);
+  });
   $('pastToggle').addEventListener('change', e => { state.past = e.target.checked; render(); });
   $('resetBtn').addEventListener('click', () => resetFilters(true));
 
