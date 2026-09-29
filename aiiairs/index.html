@@ -731,7 +731,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   ];
   const GROUP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
   const GROUP_OF = Object.fromEntries(GROUPS.flatMap(g => g.cats.map(c => [c, g.key])));
-  const REGION_ORDER = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
+  const REGION_ORDER = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '광주·전남', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
   const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const DAY = 86400000;
@@ -888,7 +888,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     '강원': ['강원','춘천','강릉','속초','원주'],
     '충북': ['충북','청주','충주'],
     '충남': ['충남','천안','아산','공주'],
-    '전남': ['전남','여수','순천','목포']
+    '전남': ['전남','여수','순천','목포'],
+    '광주·전남': ['광주','전남','여수','순천','목포']
   };
   const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없','0원'];
   const PAID_WORDS = ['유료'];

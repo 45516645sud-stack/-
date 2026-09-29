@@ -34,6 +34,9 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(collect.region_of("전라남도 여수시"), "전남")
         self.assertEqual(collect.region_of("", "경상북도 경주시 보문로"), "경북")
         self.assertEqual(collect.region_of("충청북도"), "충북")
+        self.assertEqual(collect.region_of("전남광주통합특별시"), "광주·전남")
+        self.assertEqual(collect.region_of("전라남도 여수시"), "전남")
+        self.assertEqual(collect.region_of("광주광역시"), "광주")
         self.assertEqual(collect.region_of("알 수 없음"), "기타")
 
     def test_https(self):
