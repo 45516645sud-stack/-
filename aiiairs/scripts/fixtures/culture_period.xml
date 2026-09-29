@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 테스트용 예시 응답: 한국문화정보원 공연전시(period) 형식을 흉내 낸 가상 데이터 -->
+<response>
+  <header><resultCode>00</resultCode><resultMsg>NORMAL SERVICE.</resultMsg></header>
+  <body>
+    <items>
+      <item>
+        <seq>900001</seq>
+        <title>테스트 사진전 〈겨울 바다〉</title>
+        <startDate>20261201</startDate>
+        <endDate>20270131</endDate>
+        <place>예시미술관</place>
+        <realmName>사진</realmName>
+        <area>제주</area>
+        <thumbnail>http://www.culture.go.kr/upload/rdf/test.jpg</thumbnail>
+        <gpsX>126.5</gpsX>
+        <gpsY>33.4</gpsY>
+      </item>
+      <item>
+        <seq>900002</seq>
+        <title>테스트 연극 〈빈 방〉</title>
+        <startDate>20261010</startDate>
+        <endDate>20261130</endDate>
+        <place>예시소극장</place>
+        <realmName>연극</realmName>
+        <area>서울</area>
+      </item>
+      <item>
+        <seq>900003</seq>
+        <title>테스트 가족 인형극</title>
+        <startDate>20261107</startDate>
+        <endDate>20261108</endDate>
+        <place>예시어린이회관</place>
+        <realmName>아동/가족</realmName>
+        <area>대전</area>
+        <price>무료</price>
+      </item>
+    </items>
+  </body>
+</response>

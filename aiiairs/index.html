@@ -180,6 +180,7 @@ h1{
   background:var(--ink);color:var(--bg);padding:10px 18px;font-weight:500;border-radius:0;
 }
 .btn:hover{background:var(--accent);border-color:var(--accent)}
+a.btn{text-decoration:none}
 .btn-ghost{background:transparent;color:var(--ink)}
 .btn-ghost:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn-sm{padding:7px 12px;font-size:var(--s-1)}
@@ -631,7 +632,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
           </div>
         </div>
       </div>
-      <div class="sheet" id="sheet"></div>
+      <div class="sheet" id="sheet"><div class="empty"><p>일정을 불러오는 중이에요.</p></div></div>
     </div>
   </section>
 </main>
@@ -640,15 +641,15 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
     <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.</p>
-    <p class="f-end">전국 박람회·소공연 통합 일정</p>
+    <p class="f-end">전국 박람회·소공연 통합 일정<br><span id="srcNote"></span></p>
   </div>
 </footer>
 
 <dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
 
 <!--
-  박람회 데이터. 실제 서비스에서는 이 블록을 수집 파이프라인/API 결과로 교체한다.
-  아래 항목은 레이아웃과 검색 동작을 보여주기 위한 예시 일정이며 실제 행사가 아니다.
+  예시 일정. data/fairs.json(수집 스크립트 결과)이 없을 때만 쓰인다.
+  아래 항목은 레이아웃과 검색 동작을 보여주기 위한 예시이며 실제 행사가 아니다.
   fee: 0 = 무료, 숫자 = 현장 일반 관람료(원)
   tags: 취향 검색이 참고하는 성격 태그
 -->
@@ -701,7 +702,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 </script>
 
 <script>
-(() => {
+(async () => {
   'use strict';
 
   /* ---------------- 기준 데이터 ---------------- */
@@ -730,7 +731,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   ];
   const GROUP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
   const GROUP_OF = Object.fromEntries(GROUPS.flatMap(g => g.cats.map(c => [c, g.key])));
-  const REGIONS = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '경북', '경남', '전북', '제주'];
+  const REGION_ORDER = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
   const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const DAY = 86400000;
@@ -742,13 +743,56 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const now = new Date();
   const TODAY = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const FAIRS = JSON.parse(document.getElementById('fair-data').textContent).map(f => ({
-    ...f,
-    start: parseDate(f.s),
-    end: parseDate(f.e),
-    free: f.fee === 0
-  }));
+  /* ---------------- 데이터 ----------------
+     실제 일정은 수집 스크립트(scripts/collect.py)가 매일 만드는 data/fairs.json 에서 읽는다.
+     파일이 없거나 비어 있으면 페이지 안의 예시 일정을 쓴다. */
+  async function loadData() {
+    try {
+      const res = await fetch('data/fairs.json', { cache: 'no-cache' });
+      if (res.ok) {
+        const j = await res.json();
+        if (j && Array.isArray(j.items) && j.items.length) {
+          return { sample: false, generatedAt: j.generatedAt || null, sources: j.sources || [], items: j.items };
+        }
+      }
+    } catch { /* 파일이 없거나 file:// 로 연 경우 */ }
+    return { sample: true, generatedAt: null, sources: [], items: JSON.parse(document.getElementById('fair-data').textContent) };
+  }
+  // 포스터가 없는 행사는 분류에 맞는 그림을 쓴다.
+  const DEFAULT_ART = {
+    food: 'img/coffee-dessert.webp', living: 'img/living-design-week.webp', family: 'img/ilsan-kids.webp',
+    culture: 'img/indie-book.webp', art: 'img/illust-market.webp', tech: 'img/robotics-show.webp',
+    career: 'img/youth-jobs.webp', travel: 'img/jeju-camping.webp', pet: 'img/busan-pet.webp',
+    beauty: 'img/daegu-beauty.webp', industry: 'img/arch-interior.webp', stage: 'img/daehakro-duo.webp'
+  };
+  const isWebUrl = u => typeof u === 'string' && /^https?:\/\//.test(u);
+  const DATA = await loadData();
+  const FAIRS = DATA.items
+    .filter(f => f && f.id && f.t && /^\d{4}-\d{2}-\d{2}$/.test(f.s) && /^\d{4}-\d{2}-\d{2}$/.test(f.e))
+    .map(f => {
+      const cat = CAT[f.cat] ? f.cat : 'culture';
+      const fee = typeof f.fee === 'number' ? f.fee : null;
+      return {
+        ...f,
+        cat,
+        fee,
+        region: f.region || '기타',
+        venue: f.venue || '',
+        tags: Array.isArray(f.tags) ? f.tags : [],
+        d: f.d || '',
+        img: isWebUrl(f.img) ? f.img : null,
+        url: isWebUrl(f.url) ? f.url : null,
+        art: f.art || DEFAULT_ART[cat],
+        start: parseDate(f.s),
+        end: parseDate(f.e),
+        free: fee === 0
+      };
+    });
   const BY_ID = new Map(FAIRS.map(f => [f.id, f]));
+  const REGIONS = [
+    ...REGION_ORDER.filter(r => FAIRS.some(f => f.region === r)),
+    ...[...new Set(FAIRS.map(f => f.region))].filter(r => !REGION_ORDER.includes(r))
+  ];
 
   const isPast = f => f.end < TODAY;
   const isLive = f => f.start <= TODAY && f.end >= TODAY;
@@ -838,7 +882,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     '경북': ['경북','경주','포항'],
     '경남': ['경남','창원'],
     '전북': ['전북','군산','전주','새만금'],
-    '제주': ['제주']
+    '제주': ['제주'],
+    '울산': ['울산'],
+    '세종': ['세종'],
+    '강원': ['강원','춘천','강릉','속초','원주'],
+    '충북': ['충북','청주','충주'],
+    '충남': ['충남','천안','아산','공주'],
+    '전남': ['전남','여수','순천','목포']
   };
   const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없','0원'];
   const PAID_WORDS = ['유료'];
@@ -854,7 +904,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       if (e.latin) for (const w of e.latin) if (new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(lower)) words.push(w.toUpperCase());
       if (words.length) hits.push({ ...e, words });
     }
-    const regions = REGIONS.filter(r => REGION_ALIAS[r].some(a => t.includes(a)));
+    const regions = REGIONS.filter(r => (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
 
     let period = null;
     if (/다음주말|담주말|다음주주말/.test(t)) period = 'nextweekend';
@@ -922,13 +972,21 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   /* ---------------- DOM ---------------- */
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const won = n => n === 0 ? '무료' : `${n.toLocaleString('ko-KR')}원`;
+  const won = n => n == null ? '관람료 확인' : n === 0 ? '무료' : `${n.toLocaleString('ko-KR')}원`;
   const md = d => `${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
 
+  function updatedText() {
+    const g = DATA.generatedAt ? new Date(DATA.generatedAt) : null;
+    if (!g || isNaN(g)) return '';
+    return `${pad(g.getMonth() + 1)}.${pad(g.getDate())} ${pad(g.getHours())}:${pad(g.getMinutes())}`;
+  }
   function renderMast() {
     const d = TODAY;
     $('mastMeta').innerHTML =
-      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b> 기준 · 예시 일정`;
+      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b> 기준 · ` +
+      (DATA.sample ? '예시 일정' : `일정 ${updatedText()} 갱신`);
+    const names = DATA.sources.filter(x => x && x.count).map(x => x.label || x.name);
+    $('srcNote').textContent = names.length ? `일정 출처: ${names.join(', ')}` : '';
     const upcoming = FAIRS.filter(f => !isPast(f));
     const first = upcoming.reduce((m, f) => (f.start < m ? f.start : m), upcoming[0] ? upcoming[0].start : TODAY);
     const lastD = upcoming.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
@@ -1119,6 +1177,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     return `<div class="actions">` +
       `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
       `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
+      (f.url ? `<a class="btn btn-sm btn-ghost" href="${esc(f.url)}" target="_blank" rel="noopener">공식 정보 보기</a>` : '') +
       (state.cat !== GROUP_OF[f.cat] ? `<button type="button" class="linkish" data-act="cat" data-cat="${GROUP_OF[f.cat]}">${GROUP[GROUP_OF[f.cat]].ko} 더 보기</button>` : '') +
       `<span class="done" role="status" data-done="${f.id}"></span>` +
     `</div>`;
@@ -1148,7 +1207,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'circle', fill: 'var(--ink)' }
   ];
   function posterHTML(f) {
-    if (f.img) return `<img src="${esc(f.img)}" alt="" loading="lazy">`;
+    if (f.img) return `<img src="${esc(f.img)}" alt="" loading="lazy" data-poster="${esc(f.id)}">`;
     const seed = hash(f.id);
     const r = rng(seed);
     const L = LAYOUTS[seed % LAYOUTS.length];
@@ -1554,6 +1613,14 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     $('askInput').focus();
   });
   setAskSize((() => { try { return localStorage.getItem('aiiairs.ask') || 'compact'; } catch { return 'compact'; } })());
+
+  // 실제 포스터를 못 불러오면 그 자리를 행사 정보로 만든 포스터로 바꾼다.
+  document.addEventListener('error', e => {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement) || !img.dataset.poster) return;
+    const f = BY_ID.get(img.dataset.poster);
+    if (f) img.outerHTML = posterHTML({ ...f, img: null });
+  }, true);
 
   const dlgEl = $('fairDialog');
   dlgEl.addEventListener('click', e => { if (e.target === dlgEl) closeDialog(); });
