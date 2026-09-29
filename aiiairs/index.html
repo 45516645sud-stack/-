@@ -368,13 +368,11 @@ legend + *{clear:both}
 .g-side{display:flex;align-items:center;gap:12px}
 .fold{width:30px;height:30px;border:1px solid var(--ink);background:none;padding:0;font-family:var(--f-display);font-size:var(--s2);line-height:1;border-radius:0}
 .fold:hover{background:var(--ink);color:var(--bg)}
-.fold-more{
-  display:flex;justify-content:space-between;align-items:center;width:100%;
-  border:0;border-top:1px solid var(--hair);background:var(--surface);padding:14px 20px;font-size:var(--s-1);text-align:left;
-}
-.fold-more b{font-family:var(--f-display);font-weight:400;font-size:var(--s2);line-height:1}
-.fold-more:hover{background:var(--wash)}
-.group.is-folded .cards{margin-bottom:0}
+.group-h[data-fold]{cursor:pointer}
+.group-h[data-fold]:hover{background:var(--wash)}
+.group.is-folded .group-h{border-bottom:0}
+.g-peek{margin-top:4px;font-size:var(--s-1);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.g-label{min-width:0}
 
 .fairs{list-style:none;margin:0;padding:0}
 .fair + .fair{border-top:1px solid var(--hair)}
@@ -1194,53 +1192,37 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (dlg.open) dlg.close();
   }
 
-  // 묶음은 기본으로 접혀 한 줄만 보인다. +로 펼치고 −로 접는다.
-  const openGroups = new Set();
-  const narrow = window.matchMedia('(max-width: 560px)');
-  const mid = window.matchMedia('(max-width: 1080px)');
-  function previewCount() {
-    if (state.view === 'list') return 3;
-    return narrow.matches ? 1 : mid.matches ? 2 : 3;
-  }
-  function groupHTML(big, isWord, label, sub, list, whyMap) {
+  // 묶음은 −면 달 이름(과 한 줄 미리보기)만, +면 그 달 일정 전체를 보여준다.
+  // 맨 위 묶음만 처음에 펼쳐 두고 나머지는 접어 둔다.
+  const groupOpen = new Map();
+  function groupHTML(big, isWord, label, sub, list, whyMap, defOpen) {
     const key = label;
-    const n = previewCount();
-    const foldable = list.length > n;
-    const open = !foldable || openGroups.has(key) || list.some(f => f.id === state.openId);
-    const shown = open ? list : list.slice(0, n);
-    const rest = list.length - n;
-    const toggle = foldable
-      ? `<button type="button" class="fold" data-fold="${esc(key)}" aria-expanded="${open}" aria-label="${esc(label)} ${open ? '접기' : '펼치기'}">${open ? '−' : '+'}</button>`
-      : '';
-    return `<section class="group${open ? '' : ' is-folded'}"><h3 class="group-h"><span class="g-big${isWord ? ' word' : ''}">${big}</span>` +
-      `<span class="g-label"><b>${label}</b><i>${sub}</i></span>` +
-      `<span class="g-side"><span class="g-count">${list.length}건</span>${toggle}</span></h3>` +
-      (state.view === 'card'
-        ? `<ul class="cards">${shown.map(f => cardHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`
-        : `<ul class="fairs">${shown.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`) +
-      (foldable
-        ? `<button type="button" class="fold-more" data-fold="${esc(key)}" aria-expanded="${open}">` +
-          (open ? `<span>${esc(label)} 접기</span><b aria-hidden="true">−</b>` : `<span>${esc(label)} 나머지 ${rest}건 더 보기</span><b aria-hidden="true">+</b>`) +
-          `</button>`
+    const open = list.some(f => f.id === state.openId) || (groupOpen.has(key) ? groupOpen.get(key) : !!defOpen);
+    const peek = list.slice(0, 3).map(f => esc(f.t)).join(' · ') + (list.length > 3 ? ` 외 ${list.length - 3}건` : '');
+    return `<section class="group${open ? '' : ' is-folded'}">` +
+      `<h3 class="group-h" data-fold="${esc(key)}"><span class="g-big${isWord ? ' word' : ''}">${big}</span>` +
+      `<span class="g-label"><b>${label}</b><i>${sub}</i>${open ? '' : `<span class="g-peek">${peek}</span>`}</span>` +
+      `<span class="g-side"><span class="g-count">${list.length}건</span>` +
+      `<button type="button" class="fold" aria-expanded="${open}" aria-label="${esc(label)} ${open ? '접기' : '펼치기'}">${open ? '−' : '+'}</button></span></h3>` +
+      (open
+        ? (state.view === 'card'
+          ? `<ul class="cards">${list.map(f => cardHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`
+          : `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`)
         : '') +
       `</section>`;
   }
-  function toggleGroup(key, btn) {
-    const wasOpen = openGroups.has(key);
-    if (wasOpen) openGroups.delete(key); else openGroups.add(key);
-    const fromBottom = btn.classList.contains('fold-more');
+  function toggleGroup(key) {
+    const btn = document.querySelector(`.group-h[data-fold="${CSS.escape(key)}"] .fold`);
+    const wasOpen = btn && btn.getAttribute('aria-expanded') === 'true';
+    groupOpen.set(key, !wasOpen);
+    if (wasOpen && state.openId) { closeDialog(); state.openId = null; }
     renderList();
-    // 아래쪽 막대로 접었으면 그 묶음 머리로 돌아간다.
-    const sel = `.${fromBottom ? 'fold-more' : 'fold'}[data-fold="${CSS.escape(key)}"]`;
-    const again = document.querySelector(sel);
-    if (wasOpen && fromBottom) {
-      const head = again && again.closest('.group');
-      if (head) head.scrollIntoView({ block: 'start' });
+    const again = document.querySelector(`.group-h[data-fold="${CSS.escape(key)}"]`);
+    if (again) {
+      if (wasOpen && again.getBoundingClientRect().top < 0) again.scrollIntoView({ block: 'start' });
+      again.querySelector('.fold').focus({ preventScroll: true });
     }
-    if (again) again.focus({ preventScroll: true });
   }
-  narrow.addEventListener('change', () => renderList());
-  mid.addEventListener('change', () => renderList());
 
   function renderInterp(it, matchedCount, fellBack) {
     const box = $('interp');
@@ -1282,7 +1264,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       matched = scored.length;
       if (scored.length) {
         const whyMap = new Map(scored.map(x => [x.f.id, x.why]));
-        html = groupHTML('Fit', true, '취향에 맞는 순서', 'ranked by fit', scored.map(x => x.f), whyMap);
+        html = groupHTML('Fit', true, '취향에 맞는 순서', 'ranked by fit', scored.map(x => x.f), whyMap, true);
         shown = scored.length;
         $('sheetTitle').textContent = '맞춤 결과';
       } else {
@@ -1295,12 +1277,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       const live = pool.filter(isLive).sort((a, b) => a.end - b.end);
       const next = pool.filter(f => f.start > TODAY).sort((a, b) => a.start - b.start);
       const past = pool.filter(isPast).sort((a, b) => b.start - a.start);
-      if (live.length) html += groupHTML('Now', true, '지금 열리는 중', '마감이 가까운 순', live);
+      if (live.length) html += groupHTML('Now', true, '지금 열리는 중', '마감이 가까운 순', live, null, true);
       const byMonth = new Map();
       for (const f of next) { const k = monthKey(f.start); if (!byMonth.has(k)) byMonth.set(k, []); byMonth.get(k).push(f); }
       for (const [k, list] of byMonth) {
         const [y, m] = k.split('-').map(Number);
-        html += groupHTML(pad(m), false, `${m}월`, `${MONTH_EN[m - 1]} ${y}`, list);
+        html += groupHTML(pad(m), false, `${m}월`, `${MONTH_EN[m - 1]} ${y}`, list, null, !html);
       }
       if (past.length) html += groupHTML('Past', true, '지난 일정', '최근 순', past);
     }
@@ -1496,7 +1478,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const row = e.target.closest('.row[data-id]');
     if (row) { toggleFair(row.dataset.id); return; }
     const fb = e.target.closest('[data-fold]');
-    if (fb) { toggleGroup(fb.dataset.fold, fb); return; }
+    if (fb) { toggleGroup(fb.dataset.fold); return; }
     const card = e.target.closest('.card-btn[data-card]');
     if (card) { openDialog(card.dataset.card); return; }
     const vb = e.target.closest('.view button[data-view]');
