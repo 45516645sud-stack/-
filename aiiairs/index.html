@@ -253,6 +253,63 @@ legend + *{clear:both}
 .sheet-head h2{margin:0;font-size:var(--s1);font-weight:600}
 .sheet-head p{margin:0;font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
 .sheet-head p b{color:var(--ink);font-weight:500}
+.sheet-tools{display:flex;align-items:center;gap:16px}
+.view{display:flex;border:1px solid var(--ink)}
+.view button{background:none;border:0;padding:4px 12px;font-size:var(--s-1)}
+.view button + button{border-left:1px solid var(--ink)}
+.view button:hover{background:var(--wash)}
+.view button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* 카드 — 평소엔 글, 올리면 포스터 */
+.group{overflow:hidden}
+.cards{list-style:none;margin:0 -1px -1px 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);min-width:0}
+.card-btn{
+  position:relative;display:flex;flex-direction:column;width:100%;aspect-ratio:4 / 5;
+  background:var(--surface);border:0;padding:22px 22px 20px;text-align:left;overflow:hidden;
+}
+.card-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:var(--s-1)}
+.card-cat{display:inline-flex;align-items:baseline;gap:8px}
+.card-cat::before{content:"";width:7px;height:7px;background:var(--accent);flex:0 0 auto;transform:translateY(-1px)}
+.card-state{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.card-state .free{color:var(--accent);font-weight:600}
+.card-title{
+  margin-top:14px;font-size:var(--s3);font-weight:700;line-height:1.3;letter-spacing:-.025em;
+  text-wrap:balance;
+}
+.card-why{margin-top:10px;font-size:var(--s-1);color:var(--accent)}
+.card-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-top:16px}
+.card-date{font-size:var(--s1);font-weight:500;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+.card-venue{font-size:var(--s-1);font-weight:600;line-height:1.35;text-align:right;min-width:0}
+.card-poster{position:absolute;inset:0;display:none;background:var(--ink)}
+.card-poster svg,.card-poster img,.dlg-poster svg,.dlg-poster img{display:block;width:100%;height:100%;object-fit:cover}
+@media (hover:hover){
+  .card-btn:hover .card-poster{display:block}
+}
+.card-btn:focus-visible .card-poster{display:block}
+.card-btn:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.card.is-past .card-btn{color:var(--muted)}
+
+/* 상세 다이얼로그 */
+.dlg{
+  width:min(920px,calc(100% - 32px));max-height:calc(100% - 32px);padding:0;border:1px solid var(--ink);
+  background:var(--surface);color:var(--ink);border-radius:0;overflow:auto;
+}
+.dlg::backdrop{background:rgba(20,17,15,.62)}
+.dlg-inner{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
+.dlg-poster{aspect-ratio:4 / 5;background:var(--ink);border-right:1px solid var(--ink)}
+.dlg-body{display:flex;flex-direction:column;padding:24px 28px 28px;min-width:0}
+.dlg-bar{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:var(--s-1);padding-bottom:12px;border-bottom:1px solid var(--hair)}
+.dlg-close{background:none;border:0;padding:0;font-size:var(--s-1);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.dlg-close:hover{color:var(--accent)}
+.dlg h2{margin:18px 0 6px;font-size:var(--s4);line-height:1.25;letter-spacing:-.03em;text-wrap:balance}
+.dlg .dlg-status{margin:0 0 18px;font-size:var(--s-1);color:var(--muted)}
+.dlg p.desc{margin:0 0 18px;line-height:1.7}
+.dlg dl{margin:0 0 22px;display:grid;grid-template-columns:4.5rem 1fr;column-gap:16px;row-gap:4px;font-size:var(--s-1);border-top:1px solid var(--hair);padding-top:12px}
+.dlg dt{color:var(--muted)}
+.dlg dd{margin:0}
+.dlg .actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dlg .done{font-size:var(--s-1);color:var(--accent)}
 .sheet{background:var(--surface);border:1px solid var(--ink)}
 
 .group + .group{border-top:1px solid var(--ink)}
@@ -322,6 +379,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
 /* ---------- Responsive ---------- */
 @media (max-width:1080px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .lede{grid-column:1 / -1}
   .ask{grid-column:1 / -1}
   .intro{padding-top:48px;padding-bottom:48px}
@@ -366,6 +424,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .foot .f-brand,.foot .f-note,.foot .f-end{grid-column:1 / -1;text-align:left;margin-bottom:8px}
   .ask{padding:18px}
   .ask-hint{display:none}
+  .card-btn{aspect-ratio:auto;min-height:15rem;padding:18px 16px 16px}
+  .card-title{font-size:var(--s2)}
+  .dlg-inner{grid-template-columns:1fr}
+  .dlg-poster{aspect-ratio:auto;height:min(52vh,26rem);border-right:0;border-bottom:1px solid var(--ink)}
+  .dlg-body{padding:20px 16px 22px}
+  .dlg h2{font-size:var(--s3)}
+}
+@media (max-width:560px){
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .card-btn{min-height:12.5rem}
+  .sheet-head{flex-wrap:wrap}
 }
 @media (max-width:420px){
   .detail{padding-left:16px}
@@ -453,7 +522,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       <section class="interp" id="interp" hidden aria-live="polite"></section>
       <div class="sheet-head">
         <h2 id="sheetTitle">전체 일정</h2>
-        <p id="sheetCount" aria-live="polite"></p>
+        <div class="sheet-tools">
+          <p id="sheetCount" aria-live="polite"></p>
+          <div class="view" role="group" aria-label="보기 방식">
+            <button type="button" data-view="card" aria-pressed="true">카드</button>
+            <button type="button" data-view="list" aria-pressed="false">목록</button>
+          </div>
+        </div>
       </div>
       <div class="sheet" id="sheet"></div>
     </div>
@@ -467,6 +542,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     <p class="f-end">전국 박람회 통합 일정</p>
   </div>
 </footer>
+
+<dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
 
 <!--
   박람회 데이터. 실제 서비스에서는 이 블록을 수집 파이프라인/API 결과로 교체한다.
@@ -519,17 +596,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   /* ---------------- 기준 데이터 ---------------- */
   const CATS = [
-    { key: 'food',     ko: '식음료' },
-    { key: 'living',   ko: '리빙·인테리어' },
-    { key: 'family',   ko: '웨딩·육아' },
-    { key: 'culture',  ko: '도서·문화' },
-    { key: 'art',      ko: '아트·공예' },
-    { key: 'tech',     ko: '테크·IT' },
-    { key: 'career',   ko: '취업·교육' },
-    { key: 'travel',   ko: '여행·레저' },
-    { key: 'pet',      ko: '반려동물' },
-    { key: 'beauty',   ko: '뷰티·패션' },
-    { key: 'industry', ko: '산업·비즈니스' }
+    { key: 'food',     ko: '식음료', en: 'Food & Drink' },
+    { key: 'living',   ko: '리빙·인테리어', en: 'Living' },
+    { key: 'family',   ko: '웨딩·육아', en: 'Wedding & Baby' },
+    { key: 'culture',  ko: '도서·문화', en: 'Books & Culture' },
+    { key: 'art',      ko: '아트·공예', en: 'Art & Craft' },
+    { key: 'tech',     ko: '테크·IT', en: 'Tech' },
+    { key: 'career',   ko: '취업·교육', en: 'Career' },
+    { key: 'travel',   ko: '여행·레저', en: 'Travel & Outdoor' },
+    { key: 'pet',      ko: '반려동물', en: 'Pets' },
+    { key: 'beauty',   ko: '뷰티·패션', en: 'Beauty & Fashion' },
+    { key: 'industry', ko: '산업·비즈니스', en: 'Industry' }
   ];
   const CAT = Object.fromEntries(CATS.map(c => [c.key, c]));
   const REGIONS = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '경북', '경남', '전북', '제주'];
@@ -598,7 +675,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     past: false,
     query: '',
     interp: null,
-    openId: null
+    openId: null,
+    view: (() => { try { return localStorage.getItem('aiiairs.view') === 'list' ? 'list' : 'card'; } catch { return 'card'; } })()
   };
 
   /* ---------------- 취향 해석기 ----------------
@@ -819,19 +897,134 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
         `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
         `<dt>분류</dt><dd>${CAT[f.cat].ko}</dd></dl>` +
-        `<div class="actions">` +
-          `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
-          `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
-          (state.cat !== f.cat ? `<button type="button" class="linkish" data-act="cat" data-cat="${f.cat}">${CAT[f.cat].ko} 더 보기</button>` : '') +
-          `<span class="done" role="status" data-done="${f.id}"></span>` +
-        `</div>` +
+        actionsHTML(f) +
       `</div></li>`;
+  }
+
+  function actionsHTML(f) {
+    return `<div class="actions">` +
+      `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
+      `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
+      (state.cat !== f.cat ? `<button type="button" class="linkish" data-act="cat" data-cat="${f.cat}">${CAT[f.cat].ko} 더 보기</button>` : '') +
+      `<span class="done" role="status" data-done="${f.id}"></span>` +
+    `</div>`;
+  }
+
+  /* ---------------- 포스터 ----------------
+     실제 포스터(f.img)가 있으면 그 이미지를, 없으면 행사 정보로 만든 타이포 포스터를 쓴다.
+     색은 페이지 팔레트 안에서만 조합한다. */
+  function hash(str) { let h = 2166136261; for (const c of str) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { let x = seed || 1; return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296; }; }
+  function wrapTitle(t, max) {
+    const out = [];
+    let line = '';
+    for (const w of t.split(' ')) {
+      if (line && (line + ' ' + w).length > max) { out.push(line); line = w; } else line = line ? line + ' ' + w : w;
+    }
+    if (line) out.push(line);
+    return out;
+  }
+  const LAYOUTS = [
+    { bg: 'var(--accent)', title: 'var(--surface)', meta: 'var(--ink)' },
+    { bg: 'var(--ink)', title: 'var(--bg)', meta: 'var(--muted)' },
+    { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)' },
+    { bg: 'var(--surface)', title: 'var(--ink)', meta: 'var(--muted)' },
+    { bg: 'var(--ink)', title: 'var(--surface)', meta: 'var(--hair)' },
+    { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)' }
+  ];
+  function posterHTML(f) {
+    if (f.img) return `<img src="${esc(f.img)}" alt="" loading="lazy">`;
+    const seed = hash(f.id);
+    const r = rng(seed);
+    const k = seed % LAYOUTS.length;
+    const L = LAYOUTS[k];
+    const lines = wrapTitle(f.t, 8).slice(0, 4);
+    const fs = lines.length > 3 ? 36 : 42;
+    const date = `${pad(f.start.getMonth() + 1)}.${pad(f.start.getDate())}`;
+    let deco = '';
+    let num = '';
+    const numStyle = 'font-family:var(--f-display);font-weight:300;font-variant-numeric:lining-nums';
+    if (k === 0) {
+      deco = `<circle cx="300" cy="380" r="178" fill="var(--ink)"/>`;
+      num = `<text x="24" y="474" fill="var(--surface)" font-size="92" style="${numStyle}">${date}</text>`;
+    } else if (k === 1) {
+      for (let i = 0; i < 7; i++) {
+        const w = 90 + Math.round(r() * 290);
+        deco += `<rect x="0" y="${210 + i * 34}" width="${w}" height="18" fill="${i % 3 === 2 ? 'var(--muted)' : 'var(--accent)'}"/>`;
+      }
+      num = `<text x="376" y="474" text-anchor="end" fill="var(--surface)" font-size="72" style="${numStyle}">${date}</text>`;
+    } else if (k === 2) {
+      deco = `<rect x="332" y="24" width="44" height="44" fill="var(--accent)"/>`;
+      num = `<text x="-14" y="486" fill="var(--ink)" font-size="300" style="${numStyle};letter-spacing:-12px">${pad(f.start.getDate())}</text>` +
+        `<text x="376" y="474" text-anchor="end" fill="var(--accent)" font-size="26" style="${numStyle}">${MONTH_EN[f.start.getMonth()]}</text>`;
+    } else if (k === 3) {
+      const y = 170 + Math.round(r() * 80);
+      deco = `<polygon points="0,500 400,${y} 400,500" fill="var(--accent)"/>`;
+      num = `<text x="24" y="474" fill="var(--ink)" font-size="84" style="${numStyle}">${date}</text>`;
+    } else if (k === 4) {
+      const cx = 120 + Math.round(r() * 180);
+      for (let i = 0; i < 7; i++) deco += `<circle cx="${cx}" cy="360" r="${36 + i * 30}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+      num = `<text x="24" y="474" fill="var(--surface)" font-size="72" style="${numStyle}">${date}</text>`;
+    } else {
+      let x = 0;
+      while (x < 400) { const w = 2 + Math.round(r() * 10); deco += `<rect x="${x}" y="230" width="${w}" height="270" fill="var(--ink)"/>`; x += w + 4 + Math.round(r() * 12); }
+      deco += `<rect x="24" y="352" width="236" height="124" fill="var(--accent)"/>`;
+      num = `<text x="40" y="450" fill="var(--surface)" font-size="76" style="${numStyle}">${date}</text>`;
+    }
+    const meta = `<text x="24" y="42" fill="${L.meta}" font-size="13" style="font-family:var(--f-body);letter-spacing:2px">${esc(CAT[f.cat].en.toUpperCase())} — ${esc(f.region)}</text>`;
+    const title = lines.map((l, i) =>
+      `<text x="24" y="${96 + i * (fs + 8)}" fill="${L.title}" font-size="${fs}" style="font-family:var(--f-body);font-weight:700;letter-spacing:-1px">${esc(l)}</text>`).join('');
+    return `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${esc(f.t)} 포스터">` +
+      `<rect width="400" height="500" fill="${L.bg}"/>${deco}${meta}${title}${num}</svg>`;
+  }
+
+  function cardHTML(f, why) {
+    const st = statusOf(f);
+    const sameYear = f.start.getFullYear() === f.end.getFullYear();
+    const endTxt = f.s === f.e ? '' : ` – ${sameYear ? md(f.end) : `${f.end.getFullYear()}.${md(f.end)}`}`;
+    return `<li class="card${isPast(f) ? ' is-past' : ''}">` +
+      `<button type="button" class="card-btn" data-card="${f.id}" aria-haspopup="dialog">` +
+        `<span class="card-top"><span class="card-cat">${CAT[f.cat].ko}</span>` +
+        `<span class="card-state">${f.free ? '<span class="free">무료</span> · ' : ''}${st.text}</span></span>` +
+        `<span class="card-title">${esc(f.t)}</span>` +
+        (why && why.length ? `<span class="card-why">${why.map(esc).join(' · ')}</span>` : '') +
+        `<span class="card-foot"><span class="card-date">${f.start.getFullYear()}.${md(f.start)}${endTxt}</span>` +
+        `<span class="card-venue">${esc(f.venue)}</span></span>` +
+        `<span class="card-poster" aria-hidden="true">${posterHTML(f)}</span>` +
+      `</button></li>`;
+  }
+
+  function openDialog(id) {
+    const f = BY_ID.get(id);
+    const dlg = $('fairDialog');
+    if (!f) return;
+    state.openId = id;
+    const st = statusOf(f);
+    dlg.innerHTML = `<div class="dlg-inner"><div class="dlg-poster">${posterHTML(f)}</div>` +
+      `<div class="dlg-body"><div class="dlg-bar"><span class="card-cat">${CAT[f.cat].ko}</span>` +
+      `<button type="button" class="dlg-close" data-act="close">닫기</button></div>` +
+      `<h2 id="dlgTitle">${esc(f.t)}</h2><p class="dlg-status">${st.text} · ${esc(f.region)}</p>` +
+      `<p class="desc">${esc(f.d)}</p>` +
+      `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${md(f.end)} (${WD[f.end.getDay()]})</dd>` +
+      `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
+      `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd></dl>` +
+      actionsHTML(f) + `</div></div>`;
+    if (!dlg.open) dlg.showModal();
+    dlg.scrollTop = 0;
+    syncURL();
+  }
+  function closeDialog() {
+    const dlg = $('fairDialog');
+    if (dlg.open) dlg.close();
   }
 
   function groupHTML(big, isWord, label, sub, list, whyMap) {
     return `<section class="group"><h3 class="group-h"><span class="g-big${isWord ? ' word' : ''}">${big}</span>` +
       `<span class="g-label"><b>${label}</b><i>${sub}</i></span><span class="g-count">${list.length}건</span></h3>` +
-      `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul></section>`;
+      (state.view === 'card'
+        ? `<ul class="cards">${list.map(f => cardHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`
+        : `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`) +
+      `</section>`;
   }
 
   function renderInterp(it, matchedCount, fellBack) {
@@ -909,6 +1102,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
 
   function render() {
+    document.querySelectorAll('.view button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === state.view));
     renderRail();
     renderRegions();
     renderPeriods();
@@ -1055,16 +1249,37 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   document.addEventListener('click', e => {
     const row = e.target.closest('.row[data-id]');
     if (row) { toggleFair(row.dataset.id); return; }
+    const card = e.target.closest('.card-btn[data-card]');
+    if (card) { openDialog(card.dataset.card); return; }
+    const vb = e.target.closest('.view button[data-view]');
+    if (vb) { setView(vb.dataset.view); return; }
     const act = e.target.closest('[data-act]');
     if (!act) return;
     const f = act.dataset.id && BY_ID.get(act.dataset.id);
     switch (act.dataset.act) {
       case 'ics': if (f) downloadICS(f); break;
       case 'copy': if (f) copyLink(f); break;
-      case 'cat': setCat(act.dataset.cat, true); break;
+      case 'cat': closeDialog(); setCat(act.dataset.cat, true); break;
+      case 'close': closeDialog(); break;
       case 'clear': clearQuery(); break;
       case 'reset': resetFilters(false); break;
     }
+  });
+
+  function setView(v) {
+    state.view = v;
+    state.openId = null;
+    try { localStorage.setItem('aiiairs.view', v); } catch { /* 저장 불가 환경 */ }
+    render();
+  }
+  const dlgEl = $('fairDialog');
+  dlgEl.addEventListener('click', e => { if (e.target === dlgEl) closeDialog(); });
+  dlgEl.addEventListener('close', () => {
+    const id = state.openId;
+    state.openId = null;
+    syncURL();
+    const btn = id && document.querySelector(`.card-btn[data-card="${CSS.escape(id)}"]`);
+    if (btn) btn.focus();
   });
 
   // 넓은 화면에서는 상세 설정을 항상 펼쳐 둔다.
@@ -1090,8 +1305,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     $('askInput').value = qp;
     runQuery(qp);
   } else {
+    const id = state.openId;
+    if (state.view === 'card') state.openId = null;
     render();
-    if (state.openId) document.getElementById(`fair-${state.openId}`).scrollIntoView({ block: 'center' });
+    if (id && state.view === 'card') openDialog(id);
+    else if (id) document.getElementById(`fair-${id}`).scrollIntoView({ block: 'center' });
   }
 })();
 </script>
