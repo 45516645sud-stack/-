@@ -51,7 +51,7 @@
 
 <style>
 /* ------------------------------------------------------------------
-   AIIairs — 전국 박람회 통합 일정
+   AIIairs — 전국 박람회·소공연 통합 일정
    한 장의 인쇄된 일정표처럼: 종이(bg) 위에 흰 시트(surface), 잉크, 헤어라인.
    색은 다섯 개 기본축 + 파생 두 개(--hair, --wash)만 쓴다.
    모서리 0, 그림자 없음, 애니메이션·트랜지션 없음.
@@ -464,7 +464,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap mast-top">
     <a class="brand" href="./" aria-label="AIIairs 처음으로">
       <span class="brand-word">AIIairs</span>
-      <span class="brand-sub">전국 박람회 통합 일정</span>
+      <span class="brand-sub">전국 박람회·소공연 통합 일정</span>
     </a>
     <p class="mast-meta" id="mastMeta"></p>
   </div>
@@ -477,7 +477,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <section class="wrap grid intro" aria-labelledby="h1">
     <div class="lede">
       <p class="eyebrow">Index of Fairs <span>/</span> <span id="season"></span></p>
-      <h1 id="h1">전국의 박람회를<br>한 장의 일정표로.</h1>
+      <h1 id="h1">전국의 박람회와 소공연을<br>한 장의 일정표로.</h1>
       <dl class="figures" id="figures"></dl>
     </div>
 
@@ -489,7 +489,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
           <button type="button" data-size="compact" aria-pressed="true" aria-label="간단히 보기" title="간단히 보기">_</button>
         </div>
       </div>
-      <p class="ask-help">카테고리를 몰라도 괜찮아요. 가고 싶은 분위기나 목적을 한 문장으로 적으면, 문장을 읽고 맞는 박람회와 분야를 골라드려요.</p>
+      <p class="ask-help">카테고리를 몰라도 괜찮아요. 가고 싶은 분위기나 목적을 한 문장으로 적으면, 문장을 읽고 맞는 박람회·공연과 분야를 골라드려요.</p>
       <div class="ask-body">
         <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 아이랑 부산에서 무료로 갈 만한 곳"></textarea>
         <div class="ask-foot">
@@ -502,14 +502,14 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         <ul>
           <li><button type="button" data-example="혼자 조용히 영감 받을 수 있는 곳">혼자 조용히 영감 받을 수 있는 곳</button></li>
           <li><button type="button" data-example="여자친구랑 맛있는 거 먹으면서 데이트하고 싶어요">여자친구랑 맛있는 거 먹으면서 데이트</button></li>
-          <li><button type="button" data-example="이직 준비 중인데 서울에서 도움 될 만한 행사">이직 준비 중, 서울에서 도움 될 만한 행사</button></li>
+          <li><button type="button" data-example="금요일 밤 작은 소극장에서 연극이나 재즈 보고 싶어요">금요일 밤, 작은 소극장에서 연극이나 재즈</button></li>
           <li><button type="button" data-example="이번 주말 강아지랑 무료로">이번 주말 강아지랑 무료로</button></li>
         </ul>
       </div>
     </form>
   </section>
 
-  <section class="wrap grid body" aria-label="박람회 일정">
+  <section class="wrap grid body" aria-label="행사 일정">
     <aside class="filters" aria-label="상세 설정">
       <details id="filterBox" open>
         <summary>상세 설정 <span class="sum-state" id="sumState"></span></summary>
@@ -534,7 +534,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         </fieldset>
 
         <div class="filter-end">
-          <label class="check"><input type="checkbox" id="pastToggle"> 지난 박람회도 보기</label>
+          <label class="check"><input type="checkbox" id="pastToggle"> 지난 일정도 보기</label>
           <button type="button" class="linkish" id="resetBtn">초기화</button>
         </div>
       </details>
@@ -561,7 +561,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
     <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.</p>
-    <p class="f-end">전국 박람회 통합 일정</p>
+    <p class="f-end">전국 박람회·소공연 통합 일정</p>
   </div>
 </footer>
 
@@ -575,6 +575,15 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 -->
 <script type="application/json" id="fair-data">
 [
+ {"id":"gwangju-mime","art":"img/gwangju-mime.webp","t":"광주 마임 & 거리극 주간","cat":"stage","region":"광주","venue":"양림동 야외무대·소극장","s":"2026-10-02","e":"2026-10-05","fee":0,"note":"소극장 회차는 사전 예약","tags":["가족","아이","야외","체험"],"d":"골목 야외무대의 마임과 거리극, 저녁엔 소극장 실내 공연. 아이와 걷다가 멈춰 보기 좋은 구성이다."},
+ {"id":"daehakro-duo","art":"img/daehakro-duo.webp","t":"대학로 2인극 페스티벌","cat":"stage","region":"서울","venue":"대학로 소극장 (혜화)","s":"2026-10-09","e":"2026-11-01","fee":25000,"note":"작품별 예매, 평일 할인","tags":["데이트","조용한","친구","영감"],"d":"배우 두 명이 이끄는 창작 연극 8편을 4주 동안 번갈아 올린다. 객석 100석 안팎의 소극장이라 배우의 숨소리까지 들린다."},
+ {"id":"hongdae-indie","art":"img/hongdae-indie.webp","t":"홍대 인디 밴드 라이브 위크","cat":"stage","region":"서울","venue":"홍대 앞 라이브 클럽 5곳","s":"2026-10-15","e":"2026-10-18","fee":20000,"note":"통합 팔찌 하나로 모든 클럽 입장","tags":["활기","친구","데이트"],"d":"인디 밴드 40팀이 클럽 다섯 곳을 돌며 공연한다. 팔찌 하나로 밤새 옮겨 다닐 수 있다."},
+ {"id":"busan-jazz","art":"img/busan-jazz.webp","t":"부산 재즈 소극장 나이트","cat":"stage","region":"부산","venue":"광안리 재즈홀","s":"2026-10-24","e":"2026-10-25","fee":30000,"note":"음료 1잔 포함","tags":["데이트","조용한","여행"],"d":"바다가 보이는 80석 재즈홀에서 트리오와 보컬 공연. 두 회차 모두 스탠딩 없이 좌석제다."},
+ {"id":"house-quartet","art":"img/house-quartet.webp","t":"하우스 콘서트: 가을 현악 사중주","cat":"stage","region":"서울","venue":"성수동 복합문화공간 소극장","s":"2026-11-07","e":"2026-11-08","fee":15000,"tags":["조용한","혼자","데이트"],"d":"무대와 객석 구분 없이 바닥에 앉아 듣는 현악 사중주. 공연 뒤 연주자와 짧은 대화 시간이 있다."},
+ {"id":"daejeon-reading","art":"img/daejeon-reading.webp","t":"작가 낭독 공연 ‘밤의 문장들’","cat":"stage","region":"대전","venue":"소제동 소극장","s":"2026-11-13","e":"2026-11-15","fee":0,"note":"사전 예약 필수, 회차당 40명","tags":["조용한","혼자","영감"],"d":"소설가와 시인이 조명을 낮춘 소극장에서 자기 글을 읽는다. 사이사이 첼로 연주가 들어간다."},
+ {"id":"daegu-musical","art":"img/daegu-musical.webp","t":"대구 창작 뮤지컬 쇼케이스","cat":"stage","region":"대구","venue":"동성로 소극장","s":"2026-11-19","e":"2026-11-22","fee":20000,"tags":["친구","데이트","활기"],"d":"개발 중인 창작 뮤지컬 5편의 하이라이트를 먼저 보는 자리. 관객 투표로 본공연 제작작이 정해진다."},
+ {"id":"jeju-acoustic","art":"img/jeju-acoustic.webp","t":"제주 어쿠스틱 소공연","cat":"stage","region":"제주","venue":"제주 원도심 소극장","s":"2026-12-05","e":"2026-12-06","fee":12000,"tags":["조용한","데이트","여행","혼자"],"d":"제주에 사는 싱어송라이터들의 어쿠스틱 무대. 여행 중 저녁 일정으로 넣기 좋다."},
+ {"id":"incheon-gala","art":"img/incheon-gala.webp","t":"연말 소극장 클래식 갈라","cat":"stage","region":"인천","venue":"개항장 소극장","s":"2026-12-19","e":"2026-12-24","fee":18000,"tags":["데이트","가족","조용한"],"d":"피아노 트리오와 성악가가 함께하는 연말 갈라. 오래된 창고를 고친 120석 공연장에서 열린다."},
  {"id":"tea-culture","art":"img/tea-culture.webp","t":"서울 차 문화전","cat":"food","region":"서울","venue":"코엑스 B홀","s":"2026-09-17","e":"2026-09-20","fee":10000,"tags":["조용한","시식","혼자","영감"],"d":"녹차부터 보이차, 다구와 도자기까지. 시음 부스를 천천히 돌며 차 한 잔씩 맛볼 수 있는 조용한 박람회."},
  {"id":"coffee-dessert","art":"img/coffee-dessert.webp","t":"서울 커피 & 디저트 페어","cat":"food","region":"서울","venue":"코엑스 A홀","s":"2026-09-24","e":"2026-09-27","fee":15000,"tags":["데이트","시식","쇼핑","활기","친구"],"d":"로스터리 120곳과 디저트 브랜드가 한자리에. 원두 시음과 한정 디저트 구매가 중심이다."},
  {"id":"suwon-furniture","art":"img/suwon-furniture.webp","t":"수원 가구 & 리빙 박람회","cat":"living","region":"경기","venue":"수원메쎄","s":"2026-09-24","e":"2026-09-30","fee":0,"tags":["쇼핑","가족"],"d":"가구 공장 직판과 신혼·이사 수요를 위한 리빙 브랜드 할인전. 상담 부스가 많아 평일 방문이 여유롭다."},
@@ -628,7 +637,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { key: 'travel',   ko: '여행·레저', en: 'Travel & Outdoor' },
     { key: 'pet',      ko: '반려동물', en: 'Pets' },
     { key: 'beauty',   ko: '뷰티·패션', en: 'Beauty & Fashion' },
-    { key: 'industry', ko: '산업·비즈니스', en: 'Industry' }
+    { key: 'industry', ko: '산업·비즈니스', en: 'Industry' },
+    { key: 'stage',    ko: '공연·소극장', en: 'Stage' }
   ];
   const CAT = Object.fromEntries(CATS.map(c => [c.key, c]));
   const REGIONS = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '경북', '경남', '전북', '제주'];
@@ -706,7 +716,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
      서버 없이 동작하도록 사전 기반으로 구성했다. interpret()만 교체하면
      외부 언어 모델 응답(같은 형태의 객체)으로 바꿔 끼울 수 있다. */
   const LEXICON = [
-    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서'], tags: ['데이트'], cats: { food: 1, art: 1, culture: .5 } },
+    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서'], tags: ['데이트'], cats: { food: 1, art: 1, culture: .5, stage: 1 } },
     { label: '아이와 함께', w: ['아이랑','아이와','아이들','아기','애기','아들','딸','유아','키즈','어린이','초등','육아','애들'], tags: ['아이', '가족'], cats: { family: 1.5 } },
     { label: '가족 나들이', w: ['가족','부모님','엄마','아빠','온가족','나들이'], tags: ['가족'], cats: {} },
     { label: '혼자', w: ['혼자','나홀로','혼박','홀로'], tags: ['혼자', '조용한'], cats: {} },
@@ -726,9 +736,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { label: '반려동물', w: ['강아지','고양이','반려','펫','댕댕','냥이','멍멍','애견','애묘','집사'], tags: [], cats: { pet: 2 } },
     { label: '책', w: ['책','독서','출판','작가','문학','북페어','서점','글쓰기','문구','그림책'], strip: ['산책'], tags: [], cats: { culture: 2 } },
     { label: '기술', w: ['기술','로봇','인공지능','게임','개발','코딩','과학','전자','가젯','테크','드론','전기차'], latin: ['ai','it','vr','ar'], tags: [], cats: { tech: 2 } },
-    { label: '여행·야외', w: ['여행','캠핑','아웃도어','바다','휴가','레저','등산','낚시','요트','차박','떠나','서핑'], tags: ['야외'], cats: { travel: 2 } },
+    { label: '여행·야외', w: ['여행','캠핑','아웃도어','바다','휴가','레저','등산','낚시','요트','차박','떠나','서핑'], tags: ['야외', '여행'], cats: { travel: 2 } },
     { label: '뷰티·패션', w: ['화장','뷰티','피부','패션','옷','스타일','향수','메이크업','코디','헤어','네일'], tags: [], cats: { beauty: 2 } },
     { label: '예술·공예', w: ['예술','미술','그림','일러스트','공예','작품','전시','드로잉','핸드메이드','빈티지','디자인','도자기','굿즈'], tags: ['영감'], cats: { art: 2 } },
+    { label: '공연·소극장', w: ['공연','연극','소극장','뮤지컬','콘서트','라이브','밴드','재즈','클래식','연주','낭독','마임','버스킹','무대','음악','노래','배우','인디밴드'], tags: [], cats: { stage: 2 } },
     { label: '사진', w: ['사진','카메라','촬영','영상','인스타'], tags: ['사진'], cats: { art: .5 } },
     { label: '산업', w: ['건축','건설','산업','물류','제조','공장','자동화','장비','시공'], tags: ['비즈니스'], cats: { industry: 2 } }
   ];
@@ -791,12 +802,16 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     return { raw, hits, regions, period, cost, suggested };
   }
 
+  const TEXT = new Map();
+  const text = f => { if (!TEXT.has(f.id)) TEXT.set(f.id, (f.t + f.d).toLowerCase().replace(/\s+/g, '')); return TEXT.get(f.id); };
   function scoreFair(f, it) {
     let score = 0;
     const why = [];
     for (const h of it.hits) {
       let s = (h.cats[f.cat] || 0) * 3;
       for (const tag of h.tags) if (f.tags.includes(tag)) s += 2;
+      // 적은 단어가 행사 이름·설명에 그대로 나오면 가산 (예: '재즈' → 재즈 공연)
+      s += 3 * Math.min(2, h.words.filter(w => text(f).includes(w.toLowerCase())).length);
       if (s > 0) { score += s; why.push(h.label); }
     }
     return { score, why };
@@ -838,7 +853,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const regions = new Set(upcoming.map(f => f.region)).size;
     $('figures').innerHTML = [
       ['지금 열리는 중', live, true],
-      ['예정된 박람회', soon],
+      ['예정된 행사', soon],
       ['무료로 갈 수 있는 곳', free],
       ['지역', regions]
     ].map(([k, v, a]) => `<div${a ? ' class="is-accent"' : ''}><dt>${k}</dt><dd>${pad(v)}</dd></div>`).join('');
@@ -1094,11 +1109,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         const [y, m] = k.split('-').map(Number);
         html += groupHTML(pad(m), false, `${m}월`, `${MONTH_EN[m - 1]} ${y}`, list);
       }
-      if (past.length) html += groupHTML('Past', true, '지난 박람회', '최근 순', past);
+      if (past.length) html += groupHTML('Past', true, '지난 일정', '최근 순', past);
     }
 
     if (!pool.length) {
-      html = `<div class="empty"><b>Nothing here.</b><p>지금 조건에 맞는 박람회가 없어요. 지역이나 기간을 조금 넓혀보세요.</p>` +
+      html = `<div class="empty"><b>Nothing here.</b><p>지금 조건에 맞는 행사가 없어요. 지역이나 기간을 조금 넓혀보세요.</p>` +
         `<button type="button" class="btn btn-ghost btn-sm" data-act="reset">조건 초기화</button></div>`;
       shown = 0;
     }
