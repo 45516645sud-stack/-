@@ -1,0 +1,47 @@
+# AIIairs 일정 자동 수집: 매일 새벽 공공 API에서 일정을 모아 aiiairs/data/fairs.json 을 갱신한다.
+# 저장소 Settings → Secrets and variables → Actions 에 KOPIS_API_KEY, DATA_GO_KR_KEY 를 넣어야 한다.
+name: AIIairs 일정 수집
+
+on:
+  schedule:
+    - cron: "43 20 * * *"   # 매일 05:43 KST (UTC 20:43)
+  workflow_dispatch:         # Actions 탭에서 바로 실행
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aiiairs-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 수집기 테스트
+        run: python -m unittest aiiairs/scripts/test_collect.py
+
+      - name: 일정 수집
+        env:
+          KOPIS_API_KEY: ${{ secrets.KOPIS_API_KEY }}
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+        run: python aiiairs/scripts/collect.py
+
+      - name: 바뀐 일정 커밋
+        run: |
+          if git diff --quiet -- aiiairs/data/fairs.json && ! git ls-files --others --exclude-standard -- aiiairs/data/fairs.json | grep -q .; then
+            echo "바뀐 일정 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add aiiairs/data/fairs.json
+          git commit -m "AIIairs: 일정 자동 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+          git push

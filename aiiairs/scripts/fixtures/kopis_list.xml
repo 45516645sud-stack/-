@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 테스트용 예시 응답: KOPIS 공연목록(pblprfr) 형식을 흉내 낸 가상 데이터 -->
+<dbs>
+  <db>
+    <mt20id>PF000001</mt20id>
+    <prfnm>테스트 연극 〈빈 방〉</prfnm>
+    <prfpdfrom>2026.10.10</prfpdfrom>
+    <prfpdto>2026.11.30</prfpdto>
+    <fcltynm>예시소극장 (예시소극장)</fcltynm>
+    <poster>http://www.kopis.or.kr/upload/pfmPoster/PF_PF000001.gif</poster>
+    <area>서울특별시</area>
+    <genrenm>연극</genrenm>
+    <openrun>N</openrun>
+    <prfstate>공연예정</prfstate>
+  </db>
+  <db>
+    <mt20id>PF000002</mt20id>
+    <prfnm>테스트 재즈 트리오 콘서트</prfnm>
+    <prfpdfrom>2026.10.24</prfpdfrom>
+    <prfpdto>2026.10.24</prfpdto>
+    <fcltynm>예시재즈홀</fcltynm>
+    <poster>http://www.kopis.or.kr/upload/pfmPoster/PF_PF000002.gif</poster>
+    <area>부산광역시</area>
+    <genrenm>대중음악</genrenm>
+    <openrun>N</openrun>
+    <prfstate>공연예정</prfstate>
+  </db>
+</dbs>
