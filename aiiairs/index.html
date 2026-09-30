@@ -12,6 +12,8 @@
 <meta name="author" content="정문경">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#efe8da">
+<!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
+<meta name="aiiairs-log-endpoint" content="">
 <link rel="canonical" href="https://expomoa.com/">
 
 <!-- Open Graph / Facebook -->
@@ -89,6 +91,7 @@ body{
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+#schedule:focus{outline:none}
 ::selection{background:var(--ink);color:var(--bg)}
 [hidden]{display:none!important}
 .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -423,6 +426,23 @@ legend + *{clear:both}
 .detail .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .detail .done{font-size:var(--s-1);color:var(--accent)}
 
+.miss{padding:26px 24px 24px}
+.miss-kicker{margin:0 0 6px;font-size:var(--s-1);color:var(--accent);font-weight:600}
+.miss h3{margin:0 0 16px;font-size:var(--s2);line-height:1.35;letter-spacing:-.02em;text-wrap:balance}
+.miss-list{list-style:none;margin:0 0 18px;padding:0;border-top:1px solid var(--hair)}
+.miss-list li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--hair)}
+.miss-list p{margin:0;line-height:1.55}
+.miss-list span{color:var(--muted)}
+.miss-list b{font-weight:600}
+.miss-list .btn{flex:0 0 auto}
+.miss-reset{margin:0 0 18px}
+.miss-alert{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;flex-wrap:wrap;border:1px solid var(--ink);background:var(--bg);padding:14px 16px}
+.miss-alert p{margin:0;min-width:0}
+.notice{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;flex-wrap:wrap;border:1px solid var(--ink);background:var(--surface);padding:12px 16px;margin-bottom:12px;font-size:var(--s-1)}
+.notice p{margin:0;min-width:0}
+.notice p b{font-weight:600;margin-right:4px}
+.notice.is-alert p b{color:var(--accent)}
+.notice-act{display:flex;align-items:center;gap:12px}
 .empty{padding:56px 20px;text-align:center}
 .empty b{display:block;font-family:var(--f-display);font-weight:300;font-style:italic;font-size:var(--s5);line-height:1.1;margin-bottom:10px}
 .empty p{margin:0 0 18px;color:var(--muted);font-size:var(--s-1)}
@@ -480,6 +500,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .g-big.word{font-size:var(--s3)}
   .detail{padding:0 16px 22px calc(16px + var(--col-date) + 14px)}
   .group-body{padding:10px 12px 14px}
+  .miss{padding:20px 16px}
+  .miss-list li{flex-direction:column;align-items:flex-start;gap:8px}
   .interp dl{grid-template-columns:5rem 1fr}
   .foot .f-brand,.foot .f-note,.foot .f-end{grid-column:1 / -1;text-align:left;margin-bottom:8px}
   .ask{padding:18px}
@@ -621,6 +643,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     </aside>
 
     <div class="schedule" id="schedule" tabindex="-1">
+      <div id="notice"></div>
       <section class="interp" id="interp" hidden aria-live="polite"></section>
       <div class="sheet-head">
         <h2 id="sheetTitle">전체 일정</h2>
@@ -640,7 +663,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 <footer class="foot">
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
-    <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.</p>
+    <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
     <p class="f-end">전국 박람회·소공연 통합 일정<br><span id="srcNote"></span></p>
   </div>
 </footer>
@@ -833,8 +856,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     from: null,
     to: null,
     past: false,
+    budget: null,       // 관람료 상한(원). 취향 검색의 '2만원 이하' 등에서 온다.
     query: '',
     interp: null,
+    relaxed: null,      // 조건을 넓혀 찾은 결과일 때 { note, prev }
     openId: null,
     view: (() => { try { return localStorage.getItem('aiiairs.view') === 'list' ? 'list' : 'card'; } catch { return 'card'; } })()
   };
@@ -891,7 +916,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     '전남': ['전남','여수','순천','목포'],
     '광주·전남': ['광주','전남','여수','순천','목포']
   };
-  const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없','0원'];
+  const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없'];
   const PAID_WORDS = ['유료'];
 
   function interpret(raw) {
@@ -927,8 +952,22 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
 
     let cost = null;
-    if (FREE_WORDS.some(w => t.includes(w))) cost = 'free';
+    // '20000원' 안의 '0원'을 무료로 읽지 않도록 숫자 없이 쓴 '0원'만 무료로 본다.
+    if (FREE_WORDS.some(w => t.includes(w)) || /(^|[^0-9,])0원/.test(t)) cost = 'free';
     else if (PAID_WORDS.some(w => t.includes(w))) cost = 'paid';
+
+    // 예산: '2만원 이하', '3만원까지', '1~2만원대', '5천원 이하'
+    let budget = null;
+    const span = t.match(/(\d+)[~\-](\d+)만원?대/);
+    const man = t.match(/(\d+(?:\.\d+)?)만원?(이하|이내|아래|까지|미만|안쪽|대)/);
+    const cheon = t.match(/(\d+)천원?(이하|이내|아래|까지|미만|안쪽)/);
+    if (span) budget = (Number(span[2]) + 1) * 10000 - 1;
+    else if (man) {
+      const n = parseFloat(man[1]) * 10000;
+      budget = man[2] === '대' ? (Math.floor(parseFloat(man[1])) + 1) * 10000 - 1 : man[2] === '미만' ? n - 1 : n;
+    } else if (cheon) budget = Number(cheon[1]) * 1000;
+    else if (/만원(이하|이내|아래|안쪽)/.test(t)) budget = 10000;
+    if (cost === 'free') budget = null;
 
     const catWeight = {};
     for (const h of hits) for (const [k, v] of Object.entries(h.cats)) catWeight[k] = (catWeight[k] || 0) + v;
@@ -936,7 +975,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     for (const [k, v] of Object.entries(catWeight)) groupWeight[GROUP_OF[k]] = (groupWeight[GROUP_OF[k]] || 0) + v;
     const suggested = Object.entries(groupWeight).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
 
-    return { raw, hits, regions, period, cost, suggested };
+    return { raw, hits, regions, period, cost, budget, suggested };
   }
 
   const TEXT = new Map();
@@ -955,19 +994,25 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
 
   /* ---------------- 필터 ---------------- */
-  function passes(f, skip) {
-    if (!state.past && isPast(f)) return false;
+  function passes(f, skip, st = state) {
+    if (!st.past && isPast(f)) return false;
     if (skip !== 'cost') {
-      if (state.cost === 'free' && !f.free) return false;
-      if (state.cost === 'paid' && f.free) return false;
+      if (st.cost === 'free' && !f.free) return false;
+      if (st.cost === 'paid' && f.free) return false;
     }
-    if (skip !== 'region' && state.regions.size && !state.regions.has(f.region)) return false;
-    if (skip !== 'period' && state.period !== 'all') {
-      const r = bounds();
+    if (skip !== 'budget' && st.budget != null && (f.fee == null || f.fee > st.budget)) return false;
+    if (skip !== 'region' && st.regions.size && !st.regions.has(f.region)) return false;
+    if (skip !== 'period' && st.period !== 'all') {
+      const r = bounds(st);
       if (r && !overlaps(f, r[0], r[1])) return false;
     }
-    if (skip !== 'cat' && state.cat !== 'all' && GROUP_OF[f.cat] !== state.cat) return false;
+    if (skip !== 'cat' && st.cat !== 'all' && GROUP_OF[f.cat] !== st.cat) return false;
     return true;
+  }
+  // 조건(과 취향 검색의 분위기)까지 모두 맞는 행사
+  function strictMatches(st = state, skip) {
+    const list = FAIRS.filter(f => passes(f, skip, st));
+    return st.interp && st.interp.hits.length ? list.filter(f => scoreFair(f, st.interp).score > 0) : list;
   }
 
   /* ---------------- DOM ---------------- */
@@ -1034,10 +1079,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const START_DAYS = new Set(FAIRS.map(f => dkey(f.start)));
   const dot = d => `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
   const sameDay = (a, b) => a && b && a.getTime() === b.getTime();
-  function bounds() {
-    if (state.period === 'all') return null;
-    if (state.period === 'custom') return [state.from, state.to];
-    const n = PRESET_MONTHS[state.period];
+  function bounds(st = state) {
+    if (st.period === 'all') return null;
+    if (st.period === 'custom') return [st.from, st.to];
+    const n = PRESET_MONTHS[st.period];
     return [TODAY, addDays(new Date(TODAY.getFullYear(), TODAY.getMonth() + n, TODAY.getDate()), -1)];
   }
   // 화면에 보이는 시작·종료일. 전체 기간이면 일정이 있는 범위를 보여준다.
@@ -1130,7 +1175,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
 
   function renderSummary() {
-    const n = (state.cost !== 'all') + (state.regions.size > 0) + (state.period !== 'all') + state.past;
+    const n = (state.cost !== 'all') + (state.budget != null) + (state.regions.size > 0) + (state.period !== 'all') + state.past;
     $('sumState').innerHTML = n ? `<b>${n}</b>개 적용 중` : '적용 없음';
     document.querySelectorAll('#costSeg input').forEach(i => { i.checked = i.value === state.cost; });
     $('pastToggle').checked = state.past;
@@ -1312,7 +1357,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function renderInterp(it, matchedCount, fellBack) {
     const box = $('interp');
     if (!it) { box.hidden = true; box.innerHTML = ''; return; }
-    const nothing = !it.hits.length && !it.regions.length && !it.period && !it.cost;
+    const nothing = !it.hits.length && !it.regions.length && !it.period && !it.cost && it.budget == null;
     const signals = it.hits.length
       ? it.hits.map(h => `${esc(h.label)} <span class="none">(${h.words.map(esc).join(', ')})</span>`).join(' · ')
       : '<span class="none">따로 찾지 못함</span>';
@@ -1321,19 +1366,239 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       : '<span class="none">—</span>';
     let note = '';
     if (nothing) note = '문장에서 단서를 찾지 못했어요. “아이랑 주말에”, “무료로 조용히”, “이직 준비”처럼 누구와, 언제, 무엇을 하고 싶은지 적어보세요.';
-    else if (fellBack) note = '분위기까지 딱 맞는 곳은 없어서, 지역·시기·비용 조건에 맞는 일정을 날짜순으로 보여드려요.';
+    else if (fellBack) note = '';
     else if (it.hits.length) note = `잘 맞는 순서로 ${matchedCount}곳을 골랐어요. 분야를 누르면 그 분야 전체 일정으로 넘어가요.`;
     box.innerHTML =
       `<div class="interp-head"><p>이렇게 읽었어요</p><button type="button" class="linkish" data-act="clear">검색 지우기</button></div>` +
       `<p class="interp-q"><span class="qm">“</span>${esc(it.raw)}<span class="qm">”</span></p>` +
       (nothing ? '' :
       `<dl><dt>분위기·목적</dt><dd>${signals}</dd>` +
-      `<dt>지역</dt><dd>${it.regions.length ? it.regions.join(', ') : '<span class="none">전국</span>'}</dd>` +
-      `<dt>시기</dt><dd>${it.period ? periodLabel(it.period) : '<span class="none">언제든</span>'}</dd>` +
-      `<dt>관람료</dt><dd>${it.cost === 'free' ? '무료만' : it.cost === 'paid' ? '유료만' : '<span class="none">상관없음</span>'}</dd>` +
+      `<dt>지역</dt><dd>${state.regions.size ? esc([...state.regions].join(', ')) : '<span class="none">전국</span>'}</dd>` +
+      `<dt>시기</dt><dd>${state.period === 'all' ? '<span class="none">언제든</span>' : esc((it.period && !state.relaxed ? periodLabel(it.period) + ' · ' : '') + periodText(state))}</dd>` +
+      `<dt>관람료</dt><dd>${esc([state.cost === 'free' ? '무료만' : state.cost === 'paid' ? '유료만' : '', state.budget != null ? budgetText(state.budget) : ''].filter(Boolean).join(' · ')) || '<span class="none">상관없음</span>'}</dd>` +
       `<dt>추천 분야</dt><dd>${sug}</dd></dl>`) +
       (note ? `<p class="interp-note">${note}</p>` : '');
     box.hidden = false;
+  }
+
+  /* ---------------- 결과가 없을 때 ----------------
+     '없습니다'로 끝내지 않는다. 어떤 조건 때문에 없는지, 조건 하나만 풀면 무엇이 있는지 보여주고,
+     알림을 걸 수 있게 하고, 그 검색을 기록한다. */
+  const PRESET_LABEL = { '1m': '1개월', '3m': '3개월', '6m': '6개월', '1y': '1년' };
+  const manText = n => n % 10000 === 0 ? `${n / 10000}만 원` : `${n.toLocaleString('ko-KR')}원`;
+  const budgetText = n => (n + 1) % 10000 === 0 ? `${(n + 1) / 10000 - 1}만 원대까지` : `${manText(n)} 이하`;
+  function relDay(d) {
+    const diff = Math.round((d - TODAY) / DAY);
+    const label = `${WD[d.getDay()]}요일`;
+    if (diff === 0) return '오늘';
+    if (diff === 1) return `내일(${md(d)})`;
+    const monday = addDays(TODAY, -((TODAY.getDay() + 6) % 7));
+    const week = Math.floor((d - monday) / DAY / 7);
+    if (week === 0) return `이번 주 ${label}(${md(d)})`;
+    if (week === 1) return `다음 주 ${label}(${md(d)})`;
+    return `${d.getMonth() + 1}월 ${d.getDate()}일(${WD[d.getDay()]})`;
+  }
+  function periodText(st) {
+    if (st.period === 'all') return '';
+    if (st.period === 'custom') return sameDay(st.from, st.to) ? relDay(st.from) : `${md(st.from)} – ${md(st.to)}`;
+    return `앞으로 ${PRESET_LABEL[st.period]}`;
+  }
+  function describe(st) {
+    if (st.query) return `“${st.query}”`;
+    const parts = [];
+    if (st.cat !== 'all') parts.push(GROUP[st.cat].ko);
+    if (st.regions.size) parts.push([...st.regions].join('·'));
+    if (st.period !== 'all') parts.push(periodText(st));
+    if (st.cost === 'free') parts.push('무료');
+    if (st.cost === 'paid') parts.push('유료');
+    if (st.budget != null) parts.push(budgetText(st.budget));
+    return parts.join(' · ') || '전체 일정';
+  }
+  const snapshot = (st = state) => ({
+    cat: st.cat, cost: st.cost, regions: new Set(st.regions), period: st.period,
+    from: st.from, to: st.to, budget: st.budget, past: st.past, query: st.query, interp: st.interp
+  });
+
+  // 조건 하나씩만 풀어 본다. 실제로 행사가 나오는 것만 대안으로 보여준다.
+  function relaxations(st) {
+    const out = [];
+    if (st.budget != null) {
+      const c = strictMatches(st, 'budget').filter(f => f.fee != null);
+      if (c.length) {
+        const min = Math.min(...c.map(f => f.fee));
+        const nb = Math.max(10000, Math.ceil(min / 10000) * 10000);
+        const n = c.filter(f => f.fee <= nb).length;
+        out.push({ kind: 'budget', count: n, apply: { budget: nb }, note: `관람료를 ${manText(nb)}까지 넓혔어요`,
+          html: `<span>${budgetText(st.budget)}</span>는 없지만 <b>${manText(nb)}까지 넓히면 ${n}개</b> 있어요` });
+      }
+    }
+    if (st.period !== 'all') {
+      const [a, b] = bounds(st);
+      const c = strictMatches(st, 'period').filter(f => st.past || f.end >= TODAY);
+      let best = null;
+      for (const f of c) {
+        if (f.end > b) { const d = f.start > b ? f.start : addDays(b, 1); const dist = (d - b) / DAY; if (!best || dist < best.dist) best = { d, dist }; }
+        if (f.start < a) {
+          const d = f.end < a ? f.end : addDays(a, -1);
+          const dist = (a - d) / DAY + 0.5;   // 같은 거리면 뒤쪽 날짜를 먼저
+          if ((st.past || d >= TODAY) && (!best || dist < best.dist)) best = { d, dist };
+        }
+      }
+      if (best) {
+        const n = c.filter(f => overlaps(f, best.d, best.d)).length;
+        out.push({ kind: 'period', count: n, apply: { period: 'custom', from: best.d, to: best.d }, note: `날짜를 ${relDay(best.d)}로 옮겼어요`,
+          html: `<span>${sameDay(a, b) ? '그 날짜' : '그 기간'}</span>엔 없지만 <b>${relDay(best.d)}엔 ${n}개</b> 있어요` });
+      }
+    }
+    if (st.cost !== 'all') {
+      const c = strictMatches(st, 'cost');
+      if (c.length) {
+        const fees = c.map(f => f.fee).filter(x => x != null && x > 0);
+        const cheap = st.cost === 'free' && fees.length ? ` (가장 싼 곳 ${won(Math.min(...fees))})` : '';
+        out.push({ kind: 'cost', count: c.length, apply: { cost: 'all' }, note: st.cost === 'free' ? '유료 행사까지 넓혔어요' : '무료 행사까지 넓혔어요',
+          html: st.cost === 'free'
+            ? `<span>무료</span>는 없지만 <b>유료까지 보면 ${c.length}개</b> 있어요${cheap}`
+            : `<span>유료</span>는 없지만 <b>무료까지 보면 ${c.length}개</b> 있어요` });
+      }
+    }
+    if (st.regions.size) {
+      const c = strictMatches(st, 'region');
+      if (c.length) {
+        const by = {};
+        for (const f of c) by[f.region] = (by[f.region] || 0) + 1;
+        const top = Object.entries(by).sort((x, y) => y[1] - x[1]).slice(0, 2).map(([r, n]) => `${r} ${n}개`).join(' · ');
+        out.push({ kind: 'region', count: c.length, apply: { regions: new Set() }, note: '지역을 전국으로 넓혔어요',
+          html: `<span>${[...st.regions].join('·')}</span>엔 없지만 <b>${top}</b>가 있어요` });
+      }
+    }
+    if (st.cat !== 'all') {
+      const c = strictMatches(st, 'cat');
+      if (c.length) out.push({ kind: 'cat', count: c.length, apply: { cat: 'all' }, note: '다른 분야까지 넓혔어요',
+        html: `<span>${GROUP[st.cat].ko}</span> 분야엔 없지만 <b>다른 분야까지 보면 ${c.length}개</b> 있어요` });
+    }
+    return out;
+  }
+
+  let lastRelax = [];
+  function missHTML(st, relax, altCount) {
+    lastRelax = relax;
+    const saved = alertFor(st);
+    const lines = relax.map((r, i) =>
+      `<li><p>${r.html}</p><button type="button" class="btn btn-sm btn-ghost" data-act="relax" data-i="${i}">보기 <span class="arrow" aria-hidden="true">→</span></button></li>`).join('');
+    let head;
+    if (altCount) head = `분위기까지 맞는 곳은 없어서, 조건만 맞는 ${altCount}곳을 아래에 대안으로 보여드려요.`;
+    else if (relax.length) head = '조건을 하나만 풀면 이런 게 있어요.';
+    else head = '조건을 하나씩 풀어 봐도 맞는 행사가 없어요.';
+    return `<section class="miss" aria-live="polite">` +
+      `<p class="miss-kicker">${esc(describe(st))}에 딱 맞는 행사는 아직 없어요</p>` +
+      `<h3>${head}</h3>` +
+      (lines ? `<ul class="miss-list">${lines}</ul>` : '') +
+      (!relax.length && !altCount ? `<p class="miss-reset"><button type="button" class="btn btn-ghost btn-sm" data-act="reset">조건 모두 풀기</button></p>` : '') +
+      `<div class="miss-alert">` +
+        (saved
+          ? `<p><b>알림을 켜 두었어요.</b> 이 조건에 맞는 행사가 생기면, 다음에 들어오실 때 가장 먼저 알려드릴게요.</p>`
+          : `<p>조건에 맞는 행사가 생기면 알려드릴까요?</p><button type="button" class="btn btn-sm" data-act="alert-on">알림 받기</button>`) +
+      `</div></section>`;
+  }
+
+  /* ---- 알림: 이 브라우저에 조건을 저장해 두고, 다시 들어왔을 때 새로 생긴 행사를 먼저 보여준다 */
+  const ALERT_KEY = 'aiiairs.alerts';
+  const critOf = st => ({
+    query: st.query || '', cat: st.cat, cost: st.cost, regions: [...st.regions], period: st.period,
+    from: st.period === 'custom' && st.from ? dkey(st.from) : null,
+    to: st.period === 'custom' && st.to ? dkey(st.to) : null,
+    budget: st.budget
+  });
+  const stateOf = c => ({
+    cat: c.cat || 'all', cost: c.cost || 'all', regions: new Set(c.regions || []), period: c.period || 'all',
+    from: c.from ? parseDate(c.from) : null, to: c.to ? parseDate(c.to) : null, budget: c.budget ?? null,
+    past: false, query: c.query || '', interp: c.query ? interpret(c.query) : null
+  });
+  function readAlerts() { try { return JSON.parse(localStorage.getItem(ALERT_KEY) || '[]'); } catch { return []; } }
+  function writeAlerts(list) { try { localStorage.setItem(ALERT_KEY, JSON.stringify(list.slice(-20))); return true; } catch { return false; } }
+  const critKey = st => JSON.stringify(critOf(st));
+  function alertFor(st) { const k = critKey(st); return readAlerts().find(a => JSON.stringify(a.crit) === k); }
+  let alertNote = '';
+  function addAlert() {
+    const st = state.relaxed ? state.relaxed.prev : state;
+    const list = readAlerts();
+    if (!alertFor(st)) {
+      list.push({ id: Date.now().toString(36), label: describe(st), crit: critOf(st), seen: strictMatches(st).map(f => f.id), at: new Date().toISOString() });
+      if (!writeAlerts(list)) { alertNote = '이 브라우저에서는 알림을 저장할 수 없어요.'; }
+    }
+    report({ type: 'alert', q: st.query || '', label: describe(st), crit: critOf(st) });
+    renderList();
+  }
+  // 알림마다 새로 생긴 행사 수
+  function pendingAlerts() {
+    return readAlerts().map(a => {
+      const ids = strictMatches(stateOf(a.crit)).map(f => f.id);
+      return { a, ids, fresh: ids.filter(id => !(a.seen || []).includes(id)).length };
+    }).filter(x => x.fresh > 0);
+  }
+  function openAlert(id) {
+    const list = readAlerts();
+    const a = list.find(x => x.id === id);
+    if (!a) return;
+    const st = stateOf(a.crit);
+    Object.assign(state, st, { openId: null });
+    $('askInput').value = st.query;
+    a.seen = strictMatches(st).map(f => f.id);
+    writeAlerts(list);
+    render();
+    $('schedule').scrollIntoView({ block: 'start' });
+  }
+  function dropAlert(id) { writeAlerts(readAlerts().filter(x => x.id !== id)); renderNotice(); }
+
+  /* ---- 기록: 결과가 없던 검색을 운영자에게 보낸다 (개인정보 없이 조건만)
+     <meta name="aiiairs-log-endpoint"> 에 받을 주소를 넣으면 켜진다. scripts/miss-log.gs 참고 */
+  const LOG_ENDPOINT = (document.querySelector('meta[name="aiiairs-log-endpoint"]')?.content || '').trim();
+  const logged = new Set();
+  function report(entry) {
+    if (!/^https:\/\//.test(LOG_ENDPOINT)) return;
+    const body = JSON.stringify({ ...entry, at: new Date().toISOString(), sample: DATA.sample });
+    try {
+      fetch(LOG_ENDPOINT, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body }).catch(() => {});
+    } catch { /* 기록 실패는 화면에 영향을 주지 않는다 */ }
+  }
+  function logMiss(st, relax, altCount) {
+    const key = critKey(st);
+    if (logged.has(key)) return;
+    logged.add(key);
+    report({
+      type: 'miss', source: st.query ? 'search' : 'filter', q: st.query || '', label: describe(st), crit: critOf(st),
+      relax: relax.map(r => `${r.kind}:${r.count}`).concat(altCount ? [`mood:${altCount}`] : [])
+    });
+  }
+
+  function applyRelax(i) {
+    const r = lastRelax[Number(i)];
+    if (!r) return;
+    const prev = snapshot();
+    Object.assign(state, r.apply, { openId: null });
+    state.relaxed = { note: r.note, prev };
+    render({ keepRelax: true });
+    $('schedule').scrollIntoView({ block: 'start' });
+  }
+  function undoRelax() {
+    if (!state.relaxed) return;
+    Object.assign(state, state.relaxed.prev);
+    render();
+  }
+
+  function renderNotice() {
+    let html = '';
+    if (state.relaxed) {
+      html += `<div class="notice"><p><b>원래 조건엔 없어서 넓혀 찾은 결과예요.</b> ${esc(state.relaxed.note)}</p>` +
+        `<button type="button" class="linkish" data-act="undo-relax">원래 조건으로</button></div>`;
+    }
+    for (const { a, fresh } of pendingAlerts()) {
+      html += `<div class="notice is-alert"><p><b>알림</b> ${esc(a.label)}에 맞는 행사가 새로 ${fresh}건 생겼어요.</p>` +
+        `<span class="notice-act"><button type="button" class="btn btn-sm" data-act="alert-open" data-id="${esc(a.id)}">보기</button>` +
+        `<button type="button" class="linkish" data-act="alert-off" data-id="${esc(a.id)}">알림 끄기</button></span></div>`;
+    }
+    if (alertNote) { html += `<div class="notice"><p>${esc(alertNote)}</p></div>`; alertNote = ''; }
+    $('notice').innerHTML = html;
   }
 
   function renderList() {
@@ -1357,6 +1622,16 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       }
     }
 
+    // 분위기까지 맞는 곳이 없을 때: 이유와 대안을 먼저 보여주고, 조건만 맞는 곳을 '대안'으로 분명히 표시한다.
+    if (fellBack && pool.length) {
+      const relax = relaxations(state);
+      const alt = pool.slice().sort((a, b) => a.start - b.start);
+      html = missHTML(state, relax, alt.length) +
+        groupHTML('Alt', true, '대안 · 조건만 맞는 행사', '분위기는 다를 수 있어요', alt, null, true);
+      $('sheetTitle').textContent = '대안 결과';
+      logMiss(state, relax, alt.length);
+    }
+
     if (!html) {
       $('sheetTitle').textContent = state.cat === 'all' ? '전체 일정' : `${GROUP[state.cat].ko} 일정`;
       const live = pool.filter(isLive).sort((a, b) => a.end - b.end);
@@ -1373,17 +1648,20 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
 
     if (!pool.length) {
-      html = `<div class="empty"><b>Nothing here.</b><p>지금 조건에 맞는 행사가 없어요. 지역이나 기간을 조금 넓혀보세요.</p>` +
-        `<button type="button" class="btn btn-ghost btn-sm" data-act="reset">조건 초기화</button></div>`;
+      const relax = relaxations(state);
+      html = missHTML(state, relax, 0);
       shown = 0;
+      logMiss(state, relax, 0);
     }
 
     $('sheet').innerHTML = html;
     $('sheetCount').innerHTML = `<b>${shown}</b>건${state.past ? '' : ' · 지난 일정 제외'}`;
     renderInterp(it, matched, fellBack);
+    renderNotice();
   }
 
-  function render() {
+  function render(opts = {}) {
+    if (!opts.keepRelax) state.relaxed = null;
     document.querySelectorAll('.view button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === state.view));
     renderRail();
     renderRegions();
@@ -1425,6 +1703,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       state.to = b;
     } else state.period = 'all';
     state.cost = it.cost || 'all';
+    state.budget = it.budget ?? null;
     render();
     $('schedule').focus({ preventScroll: true });
     $('schedule').scrollIntoView({ block: 'start' });
@@ -1437,6 +1716,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
   function resetFilters(keepQuery) {
     state.cost = 'all';
+    state.budget = null;
     state.regions = new Set();
     state.period = 'all';
     cal.pick = null;
@@ -1578,6 +1858,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       case 'close': closeDialog(); break;
       case 'clear': clearQuery(); break;
       case 'reset': resetFilters(false); break;
+      case 'relax': applyRelax(act.dataset.i); break;
+      case 'undo-relax': undoRelax(); break;
+      case 'alert-on': addAlert(); break;
+      case 'alert-open': openAlert(act.dataset.id); break;
+      case 'alert-off': dropAlert(act.dataset.id); break;
     }
   });
 
@@ -1643,6 +1928,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   /* ---------------- 시작 ---------------- */
   renderMast();
+  if (LOG_ENDPOINT) $('logNote').textContent = ' 찾는 행사가 없을 때는 일정을 보강하려고 검색 조건만 익명으로 기록해요.';
   const params = new URLSearchParams(location.search);
   const qp = params.get('q');
   const cp = params.get('cat');
