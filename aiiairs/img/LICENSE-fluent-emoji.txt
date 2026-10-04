@@ -1,6 +1,6 @@
 Poster objects in this folder come from Fluent Emoji by Microsoft
 (https://github.com/microsoft/fluentui-emoji), distributed via the npm
-package @lobehub/fluent-emoji-3d. Each file is copied unchanged and renamed after the fair it illustrates.
+package @lobehub/fluent-emoji-3d. Each file is copied unchanged and renamed after the show it illustrates.
 
 MIT License
 

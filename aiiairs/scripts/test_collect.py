@@ -48,6 +48,15 @@ class ParseTest(unittest.TestCase):
                          "K-POP STAGE (구. 윤형빈소극장 [홍대] )")
         self.assertEqual(collect.clean_venue("더퍼포머씨어터 [화성] (더퍼포머씨어터)"), "더퍼포머씨어터 [화성]")
 
+    def test_small_stage(self):
+        self.assertTrue(collect.is_small("예시소극장", 120, 300))
+        self.assertFalse(collect.is_small("예시아트센터 (대극장)", 1200, 300))
+        self.assertFalse(collect.is_small("예시아레나 (대공연장)", None, 300))
+        self.assertTrue(collect.is_small("재즈클럽 그루브", None, 300))
+        self.assertEqual(collect.seats_for("예시아트센터 (소극장)", [("대극장", 1200), ("소극장", 180)]), 180)
+        self.assertIsNone(collect.seats_for("예시아트센터 (야외)", [("대극장", 1200), ("소극장", 180)]))
+        self.assertEqual(collect.seats_for("예시홀", [("예시홀", 90)]), 90)
+
     def test_https(self):
         self.assertEqual(collect.https("http://a.kr/x.gif"), "https://a.kr/x.gif")
         self.assertIsNone(collect.https("javascript:alert(1)"))
@@ -68,7 +77,14 @@ class FixtureRunTest(unittest.TestCase):
             self.assertEqual(items["kopis-pf000002"]["region"], "부산")
             self.assertEqual(items["kopis-pf000001"]["fee"], 20000)
             self.assertEqual(items["kopis-pf000001"]["venue"], "예시소극장")
-            self.assertEqual(items["kcisa-900003"]["cat"], "family")
+            self.assertEqual(items["kcisa-900003"]["cat"], "kids")
+            # 전시(사진전)는 소공연 사이트에 싣지 않는다
+            self.assertNotIn("kcisa-900001", items)
+            # 좌석 수를 알면 표시하고, 큰 공연장(대공연장)은 뺀다
+            self.assertEqual(items["kopis-pf000001"]["seats"], 120)
+            self.assertNotIn("kopis-pf000003", items)
+            self.assertEqual(items["kopis-pf000001"]["cat"], "theater")
+            self.assertEqual(items["kopis-pf000002"]["cat"], "music")
             for it in data["items"]:
                 self.assertRegex(it["s"], r"^\d{4}-\d{2}-\d{2}$")
                 self.assertIn("fee", it)

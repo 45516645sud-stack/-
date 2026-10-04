@@ -6,8 +6,10 @@
 
 출처
   - KOPIS 공연예술통합전산망 오픈API      : 연극·뮤지컬·콘서트 등 공연 (환경변수 KOPIS_API_KEY)
-  - 한국문화정보원 한눈에보는문화정보 API  : 공연·전시 (환경변수 DATA_GO_KR_KEY, 공공데이터포털 '디코딩' 키)
-  - data/manual.csv                        : 박람회 등 운영자가 직접 넣는 행사 (키 필요 없음)
+  - 한국문화정보원 한눈에보는문화정보 API  : 공연 (환경변수 DATA_GO_KR_KEY, 공공데이터포털 '디코딩' 키, 전시 등은 제외)
+  - data/manual.csv                        : API에 없는 소공연을 운영자가 직접 넣는 곳 (키 필요 없음)
+
+소극장 사이트이므로 KOPIS 공연은 공연장 좌석 수가 --max-seats(기본 300) 이하인 것만 싣는다.
 
 사용
   python3 aiiairs/scripts/collect.py                 # 실제 API 호출
@@ -71,46 +73,71 @@ def region_of(*texts: str) -> str:
     return "기타"
 
 
+# 페이지 분류(장르): theater 연극 / musical 뮤지컬 / music 라이브 음악 / classic 클래식·국악 / dance 무용·마임 / kids 아동·가족
+PAGE_CATS = {"theater", "musical", "music", "classic", "dance", "kids"}
+
 # KOPIS 장르 → (페이지 분류, 포스터 대체 그림, 취향 태그)
 KOPIS_GENRE = {
-    "연극": ("stage", "img/daehakro-duo.webp", ["데이트", "친구", "영감"]),
-    "뮤지컬": ("stage", "img/daegu-musical.webp", ["데이트", "친구", "활기"]),
-    "대중음악": ("stage", "img/hongdae-indie.webp", ["활기", "친구", "데이트"]),
-    "서양음악(클래식)": ("stage", "img/house-quartet.webp", ["조용한", "데이트"]),
-    "한국음악(국악)": ("stage", "img/jeju-acoustic.webp", ["조용한", "가족"]),
-    "무용": ("stage", "img/gwangju-mime.webp", ["영감", "조용한"]),
-    "대중무용": ("stage", "img/gwangju-mime.webp", ["활기", "친구"]),
-    "서커스/마술": ("stage", "img/gwangju-mime.webp", ["가족", "아이", "활기"]),
-    "복합": ("stage", "img/daehakro-duo.webp", ["영감"]),
+    "연극": ("theater", "img/daehakro-duo.webp", ["데이트", "친구", "영감"]),
+    "뮤지컬": ("musical", "img/daegu-musical.webp", ["데이트", "친구", "활기"]),
+    "대중음악": ("music", "img/hongdae-indie.webp", ["활기", "친구", "데이트"]),
+    "서양음악(클래식)": ("classic", "img/house-quartet.webp", ["조용한", "데이트"]),
+    "한국음악(국악)": ("classic", "img/jeju-acoustic.webp", ["조용한", "가족"]),
+    "무용": ("dance", "img/gwangju-mime.webp", ["영감", "조용한"]),
+    "무용(서양/한국무용)": ("dance", "img/gwangju-mime.webp", ["영감", "조용한"]),
+    "대중무용": ("dance", "img/gwangju-mime.webp", ["활기", "친구"]),
+    "서커스/마술": ("dance", "img/gwangju-mime.webp", ["가족", "아이", "활기"]),
+    "복합": ("theater", "img/daehakro-duo.webp", ["영감"]),
 }
+KIDS_ART = "img/gwangju-mime.webp"
 
-# 문화정보원 분야명 → 페이지 분류 (앞에서부터 처음 맞는 것)
+# 문화정보원 분야명 → 페이지 분류 (앞에서부터 처음 맞는 것). 공연이 아닌 분야(전시 등)는 버린다.
 CULTURE_REALM = [
-    (("연극", "뮤지컬", "음악", "국악", "무용", "오페라", "콘서트", "공연"), "stage"),
-    (("미술", "사진", "건축", "디자인", "공예", "전시"), "art"),
-    (("아동", "가족", "어린이"), "family"),
-    (("교육", "강연", "체험"), "career"),
-    (("축제", "행사", "여행"), "travel"),
+    (("아동", "가족", "어린이"), "kids"),
+    (("뮤지컬",), "musical"),
+    (("연극",), "theater"),
+    (("클래식", "오페라", "국악", "실내악"), "classic"),
+    (("무용", "발레", "마임", "서커스"), "dance"),
+    (("음악", "콘서트", "공연"), "music"),
 ]
 
 MANUAL_CAT = {
     # 한글 분류명 → 페이지 분류 키
-    "식음료": "food", "먹거리": "food", "리빙": "living", "리빙·인테리어": "living", "인테리어": "living",
-    "웨딩": "family", "육아": "family", "웨딩·육아": "family", "도서": "culture", "도서·문화": "culture",
-    "문화": "culture", "아트": "art", "아트·공예": "art", "공예": "art", "미술": "art", "테크": "tech",
-    "테크·IT": "tech", "IT": "tech", "취업": "career", "교육": "career", "취업·교육": "career",
-    "여행": "travel", "레저": "travel", "여행·레저": "travel", "반려동물": "pet", "펫": "pet",
-    "뷰티": "beauty", "패션": "beauty", "뷰티·패션": "beauty", "산업": "industry", "비즈니스": "industry",
-    "산업·비즈니스": "industry", "공연": "stage", "소극장": "stage", "공연·소극장": "stage",
+    "연극": "theater", "낭독": "theater", "뮤지컬": "musical",
+    "음악": "music", "라이브": "music", "라이브 음악": "music", "콘서트": "music", "재즈": "music", "인디": "music", "밴드": "music",
+    "클래식": "classic", "국악": "classic", "클래식·국악": "classic",
+    "무용": "dance", "마임": "dance", "서커스": "dance", "무용·마임": "dance",
+    "아동": "kids", "가족": "kids", "아동·가족": "kids",
 }
-PAGE_CATS = set(MANUAL_CAT.values())
 
-
-def realm_to_cat(realm: str) -> str:
+def realm_to_cat(realm: str) -> str | None:
     for words, cat in CULTURE_REALM:
         if any(w in (realm or "") for w in words):
             return cat
-    return "culture"
+    return None
+
+
+# ------------------------------------------------------------------ 소극장 판별
+
+# 좌석 수를 모를 때 공연장 이름으로 판단한다.
+BIG_WORDS = ("대극장", "대공연장", "체육관", "아레나", "경기장", "올림픽홀", "돔", "컨벤션", "대강당", "세종문화회관", "예술의전당 오페라")
+SMALL_WORDS = ("소극장", "소공연장", "블랙박스", "라이브", "클럽", "스튜디오", "살롱", "카페", "갤러리")
+
+
+def is_small(venue: str, seats: int | None, max_seats: int) -> bool:
+    """좌석 수가 있으면 그것으로, 없으면 이름으로 소극장인지 정한다."""
+    if seats is not None:
+        return seats <= max_seats
+    v = venue or ""
+    if any(w in v for w in SMALL_WORDS):
+        return True
+    return not any(w in v for w in BIG_WORDS)
+
+
+def hall_of(venue: str) -> str:
+    """'대학로 아트원씨어터 (2관)' → '2관'. 괄호가 없으면 빈 문자열."""
+    m = re.search(r"\(([^()]*)\)\s*$", venue or "")
+    return m.group(1).strip() if m else ""
 
 
 def clean_venue(name: str) -> str:
@@ -245,11 +272,12 @@ def windows(start: dt.date, end: dt.date, span: int = 31):
         cur = stop + dt.timedelta(days=1)
 
 
-def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_limit: int, fixtures: bool) -> list[dict]:
+def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_limit: int, fixtures: bool,
+                  max_seats: int = 300) -> list[dict]:
     seen: dict[str, dict] = {}
     spans = list(windows(start, end))
     # 첫 달에서 한도가 다 차지 않도록 기간마다 한도를 나눠 쓴다.
-    per = max(1, math.ceil(limit / len(spans)))
+    per = limit if fixtures else max(1, math.ceil(limit / len(spans)))
     for a, b in spans:
         page = 1
         cap = min(limit, len(seen) + per)
@@ -291,12 +319,55 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
         for pid, d in zip(wanted, pool.map(detail_of, wanted)):
             details[pid] = d
 
-    items = []
+    # 공연장(시설) 좌석 수: 같은 시설은 한 번만 조회한다.
+    def place_of(fid: str) -> list[tuple[str, int]]:
+        try:
+            body = (FIXTURES / "kopis_place.xml").read_bytes() if fixtures else \
+                fetch(f"{KOPIS_BASE}/prfplc/{urllib.parse.quote(fid)}?" + urllib.parse.urlencode({"service": key}))
+            halls = [(h.get("prfplcnm", ""), int(re.sub(r"\D", "", h.get("seatscale", "")) or 0))
+                     for h in records(body, ("prfplcnm", "seatscale"))]
+            if not halls:  # 공연장 목록이 없으면 시설 전체 좌석 수
+                whole = records(body, ("fcltynm", "seatscale"))
+                halls = [("", int(re.sub(r"\D", "", whole[0].get("seatscale", "")) or 0))] if whole else []
+            return [h for h in halls if h[1] > 0]
+        except Exception as e:
+            print(f"  · KOPIS 시설 건너뜀 {fid}: {e}", file=sys.stderr)
+            return []
+
+    fids = sorted({first(d, "mt10id") for d in details.values() if first(d, "mt10id")})
+    with cf.ThreadPoolExecutor(max_workers=6) as pool:
+        places = dict(zip(fids, pool.map(place_of, fids)))
+
+    items, dropped = [], 0
     for pid in ids:
-        item = kopis_item(seen[pid], details.get(pid, {}))
-        if item:
-            items.append(item)
+        d = details.get(pid, {})
+        item = kopis_item(seen[pid], d)
+        if not item:
+            continue
+        seats = seats_for(item["venue"], places.get(first(d, "mt10id"), []))
+        if not is_small(item["venue"], seats, max_seats):
+            dropped += 1
+            continue
+        if seats:
+            item["seats"] = seats
+        items.append(item)
+    print(f"  · {max_seats}석이 넘는 공연장 {dropped}건 제외")
     return items
+
+
+def seats_for(venue: str, halls: list[tuple[str, int]]) -> int | None:
+    """공연 장소 '시설 (공연장)'에 맞는 공연장 좌석 수. 모르면 None."""
+    if not halls:
+        return None
+    if len(halls) == 1:
+        return halls[0][1]
+    want = re.sub(r"\s+", "", hall_of(venue))
+    if want:
+        for name, seats in halls:
+            n = re.sub(r"\s+", "", name)
+            if n and (n == want or want in n or n in want):
+                return seats
+    return None
 
 
 def kopis_item(r: dict, d: dict) -> dict | None:
@@ -304,9 +375,10 @@ def kopis_item(r: dict, d: dict) -> dict | None:
     if not s or not e:
         return None
     genre = first(d, "genrenm") or first(r, "genrenm")
-    cat, art, tags = KOPIS_GENRE.get(genre, ("stage", "img/daehakro-duo.webp", ["영감"]))
+    cat, art, tags = KOPIS_GENRE.get(genre, ("theater", "img/daehakro-duo.webp", ["영감"]))
     tags = list(tags)
     if first(d, "child") == "Y" or first(r, "child") == "Y":
+        cat, art = "kids", KIDS_ART
         tags += ["가족", "아이"]
     url = None
     relates = d.get("relates")
@@ -370,6 +442,8 @@ def culture_item(r: dict) -> dict | None:
     realm = first(r, "realmName", "realm")
     venue = first(r, "place", "placeName")
     cat = realm_to_cat(realm)
+    if not cat:  # 전시·축제 등 공연이 아닌 것은 싣지 않는다
+        return None
     fee_text = first(r, "price", "fee")
     return {
         "id": "kcisa-" + (first(r, "seq") or slug(title, s.isoformat(), venue)),
@@ -381,7 +455,7 @@ def culture_item(r: dict) -> dict | None:
         "e": e.isoformat(),
         "fee": parse_fee(fee_text),
         "note": "",
-        "tags": ["영감"] if cat == "art" else [],
+        "tags": ["가족", "아이"] if cat == "kids" else [],
         "d": clip(first(r, "contents1", "description")) or f"{realm or '문화행사'} · {venue}",
         "img": https(first(r, "thumbnail", "imgUrl")),
         "url": https(first(r, "url", "placeUrl")),
@@ -408,7 +482,7 @@ def collect_manual(path: Path) -> list[dict]:
                 print(f"  · manual.csv {n}행: 날짜를 읽을 수 없어 건너뜀 ({title})", file=sys.stderr)
                 continue
             raw_cat = (row.get("분류") or "").strip()
-            cat = raw_cat if raw_cat in PAGE_CATS else MANUAL_CAT.get(raw_cat, "industry")
+            cat = raw_cat if raw_cat in PAGE_CATS else MANUAL_CAT.get(raw_cat, "theater")
             fee_raw = (row.get("관람료") or "").strip()
             fee = parse_fee(fee_raw) if not fee_raw.isdigit() else int(fee_raw)
             venue = (row.get("장소") or "").strip()
@@ -462,6 +536,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--max-kopis", type=int, default=1200, help="KOPIS에서 가져올 최대 공연 수 (기간마다 나눠 씀)")
     ap.add_argument("--kopis-detail", type=int, default=1200, help="요금·줄거리를 가져올 상세 조회 건수")
     ap.add_argument("--max-culture", type=int, default=400)
+    ap.add_argument("--max-seats", type=int, default=300, help="이 좌석 수 이하 공연장만 싣는다 (소극장 기준)")
     ap.add_argument("--fixtures", action="store_true", help="저장된 예시 응답으로 실행 (네트워크·키 불필요)")
     args = ap.parse_args(argv)
 
@@ -489,7 +564,7 @@ def main(argv: list[str] | None = None) -> int:
             sources.append({"name": name, "label": label, "count": 0, "ok": False, "error": str(e)[:200]})
 
     run("manual", "운영자 입력", lambda _k: collect_manual(Path(args.manual)))
-    run("kopis", "KOPIS 공연예술통합전산망", lambda k: collect_kopis(k, start, end, args.max_kopis, args.kopis_detail, args.fixtures), "KOPIS_API_KEY")
+    run("kopis", "KOPIS 공연예술통합전산망", lambda k: collect_kopis(k, start, end, args.max_kopis, args.kopis_detail, args.fixtures, args.max_seats), "KOPIS_API_KEY")
     run("kcisa", "한국문화정보원", lambda k: collect_culture(k, start, end, args.max_culture, args.fixtures), "DATA_GO_KR_KEY")
 
     items = merge(groups, start, end)

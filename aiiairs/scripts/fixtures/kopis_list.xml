@@ -25,4 +25,16 @@
     <openrun>N</openrun>
     <prfstate>공연예정</prfstate>
   </db>
+  <db>
+    <mt20id>PF000003</mt20id>
+    <prfnm>테스트 아레나 투어 콘서트</prfnm>
+    <prfpdfrom>2026.11.01</prfpdfrom>
+    <prfpdto>2026.11.02</prfpdto>
+    <fcltynm>예시아레나 (대공연장)</fcltynm>
+    <poster>http://www.kopis.or.kr/upload/pfmPoster/PF_PF000003.gif</poster>
+    <area>서울특별시</area>
+    <genrenm>대중음악</genrenm>
+    <openrun>N</openrun>
+    <prfstate>공연예정</prfstate>
+  </db>
 </dbs>
