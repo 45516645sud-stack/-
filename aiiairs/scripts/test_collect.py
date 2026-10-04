@@ -39,6 +39,15 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(collect.region_of("광주광역시"), "광주")
         self.assertEqual(collect.region_of("알 수 없음"), "기타")
 
+    def test_venue(self):
+        self.assertEqual(collect.clean_venue("예시소극장 (예시소극장)"), "예시소극장")
+        self.assertEqual(collect.clean_venue("단막극장(구.대학로단막극장) (단막극장(구.대학로단막극장))"), "단막극장(구.대학로단막극장)")
+        self.assertEqual(collect.clean_venue("롯데마트 [월드컵] (행복을 주는 가족극장)"), "롯데마트 [월드컵] (행복을 주는 가족극장)")
+        self.assertEqual(collect.clean_venue("대학로 스카이씨어터"), "대학로 스카이씨어터")
+        self.assertEqual(collect.clean_venue("K-POP STAGE (구. 윤형빈소극장 [홍대] ) (K-POP STAGE (구. 윤형빈소극장 [홍대] ) )"),
+                         "K-POP STAGE (구. 윤형빈소극장 [홍대] )")
+        self.assertEqual(collect.clean_venue("더퍼포머씨어터 [화성] (더퍼포머씨어터)"), "더퍼포머씨어터 [화성]")
+
     def test_https(self):
         self.assertEqual(collect.https("http://a.kr/x.gif"), "https://a.kr/x.gif")
         self.assertIsNone(collect.https("javascript:alert(1)"))
@@ -58,6 +67,7 @@ class FixtureRunTest(unittest.TestCase):
             self.assertEqual(items["kopis-pf000002"]["venue"], "예시재즈홀")
             self.assertEqual(items["kopis-pf000002"]["region"], "부산")
             self.assertEqual(items["kopis-pf000001"]["fee"], 20000)
+            self.assertEqual(items["kopis-pf000001"]["venue"], "예시소극장")
             self.assertEqual(items["kcisa-900003"]["cat"], "family")
             for it in data["items"]:
                 self.assertRegex(it["s"], r"^\d{4}-\d{2}-\d{2}$")

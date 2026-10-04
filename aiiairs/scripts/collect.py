@@ -19,10 +19,12 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
 import csv
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 import re
 import sys
@@ -109,6 +111,26 @@ def realm_to_cat(realm: str) -> str:
         if any(w in (realm or "") for w in words):
             return cat
     return "culture"
+
+
+def clean_venue(name: str) -> str:
+    """KOPIS 시설명 '공연장 (시설)'에서 같은 이름이 괄호로 반복되면 한 번만 남긴다.
+    '예시소극장 (예시소극장)' → '예시소극장', '롯데마트 [월드컵] (행복을 주는 가족극장)' → 그대로"""
+    name = (name or "").strip()
+    if " (" not in name or not name.endswith(")"):
+        return name
+    squash = lambda t: re.sub(r"\s+", "", t)
+    cuts = [m.start() for m in re.finditer(r" \(", name)]
+    # 1) 이름 안에도 괄호가 있을 수 있어, 모든 자리에서 '앞 == 괄호 속'인지 본다
+    for i in cuts:
+        head, tail = name[:i].strip(), name[i + 2:-1].strip()
+        if head and squash(head) == squash(tail):
+            return head
+    # 2) 마지막 괄호 속이 앞 이름의 일부일 때 ('더퍼포머씨어터 [화성] (더퍼포머씨어터)')
+    head, tail = name[:cuts[-1]].strip(), name[cuts[-1] + 2:-1].strip()
+    if "(" not in tail and tail and squash(tail) in squash(head):
+        return head
+    return name
 
 
 def parse_fee(text: str | None) -> int | None:
@@ -225,9 +247,13 @@ def windows(start: dt.date, end: dt.date, span: int = 31):
 
 def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_limit: int, fixtures: bool) -> list[dict]:
     seen: dict[str, dict] = {}
-    for a, b in windows(start, end):
+    spans = list(windows(start, end))
+    # 첫 달에서 한도가 다 차지 않도록 기간마다 한도를 나눠 쓴다.
+    per = max(1, math.ceil(limit / len(spans)))
+    for a, b in spans:
         page = 1
-        while len(seen) < limit:
+        cap = min(limit, len(seen) + per)
+        while len(seen) < cap:
             if fixtures:
                 body = (FIXTURES / "kopis_list.xml").read_bytes()
             else:
@@ -238,7 +264,7 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
                 body = fetch(f"{KOPIS_BASE}/pblprfr?{q}")
             rows = records(body, ("mt20id", "prfnm"))
             for r in rows:
-                if r["mt20id"] not in seen and len(seen) < limit:
+                if r["mt20id"] not in seen and len(seen) < cap:
                     seen[r["mt20id"]] = r
             if fixtures or len(rows) < 100:
                 break
@@ -246,19 +272,28 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
         if fixtures:
             break
 
+    def detail_of(pid: str) -> dict:
+        try:
+            body = (FIXTURES / "kopis_detail.xml").read_bytes() if fixtures else \
+                fetch(f"{KOPIS_BASE}/pblprfr/{urllib.parse.quote(pid)}?" + urllib.parse.urlencode({"service": key}))
+            got = records(body, ("mt20id", "prfnm"))
+            # 다른 공연의 상세가 섞이지 않도록 ID가 같은 것만 쓴다.
+            return next((g for g in got if g.get("mt20id") == pid), {})
+        except Exception as e:  # 상세 한 건 실패는 목록 정보로 대신한다
+            print(f"  · KOPIS 상세 건너뜀 {pid}: {e}", file=sys.stderr)
+            return {}
+
+    ids = list(seen)
+    wanted = ids[:detail_limit]
+    details: dict[str, dict] = {}
+    # 상세 조회는 한 건씩이라 느리다. 몇 건씩 동시에 부른다.
+    with cf.ThreadPoolExecutor(max_workers=6) as pool:
+        for pid, d in zip(wanted, pool.map(detail_of, wanted)):
+            details[pid] = d
+
     items = []
-    for i, (pid, r) in enumerate(seen.items()):
-        detail = {}
-        if i < detail_limit:
-            try:
-                body = (FIXTURES / "kopis_detail.xml").read_bytes() if fixtures else \
-                    fetch(f"{KOPIS_BASE}/pblprfr/{urllib.parse.quote(pid)}?" + urllib.parse.urlencode({"service": key}))
-                got = records(body, ("mt20id", "prfnm"))
-                # 다른 공연의 상세가 섞이지 않도록 ID가 같은 것만 쓴다.
-                detail = next((g for g in got if g.get("mt20id") == pid), {})
-            except Exception as e:  # 상세 한 건 실패는 목록 정보로 대신한다
-                print(f"  · KOPIS 상세 건너뜀 {pid}: {e}", file=sys.stderr)
-        item = kopis_item(r, detail)
+    for pid in ids:
+        item = kopis_item(seen[pid], details.get(pid, {}))
         if item:
             items.append(item)
     return items
@@ -281,7 +316,7 @@ def kopis_item(r: dict, d: dict) -> dict | None:
             if url:
                 break
     fee_text = first(d, "pcseguidance")
-    venue = first(d, "fcltynm") or first(r, "fcltynm")
+    venue = clean_venue(first(d, "fcltynm") or first(r, "fcltynm"))
     summary = clip(first(d, "sty"))
     return {
         "id": "kopis-" + first(r, "mt20id").lower(),
@@ -424,8 +459,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--manual", default=str(DATA_DIR / "manual.csv"))
     ap.add_argument("--days", type=int, default=180, help="오늘부터 며칠 뒤까지 모을지")
     ap.add_argument("--past-days", type=int, default=0, help="이미 끝난 행사를 며칠 전까지 남길지")
-    ap.add_argument("--max-kopis", type=int, default=400)
-    ap.add_argument("--kopis-detail", type=int, default=150, help="요금·줄거리를 가져올 상세 조회 건수")
+    ap.add_argument("--max-kopis", type=int, default=1200, help="KOPIS에서 가져올 최대 공연 수 (기간마다 나눠 씀)")
+    ap.add_argument("--kopis-detail", type=int, default=1200, help="요금·줄거리를 가져올 상세 조회 건수")
     ap.add_argument("--max-culture", type=int, default=400)
     ap.add_argument("--fixtures", action="store_true", help="저장된 예시 응답으로 실행 (네트워크·키 불필요)")
     args = ap.parse_args(argv)
