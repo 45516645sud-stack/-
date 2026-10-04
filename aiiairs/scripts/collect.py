@@ -94,6 +94,27 @@ KOPIS_GENRE = {
     "복합": ("theater", "img/daehakro-duo.webp", ["영감"]),
 }
 KIDS_ART = "img/gwangju-mime.webp"
+# KOPIS 장르 이름은 '무용(서양/한국무용)'처럼 바뀌거나 길어질 수 있어, 정확히 맞지 않으면 낱말로 찾는다.
+GENRE_WORDS = [
+    (("뮤지컬",), "뮤지컬"),
+    (("무용", "발레", "댄스"), "무용"),
+    (("서커스", "마술"), "서커스/마술"),
+    (("클래식", "서양음악", "오페라"), "서양음악(클래식)"),
+    (("국악", "한국음악"), "한국음악(국악)"),
+    (("대중음악", "콘서트"), "대중음악"),
+    (("연극",), "연극"),
+]
+
+
+def genre_info(genre: str) -> tuple[str, str, list[str]]:
+    """KOPIS 장르 이름 → (페이지 분류, 대체 그림, 취향 태그)"""
+    g = (genre or "").strip()
+    if g in KOPIS_GENRE:
+        return KOPIS_GENRE[g]
+    for words, key in GENRE_WORDS:
+        if any(w in g for w in words):
+            return KOPIS_GENRE[key]
+    return ("theater", "img/daehakro-duo.webp", ["영감"])
 
 # 문화정보원 분야명 → 페이지 분류 (앞에서부터 처음 맞는 것). 공연이 아닌 분야(전시 등)는 버린다.
 CULTURE_REALM = [
@@ -379,7 +400,7 @@ def kopis_item(r: dict, d: dict) -> dict | None:
     if not s or not e:
         return None
     genre = first(d, "genrenm") or first(r, "genrenm")
-    cat, art, tags = KOPIS_GENRE.get(genre, ("theater", "img/daehakro-duo.webp", ["영감"]))
+    cat, art, tags = genre_info(genre)
     tags = list(tags)
     if first(d, "child") == "Y" or first(r, "child") == "Y":
         cat, art = "kids", KIDS_ART

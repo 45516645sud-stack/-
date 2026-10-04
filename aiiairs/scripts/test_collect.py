@@ -78,6 +78,17 @@ class ParseTest(unittest.TestCase):
             collect.cache_posters(again, folder, getter=lambda u: (_ for _ in ()).throw(AssertionError("다시 받음")))
             self.assertEqual(again[0]["poster"], items[0]["poster"])
 
+    def test_genre(self):
+        # KOPIS 가 실제로 보내는 이름 '무용(서양/한국무용)' 도 무용·마임으로
+        self.assertEqual(collect.genre_info("무용(서양/한국무용)")[0], "dance")
+        self.assertEqual(collect.genre_info("서커스/마술")[0], "dance")
+        self.assertEqual(collect.genre_info("서양음악(클래식)")[0], "classic")
+        self.assertEqual(collect.genre_info("한국음악(국악)")[0], "classic")
+        self.assertEqual(collect.genre_info("대중음악")[0], "music")
+        self.assertEqual(collect.genre_info("뮤지컬")[0], "musical")
+        self.assertEqual(collect.genre_info("복합")[0], "theater")
+        self.assertEqual(collect.genre_info("처음 보는 장르")[0], "theater")
+
     def test_https(self):
         self.assertEqual(collect.https("http://a.kr/x.gif"), "https://a.kr/x.gif")
         self.assertIsNone(collect.https("javascript:alert(1)"))
