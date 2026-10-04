@@ -103,6 +103,10 @@ class FixtureRunTest(unittest.TestCase):
             self.assertNotIn("kcisa-900001", items)
             # 좌석 수를 알면 표시하고, 큰 공연장(대공연장)은 뺀다
             self.assertEqual(items["kopis-pf000001"]["seats"], 120)
+            # 모든 KOPIS 공연에 공식 공연 페이지 링크가 붙는다 (예매처가 없어도)
+            self.assertTrue(items["kopis-pf000002"]["info"].endswith("mt20Id=PF000002"))
+            self.assertNotIn("url", items["kopis-pf000002"])
+            self.assertEqual(items["kopis-pf000001"]["url"], "https://ticket.example.com/PF000001")
             self.assertNotIn("kopis-pf000003", items)
             self.assertEqual(items["kopis-pf000001"]["cat"], "theater")
             self.assertEqual(items["kopis-pf000002"]["cat"], "music")

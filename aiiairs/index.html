@@ -759,6 +759,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         // 수집기가 내려받아 둔 공식 포스터 (사이트 안의 파일이라 늘 빠르게 뜬다)
         poster: typeof f.poster === 'string' && /^posters\/[\w.-]+$/.test(f.poster) ? f.poster : null,
         url: isWebUrl(f.url) ? f.url : null,
+        info: isWebUrl(f.info) ? f.info : null,
         art: f.art || DEFAULT_ART[cat],
         start: parseDate(f.s),
         end: parseDate(f.e),
@@ -1165,7 +1166,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     return `<div class="actions">` +
       `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
       `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
-      (f.url ? `<a class="btn btn-sm btn-ghost" href="${esc(f.url)}" target="_blank" rel="noopener">공식 정보 보기</a>` : '') +
+      // KOPIS 공연은 예매처(있을 때)와 KOPIS 공식 공연 페이지(항상)를, 직접 넣은 공연은 공식 링크를 보여준다.
+      (f.url ? `<a class="btn btn-sm btn-ghost" href="${esc(f.url)}" target="_blank" rel="noopener">${f.src === 'kopis' ? '예매하기' : '공식 정보 보기'}</a>` : '') +
+      (f.info ? `<a class="btn btn-sm btn-ghost" href="${esc(f.info)}" target="_blank" rel="noopener">KOPIS 공연 정보</a>` : '') +
       (state.cat !== GROUP_OF[f.cat] ? `<button type="button" class="linkish" data-act="cat" data-cat="${GROUP_OF[f.cat]}">${GROUP[GROUP_OF[f.cat]].ko} 더 보기</button>` : '') +
       `<span class="done" role="status" data-done="${f.id}"></span>` +
     `</div>`;

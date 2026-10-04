@@ -46,6 +46,8 @@ KST = dt.timezone(dt.timedelta(hours=9))
 UA = "AIIairs-collector/1.0 (+https://expomoa.com/)"
 
 KOPIS_BASE = "https://www.kopis.or.kr/openApi/restful"
+# 공연마다 있는 KOPIS 공식 상세 페이지 (예매처 링크가 없을 때도 늘 붙일 수 있다)
+KOPIS_PAGE = "https://www.kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00020&mt20Id={}"
 CULTURE_URL = "https://apis.data.go.kr/B553457/nopenapi/rest/publicperformancedisplays/period"
 
 # ------------------------------------------------------------------ 공통 매핑
@@ -406,7 +408,8 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "d": summary or f"{genre or '공연'} · {venue}",
         "img": https(first(d, "poster") or first(r, "poster")),
         "art": art,
-        "url": url,
+        "url": url,                                        # 예매처 (없을 수 있음)
+        "info": KOPIS_PAGE.format(urllib.parse.quote(first(r, "mt20id"))),  # KOPIS 공식 공연 페이지
         "src": "kopis",
     }
 
