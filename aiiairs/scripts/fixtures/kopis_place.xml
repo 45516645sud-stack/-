@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 테스트용 예시 응답: KOPIS 공연시설상세(prfplc/{id}) 형식을 흉내 낸 가상 데이터 -->
+<dbs>
+  <db>
+    <fcltynm>예시소극장</fcltynm>
+    <mt10id>FC000001</mt10id>
+    <mt13cnt>1</mt13cnt>
+    <seatscale>120</seatscale>
+    <mt13s>
+      <mt13>
+        <prfplcnm>예시소극장</prfplcnm>
+        <mt13id>FC000001-01</mt13id>
+        <seatscale>120</seatscale>
+      </mt13>
+    </mt13s>
+  </db>
+</dbs>

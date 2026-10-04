@@ -6,8 +6,10 @@
 
 출처
   - KOPIS 공연예술통합전산망 오픈API      : 연극·뮤지컬·콘서트 등 공연 (환경변수 KOPIS_API_KEY)
-  - 한국문화정보원 한눈에보는문화정보 API  : 공연·전시 (환경변수 DATA_GO_KR_KEY, 공공데이터포털 '디코딩' 키)
-  - data/manual.csv                        : 박람회 등 운영자가 직접 넣는 행사 (키 필요 없음)
+  - 한국문화정보원 한눈에보는문화정보 API  : 공연 (환경변수 DATA_GO_KR_KEY, 공공데이터포털 '디코딩' 키, 전시 등은 제외)
+  - data/manual.csv                        : API에 없는 소공연을 운영자가 직접 넣는 곳 (키 필요 없음)
+
+소극장 사이트이므로 KOPIS 공연은 공연장 좌석 수가 --max-seats(기본 300) 이하인 것만 싣는다.
 
 사용
   python3 aiiairs/scripts/collect.py                 # 실제 API 호출
@@ -19,10 +21,13 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
 import csv
 import datetime as dt
 import hashlib
+import io
 import json
+import math
 import os
 import re
 import sys
@@ -35,11 +40,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]          # aiiairs/
 DATA_DIR = ROOT / "data"
+POSTER_DIR = ROOT / "posters"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 KST = dt.timezone(dt.timedelta(hours=9))
 UA = "AIIairs-collector/1.0 (+https://expomoa.com/)"
 
 KOPIS_BASE = "https://www.kopis.or.kr/openApi/restful"
+# 공연마다 있는 KOPIS 공식 상세 페이지 (예매처 링크가 없을 때도 늘 붙일 수 있다)
+KOPIS_PAGE = "https://www.kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00020&mt20Id={}"
 CULTURE_URL = "https://apis.data.go.kr/B553457/nopenapi/rest/publicperformancedisplays/period"
 
 # ------------------------------------------------------------------ 공통 매핑
@@ -69,46 +77,112 @@ def region_of(*texts: str) -> str:
     return "기타"
 
 
+# 페이지 분류(장르): theater 연극 / musical 뮤지컬 / music 라이브 음악 / classic 클래식·국악 / dance 무용·마임 / kids 아동·가족
+PAGE_CATS = {"theater", "musical", "music", "classic", "dance", "kids"}
+
 # KOPIS 장르 → (페이지 분류, 포스터 대체 그림, 취향 태그)
 KOPIS_GENRE = {
-    "연극": ("stage", "img/daehakro-duo.webp", ["데이트", "친구", "영감"]),
-    "뮤지컬": ("stage", "img/daegu-musical.webp", ["데이트", "친구", "활기"]),
-    "대중음악": ("stage", "img/hongdae-indie.webp", ["활기", "친구", "데이트"]),
-    "서양음악(클래식)": ("stage", "img/house-quartet.webp", ["조용한", "데이트"]),
-    "한국음악(국악)": ("stage", "img/jeju-acoustic.webp", ["조용한", "가족"]),
-    "무용": ("stage", "img/gwangju-mime.webp", ["영감", "조용한"]),
-    "대중무용": ("stage", "img/gwangju-mime.webp", ["활기", "친구"]),
-    "서커스/마술": ("stage", "img/gwangju-mime.webp", ["가족", "아이", "활기"]),
-    "복합": ("stage", "img/daehakro-duo.webp", ["영감"]),
+    "연극": ("theater", "img/daehakro-duo.webp", ["데이트", "친구", "영감"]),
+    "뮤지컬": ("musical", "img/daegu-musical.webp", ["데이트", "친구", "활기"]),
+    "대중음악": ("music", "img/hongdae-indie.webp", ["활기", "친구", "데이트"]),
+    "서양음악(클래식)": ("classic", "img/house-quartet.webp", ["조용한", "데이트"]),
+    "한국음악(국악)": ("classic", "img/jeju-acoustic.webp", ["조용한", "가족"]),
+    "무용": ("dance", "img/gwangju-mime.webp", ["영감", "조용한"]),
+    "무용(서양/한국무용)": ("dance", "img/gwangju-mime.webp", ["영감", "조용한"]),
+    "대중무용": ("dance", "img/gwangju-mime.webp", ["활기", "친구"]),
+    "서커스/마술": ("dance", "img/gwangju-mime.webp", ["가족", "아이", "활기"]),
+    "복합": ("theater", "img/daehakro-duo.webp", ["영감"]),
 }
+KIDS_ART = "img/gwangju-mime.webp"
+# KOPIS 장르 이름은 '무용(서양/한국무용)'처럼 바뀌거나 길어질 수 있어, 정확히 맞지 않으면 낱말로 찾는다.
+GENRE_WORDS = [
+    (("뮤지컬",), "뮤지컬"),
+    (("무용", "발레", "댄스"), "무용"),
+    (("서커스", "마술"), "서커스/마술"),
+    (("클래식", "서양음악", "오페라"), "서양음악(클래식)"),
+    (("국악", "한국음악"), "한국음악(국악)"),
+    (("대중음악", "콘서트"), "대중음악"),
+    (("연극",), "연극"),
+]
 
-# 문화정보원 분야명 → 페이지 분류 (앞에서부터 처음 맞는 것)
+
+def genre_info(genre: str) -> tuple[str, str, list[str]]:
+    """KOPIS 장르 이름 → (페이지 분류, 대체 그림, 취향 태그)"""
+    g = (genre or "").strip()
+    if g in KOPIS_GENRE:
+        return KOPIS_GENRE[g]
+    for words, key in GENRE_WORDS:
+        if any(w in g for w in words):
+            return KOPIS_GENRE[key]
+    return ("theater", "img/daehakro-duo.webp", ["영감"])
+
+# 문화정보원 분야명 → 페이지 분류 (앞에서부터 처음 맞는 것). 공연이 아닌 분야(전시 등)는 버린다.
 CULTURE_REALM = [
-    (("연극", "뮤지컬", "음악", "국악", "무용", "오페라", "콘서트", "공연"), "stage"),
-    (("미술", "사진", "건축", "디자인", "공예", "전시"), "art"),
-    (("아동", "가족", "어린이"), "family"),
-    (("교육", "강연", "체험"), "career"),
-    (("축제", "행사", "여행"), "travel"),
+    (("아동", "가족", "어린이"), "kids"),
+    (("뮤지컬",), "musical"),
+    (("연극",), "theater"),
+    (("클래식", "오페라", "국악", "실내악"), "classic"),
+    (("무용", "발레", "마임", "서커스"), "dance"),
+    (("음악", "콘서트", "공연"), "music"),
 ]
 
 MANUAL_CAT = {
     # 한글 분류명 → 페이지 분류 키
-    "식음료": "food", "먹거리": "food", "리빙": "living", "리빙·인테리어": "living", "인테리어": "living",
-    "웨딩": "family", "육아": "family", "웨딩·육아": "family", "도서": "culture", "도서·문화": "culture",
-    "문화": "culture", "아트": "art", "아트·공예": "art", "공예": "art", "미술": "art", "테크": "tech",
-    "테크·IT": "tech", "IT": "tech", "취업": "career", "교육": "career", "취업·교육": "career",
-    "여행": "travel", "레저": "travel", "여행·레저": "travel", "반려동물": "pet", "펫": "pet",
-    "뷰티": "beauty", "패션": "beauty", "뷰티·패션": "beauty", "산업": "industry", "비즈니스": "industry",
-    "산업·비즈니스": "industry", "공연": "stage", "소극장": "stage", "공연·소극장": "stage",
+    "연극": "theater", "낭독": "theater", "뮤지컬": "musical",
+    "음악": "music", "라이브": "music", "라이브 음악": "music", "콘서트": "music", "재즈": "music", "인디": "music", "밴드": "music",
+    "클래식": "classic", "국악": "classic", "클래식·국악": "classic",
+    "무용": "dance", "마임": "dance", "서커스": "dance", "무용·마임": "dance",
+    "아동": "kids", "가족": "kids", "아동·가족": "kids",
 }
-PAGE_CATS = set(MANUAL_CAT.values())
 
-
-def realm_to_cat(realm: str) -> str:
+def realm_to_cat(realm: str) -> str | None:
     for words, cat in CULTURE_REALM:
         if any(w in (realm or "") for w in words):
             return cat
-    return "culture"
+    return None
+
+
+# ------------------------------------------------------------------ 소극장 판별
+
+# 좌석 수를 모를 때 공연장 이름으로 판단한다.
+BIG_WORDS = ("대극장", "대공연장", "체육관", "아레나", "경기장", "올림픽홀", "돔", "컨벤션", "대강당", "세종문화회관", "예술의전당 오페라")
+SMALL_WORDS = ("소극장", "소공연장", "블랙박스", "라이브", "클럽", "스튜디오", "살롱", "카페", "갤러리")
+
+
+def is_small(venue: str, seats: int | None, max_seats: int) -> bool:
+    """좌석 수가 있으면 그것으로, 없으면 이름으로 소극장인지 정한다."""
+    if seats is not None:
+        return seats <= max_seats
+    v = venue or ""
+    if any(w in v for w in SMALL_WORDS):
+        return True
+    return not any(w in v for w in BIG_WORDS)
+
+
+def hall_of(venue: str) -> str:
+    """'대학로 아트원씨어터 (2관)' → '2관'. 괄호가 없으면 빈 문자열."""
+    m = re.search(r"\(([^()]*)\)\s*$", venue or "")
+    return m.group(1).strip() if m else ""
+
+
+def clean_venue(name: str) -> str:
+    """KOPIS 시설명 '공연장 (시설)'에서 같은 이름이 괄호로 반복되면 한 번만 남긴다.
+    '예시소극장 (예시소극장)' → '예시소극장', '롯데마트 [월드컵] (행복을 주는 가족극장)' → 그대로"""
+    name = (name or "").strip()
+    if " (" not in name or not name.endswith(")"):
+        return name
+    squash = lambda t: re.sub(r"\s+", "", t)
+    cuts = [m.start() for m in re.finditer(r" \(", name)]
+    # 1) 이름 안에도 괄호가 있을 수 있어, 모든 자리에서 '앞 == 괄호 속'인지 본다
+    for i in cuts:
+        head, tail = name[:i].strip(), name[i + 2:-1].strip()
+        if head and squash(head) == squash(tail):
+            return head
+    # 2) 마지막 괄호 속이 앞 이름의 일부일 때 ('더퍼포머씨어터 [화성] (더퍼포머씨어터)')
+    head, tail = name[:cuts[-1]].strip(), name[cuts[-1] + 2:-1].strip()
+    if "(" not in tail and tail and squash(tail) in squash(head):
+        return head
+    return name
 
 
 def parse_fee(text: str | None) -> int | None:
@@ -223,11 +297,16 @@ def windows(start: dt.date, end: dt.date, span: int = 31):
         cur = stop + dt.timedelta(days=1)
 
 
-def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_limit: int, fixtures: bool) -> list[dict]:
+def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_limit: int, fixtures: bool,
+                  max_seats: int = 300) -> list[dict]:
     seen: dict[str, dict] = {}
-    for a, b in windows(start, end):
+    spans = list(windows(start, end))
+    # 첫 달에서 한도가 다 차지 않도록 기간마다 한도를 나눠 쓴다.
+    per = limit if fixtures else max(1, math.ceil(limit / len(spans)))
+    for a, b in spans:
         page = 1
-        while len(seen) < limit:
+        cap = min(limit, len(seen) + per)
+        while len(seen) < cap:
             if fixtures:
                 body = (FIXTURES / "kopis_list.xml").read_bytes()
             else:
@@ -238,7 +317,7 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
                 body = fetch(f"{KOPIS_BASE}/pblprfr?{q}")
             rows = records(body, ("mt20id", "prfnm"))
             for r in rows:
-                if r["mt20id"] not in seen and len(seen) < limit:
+                if r["mt20id"] not in seen and len(seen) < cap:
                     seen[r["mt20id"]] = r
             if fixtures or len(rows) < 100:
                 break
@@ -246,22 +325,74 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
         if fixtures:
             break
 
-    items = []
-    for i, (pid, r) in enumerate(seen.items()):
-        detail = {}
-        if i < detail_limit:
-            try:
-                body = (FIXTURES / "kopis_detail.xml").read_bytes() if fixtures else \
-                    fetch(f"{KOPIS_BASE}/pblprfr/{urllib.parse.quote(pid)}?" + urllib.parse.urlencode({"service": key}))
-                got = records(body, ("mt20id", "prfnm"))
-                # 다른 공연의 상세가 섞이지 않도록 ID가 같은 것만 쓴다.
-                detail = next((g for g in got if g.get("mt20id") == pid), {})
-            except Exception as e:  # 상세 한 건 실패는 목록 정보로 대신한다
-                print(f"  · KOPIS 상세 건너뜀 {pid}: {e}", file=sys.stderr)
-        item = kopis_item(r, detail)
-        if item:
-            items.append(item)
+    def detail_of(pid: str) -> dict:
+        try:
+            body = (FIXTURES / "kopis_detail.xml").read_bytes() if fixtures else \
+                fetch(f"{KOPIS_BASE}/pblprfr/{urllib.parse.quote(pid)}?" + urllib.parse.urlencode({"service": key}))
+            got = records(body, ("mt20id", "prfnm"))
+            # 다른 공연의 상세가 섞이지 않도록 ID가 같은 것만 쓴다.
+            return next((g for g in got if g.get("mt20id") == pid), {})
+        except Exception as e:  # 상세 한 건 실패는 목록 정보로 대신한다
+            print(f"  · KOPIS 상세 건너뜀 {pid}: {e}", file=sys.stderr)
+            return {}
+
+    ids = list(seen)
+    wanted = ids[:detail_limit]
+    details: dict[str, dict] = {}
+    # 상세 조회는 한 건씩이라 느리다. 몇 건씩 동시에 부른다.
+    with cf.ThreadPoolExecutor(max_workers=6) as pool:
+        for pid, d in zip(wanted, pool.map(detail_of, wanted)):
+            details[pid] = d
+
+    # 공연장(시설) 좌석 수: 같은 시설은 한 번만 조회한다.
+    def place_of(fid: str) -> list[tuple[str, int]]:
+        try:
+            body = (FIXTURES / "kopis_place.xml").read_bytes() if fixtures else \
+                fetch(f"{KOPIS_BASE}/prfplc/{urllib.parse.quote(fid)}?" + urllib.parse.urlencode({"service": key}))
+            halls = [(h.get("prfplcnm", ""), int(re.sub(r"\D", "", h.get("seatscale", "")) or 0))
+                     for h in records(body, ("prfplcnm", "seatscale"))]
+            if not halls:  # 공연장 목록이 없으면 시설 전체 좌석 수
+                whole = records(body, ("fcltynm", "seatscale"))
+                halls = [("", int(re.sub(r"\D", "", whole[0].get("seatscale", "")) or 0))] if whole else []
+            return [h for h in halls if h[1] > 0]
+        except Exception as e:
+            print(f"  · KOPIS 시설 건너뜀 {fid}: {e}", file=sys.stderr)
+            return []
+
+    fids = sorted({first(d, "mt10id") for d in details.values() if first(d, "mt10id")})
+    with cf.ThreadPoolExecutor(max_workers=6) as pool:
+        places = dict(zip(fids, pool.map(place_of, fids)))
+
+    items, dropped = [], 0
+    for pid in ids:
+        d = details.get(pid, {})
+        item = kopis_item(seen[pid], d)
+        if not item:
+            continue
+        seats = seats_for(item["venue"], places.get(first(d, "mt10id"), []))
+        if not is_small(item["venue"], seats, max_seats):
+            dropped += 1
+            continue
+        if seats:
+            item["seats"] = seats
+        items.append(item)
+    print(f"  · {max_seats}석이 넘는 공연장 {dropped}건 제외")
     return items
+
+
+def seats_for(venue: str, halls: list[tuple[str, int]]) -> int | None:
+    """공연 장소 '시설 (공연장)'에 맞는 공연장 좌석 수. 모르면 None."""
+    if not halls:
+        return None
+    if len(halls) == 1:
+        return halls[0][1]
+    want = re.sub(r"\s+", "", hall_of(venue))
+    if want:
+        for name, seats in halls:
+            n = re.sub(r"\s+", "", name)
+            if n and (n == want or want in n or n in want):
+                return seats
+    return None
 
 
 def kopis_item(r: dict, d: dict) -> dict | None:
@@ -269,9 +400,10 @@ def kopis_item(r: dict, d: dict) -> dict | None:
     if not s or not e:
         return None
     genre = first(d, "genrenm") or first(r, "genrenm")
-    cat, art, tags = KOPIS_GENRE.get(genre, ("stage", "img/daehakro-duo.webp", ["영감"]))
+    cat, art, tags = genre_info(genre)
     tags = list(tags)
     if first(d, "child") == "Y" or first(r, "child") == "Y":
+        cat, art = "kids", KIDS_ART
         tags += ["가족", "아이"]
     url = None
     relates = d.get("relates")
@@ -281,7 +413,7 @@ def kopis_item(r: dict, d: dict) -> dict | None:
             if url:
                 break
     fee_text = first(d, "pcseguidance")
-    venue = first(d, "fcltynm") or first(r, "fcltynm")
+    venue = clean_venue(first(d, "fcltynm") or first(r, "fcltynm"))
     summary = clip(first(d, "sty"))
     return {
         "id": "kopis-" + first(r, "mt20id").lower(),
@@ -297,7 +429,8 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "d": summary or f"{genre or '공연'} · {venue}",
         "img": https(first(d, "poster") or first(r, "poster")),
         "art": art,
-        "url": url,
+        "url": url,                                        # 예매처 (없을 수 있음)
+        "info": KOPIS_PAGE.format(urllib.parse.quote(first(r, "mt20id"))),  # KOPIS 공식 공연 페이지
         "src": "kopis",
     }
 
@@ -335,6 +468,8 @@ def culture_item(r: dict) -> dict | None:
     realm = first(r, "realmName", "realm")
     venue = first(r, "place", "placeName")
     cat = realm_to_cat(realm)
+    if not cat:  # 전시·축제 등 공연이 아닌 것은 싣지 않는다
+        return None
     fee_text = first(r, "price", "fee")
     return {
         "id": "kcisa-" + (first(r, "seq") or slug(title, s.isoformat(), venue)),
@@ -346,7 +481,7 @@ def culture_item(r: dict) -> dict | None:
         "e": e.isoformat(),
         "fee": parse_fee(fee_text),
         "note": "",
-        "tags": ["영감"] if cat == "art" else [],
+        "tags": ["가족", "아이"] if cat == "kids" else [],
         "d": clip(first(r, "contents1", "description")) or f"{realm or '문화행사'} · {venue}",
         "img": https(first(r, "thumbnail", "imgUrl")),
         "url": https(first(r, "url", "placeUrl")),
@@ -373,7 +508,7 @@ def collect_manual(path: Path) -> list[dict]:
                 print(f"  · manual.csv {n}행: 날짜를 읽을 수 없어 건너뜀 ({title})", file=sys.stderr)
                 continue
             raw_cat = (row.get("분류") or "").strip()
-            cat = raw_cat if raw_cat in PAGE_CATS else MANUAL_CAT.get(raw_cat, "industry")
+            cat = raw_cat if raw_cat in PAGE_CATS else MANUAL_CAT.get(raw_cat, "theater")
             fee_raw = (row.get("관람료") or "").strip()
             fee = parse_fee(fee_raw) if not fee_raw.isdigit() else int(fee_raw)
             venue = (row.get("장소") or "").strip()
@@ -394,6 +529,79 @@ def collect_manual(path: Path) -> list[dict]:
                 "src": "manual",
             })
     return items
+
+
+# ------------------------------------------------------------------ 포스터 내려받기
+
+def image_ext(data: bytes) -> str | None:
+    """그림 파일인지 머리 바이트로 확인한다 (오류 페이지 HTML 등을 걸러낸다)."""
+    if data[:3] == b"\xff\xd8\xff":
+        return ".jpg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return ".png"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return ".gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    return None
+
+
+def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None) -> int:
+    """공식 포스터(img)를 내려받아 작게 줄여 folder 에 저장하고, 각 행사에 poster 경로를 단다.
+
+    - 이미 받은 포스터는 다시 받지 않는다.
+    - Pillow 가 있으면 가로 width 픽셀 WebP 로 줄이고, 없으면 원본을 그대로 저장한다.
+    - 지금 일정에 없는 포스터 파일은 지운다 (저장소가 커지지 않게).
+    """
+    getter = getter or (lambda url: fetch(url, tries=2, timeout=15))
+    try:
+        from PIL import Image  # 선택 사항
+    except ImportError:
+        Image = None
+    folder.mkdir(parents=True, exist_ok=True)
+    have = {p.name for p in folder.iterdir() if p.is_file()}
+
+    def one(it: dict) -> str | None:
+        url = it.get("img")
+        if not url:
+            return None
+        base = re.sub(r"[^a-z0-9_-]+", "-", it["id"].lower())
+        for ext in (".webp", ".jpg", ".png", ".gif"):
+            if base + ext in have:
+                return base + ext
+        try:
+            data = getter(url)
+        except Exception as e:
+            print(f"  · 포스터 건너뜀 {it['id']}: {e}", file=sys.stderr)
+            return None
+        ext = image_ext(data)
+        if not ext or len(data) > 8_000_000:
+            return None
+        if Image is not None:
+            try:
+                im = Image.open(io.BytesIO(data))
+                im = im.convert("RGB")
+                if im.width > width:
+                    im = im.resize((width, max(1, round(im.height * width / im.width))), Image.LANCZOS)
+                im.save(folder / (base + ".webp"), "WEBP", quality=72, method=6)
+                return base + ".webp"
+            except Exception as e:
+                print(f"  · 포스터 줄이기 실패, 원본 저장 {it['id']}: {e}", file=sys.stderr)
+        (folder / (base + ext)).write_bytes(data)
+        return base + ext
+
+    with cf.ThreadPoolExecutor(max_workers=6) as pool:
+        names = list(pool.map(one, items))
+    got = 0
+    for it, name in zip(items, names):
+        if name:
+            it["poster"] = f"{folder.name}/{name}"
+            got += 1
+    used = {n for n in names if n}
+    for p in folder.iterdir():
+        if p.is_file() and p.name not in used and not p.name.startswith("."):
+            p.unlink()
+    return got
 
 
 # ------------------------------------------------------------------ 합치기
@@ -424,10 +632,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--manual", default=str(DATA_DIR / "manual.csv"))
     ap.add_argument("--days", type=int, default=180, help="오늘부터 며칠 뒤까지 모을지")
     ap.add_argument("--past-days", type=int, default=0, help="이미 끝난 행사를 며칠 전까지 남길지")
-    ap.add_argument("--max-kopis", type=int, default=400)
-    ap.add_argument("--kopis-detail", type=int, default=150, help="요금·줄거리를 가져올 상세 조회 건수")
+    ap.add_argument("--max-kopis", type=int, default=1200, help="KOPIS에서 가져올 최대 공연 수 (기간마다 나눠 씀)")
+    ap.add_argument("--kopis-detail", type=int, default=1200, help="요금·줄거리를 가져올 상세 조회 건수")
     ap.add_argument("--max-culture", type=int, default=400)
+    ap.add_argument("--max-seats", type=int, default=300, help="이 좌석 수 이하 공연장만 싣는다 (소극장 기준)")
     ap.add_argument("--fixtures", action="store_true", help="저장된 예시 응답으로 실행 (네트워크·키 불필요)")
+    ap.add_argument("--posters-dir", default=str(POSTER_DIR), help="공식 포스터를 내려받아 둘 폴더 (페이지 기준 상대 경로로 쓰임)")
+    ap.add_argument("--no-posters", action="store_true", help="포스터를 내려받지 않는다")
     args = ap.parse_args(argv)
 
     today = dt.datetime.now(KST).date()
@@ -454,13 +665,17 @@ def main(argv: list[str] | None = None) -> int:
             sources.append({"name": name, "label": label, "count": 0, "ok": False, "error": str(e)[:200]})
 
     run("manual", "운영자 입력", lambda _k: collect_manual(Path(args.manual)))
-    run("kopis", "KOPIS 공연예술통합전산망", lambda k: collect_kopis(k, start, end, args.max_kopis, args.kopis_detail, args.fixtures), "KOPIS_API_KEY")
+    run("kopis", "KOPIS 공연예술통합전산망", lambda k: collect_kopis(k, start, end, args.max_kopis, args.kopis_detail, args.fixtures, args.max_seats), "KOPIS_API_KEY")
     run("kcisa", "한국문화정보원", lambda k: collect_culture(k, start, end, args.max_culture, args.fixtures), "DATA_GO_KR_KEY")
 
     items = merge(groups, start, end)
     if not items:
         print("모은 일정이 없어 기존 파일을 그대로 둡니다.", file=sys.stderr)
         return 1
+
+    if not args.no_posters and not args.fixtures:
+        got = cache_posters(items, Path(args.posters_dir))
+        print(f"- 포스터: {got}건 저장")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

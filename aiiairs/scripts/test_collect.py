@@ -39,6 +39,56 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(collect.region_of("광주광역시"), "광주")
         self.assertEqual(collect.region_of("알 수 없음"), "기타")
 
+    def test_venue(self):
+        self.assertEqual(collect.clean_venue("예시소극장 (예시소극장)"), "예시소극장")
+        self.assertEqual(collect.clean_venue("단막극장(구.대학로단막극장) (단막극장(구.대학로단막극장))"), "단막극장(구.대학로단막극장)")
+        self.assertEqual(collect.clean_venue("롯데마트 [월드컵] (행복을 주는 가족극장)"), "롯데마트 [월드컵] (행복을 주는 가족극장)")
+        self.assertEqual(collect.clean_venue("대학로 스카이씨어터"), "대학로 스카이씨어터")
+        self.assertEqual(collect.clean_venue("K-POP STAGE (구. 윤형빈소극장 [홍대] ) (K-POP STAGE (구. 윤형빈소극장 [홍대] ) )"),
+                         "K-POP STAGE (구. 윤형빈소극장 [홍대] )")
+        self.assertEqual(collect.clean_venue("더퍼포머씨어터 [화성] (더퍼포머씨어터)"), "더퍼포머씨어터 [화성]")
+
+    def test_small_stage(self):
+        self.assertTrue(collect.is_small("예시소극장", 120, 300))
+        self.assertFalse(collect.is_small("예시아트센터 (대극장)", 1200, 300))
+        self.assertFalse(collect.is_small("예시아레나 (대공연장)", None, 300))
+        self.assertTrue(collect.is_small("재즈클럽 그루브", None, 300))
+        self.assertEqual(collect.seats_for("예시아트센터 (소극장)", [("대극장", 1200), ("소극장", 180)]), 180)
+        self.assertIsNone(collect.seats_for("예시아트센터 (야외)", [("대극장", 1200), ("소극장", 180)]))
+        self.assertEqual(collect.seats_for("예시홀", [("예시홀", 90)]), 90)
+
+    def test_cache_posters(self):
+        gif = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+        pages = {"https://a.kr/1.gif": gif, "https://a.kr/2.gif": b"<html>error</html>"}
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "posters"
+            folder.mkdir()
+            (folder / "old-show.webp").write_bytes(b"x")  # 지금 일정에 없는 파일은 지워진다
+            items = [{"id": "kopis-pf1", "img": "https://a.kr/1.gif"},
+                     {"id": "kopis-pf2", "img": "https://a.kr/2.gif"},
+                     {"id": "manual-3"}]
+            got = collect.cache_posters(items, folder, getter=lambda u: pages[u])
+            self.assertEqual(got, 1)
+            self.assertTrue(items[0]["poster"].startswith("posters/kopis-pf1."))
+            self.assertTrue((folder / items[0]["poster"].split("/", 1)[1]).exists())
+            self.assertNotIn("poster", items[1])  # 그림이 아닌 응답은 저장하지 않는다
+            self.assertFalse((folder / "old-show.webp").exists())
+            # 두 번째에는 다시 받지 않는다
+            again = [{"id": "kopis-pf1", "img": "https://a.kr/1.gif"}]
+            collect.cache_posters(again, folder, getter=lambda u: (_ for _ in ()).throw(AssertionError("다시 받음")))
+            self.assertEqual(again[0]["poster"], items[0]["poster"])
+
+    def test_genre(self):
+        # KOPIS 가 실제로 보내는 이름 '무용(서양/한국무용)' 도 무용·마임으로
+        self.assertEqual(collect.genre_info("무용(서양/한국무용)")[0], "dance")
+        self.assertEqual(collect.genre_info("서커스/마술")[0], "dance")
+        self.assertEqual(collect.genre_info("서양음악(클래식)")[0], "classic")
+        self.assertEqual(collect.genre_info("한국음악(국악)")[0], "classic")
+        self.assertEqual(collect.genre_info("대중음악")[0], "music")
+        self.assertEqual(collect.genre_info("뮤지컬")[0], "musical")
+        self.assertEqual(collect.genre_info("복합")[0], "theater")
+        self.assertEqual(collect.genre_info("처음 보는 장르")[0], "theater")
+
     def test_https(self):
         self.assertEqual(collect.https("http://a.kr/x.gif"), "https://a.kr/x.gif")
         self.assertIsNone(collect.https("javascript:alert(1)"))
@@ -58,7 +108,19 @@ class FixtureRunTest(unittest.TestCase):
             self.assertEqual(items["kopis-pf000002"]["venue"], "예시재즈홀")
             self.assertEqual(items["kopis-pf000002"]["region"], "부산")
             self.assertEqual(items["kopis-pf000001"]["fee"], 20000)
-            self.assertEqual(items["kcisa-900003"]["cat"], "family")
+            self.assertEqual(items["kopis-pf000001"]["venue"], "예시소극장")
+            self.assertEqual(items["kcisa-900003"]["cat"], "kids")
+            # 전시(사진전)는 소공연 사이트에 싣지 않는다
+            self.assertNotIn("kcisa-900001", items)
+            # 좌석 수를 알면 표시하고, 큰 공연장(대공연장)은 뺀다
+            self.assertEqual(items["kopis-pf000001"]["seats"], 120)
+            # 모든 KOPIS 공연에 공식 공연 페이지 링크가 붙는다 (예매처가 없어도)
+            self.assertTrue(items["kopis-pf000002"]["info"].endswith("mt20Id=PF000002"))
+            self.assertNotIn("url", items["kopis-pf000002"])
+            self.assertEqual(items["kopis-pf000001"]["url"], "https://ticket.example.com/PF000001")
+            self.assertNotIn("kopis-pf000003", items)
+            self.assertEqual(items["kopis-pf000001"]["cat"], "theater")
+            self.assertEqual(items["kopis-pf000002"]["cat"], "music")
             for it in data["items"]:
                 self.assertRegex(it["s"], r"^\d{4}-\d{2}-\d{2}$")
                 self.assertIn("fee", it)
