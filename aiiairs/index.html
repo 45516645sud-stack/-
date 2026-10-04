@@ -756,6 +756,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         tags: Array.isArray(f.tags) ? f.tags : [],
         d: f.d || '',
         img: isWebUrl(f.img) ? f.img : null,
+        // 수집기가 내려받아 둔 공식 포스터 (사이트 안의 파일이라 늘 빠르게 뜬다)
+        poster: typeof f.poster === 'string' && /^posters\/[\w.-]+$/.test(f.poster) ? f.poster : null,
         url: isWebUrl(f.url) ? f.url : null,
         art: f.art || DEFAULT_ART[cat],
         start: parseDate(f.s),
@@ -1193,7 +1195,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'circle', fill: 'var(--ink)' }
   ];
   function posterHTML(f) {
-    if (f.img) return `<img src="${esc(f.img)}" alt="" loading="lazy" data-poster="${esc(f.id)}">`;
+    const src = f.poster || f.img;
+    if (src) return `<img src="${esc(src)}" alt="" loading="lazy" data-poster="${esc(f.id)}">`;
     const seed = hash(f.id);
     const r = rng(seed);
     const L = LAYOUTS[seed % LAYOUTS.length];

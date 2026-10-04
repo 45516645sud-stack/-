@@ -57,6 +57,27 @@ class ParseTest(unittest.TestCase):
         self.assertIsNone(collect.seats_for("예시아트센터 (야외)", [("대극장", 1200), ("소극장", 180)]))
         self.assertEqual(collect.seats_for("예시홀", [("예시홀", 90)]), 90)
 
+    def test_cache_posters(self):
+        gif = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+        pages = {"https://a.kr/1.gif": gif, "https://a.kr/2.gif": b"<html>error</html>"}
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "posters"
+            folder.mkdir()
+            (folder / "old-show.webp").write_bytes(b"x")  # 지금 일정에 없는 파일은 지워진다
+            items = [{"id": "kopis-pf1", "img": "https://a.kr/1.gif"},
+                     {"id": "kopis-pf2", "img": "https://a.kr/2.gif"},
+                     {"id": "manual-3"}]
+            got = collect.cache_posters(items, folder, getter=lambda u: pages[u])
+            self.assertEqual(got, 1)
+            self.assertTrue(items[0]["poster"].startswith("posters/kopis-pf1."))
+            self.assertTrue((folder / items[0]["poster"].split("/", 1)[1]).exists())
+            self.assertNotIn("poster", items[1])  # 그림이 아닌 응답은 저장하지 않는다
+            self.assertFalse((folder / "old-show.webp").exists())
+            # 두 번째에는 다시 받지 않는다
+            again = [{"id": "kopis-pf1", "img": "https://a.kr/1.gif"}]
+            collect.cache_posters(again, folder, getter=lambda u: (_ for _ in ()).throw(AssertionError("다시 받음")))
+            self.assertEqual(again[0]["poster"], items[0]["poster"])
+
     def test_https(self):
         self.assertEqual(collect.https("http://a.kr/x.gif"), "https://a.kr/x.gif")
         self.assertIsNone(collect.https("javascript:alert(1)"))

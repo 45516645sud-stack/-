@@ -25,6 +25,7 @@ import concurrent.futures as cf
 import csv
 import datetime as dt
 import hashlib
+import io
 import json
 import math
 import os
@@ -39,6 +40,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]          # aiiairs/
 DATA_DIR = ROOT / "data"
+POSTER_DIR = ROOT / "posters"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 KST = dt.timezone(dt.timedelta(hours=9))
 UA = "AIIairs-collector/1.0 (+https://expomoa.com/)"
@@ -505,6 +507,79 @@ def collect_manual(path: Path) -> list[dict]:
     return items
 
 
+# ------------------------------------------------------------------ 포스터 내려받기
+
+def image_ext(data: bytes) -> str | None:
+    """그림 파일인지 머리 바이트로 확인한다 (오류 페이지 HTML 등을 걸러낸다)."""
+    if data[:3] == b"\xff\xd8\xff":
+        return ".jpg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return ".png"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return ".gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    return None
+
+
+def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None) -> int:
+    """공식 포스터(img)를 내려받아 작게 줄여 folder 에 저장하고, 각 행사에 poster 경로를 단다.
+
+    - 이미 받은 포스터는 다시 받지 않는다.
+    - Pillow 가 있으면 가로 width 픽셀 WebP 로 줄이고, 없으면 원본을 그대로 저장한다.
+    - 지금 일정에 없는 포스터 파일은 지운다 (저장소가 커지지 않게).
+    """
+    getter = getter or (lambda url: fetch(url, tries=2, timeout=15))
+    try:
+        from PIL import Image  # 선택 사항
+    except ImportError:
+        Image = None
+    folder.mkdir(parents=True, exist_ok=True)
+    have = {p.name for p in folder.iterdir() if p.is_file()}
+
+    def one(it: dict) -> str | None:
+        url = it.get("img")
+        if not url:
+            return None
+        base = re.sub(r"[^a-z0-9_-]+", "-", it["id"].lower())
+        for ext in (".webp", ".jpg", ".png", ".gif"):
+            if base + ext in have:
+                return base + ext
+        try:
+            data = getter(url)
+        except Exception as e:
+            print(f"  · 포스터 건너뜀 {it['id']}: {e}", file=sys.stderr)
+            return None
+        ext = image_ext(data)
+        if not ext or len(data) > 8_000_000:
+            return None
+        if Image is not None:
+            try:
+                im = Image.open(io.BytesIO(data))
+                im = im.convert("RGB")
+                if im.width > width:
+                    im = im.resize((width, max(1, round(im.height * width / im.width))), Image.LANCZOS)
+                im.save(folder / (base + ".webp"), "WEBP", quality=72, method=6)
+                return base + ".webp"
+            except Exception as e:
+                print(f"  · 포스터 줄이기 실패, 원본 저장 {it['id']}: {e}", file=sys.stderr)
+        (folder / (base + ext)).write_bytes(data)
+        return base + ext
+
+    with cf.ThreadPoolExecutor(max_workers=6) as pool:
+        names = list(pool.map(one, items))
+    got = 0
+    for it, name in zip(items, names):
+        if name:
+            it["poster"] = f"{folder.name}/{name}"
+            got += 1
+    used = {n for n in names if n}
+    for p in folder.iterdir():
+        if p.is_file() and p.name not in used and not p.name.startswith("."):
+            p.unlink()
+    return got
+
+
 # ------------------------------------------------------------------ 합치기
 
 def norm_title(t: str) -> str:
@@ -538,6 +613,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--max-culture", type=int, default=400)
     ap.add_argument("--max-seats", type=int, default=300, help="이 좌석 수 이하 공연장만 싣는다 (소극장 기준)")
     ap.add_argument("--fixtures", action="store_true", help="저장된 예시 응답으로 실행 (네트워크·키 불필요)")
+    ap.add_argument("--posters-dir", default=str(POSTER_DIR), help="공식 포스터를 내려받아 둘 폴더 (페이지 기준 상대 경로로 쓰임)")
+    ap.add_argument("--no-posters", action="store_true", help="포스터를 내려받지 않는다")
     args = ap.parse_args(argv)
 
     today = dt.datetime.now(KST).date()
@@ -571,6 +648,10 @@ def main(argv: list[str] | None = None) -> int:
     if not items:
         print("모은 일정이 없어 기존 파일을 그대로 둡니다.", file=sys.stderr)
         return 1
+
+    if not args.no_posters and not args.fixtures:
+        got = cache_posters(items, Path(args.posters_dir))
+        print(f"- 포스터: {got}건 저장")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
