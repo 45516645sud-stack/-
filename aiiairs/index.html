@@ -971,8 +971,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { label: '혼자', w: ['혼자','나홀로','홀로'], tags: ['혼자', '조용한'], cats: { theater: .5, classic: .5 } },
     { label: '조용한', w: ['조용','차분','한적','고요','여유','느긋','힐링','쉬고','쉬러','휴식','잔잔'], tags: ['조용한'], cats: { classic: 1 } },
     { label: '영감', w: ['영감','자극','감각','새로운','실험','창작','예술','감성'], tags: ['영감'], cats: { theater: .5, dance: 1 } },
-    { label: '활기찬', w: ['신나','활기','북적','재밌','재미','웃긴','웃음','코미디','핫한','힙한','친구','스트레스'], tags: ['활기', '친구'], cats: { music: 1, musical: .5 } },
-    { label: '연극', w: ['연극','희곡','배우','2인극','1인극','대학로','혜화','낭독','코믹','로맨스','스릴러'], tags: [], cats: { theater: 3 } },
+    { label: '활기찬', w: ['신나','활기','북적','재밌','재미','핫한','힙한','친구','스트레스'], tags: ['활기', '친구'], cats: { music: 1, musical: .5 }, strip: ['여자친구','남자친구','여사친','남사친'] },
+    // '개그 콘서트'처럼 '콘서트'가 붙어도 음악 공연이 아니라 웃음 공연이다 (mutes: 이 단어가 있으면 다른 분야의 해당 단서를 무시)
+    // 장르 이름이 따로 없어서(대부분 '연극') 공연 이름·소개에 웃음 단어가 실제로 있는 것만 고른다 (textOnly)
+    { label: '코미디·개그', w: ['개그','개콘','코미디','코믹','희극','웃긴','웃기','웃음','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'], tags: [], cats: { theater: 1 },
+      textOnly: ['개그','코미디','코믹','희극','웃음','웃기','웃긴','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱','코미디언'],
+      mutes: { '라이브 음악': ['콘서트','라이브','클럽'] } },
+    { label: '연극', w: ['연극','희곡','배우','2인극','1인극','대학로','혜화','낭독','로맨스','스릴러'], tags: [], cats: { theater: 3 } },
     { label: '뮤지컬', w: ['뮤지컬','넘버'], tags: [], cats: { musical: 3 } },
     { label: '라이브 음악', w: ['라이브','밴드','인디','재즈','록','락','힙합','어쿠스틱','싱어송','버스킹','클럽','콘서트','노래','음악'], tags: [], cats: { music: 3 } },
     { label: '클래식·국악', w: ['클래식','현악','피아노','바이올린','첼로','실내악','사중주','오케스트라','오페라','성악','국악','가야금','판소리','하우스콘서트'], tags: [], cats: { classic: 3 } },
@@ -1012,6 +1017,15 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       const words = e.w.filter(w => text.includes(w));
       if (e.latin) for (const w of e.latin) if (new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(lower)) words.push(w.toUpperCase());
       if (words.length) hits.push({ ...e, words });
+    }
+    for (const h of [...hits]) {
+      if (!h.mutes) continue;
+      for (const [label, muted] of Object.entries(h.mutes)) {
+        const other = hits.find(x => x.label === label);
+        if (!other) continue;
+        other.words = other.words.filter(w => !muted.includes(w));
+        if (!other.words.length) hits.splice(hits.indexOf(other), 1);
+      }
     }
     const regions = REGIONS.filter(r => (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
 
@@ -1067,6 +1081,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     let score = 0;
     const why = [];
     for (const h of it.hits) {
+      if (h.textOnly) {
+        const n = h.textOnly.filter(w => text(f).includes(w)).length;
+        if (n) { score += 6 + 3 * Math.min(2, n) + (h.cats[f.cat] || 0) * 3; why.push(h.label); }
+        continue;
+      }
       let s = (h.cats[f.cat] || 0) * 3;
       for (const tag of h.tags) if (f.tags.includes(tag)) s += 2;
       // 적은 단어가 행사 이름·설명에 그대로 나오면 가산 (예: '재즈' → 재즈 공연)
