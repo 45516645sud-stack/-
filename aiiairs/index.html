@@ -471,24 +471,53 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .c-fee{order:1;padding-top:4px}
   .c-cat,.c-status{padding-top:0;text-align:right}
 }
-/* 사용 의견: 5분쯤 써 본 뒤 한 번만 묻는다. 화면을 가리지 않게 오른쪽 아래 작은 종이 한 장 */
-.fb{position:fixed;right:24px;bottom:24px;z-index:20;width:min(360px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--ink);padding:18px 20px 20px}
-.fb[hidden]{display:none}
-.fb-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.fb-title{margin:0;font-size:var(--s1);font-weight:500}
-.fb-sub{margin:6px 0 0;font-size:var(--s-1);color:var(--muted)}
-.fb-pick{display:grid;grid-template-columns:1fr 1fr;margin-top:16px;border:1px solid var(--ink)}
-.fb-pick button{background:transparent;border:0;padding:14px 10px;text-align:left;font-size:var(--s0)}
+/* 사용 의견: 5분쯤 써 본 뒤 한 번만 묻는다. 오른쪽 아래, 일정표에 끼워 둔 엽서 한 장처럼 */
+.fb{position:fixed;right:24px;bottom:24px;z-index:20;width:min(420px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;background:var(--surface);border:1px solid var(--ink)}
+.fb[hidden],.fb-step[hidden]{display:none}
+.fb button{-webkit-tap-highlight-color:transparent}
+.fb-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--ink);color:var(--bg);padding:10px 20px}
+.fb-bar b{font-family:var(--f-display);font-weight:600;font-size:var(--s0);letter-spacing:.01em}
+.fb-brand{margin:0}
+.fb-brand span{font-size:var(--s-2);color:var(--hair);margin-left:8px}
+.fb-brand i{font-style:normal}
+.fb-bar .fb-x{background:none;border:0;color:var(--bg);font-size:var(--s-1);padding:2px 0;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.fb-bar .fb-x:hover{color:var(--accent)}
+.fb-body{padding:22px 20px 20px}
+.fb-eyebrow{margin:0 0 10px;font-family:var(--f-display);font-style:italic;font-size:var(--s-1);color:var(--muted)}
+.fb-eyebrow em{font-style:normal;color:var(--accent)}
+.fb-title{margin:0;font-size:var(--s3);line-height:1.25;font-weight:500;letter-spacing:-.01em}
+.fb-sub{margin:8px 0 0;font-size:var(--s-1);color:var(--muted);line-height:1.6}
+.fb-pick{display:grid;grid-template-columns:1fr 1fr;margin-top:20px;border:1px solid var(--ink)}
+.fb-pick button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--surface);border:0;padding:14px 16px 16px;text-align:left;color:var(--ink)}
 .fb-pick button + button{border-left:1px solid var(--ink)}
-.fb-pick button:hover{background:var(--ink);color:var(--bg)}
-.fb-no{display:block;font-family:var(--f-display);font-size:var(--s-1);color:var(--accent);margin-bottom:2px}
-.fb-pick button:hover .fb-no{color:var(--bg)}
-.fb textarea{display:block;width:100%;margin-top:14px;min-height:96px;resize:vertical;border:1px solid var(--hair);background:var(--surface);color:var(--ink);padding:10px 12px;font:inherit;font-size:var(--s0);border-radius:0}
+.fb-pick button:hover,.fb-pick button:focus-visible{background:var(--ink);color:var(--bg)}
+.fb-no{font-family:var(--f-display);font-weight:300;font-size:var(--s6);line-height:1;color:var(--accent);margin-bottom:8px}
+.fb-pick button:hover .fb-no,.fb-pick button:focus-visible .fb-no{color:var(--bg)}
+.fb-label{font-size:var(--s1);font-weight:500}
+.fb-desc{font-size:var(--s-1);color:var(--muted)}
+.fb-pick button:hover .fb-desc,.fb-pick button:focus-visible .fb-desc{color:var(--hair)}
+.fb-chosen{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid var(--hair);font-size:var(--s-1);color:var(--muted)}
+.fb-chosen b{font-family:var(--f-display);font-weight:400;color:var(--accent);margin-right:6px}
+.fb-chosen strong{font-weight:500;color:var(--ink)}
+.fb-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.fb-reasons button{border:1px solid var(--hair);background:var(--surface);padding:5px 11px;font-size:var(--s-1);border-radius:0;color:var(--ink)}
+.fb-reasons button:hover{border-color:var(--ink)}
+.fb-reasons button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.fb textarea{display:block;width:100%;margin-top:12px;min-height:84px;resize:vertical;border:1px solid var(--hair);background:var(--surface);color:var(--ink);padding:10px 12px;font:inherit;font-size:var(--s0);line-height:1.55;border-radius:0}
+.fb textarea::placeholder{color:var(--muted);opacity:.8}
 .fb textarea:focus{outline:0;border-color:var(--accent)}
-.fb-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}
+.fb-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px}
 .fb-hint{font-size:var(--s-2);color:var(--muted)}
+.fb-btns{display:flex;align-items:center;gap:16px;flex:none}
+.fb-thanks{margin:0;font-family:var(--f-display);font-style:italic;font-weight:300;font-size:var(--s6);line-height:1;color:var(--accent)}
+.fb-done .fb-title{margin-top:14px;font-size:var(--s2)}
 @media (max-width:820px){
-  .fb{left:0;right:0;bottom:0;width:auto;border-width:1px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+  .fb{left:0;right:0;bottom:0;width:auto;max-height:85vh;border-width:1px 0 0}
+  .fb-bar{padding:10px 16px}
+  .fb-body{padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+  .fb-title{font-size:var(--s2)}
+  .fb-no{font-size:var(--s5)}
+  .fb-hint{display:none}
 
   :root{--pad:16px;--gap:16px;--col-date:3.6rem}
   .filters,.schedule{grid-column:1 / -1}
@@ -659,6 +688,66 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         </div>
       </details>
     </aside>
+
+    <div class="schedule" id="schedule" tabindex="-1">
+      <div id="notice"></div>
+      <section class="interp" id="interp" hidden aria-live="polite"></section>
+      <div class="sheet-head">
+        <h2 id="sheetTitle">전체 일정</h2>
+        <div class="sheet-tools">
+          <p id="sheetCount" aria-live="polite"></p>
+          <div class="view" role="group" aria-label="보기 방식">
+            <button type="button" data-view="list" aria-pressed="false">목록</button>
+            <button type="button" data-view="card" aria-pressed="true">카드</button>
+          </div>
+        </div>
+      </div>
+      <div class="sheet" id="sheet"><div class="empty"><p>일정을 불러오는 중이에요.</p></div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="f-brand">AIIairs</span>
+    <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
+    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span></p>
+  </div>
+</footer>
+
+<dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
+
+<aside class="fb" id="feedback" aria-labelledby="fbTitle" aria-live="polite" hidden>
+  <div class="fb-bar">
+    <p class="fb-brand"><b>AIIairs</b><span>사용 의견 · <i id="fbStepNo">1 / 2</i></span></p>
+    <button type="button" class="fb-x" data-fb="close">닫기</button>
+  </div>
+  <div class="fb-body fb-step" data-step="ask">
+    <p class="fb-eyebrow">A short question <em>/ 5분 사용</em></p>
+    <p class="fb-title" id="fbTitle">사용은 어떠신가요?</p>
+    <p class="fb-sub">둘러봐 주셔서 고마워요. 한 번만 여쭤볼게요.</p>
+    <div class="fb-pick" role="group" aria-label="사용 평가">
+      <button type="button" data-fb="1"><span class="fb-no">1</span><span class="fb-label">별로예요</span><span class="fb-desc">아쉬운 점이 있어요</span></button>
+      <button type="button" data-fb="2"><span class="fb-no">2</span><span class="fb-label">좋아요</span><span class="fb-desc">또 쓰고 싶어요</span></button>
+    </div>
+  </div>
+  <form class="fb-body fb-step" data-step="why" hidden>
+    <div class="fb-chosen"><span><b id="fbNo"></b><strong id="fbChosen"></strong>을 고르셨어요</span><button type="button" class="linkish" data-fb="back">다시 고르기</button></div>
+    <p class="fb-title" id="fbWhy"></p>
+    <p class="fb-sub" id="fbAsk"></p>
+    <div class="fb-reasons" id="fbReasons" role="group" aria-label="해당하는 것 고르기 (여러 개 가능)"></div>
+    <textarea id="fbText" maxlength="500" rows="3" aria-labelledby="fbWhy fbAsk"></textarea>
+    <div class="fb-foot">
+      <span class="fb-hint">이름·연락처는 적지 말아 주세요</span>
+      <span class="fb-btns"><button type="button" class="linkish" data-fb="skip">건너뛰기</button><button type="submit" class="btn btn-sm">보내기 <span class="arrow">→</span></button></span>
+    </div>
+  </form>
+  <div class="fb-body fb-step fb-done" data-step="done" hidden>
+    <p class="fb-thanks">Thank you.</p>
+    <p class="fb-title">고맙습니다.</p>
+    <p class="fb-sub">보내주신 의견은 다음에 사이트를 고칠 때 한 줄씩 꼭 읽어볼게요.</p>
+  </div>
+</aside>
 
     <div class="schedule" id="schedule" tabindex="-1">
       <div id="notice"></div>
@@ -1936,8 +2025,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const USE_KEY = 'aiiairs.usedMs';
   const FB_AFTER = 5 * 60 * 1000;
   const FB_COPY = {
-    1: { title: '왜 별로이신가요?', ask: '개선점을 적어 주시면 감사합니다.', rating: '별로예요' },
-    2: { title: '왜 좋으신가요?', ask: '좋았던 점을 적어 주시면 감사합니다.', rating: '좋아요' }
+    1: { title: '왜 별로이신가요?', ask: '개선점을 적어 주시면 감사합니다. 해당하는 것을 눌러도 돼요.', rating: '별로예요',
+         reasons: ['찾는 공연이 없어요', '검색이 잘 안 맞아요', '보기가 불편해요', '정보가 틀렸어요', '느려요'],
+         ph: '예) 우리 동네 공연이 더 있었으면 좋겠어요' },
+    2: { title: '왜 좋으신가요?', ask: '좋았던 점을 적어 주시면 감사합니다. 해당하는 것을 눌러도 돼요.', rating: '좋아요',
+         reasons: ['소극장만 모아 봐서', '포스터로 고르기 쉬워서', '취향 검색이 잘 맞아서', '날짜·지역 거르기 편해서', '디자인이 차분해서'],
+         ph: '예) 대학로 공연을 한눈에 볼 수 있어서 좋아요' }
   };
   const fb = $('feedback');
   const fbForce = new URLSearchParams(location.search).has('feedback');
@@ -1949,12 +2042,16 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   };
   function fbStep(name) {
     fb.querySelectorAll('.fb-step').forEach(el => { el.hidden = el.dataset.step !== name; });
+    $('fbStepNo').textContent = name === 'done' ? '완료' : name === 'why' ? '2 / 2' : '1 / 2';
+  }
+  function fbPicked() {
+    return [...$('fbReasons').querySelectorAll('button[aria-pressed="true"]')].map(b => b.textContent);
   }
   function fbSend(text) {
     if (fbSent || !fbRating) return;
     fbSent = true;
     report({
-      type: 'feedback', rating: FB_COPY[fbRating].rating, text: (text || '').trim().slice(0, 500),
+      type: 'feedback', rating: FB_COPY[fbRating].rating, text: (text || '').trim().slice(0, 500), reasons: fbPicked(),
       minutes: Math.round(Number(store.get(USE_KEY) || 0) / 60000),
       device: window.matchMedia('(hover:none)').matches ? '모바일' : 'PC'
     });
@@ -1972,13 +2069,20 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     fb.hidden = false;
   }
   fb.addEventListener('click', e => {
+    const r = e.target.closest('[data-reason]');
+    if (r) { r.setAttribute('aria-pressed', String(r.getAttribute('aria-pressed') !== 'true')); return; }
     const b = e.target.closest('[data-fb]');
     if (!b) return;
     const act = b.dataset.fb;
     if (act === '1' || act === '2') {
       fbRating = act;
-      $('fbWhy').textContent = FB_COPY[act].title;
-      $('fbAsk').textContent = FB_COPY[act].ask;
+      const c = FB_COPY[act];
+      $('fbNo').textContent = act;
+      $('fbChosen').textContent = c.rating;
+      $('fbWhy').textContent = c.title;
+      $('fbAsk').textContent = c.ask;
+      $('fbText').placeholder = c.ph;
+      $('fbReasons').innerHTML = c.reasons.map(r => `<button type="button" aria-pressed="false" data-reason>${r}</button>`).join('');
       fbStep('why');
       $('fbText').focus();
     } else if (act === 'back') {

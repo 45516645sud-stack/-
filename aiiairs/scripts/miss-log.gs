@@ -16,7 +16,7 @@
 
 var HEADER = ['시각', '종류', '어디서', '검색어', '조건', '조건을 풀면', '예시 데이터'];
 var TYPES = { miss: '결과 없음', alert: '알림 신청', feedback: '의견' };
-var FEEDBACK_HEADER = ['시각', '평가', '의견', '사용 시간(분)', '화면'];
+var FEEDBACK_HEADER = ['시각', '평가', '고른 이유', '의견', '사용 시간(분)', '화면'];
 
 function doPost(e) {
   var data;
@@ -32,6 +32,7 @@ function doPost(e) {
     sheet.appendRow([
       new Date(),
       data.rating === '좋아요' ? '2 좋아요' : '1 별로예요',
+      cut_((data.reasons || []).join(', '), 200),
       cut_(data.text, 500),
       Number(data.minutes) || '',
       data.device === '모바일' ? '모바일' : 'PC'
