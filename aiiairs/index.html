@@ -612,17 +612,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       <dl class="figures" id="figures"></dl>
     </div>
 
-    <form class="ask is-compact" id="askForm" role="search" autocomplete="off">
+    <form class="ask" id="askForm" role="search" autocomplete="off">
       <div class="ask-head">
         <label class="ask-label" for="askInput">취향으로 찾기 <em>Ask in your words</em></label>
         <div class="ask-size" role="group" aria-label="검색창 크기">
-          <button type="button" data-size="full" aria-pressed="false" aria-label="크게 보기" title="크게 보기">+</button>
-          <button type="button" data-size="compact" aria-pressed="true" aria-label="간단히 보기" title="간단히 보기">−</button>
+          <button type="button" data-size="full" aria-pressed="true" aria-label="크게 보기" title="크게 보기">+</button>
+          <button type="button" data-size="compact" aria-pressed="false" aria-label="간단히 보기" title="간단히 보기">−</button>
         </div>
       </div>
       <p class="ask-help">장르를 몰라도 괜찮아요. 보고 싶은 분위기나 함께 갈 사람을 한 문장으로 적으면, 문장을 읽고 맞는 공연과 장르를 골라드려요.</p>
       <div class="ask-body">
-        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 대학로 연극" data-ph-compact="예) 이번 주말 대학로 연극" data-ph-full="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극"></textarea>
+        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극" data-ph-compact="예) 이번 주말 대학로 연극" data-ph-full="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극"></textarea>
         <div class="ask-foot">
           <span class="ask-hint">Enter 찾기 · Shift+Enter 줄바꿈</span>
           <button class="btn" type="submit">찾아보기 <span class="arrow" aria-hidden="true">→</span></button>
@@ -1990,7 +1990,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     setAskSize(b.dataset.size);
     $('askInput').focus();
   });
-  setAskSize((() => { try { return localStorage.getItem('aiiairs.ask') || 'compact'; } catch { return 'compact'; } })());
+  setAskSize((() => { try { return localStorage.getItem('aiiairs.ask') || 'full'; } catch { return 'full'; } })());
 
   // 실제 포스터를 못 불러오면 그 자리를 행사 정보로 만든 포스터로 바꾼다.
   document.addEventListener('error', e => {
