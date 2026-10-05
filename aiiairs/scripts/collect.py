@@ -431,6 +431,7 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "art": art,
         "url": url,                                        # 예매처 (없을 수 있음)
         "info": KOPIS_PAGE.format(urllib.parse.quote(first(r, "mt20id"))),  # KOPIS 공식 공연 페이지
+        "openrun": True if (first(d, "openrun") or first(r, "openrun")) == "Y" else None,
         "src": "kopis",
     }
 

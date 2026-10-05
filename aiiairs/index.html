@@ -325,9 +325,9 @@ legend + *{clear:both}
   text-wrap:balance;
 }
 .card-why{margin-top:10px;font-size:var(--s-1);color:var(--accent)}
-.card-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-top:16px}
+.card-foot{margin-top:auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:4px 12px;padding-top:16px}
 .card-date{font-size:var(--s1);font-weight:500;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
-.card-venue{font-size:var(--s-1);font-weight:600;line-height:1.35;text-align:right;min-width:0}
+.card-venue{flex:1 1 6.5rem;min-width:6.5rem;font-size:var(--s-1);font-weight:600;line-height:1.35;text-align:right}
 .card-poster{position:absolute;inset:0;display:none;background:var(--ink)}
 .card-poster svg,.card-poster img,.dlg-poster svg,.dlg-poster img{display:block;width:100%;height:100%;object-fit:cover}
 @media (hover:hover){
@@ -532,7 +532,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .card-title,.group-body .card-title{margin-top:8px;font-size:var(--s1)}
   .card-foot{flex-direction:column;align-items:flex-start;gap:2px;padding-top:10px}
   .card-date{font-size:var(--s0)}
-  .card-venue{text-align:left;font-weight:500;color:var(--muted)}
+  .card-venue{flex:none;min-width:0;text-align:left;font-weight:500;color:var(--muted)}
 }
 @media (max-width:420px){
   .detail{padding-left:16px}
@@ -763,6 +763,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         art: f.art || DEFAULT_ART[cat],
         start: parseDate(f.s),
         end: parseDate(f.e),
+        // 끝나는 날 없이 계속하는 공연. KOPIS 는 종료일을 몇 년 뒤로 적어 보낸다.
+        openrun: f.openrun === true || (parseDate(f.e) - parseDate(f.s)) / DAY > 730,
         free: fee === 0
       };
     });
@@ -976,8 +978,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const names = DATA.sources.filter(x => x && x.count).map(x => x.label || x.name);
     $('srcNote').textContent = names.length ? `일정 출처: ${names.join(', ')}` : '';
     const upcoming = FAIRS.filter(f => !isPast(f));
-    const first = upcoming.reduce((m, f) => (f.start < m ? f.start : m), upcoming[0] ? upcoming[0].start : TODAY);
-    const lastD = upcoming.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
+    // 오픈런(종료일이 몇 년 뒤)은 기간 표시에서 빼고, 이미 시작한 공연은 오늘부터로 본다.
+    const dated = upcoming.filter(f => !f.openrun);
+    const first = dated.reduce((m, f) => (f.start < m ? f.start : m), TODAY) < TODAY ? TODAY
+      : dated.reduce((m, f) => (f.start < m ? f.start : m), TODAY);
+    const lastD = dated.reduce((m, f) => (f.end > m ? f.end : m), TODAY);
     $('season').textContent = `${first.getFullYear()}.${pad(first.getMonth() + 1)} — ${lastD.getFullYear()}.${pad(lastD.getMonth() + 1)}`;
     const live = FAIRS.filter(isLive).length;
     const soon = FAIRS.filter(f => f.start > TODAY).length;
@@ -1125,6 +1130,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   function statusOf(f) {
     if (isPast(f)) return { cls: '', text: '종료' };
+    if (isLive(f) && f.openrun) return { cls: 'live', text: '오픈런 · 상시 공연' };
     if (isLive(f)) {
       const left = Math.round((f.end - TODAY) / DAY);
       return { cls: 'live', text: left === 0 ? '오늘 마감' : `진행 중 · ${left}일 남음` };
@@ -1136,7 +1142,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function rowHTML(f, why) {
     const st = statusOf(f);
     const sameMonth = f.start.getMonth() === f.end.getMonth();
-    const endTxt = f.s === f.e ? '하루' : `— ${sameMonth ? pad(f.end.getDate()) : md(f.end)} ${WD[f.end.getDay()]}`;
+    const endTxt = f.openrun ? '— 오픈런' : f.s === f.e ? '하루' : `— ${sameMonth ? pad(f.end.getDate()) : md(f.end)} ${WD[f.end.getDay()]}`;
     const open = state.openId === f.id;
     const cls = ['fair', isPast(f) ? 'is-past' : '', open ? 'is-open' : ''].join(' ').trim();
     return `<li class="${cls}" id="fair-${f.id}">` +
@@ -1153,7 +1159,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `</button>` +
       `<div class="detail" id="detail-${f.id}"${open ? '' : ' hidden'}>` +
         `<p>${esc(f.d)}</p>` +
-        `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${md(f.end)} (${WD[f.end.getDay()]})</dd>` +
+        `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
         `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
         (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
         `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
@@ -1231,7 +1237,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function cardHTML(f, why) {
     const st = statusOf(f);
     const sameYear = f.start.getFullYear() === f.end.getFullYear();
-    const endTxt = f.s === f.e ? '' : ` – ${sameYear ? md(f.end) : `${f.end.getFullYear()}.${md(f.end)}`}`;
+    const endTxt = f.openrun ? ' – 오픈런' : f.s === f.e ? '' : ` – ${sameYear ? md(f.end) : `${f.end.getFullYear()}.${md(f.end)}`}`;
     return `<li class="card${isPast(f) ? ' is-past' : ''}">` +
       `<button type="button" class="card-btn" data-card="${f.id}" aria-haspopup="dialog">` +
         `<span class="card-text"><span class="card-top"><span class="card-cat">${CAT[f.cat].ko}</span>` +
@@ -1255,7 +1261,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<button type="button" class="dlg-close" data-act="close">닫기</button></div>` +
       `<h2 id="dlgTitle">${esc(f.t)}</h2><p class="dlg-status">${st.text} · ${esc(f.region)}</p>` +
       `<p class="desc">${esc(f.d)}</p>` +
-      `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${md(f.end)} (${WD[f.end.getDay()]})</dd>` +
+      `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
       `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
       (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
       `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd></dl>` +
@@ -1702,7 +1708,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `UID:${f.id}@expomoa.com`,
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ymd(f.start)}`,
-      `DTEND;VALUE=DATE:${ymd(addDays(f.end, 1))}`,
+      `DTEND;VALUE=DATE:${ymd(addDays(f.openrun ? f.start : f.end, 1))}`,
       `SUMMARY:${icsEscape(f.t)}`,
       `LOCATION:${icsEscape(`${f.venue}, ${f.region}`)}`,
       `DESCRIPTION:${icsEscape(`${f.d}\n관람료: ${won(f.fee)}${f.note ? ` (${f.note})` : ''}`)}`,
