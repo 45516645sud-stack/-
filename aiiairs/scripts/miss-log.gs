@@ -1,8 +1,9 @@
 /**
  * AIIairs 검색 기록 받기 (Google Apps Script)
  *
- * 사이트에서 결과가 없던 검색(type: "miss")과 알림 신청(type: "alert")을
- * 구글 시트에 한 줄씩 쌓는다. 개인정보는 받지 않고 검색 조건만 받는다.
+ * 사이트에서 결과가 없던 검색(type: "miss"), 알림 신청(type: "alert"),
+ * 5분 사용 뒤 묻는 사용 의견(type: "feedback")을 구글 시트에 한 줄씩 쌓는다.
+ * 개인정보는 받지 않는다 (검색 조건, 별로예요/좋아요, 적어 준 의견만).
  *
  * 설치
  *  1. 구글 시트를 새로 만든다 → 확장 프로그램 → Apps Script
@@ -14,7 +15,8 @@
  */
 
 var HEADER = ['시각', '종류', '어디서', '검색어', '조건', '조건을 풀면', '예시 데이터'];
-var TYPES = { miss: '결과 없음', alert: '알림 신청' };
+var TYPES = { miss: '결과 없음', alert: '알림 신청', feedback: '의견' };
+var FEEDBACK_HEADER = ['시각', '평가', '의견', '사용 시간(분)', '화면'];
 
 function doPost(e) {
   var data;
@@ -26,6 +28,16 @@ function doPost(e) {
   if (!TYPES[data.type]) return ContentService.createTextOutput('ignored');
 
   var sheet = sheetFor_(data.type);
+  if (data.type === 'feedback') {
+    sheet.appendRow([
+      new Date(),
+      data.rating === '좋아요' ? '2 좋아요' : '1 별로예요',
+      cut_(data.text, 500),
+      Number(data.minutes) || '',
+      data.device === '모바일' ? '모바일' : 'PC'
+    ]);
+    return ContentService.createTextOutput('ok');
+  }
   sheet.appendRow([
     new Date(),
     TYPES[data.type],
@@ -38,13 +50,13 @@ function doPost(e) {
   return ContentService.createTextOutput('ok');
 }
 
-// 종류별로 탭을 나눈다: '결과 없음', '알림 신청'
+// 종류별로 탭을 나눈다: '결과 없음', '알림 신청', '의견'
 function sheetFor_(type) {
   var book = SpreadsheetApp.getActiveSpreadsheet();
   var name = TYPES[type];
   var sheet = book.getSheetByName(name) || book.insertSheet(name);
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(HEADER);
+    sheet.appendRow(type === 'feedback' ? FEEDBACK_HEADER : HEADER);
     sheet.setFrozenRows(1);
   }
   return sheet;
