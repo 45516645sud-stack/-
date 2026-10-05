@@ -1,0 +1,63 @@
+# AIIairs 사이트 공개: aiiairs/ 폴더를 GitHub Pages 로 올린다.
+# 처음 한 번 저장소 Settings → Pages → Build and deployment → Source 를 "GitHub Actions" 로 바꿔야 한다.
+# 주소: https://<계정>.github.io/<저장소>/
+name: AIIairs 사이트 공개
+
+on:
+  # 사이트 파일을 고쳐 기본 브랜치에 올렸을 때
+  push:
+    paths:
+      - "aiiairs/**"
+      - ".github/workflows/aiiairs-pages.yml"
+  # 일정 수집이 끝났을 때. 수집 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
+  workflow_run:
+    workflows: ["AIIairs 일정 수집"]
+    types: [completed]
+  # Actions 탭에서 바로 실행
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: aiiairs-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # 기본 브랜치에서만, 그리고 수집이 실패했을 때는 올리지 않는다
+    if: >-
+      github.ref_name == github.event.repository.default_branch &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # workflow_run 일 때도 수집이 막 올린 최신 일정을 받도록 기본 브랜치 끝을 받는다
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: 공개할 파일만 모으기
+        run: |
+          mkdir -p _site
+          cp aiiairs/index.html aiiairs/robots.txt aiiairs/sitemap.xml _site/
+          cp -r aiiairs/img aiiairs/data _site/
+          if [ -d aiiairs/posters ]; then cp -r aiiairs/posters _site/; fi
+          # 운영용 파일(직접 입력 원본 표)은 올리지 않는다
+          rm -f _site/data/manual.csv
+          touch _site/.nojekyll
+          ls -la _site _site/data | head -40
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

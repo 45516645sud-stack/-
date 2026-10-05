@@ -44,6 +44,15 @@ aiiairs/
 4. **예시 일정 끄기**: `data/fairs.json`이 생기면 페이지가 자동으로 실제 일정을 보여주고,
    상단의 '예시 일정' 표시 대신 갱신 시각과 출처를 보여줘요.
 
+## 사이트 공개 (GitHub Pages)
+
+`.github/workflows/aiiairs-pages.yml`이 `aiiairs/` 폴더를 GitHub Pages로 올려요. 주소는 `https://45516645sud-stack.github.io/-/`예요.
+
+- **처음 한 번만**: 저장소 Settings → Pages → Build and deployment → Source를 **GitHub Actions**로 바꾸기
+- 그다음부터는 자동이에요. 사이트 파일을 고쳐 기본 브랜치에 올리거나, 매일 새벽 일정 수집이 끝나면 다시 올라가요.
+  (수집 로봇이 만든 커밋은 다른 자동 작업을 깨우지 않아서, 수집 워크플로가 끝나는 것을 신호로 받아요.)
+- 올라가는 것: `index.html`, `robots.txt`, `sitemap.xml`, `img/`, `data/fairs.json`, `posters/`. 수집 스크립트와 `manual.csv`는 올리지 않아요.
+
 ## 공식 포스터
 
 수집기가 KOPIS의 공식 포스터를 내려받아 `posters/`에 작게(가로 360px WebP) 저장하고, 페이지는 그 파일을 써요.
