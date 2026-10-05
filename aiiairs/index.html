@@ -931,7 +931,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function periodRange(p) {
     if (p === 'weekend') return weekend(0);
     if (p === 'nextweekend') return weekend(1);
+    if (p === 'today') return [TODAY, TODAY];
+    if (p === 'tomorrow') return [addDays(TODAY, 1), addDays(TODAY, 1)];
+    if (p === 'thisweek') return [TODAY, addDays(TODAY, (7 - TODAY.getDay()) % 7)];
+    if (p === 'nextweek') { const mon = addDays(TODAY, ((8 - TODAY.getDay()) % 7) || 7); return [mon, addDays(mon, 6)]; }
+    if (p === 'xmas') { const y = TODAY.getMonth() === 11 && TODAY.getDate() > 25 ? TODAY.getFullYear() + 1 : TODAY.getFullYear(); return [new Date(y, 11, 24), new Date(y, 11, 25)]; }
     if (p.startsWith('m:')) return monthRange(p.slice(2));
+    if (p.startsWith('d:')) { const [a, b] = p.slice(2).split('~'); return [parseDate(a), parseDate(b || a)]; }
     return null;
   }
   const monthKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
@@ -939,6 +945,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (p === 'all') return '전체 기간';
     if (p === 'weekend') return '이번 주말';
     if (p === 'nextweekend') return '다음 주말';
+    // 오늘·내일·특정 날짜는 뒤에 붙는 날짜 표시로 충분하다
+    if (p === 'today' || p === 'tomorrow' || p.startsWith('d:')) return '';
+    const named = { thisweek: '이번 주', nextweek: '다음 주', xmas: '크리스마스' }[p];
+    if (named) return named;
     const [y, m] = p.slice(2).split('-').map(Number);
     return y === TODAY.getFullYear() ? `${m}월` : `${String(y).slice(2)}년 ${m}월`;
   }
@@ -965,37 +975,62 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
      서버 없이 동작하도록 사전 기반으로 구성했다. interpret()만 교체하면
      외부 언어 모델 응답(같은 형태의 객체)으로 바꿔 끼울 수 있다. */
   const LEXICON = [
-    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서'], tags: ['데이트'], cats: { theater: 1, musical: 1, music: 1 } },
-    { label: '아이와 함께', w: ['아이랑','아이와','아이들','아기','애기','아들','딸','유아','키즈','어린이','초등','애들','인형극','동화'], tags: ['아이', '가족'], cats: { kids: 3 } },
-    { label: '가족', w: ['가족','부모님','엄마','아빠','온가족','나들이'], tags: ['가족'], cats: { kids: 1, classic: .5 } },
-    { label: '혼자', w: ['혼자','나홀로','홀로'], tags: ['혼자', '조용한'], cats: { theater: .5, classic: .5 } },
-    { label: '조용한', w: ['조용','차분','한적','고요','여유','느긋','힐링','쉬고','쉬러','휴식','잔잔'], tags: ['조용한'], cats: { classic: 1 } },
-    { label: '영감', w: ['영감','자극','감각','새로운','실험','창작','예술','감성'], tags: ['영감'], cats: { theater: .5, dance: 1 } },
-    { label: '활기찬', w: ['신나','활기','북적','재밌','재미','핫한','힙한','친구','스트레스'], tags: ['활기', '친구'], cats: { music: 1, musical: .5 }, strip: ['여자친구','남자친구','여사친','남사친'] },
+    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서','로맨틱','로맨스','기념일','생일','프로포즈','썸','첫만남','설레','설렘'], latin: ['date','couple'], tags: ['데이트'], cats: { theater: 1, musical: 1, music: 1 } },
+    // '아이돌'의 '아이'는 아이(어린이)가 아니다
+    { label: '아이와 함께', w: ['아이','아기','애기','아들','딸','유아','키즈','어린이','아동','초등','애들','유치원','인형극','동화','가족극'], strip: ['아이돌','아이디'], latin: ['kids','kid','children','family'], tags: ['아이', '가족'], cats: { kids: 3 } },
+    { label: '가족', w: ['가족','온가족','나들이'], tags: ['가족'], cats: { kids: 1, classic: .5 } },
+    { label: '부모님과', w: ['부모님','어머니','아버지','엄마','아빠','효도','할머니','할아버지','어르신','시부모','장인','장모'], tags: [], cats: { classic: 1, musical: 1, theater: .5 } },
+    { label: '청소년', w: ['중학생','고등학생','청소년','중딩','고딩','10대','십대','수학여행'], tags: [], cats: { musical: 1, theater: 1, music: .5 }, soft: true },
+    { label: '혼자', w: ['혼자','나홀로','홀로','혼공','혼관','혼밥','혼술'], tags: ['혼자', '조용한'], cats: { theater: .5, classic: .5 } },
+    { label: '여럿이', w: ['동료','회사','단체','회식','팀원','동아리','모임','친구들'], tags: ['친구'], cats: { musical: 1, theater: 1, music: 1 }, soft: true },
+    { label: '조용한', w: ['조용','차분','한적','고요','여유','느긋','힐링','쉬고','쉬러','휴식'], tags: ['조용한'], cats: { classic: 1 } },
+    { label: '감성', w: ['감성','비오는','비내리','잔잔','몽환','새벽','센치','우울','쓸쓸'], tags: ['조용한'], cats: { music: 1, classic: 1 } },
+    { label: '감동', w: ['감동','울고','눈물','먹먹','뭉클','위로','울컥','슬픈','여운'], tags: [], cats: { theater: .5, musical: .5 }, soft: true },
+    { label: '영감', w: ['영감','자극','감각','새로운','실험','창작','예술'], tags: ['영감'], cats: { theater: .5, dance: 1 } },
+    { label: '활기찬', w: ['신나','활기','북적','재밌','재미','핫한','힙한','친구','스트레스'], tags: ['활기', '친구'], cats: { music: 1, musical: .5 }, strip: ['여자친구','남자친구','여사친','남사친','외국인친구'] },
     // '개그 콘서트'처럼 '콘서트'가 붙어도 음악 공연이 아니라 웃음 공연이다 (mutes: 이 단어가 있으면 다른 분야의 해당 단서를 무시)
     // 장르 이름이 따로 없어서(대부분 '연극') 공연 이름·소개에 웃음 단어가 실제로 있는 것만 고른다 (textOnly)
-    { label: '코미디·개그', w: ['개그','개콘','코미디','코믹','희극','웃긴','웃기','웃음','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'], tags: [], cats: { theater: 1 },
-      textOnly: ['개그','코미디','코믹','희극','웃음','웃기','웃긴','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱','코미디언'],
+    { label: '코미디·개그', w: ['개그','개콘','코미디','코믹','희극','웃긴','웃기','웃음','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'], latin: ['comedy','comedian','funny','standup'], tags: [], cats: { theater: 1 },
+      textOnly: ['개그','코미디','코믹','희극','웃음','웃기','웃긴','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'],
       mutes: { '라이브 음악': ['콘서트','라이브','클럽'] } },
-    { label: '연극', w: ['연극','희곡','배우','2인극','1인극','대학로','혜화','낭독','로맨스','스릴러'], tags: [], cats: { theater: 3 } },
-    { label: '뮤지컬', w: ['뮤지컬','넘버'], tags: [], cats: { musical: 3 } },
-    { label: '라이브 음악', w: ['라이브','밴드','인디','재즈','록','락','힙합','어쿠스틱','싱어송','버스킹','클럽','콘서트','노래','음악'], tags: [], cats: { music: 3 } },
-    { label: '클래식·국악', w: ['클래식','현악','피아노','바이올린','첼로','실내악','사중주','오케스트라','오페라','성악','국악','가야금','판소리','하우스콘서트'], tags: [], cats: { classic: 3 } },
-    { label: '무용·마임', w: ['무용','발레','현대무용','댄스','마임','서커스','마술','저글링','퍼포먼스','몸짓'], tags: [], cats: { dance: 3 } },
-    { label: '여행 중', w: ['여행','여행지','떠나','휴가'], tags: ['여행'], cats: {} }
+    { label: '공포·스릴러', w: ['무서','공포','호러','스릴러','추리','미스터리','미스테리','오싹','괴담','귀신','좀비','서스펜스'], latin: ['horror','thriller'], tags: [], cats: { theater: 1 },
+      textOnly: ['공포','호러','스릴러','추리','미스터리','미스테리','괴담','귀신','좀비','살인','범죄','서스펜스','오싹'] },
+    { label: '반려동물과', w: ['반려견','반려동물','반려묘','강아지','댕댕','펫'], latin: ['pet','dog'], tags: [], cats: {}, textOnly: ['펫프렌들리','반려견동반','반려동물동반','반려견입장','반려동물입장','반려견과함께','반려동물과함께'] },
+    { label: '말 없이 즐기는', w: ['외국인','말안통','말없이','말이필요없','넌버벌','논버벌','대사없','언어상관'], latin: ['nonverbal','foreigner'], tags: [], cats: { dance: 2.5, music: 1, classic: 1 } },
+    { label: '연극', narrow: true, w: ['연극','희곡','배우','2인극','1인극','대학로','혜화','낭독','모노드라마','부조리극'], latin: ['theater','theatre','play','drama'], tags: [], cats: { theater: 3 } },
+    { label: '뮤지컬', narrow: true, w: ['뮤지컬','넘버'], latin: ['musical'], tags: [], cats: { musical: 3 } },
+    { label: '라이브 음악', narrow: true, w: ['라이브','밴드','인디','재즈','록','락페','락밴드','락공연','락음악','힙합','어쿠스틱','싱어송','버스킹','클럽','콘서트','노래','음악','트로트','발라드','아이돌','케이팝','k팝','팝송','알앤비','블루스','소울','포크','디제이'], latin: ['jazz','concert','live','band','indie','rock','hiphop','kpop','k-pop','pop','dj','edm'], tags: [], cats: { music: 3 } },
+    { label: '클래식·국악', narrow: true, w: ['클래식','현악','피아노','바이올린','첼로','실내악','사중주','오케스트라','오페라','성악','국악','가야금','판소리','하우스콘서트','사물놀이','풍물','대금','해금','장구','창극','민요','정가','타악','독주회','리사이틀','앙상블','합창','기타리스트'], latin: ['classical','classic','piano','violin','opera','recital','orchestra'], tags: [], cats: { classic: 3 },
+      mutes: { '라이브 음악': ['콘서트'] } },
+    { label: '무용·마임', narrow: true, w: ['무용','발레','현대무용','한국무용','전통춤','댄스','춤','비보잉','브레이킹','탭댄스','스트릿','마임','서커스','마술','저글링','퍼포먼스','몸짓','아크로바틱'], latin: ['dance','ballet','mime','circus','magic'], tags: [], cats: { dance: 3 } },
+    // 공연 정보로 바로 판단하는 말 (test)
+    { label: '오픈런', w: ['오픈런','상시공연','장기공연','언제든볼수'], tags: [], cats: {}, test: f => f.openrun },
+    { label: '곧 끝나는', w: ['끝나는','막공','마감','막바지','종연','놓치기전','곧끝'], tags: [], cats: {}, test: f => f.end >= TODAY && f.end <= addDays(TODAY, 14) },
+    { label: '곧 시작', w: ['새로시작','곧시작','개막','오픈예정','새로운공연','새로올라','신작'], tags: [], cats: {}, test: f => f.start > TODAY && f.start <= addDays(TODAY, 14) },
+    // 그 자체로는 거르지 않는 말 (사이트가 원래 소극장 모음이라)
+    { label: '소극장', w: ['소극장','작은극장','작은무대','소공연'], tags: [], cats: {}, soft: true },
+    { label: '여행 중', w: ['여행','여행지','떠나','휴가'], latin: ['trip','travel'], tags: ['여행'], cats: {}, soft: true },
+    { label: '아무거나', w: ['아무거나','뭐볼까','뭘볼까','추천','심심','볼만한','볼거리'], tags: [], cats: {}, soft: true }
   ];
+  const LATIN_KO = { jazz: '재즈', rock: '록', band: '밴드', hiphop: '힙합', kpop: '케이팝', 'k-pop': '케이팝', piano: '피아노', violin: '바이올린',
+    opera: '오페라', ballet: '발레', mime: '마임', circus: '서커스', magic: '마술', comedy: '코미디', funny: '웃긴', horror: '공포', thriller: '스릴러',
+    musical: '뮤지컬', theater: '연극', theatre: '연극', play: '연극', drama: '연극', concert: '콘서트', live: '라이브', dance: '댄스', kids: '어린이', children: '어린이' };
+  // 장르 이름 자체(연극·콘서트 등)는 '이 단어가 적힌 공연만' 고르는 데 쓰지 않는다. '재즈', '판소리'처럼 구체적인 말만 쓴다.
+  const BROAD = new Set(['연극','배우','대학로','혜화','뮤지컬','넘버','라이브','콘서트','노래','음악','클럽','인디','아이돌','클래식','국악','무용','댄스','퍼포먼스','몸짓','춤',
+    'THEATER','THEATRE','PLAY','DRAMA','MUSICAL','CONCERT','LIVE','CLASSIC','CLASSICAL','DANCE']);
+
   const REGION_ALIAS = {
-    '서울': ['서울','대학로','혜화','홍대','합정','신촌','성수','이태원','강남','종로','마포'],
+    '서울': ['서울','seoul','대학로','혜화','홍대','합정','신촌','성수','이태원','강남','종로','마포'],
     '경기': ['경기','일산','고양','수원','판교','성남','부천','안양'],
-    '인천': ['인천','송도'],
-    '부산': ['부산','해운대','광안리','서면','남포'],
-    '대구': ['대구','동성로'],
-    '대전': ['대전','유성'],
+    '인천': ['인천','incheon','송도'],
+    '부산': ['부산','busan','해운대','광안리','서면','남포'],
+    '대구': ['대구','daegu','동성로'],
+    '대전': ['대전','daejeon','유성'],
     '광주': ['광주','양림동'],
     '경북': ['경북','경주','포항'],
     '경남': ['경남','창원'],
     '전북': ['전북','군산','전주'],
-    '제주': ['제주'],
+    '제주': ['제주','jeju'],
     '울산': ['울산'],
     '세종': ['세종'],
     '강원': ['강원','춘천','강릉','속초','원주'],
@@ -1015,8 +1050,15 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       let text = t;
       if (e.strip) for (const s of e.strip) text = text.split(s).join('');
       const words = e.w.filter(w => text.includes(w));
-      if (e.latin) for (const w of e.latin) if (new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(lower)) words.push(w.toUpperCase());
+      if (e.latin) for (const w of e.latin) if (new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(lower)) words.push(LATIN_KO[w] || w.toUpperCase());
       if (words.length) hits.push({ ...e, words });
+    }
+    const age = t.match(/(\d{1,2})(살|세)/);
+    if (age && Number(age[1]) <= 12 && !hits.some(h => h.label === '아이와 함께')) {
+      const kid = LEXICON.find(e => e.label === '아이와 함께');
+      hits.push({ ...kid, words: [age[0]] });
+    } else if (age && Number(age[1]) >= 13 && Number(age[1]) <= 19 && !hits.some(h => h.label === '청소년')) {
+      hits.push({ ...LEXICON.find(e => e.label === '청소년'), words: [age[0]] });
     }
     for (const h of [...hits]) {
       if (!h.mutes) continue;
@@ -1027,11 +1069,53 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         if (!other.words.length) hits.splice(hits.indexOf(other), 1);
       }
     }
-    const regions = REGIONS.filter(r => (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
+    let regions = REGIONS.filter(r => (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
+    let excludedOut = null;
+    // '서울 말고', '부산 빼고' → 그 지역을 뺀 나머지. '지방' → 수도권을 뺀 나머지
+    const NOT = /^(말고|빼고|제외|아닌|아니고|이외|외에|밖)/;
+    const excluded = new Set(regions.filter(r => (REGION_ALIAS[r] || [r]).some(a => {
+      const i = t.indexOf(a);
+      return i >= 0 && NOT.test(t.slice(i + a.length).replace(/^(은|는|이|가|을|를|쪽|지역)/, ''));
+    })));
+    if (/지방|지역공연|수도권말고|수도권빼고/.test(t)) ['서울', '경기', '인천'].forEach(r => excluded.add(r));
+    if (excluded.size) excludedOut = [...excluded].filter(r => REGIONS.includes(r) || r === '서울');
+    if (excluded.size) regions = REGIONS.filter(r => !excluded.has(r) && !(REGION_ALIAS[r] || []).some(a => [...excluded].includes(a)));
 
     let period = null;
-    if (/다음주말|담주말|다음주주말/.test(t)) period = 'nextweekend';
+    const ymd = (mm, dd) => {
+      const y = mm - 1 < TODAY.getMonth() ? TODAY.getFullYear() + 1 : TODAY.getFullYear();
+      return `${y}-${pad(mm)}-${pad(dd)}`;
+    };
+    const day = t.match(/(\d{1,2})월(\d{1,2})일/);
+    const monthWeekend = t.match(/(\d{1,2})월(첫째|첫|둘째|두번째|셋째|세번째|넷째|네번째|마지막)?주말/);
+    const wd = t.match(/(다음주|담주)?(월|화|수|목|금|토|일)요일/);
+    if (day && Number(day[1]) >= 1 && Number(day[1]) <= 12 && Number(day[2]) >= 1 && Number(day[2]) <= 31) period = 'd:' + ymd(Number(day[1]), Number(day[2]));
+    else if (monthWeekend && Number(monthWeekend[1]) >= 1 && Number(monthWeekend[1]) <= 12) {
+      // 'N월 첫째 주말' → 그 달의 N번째 토·일, 'N월 주말' → 그 달 전체
+      const mm = Number(monthWeekend[1]);
+      const y = mm - 1 < TODAY.getMonth() ? TODAY.getFullYear() + 1 : TODAY.getFullYear();
+      const nth = { 첫째: 0, 첫: 0, 둘째: 1, 두번째: 1, 셋째: 2, 세번째: 2, 넷째: 3, 네번째: 3 }[monthWeekend[2]];
+      const sats = [];
+      for (let d = new Date(y, mm - 1, 1); d.getMonth() === mm - 1; d = addDays(d, 1)) if (d.getDay() === 6) sats.push(d);
+      const sat = monthWeekend[2] === '마지막' ? sats[sats.length - 1] : nth != null ? sats[nth] : null;
+      period = sat ? `d:${y}-${pad(mm)}-${pad(sat.getDate())}~${dkey(addDays(sat, 1))}` : `m:${y}-${pad(mm)}`;
+    }
+    else if (/할로윈|핼러윈|할로윈데이/.test(t)) period = 'd:' + ymd(10, 31);
+    else if (wd) {
+      // '금요일' → 오늘부터 가장 가까운 그 요일, '다음주 금요일' → 다음 주의 그 요일
+      const want = '일월화수목금토'.indexOf(wd[2]);
+      let d = addDays(TODAY, (want - TODAY.getDay() + 7) % 7);
+      if (wd[1]) { const mon = addDays(TODAY, ((8 - TODAY.getDay()) % 7) || 7); d = addDays(mon, (want + 6) % 7); }
+      period = 'd:' + dkey(d);
+    }
+    else if (/다음주말|담주말|다음주주말/.test(t)) period = 'nextweekend';
     else if (/주말/.test(t)) period = 'weekend';
+    else if (/오늘|지금|당장|퇴근|진행중|하는중/.test(t)) period = 'today';
+    else if (/모레/.test(t)) period = 'd:' + dkey(addDays(TODAY, 2));
+    else if (/내일/.test(t)) period = 'tomorrow';
+    else if (/이번주|금주/.test(t)) period = 'thisweek';
+    else if (/다음주|담주/.test(t)) period = 'nextweek';
+    else if (/크리스마스|성탄/.test(t)) period = 'xmas';
     else {
       let target = null;
       const m = t.match(/(\d{1,2})월/);
@@ -1043,7 +1127,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         }
       } else if (/이번달|이달/.test(t)) target = monthKey(TODAY);
       else if (/다음달|담달/.test(t)) target = monthKey(new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 1));
-      else if (/연말|크리스마스/.test(t)) target = `${TODAY.getFullYear()}-12`;
+      else if (/연말/.test(t)) target = `${TODAY.getFullYear()}-12`;
       else if (/새해|연초/.test(t)) target = `${TODAY.getFullYear() + 1}-01`;
       if (target) period = 'm:' + target;
     }
@@ -1056,14 +1140,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     // 예산: '2만원 이하', '3만원까지', '1~2만원대', '5천원 이하'
     let budget = null;
     const span = t.match(/(\d+)[~\-](\d+)만원?대/);
+    const manCheon = t.match(/(\d+)만(\d)천원?(이하|이내|아래|까지|미만|안쪽)?/);
     const man = t.match(/(\d+(?:\.\d+)?)만원?(이하|이내|아래|까지|미만|안쪽|대)/);
     const cheon = t.match(/(\d+)천원?(이하|이내|아래|까지|미만|안쪽)/);
     if (span) budget = (Number(span[2]) + 1) * 10000 - 1;
+    else if (manCheon) budget = Number(manCheon[1]) * 10000 + Number(manCheon[2]) * 1000 - (manCheon[3] === '미만' ? 1 : 0);
     else if (man) {
       const n = parseFloat(man[1]) * 10000;
       budget = man[2] === '대' ? (Math.floor(parseFloat(man[1])) + 1) * 10000 - 1 : man[2] === '미만' ? n - 1 : n;
     } else if (cheon) budget = Number(cheon[1]) * 1000;
     else if (/만원(이하|이내|아래|안쪽)/.test(t)) budget = 10000;
+    else if (/(^|[^비])(싼|싸게|싸고)|저렴|가성비|알뜰|부담없/.test(t) || /\bcheap\b/.test(lower)) budget = 20000;
     if (cost === 'free') budget = null;
 
     const catWeight = {};
@@ -1072,7 +1159,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     for (const [k, v] of Object.entries(catWeight)) groupWeight[GROUP_OF[k]] = (groupWeight[GROUP_OF[k]] || 0) + v;
     const suggested = Object.entries(groupWeight).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
 
-    return { raw, hits, regions, period, cost, budget, suggested };
+    return { raw, hits, regions, period, cost, budget, suggested, excluded: excludedOut };
   }
 
   const TEXT = new Map();
@@ -1080,19 +1167,24 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function scoreFair(f, it) {
     let score = 0;
     const why = [];
+    let core = 0;
     for (const h of it.hits) {
+      if (h.test) {
+        if (h.test(f)) { score += 10; core += 10; why.push(h.label); }
+        continue;
+      }
       if (h.textOnly) {
         const n = h.textOnly.filter(w => text(f).includes(w)).length;
-        if (n) { score += 6 + 3 * Math.min(2, n) + (h.cats[f.cat] || 0) * 3; why.push(h.label); }
+        if (n) { const v = 6 + 3 * Math.min(2, n) + (h.cats[f.cat] || 0) * 3; score += v; core += v; why.push(h.label); }
         continue;
       }
       let s = (h.cats[f.cat] || 0) * 3;
       for (const tag of h.tags) if (f.tags.includes(tag)) s += 2;
       // 적은 단어가 행사 이름·설명에 그대로 나오면 가산 (예: '재즈' → 재즈 공연)
-      s += 3 * Math.min(2, h.words.filter(w => text(f).includes(w.toLowerCase())).length);
-      if (s > 0) { score += s; why.push(h.label); }
+      s += 5 * Math.min(2, h.words.filter(w => text(f).includes(w.toLowerCase())).length);
+      if (s > 0) { score += s; if (!h.soft) core += s; why.push(h.label); }
     }
-    return { score, why };
+    return { score, why, core };
   }
 
   /* ---------------- 필터 ---------------- */
@@ -1111,10 +1203,33 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (skip !== 'cat' && st.cat !== 'all' && GROUP_OF[f.cat] !== st.cat) return false;
     return true;
   }
+  /* 취향 검색 결과 고르기
+     - 거르는 단서(soft 가 아닌 것)가 있으면 그 단서에 맞는 공연만, 없으면(여행 중·소극장 등) 조건에 맞는 공연 전부를 점수순으로
+     - textOnly 단서(코미디·공포·반려동물)는 이름·소개에 그 말이 있는 공연만
+     - '재즈', '판소리'처럼 구체적인 장르 말이 이름·소개에 그대로 있는 공연이 있으면 그것만 (없으면 장르 전체) */
+  function rankFor(pool, it) {
+    const strict = it.hits.some(h => !h.soft);
+    const needText = it.hits.filter(h => h.textOnly || h.test);
+    // 장르를 정하는 단서(연극·재즈·아이와 함께 등, 가중치 3 이상)가 있으면 그 장르 공연만. 여럿이면 그중 하나
+    const genres = new Set(it.hits.filter(h => !h.soft).flatMap(h => Object.entries(h.cats).filter(([, v]) => v >= 3).map(([k]) => k)));
+    let scored = pool.map(f => ({ f, ...scoreFair(f, it) }))
+      .filter(x => (strict ? x.core > 0 : true) && needText.every(h => x.why.includes(h.label)) && (!genres.size || genres.has(x.f.cat)));
+    const specific = [...new Set(it.hits.filter(h => h.narrow).flatMap(h => h.words).filter(w => !BROAD.has(w)))];
+    it.narrowed = null;
+    it.notFound = null;
+    if (specific.length) {
+      const exact = scored.filter(x => specific.some(w => text(x.f).includes(w.toLowerCase())));
+      if (exact.length) { scored = exact; it.narrowed = specific.filter(w => exact.some(x => text(x.f).includes(w.toLowerCase()))); }
+      else it.notFound = specific;
+    }
+    // '곧 끝나는'을 찾으면 끝나는 날이 가까운 순, 아니면 시작이 가까운 순
+    const byEnd = it.hits.some(h => h.label === '곧 끝나는');
+    return scored.sort((a, b) => b.score - a.score || (byEnd ? a.f.end - b.f.end : a.f.start - b.f.start));
+  }
   // 조건(과 취향 검색의 분위기)까지 모두 맞는 행사
   function strictMatches(st = state, skip) {
     const list = FAIRS.filter(f => passes(f, skip, st));
-    return st.interp && st.interp.hits.length ? list.filter(f => scoreFair(f, st.interp).score > 0) : list;
+    return st.interp && st.interp.hits.length ? rankFor(list, st.interp).map(x => x.f) : list;
   }
 
   /* ---------------- DOM ---------------- */
@@ -1476,16 +1591,18 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       ? `<div class="chips">${it.suggested.map(k => `<button type="button" class="chip" data-act="cat" data-cat="${k}">${GROUP[k].ko}</button>`).join('')}</div>`
       : '<span class="none">—</span>';
     let note = '';
-    if (nothing) note = '문장에서 단서를 찾지 못했어요. “아이랑 주말에”, “무료로 조용히”, “이직 준비”처럼 누구와, 언제, 무엇을 하고 싶은지 적어보세요.';
+    if (nothing) note = '문장에서 단서를 찾지 못해 전체 일정을 보여드려요. “아이랑 주말에”, “무료로 조용히”, “대학로 2인극”처럼 누구와, 언제, 어떤 공연을 보고 싶은지 적어보세요.';
     else if (fellBack) note = '';
+    else if (it.notFound && it.notFound.length && matchedCount) note = `‘${it.notFound.map(esc).join('’, ‘')}’이(가) 적힌 공연은 지금 없어서, 같은 장르 ${matchedCount}개를 잘 맞는 순서로 보여드려요.`;
+    else if (it.narrowed && it.narrowed.length) note = `이름이나 소개에 ‘${it.narrowed.map(esc).join('’, ‘')}’이(가) 들어간 공연 ${matchedCount}개를 골랐어요. 장르를 누르면 그 장르 전체 일정으로 넘어가요.`;
     else if (it.hits.length) note = `잘 맞는 순서로 ${matchedCount}개를 골랐어요. 장르를 누르면 그 장르 전체 일정으로 넘어가요.`;
     box.innerHTML =
       `<div class="interp-head"><p>이렇게 읽었어요</p><button type="button" class="linkish" data-act="clear">검색 지우기</button></div>` +
       `<p class="interp-q"><span class="qm">“</span>${esc(it.raw)}<span class="qm">”</span></p>` +
       (nothing ? '' :
       `<dl><dt>분위기·목적</dt><dd>${signals}</dd>` +
-      `<dt>지역</dt><dd>${state.regions.size ? esc([...state.regions].join(', ')) : '<span class="none">전국</span>'}</dd>` +
-      `<dt>시기</dt><dd>${state.period === 'all' ? '<span class="none">언제든</span>' : esc((it.period && !state.relaxed ? periodLabel(it.period) + ' · ' : '') + periodText(state))}</dd>` +
+      `<dt>지역</dt><dd>${it.excluded && !state.relaxed && state.regions.size > 4 ? esc(it.excluded.join('·') + ' 말고 다른 지역') : state.regions.size ? esc([...state.regions].join(', ')) : '<span class="none">전국</span>'}</dd>` +
+      `<dt>시기</dt><dd>${state.period === 'all' ? '<span class="none">언제든</span>' : esc((it.period && !state.relaxed && periodLabel(it.period) ? periodLabel(it.period) + ' · ' : '') + periodText(state))}</dd>` +
       `<dt>관람료</dt><dd>${esc([state.cost === 'free' ? '무료만' : state.cost === 'paid' ? '유료만' : '', state.budget != null ? budgetText(state.budget) : ''].filter(Boolean).join(' · ')) || '<span class="none">상관없음</span>'}</dd>` +
       `<dt>추천 장르</dt><dd>${sug}</dd></dl>`) +
       (note ? `<p class="interp-note">${note}</p>` : '');
@@ -1720,8 +1837,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     let matched = 0, fellBack = false;
 
     if (it && it.hits.length) {
-      const scored = pool.map(f => ({ f, ...scoreFair(f, it) })).filter(x => x.score > 0)
-        .sort((a, b) => b.score - a.score || a.f.start - b.f.start);
+      const scored = rankFor(pool, it);
       matched = scored.length;
       if (scored.length) {
         const whyMap = new Map(scored.map(x => [x.f.id, x.why]));
