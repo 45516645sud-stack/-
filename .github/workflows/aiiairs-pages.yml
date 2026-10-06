@@ -32,7 +32,7 @@ jobs:
       github.ref_name == github.event.repository.default_branch &&
       (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 40
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -47,11 +47,38 @@ jobs:
           mkdir -p _site
           cp aiiairs/index.html aiiairs/robots.txt aiiairs/sitemap.xml _site/
           cp -r aiiairs/img aiiairs/data _site/
-          if [ -d aiiairs/posters ]; then cp -r aiiairs/posters _site/; fi
           # 운영용 파일(직접 입력 원본 표)은 올리지 않는다
           rm -f _site/data/manual.csv
           touch _site/.nojekyll
-          ls -la _site _site/data | head -40
+
+      # 공식 포스터: 저장소에 쌓지 않고 사이트를 올릴 때 받는다. 받아 둔 것은 Actions 캐시에 두고 새것만 받는다.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 포스터 줄이기 도구 설치
+        run: pip install --quiet Pillow
+
+      - name: 받아 둔 포스터 꺼내기
+        uses: actions/cache/restore@v4
+        with:
+          path: .poster-cache
+          key: posters-${{ github.run_id }}
+          restore-keys: posters-
+
+      - name: 포스터 준비
+        run: |
+          python aiiairs/scripts/collect.py --posters-only --out _site/data/fairs.json --posters-dir .poster-cache
+          mkdir -p _site/posters
+          cp -r .poster-cache/. _site/posters/
+          ls _site/posters | wc -l
+          du -sh _site
+
+      - name: 받은 포스터 남겨 두기
+        uses: actions/cache/save@v4
+        with:
+          path: .poster-cache
+          key: posters-${{ github.run_id }}
 
       - uses: actions/configure-pages@v5
 

@@ -12,7 +12,6 @@ aiiairs/
 ├─ data/
 │  ├─ fairs.json          수집 결과 (자동 생성, 직접 고치지 않음)
 │  └─ manual.csv          API에 없는 소공연을 직접 넣는 곳
-├─ posters/               KOPIS 공식 포스터 (수집기가 내려받아 가로 360px로 줄여 둔 것, 자동 생성)
 ├─ img/                   포스터가 없을 때 쓰는 그림 (Fluent Emoji, MIT)
 └─ scripts/
    ├─ collect.py          수집기 (Python 표준 라이브러리만 사용)
@@ -51,13 +50,24 @@ aiiairs/
 - **처음 한 번만**: 저장소 Settings → Pages → Build and deployment → Source를 **GitHub Actions**로 바꾸기
 - 그다음부터는 자동이에요. 사이트 파일을 고쳐 기본 브랜치에 올리거나, 매일 새벽 일정 수집이 끝나면 다시 올라가요.
   (수집 로봇이 만든 커밋은 다른 자동 작업을 깨우지 않아서, 수집 워크플로가 끝나는 것을 신호로 받아요.)
-- 올라가는 것: `index.html`, `robots.txt`, `sitemap.xml`, `img/`, `data/fairs.json`, `posters/`. 수집 스크립트와 `manual.csv`는 올리지 않아요.
+- 올라가는 것: `index.html`, `robots.txt`, `sitemap.xml`, `img/`, `data/fairs.json`, 그리고 올릴 때 받은 `posters/`. 수집 스크립트와 `manual.csv`는 올리지 않아요.
+
+## 전국 공연을 전부 모으기
+
+KOPIS에서 오늘부터 180일 동안의 공연을 **한도 없이 전부** 가져온 뒤, 300석 이하 공연장만 남겨요.
+
+- 공연마다 상세(요금·공연장·예매처)를 한 번씩 물어봐야 해서, **처음 한 번은 오래 걸려요** (최대 2시간으로 잡아 둠).
+- 한 번 물어본 상세는 7일, 공연장 좌석 수는 60일 동안 기억해 두고 다시 묻지 않아요. 그래서 다음 날부터는 새 공연만 물어봐요.
+  기억은 저장소가 아니라 GitHub Actions 캐시(`aiiairs/.cache/`)에 둬요.
+- 한 번에 새로 물어보는 상세는 6,000건까지예요(`--kopis-detail`). 넘치는 공연은 큰 공연장인지 아직 모르니 싣지 않고, 다음 날 마저 물어봐서 실어요.
+- KOPIS에 없는 공연(카페 공연, 버스킹, DM으로만 표를 파는 공연)은 `data/manual.csv`로 넣어요.
 
 ## 공식 포스터
 
-수집기가 KOPIS의 공식 포스터를 내려받아 `posters/`에 작게(가로 360px WebP) 저장하고, 페이지는 그 파일을 써요.
-KOPIS 서버 상태와 상관없이 포스터가 빨리 뜨고, 지금 일정에 없는 포스터는 자동으로 지워 저장소가 커지지 않게 해요.
-포스터가 없거나 못 받은 공연은 장르 그림으로 만든 포스터가 대신 나와요. (`--no-posters`로 끌 수 있어요)
+포스터는 **저장소에 넣지 않아요.** 매일 바뀌는 사진을 저장소에 쌓으면 지운 사진까지 기록에 남아 저장소가 계속 커지기 때문이에요.
+대신 사이트를 올릴 때(`aiiairs-pages.yml`) KOPIS 공식 포스터를 내려받아 가로 360px WebP로 줄여 함께 올려요.
+받아 둔 포스터는 GitHub Actions 캐시에 두고 새 공연 것만 받아요.
+포스터를 못 받은 공연은 KOPIS 포스터 주소를 바로 쓰고, 그것도 안 되면 장르 그림으로 만든 포스터가 나와요.
 
 ## 장르와 소극장 기준
 
@@ -139,7 +149,7 @@ KOPIS_API_KEY=... DATA_GO_KR_KEY=... python3 aiiairs/scripts/collect.py         
 python3 -m unittest aiiairs/scripts/test_collect.py                                                                        # 테스트
 ```
 
-주요 옵션: `--days 180`(오늘부터 며칠 뒤까지), `--max-kopis 1200`, `--kopis-detail 1200`(요금·줄거리를 가져올 건수), `--max-seats 300`(소극장 기준 좌석 수), `--max-culture 400`.
+주요 옵션: `--days 180`(오늘부터 며칠 뒤까지), `--max-kopis 0`(0 = 전부), `--kopis-detail 6000`(한 번에 새로 물어볼 상세 건수), `--max-seats 300`(소극장 기준 좌석 수), `--max-culture 400`, `--no-posters`, `--posters-only`(사이트 올릴 때 포스터만 받기).
 
 ## 알아둘 점
 

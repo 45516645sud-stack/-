@@ -17,3 +17,8 @@ build/
 # Python 실행 시 자동 생성되는 임시 파일
 __pycache__/
 *.pyc
+
+# AIIairs: 수집기가 기억해 두는 공연 정보와 포스터 (Actions 캐시에 두고 저장소에는 넣지 않는다)
+aiiairs/.cache/
+.poster-cache/
+aiiairs/posters/

@@ -41,6 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]          # aiiairs/
 DATA_DIR = ROOT / "data"
 POSTER_DIR = ROOT / "posters"
+CACHE_FILE = ROOT / ".cache" / "kopis.json"           # 이미 물어본 공연·공연장 정보 (저장소에 넣지 않음)
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 KST = dt.timezone(dt.timedelta(hours=9))
 UA = "AIIairs-collector/1.0 (+https://expomoa.com/)"
@@ -302,15 +303,57 @@ def windows(start: dt.date, end: dt.date, span: int = 31):
         cur = stop + dt.timedelta(days=1)
 
 
+def slim_detail(d: dict) -> dict:
+    """상세 응답에서 쓰는 것만 남긴다 (기억해 두기 쉽게 글자만)."""
+    out = {k: first(d, k) for k in ("mt20id", "mt10id", "genrenm", "child", "pcseguidance", "fcltynm", "area", "poster", "openrun")}
+    out["sty"] = clip(first(d, "sty"), 400)
+    relates = d.get("relates")
+    if isinstance(relates, ET.Element):
+        for rel in relates:
+            url = https(rel.findtext("relateurl"))
+            if url:
+                out["relateurl"] = url
+                break
+    return {k: v for k, v in out.items() if v}
+
+
+def load_cache(path: Path | None) -> dict:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8")) if path else {}
+    except (OSError, ValueError):
+        data = {}
+    return {"details": data.get("details", {}), "places": data.get("places", {})}
+
+
+def save_cache(path: Path | None, cache: dict) -> None:
+    if not path:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
+
+def fresh(entry: dict | None, today: dt.date, days: int) -> bool:
+    try:
+        return entry is not None and (today - dt.date.fromisoformat(entry["at"])).days < days
+    except (KeyError, ValueError, TypeError):
+        return False
+
+
 def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_limit: int, fixtures: bool,
-                  max_seats: int = 300) -> list[dict]:
+                  max_seats: int = 300, cache_path: Path | None = None, today: dt.date | None = None) -> list[dict]:
+    """KOPIS 공연을 기간 안에서 전부 모은다 (limit 0 = 한도 없음).
+
+    상세·공연장 정보는 cache_path 에 기억해 두고, 상세는 7일·공연장은 60일이 지나야 다시 묻는다.
+    detail_limit 은 한 번 실행에서 새로 물어볼 상세 건수 한도 (0 = 한도 없음). 한도에 걸려 아직 못 물어본
+    공연은 이번엔 싣지 않고 다음 실행 때 싣는다 (큰 공연장인지 모르는 채로 싣지 않게)."""
+    today = today or dt.datetime.now(KST).date()
+    cache = load_cache(None if fixtures else cache_path)
     seen: dict[str, dict] = {}
     spans = list(windows(start, end))
-    # 첫 달에서 한도가 다 차지 않도록 기간마다 한도를 나눠 쓴다.
-    per = limit if fixtures else max(1, math.ceil(limit / len(spans)))
+    per = limit if fixtures or not limit else max(1, math.ceil(limit / len(spans)))
     for a, b in spans:
         page = 1
-        cap = min(limit, len(seen) + per)
+        cap = min(limit, len(seen) + per) if limit else float("inf")
         while len(seen) < cap:
             if fixtures:
                 body = (FIXTURES / "kopis_list.xml").read_bytes()
@@ -330,24 +373,47 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
         if fixtures:
             break
 
-    def detail_of(pid: str) -> dict:
+    def detail_of(pid: str) -> dict | None:
+        """상세 한 건. 실패하면 None (다음 실행 때 다시 묻는다)."""
         try:
             body = (FIXTURES / "kopis_detail.xml").read_bytes() if fixtures else \
                 fetch(f"{KOPIS_BASE}/pblprfr/{urllib.parse.quote(pid)}?" + urllib.parse.urlencode({"service": key}))
             got = records(body, ("mt20id", "prfnm"))
             # 다른 공연의 상세가 섞이지 않도록 ID가 같은 것만 쓴다.
-            return next((g for g in got if g.get("mt20id") == pid), {})
+            return slim_detail(next((g for g in got if g.get("mt20id") == pid), {}))
         except Exception as e:  # 상세 한 건 실패는 목록 정보로 대신한다
             print(f"  · KOPIS 상세 건너뜀 {pid}: {e}", file=sys.stderr)
-            return {}
+            return None
 
     ids = list(seen)
-    wanted = ids[:detail_limit]
     details: dict[str, dict] = {}
+    todo = []
+    for pid in ids:
+        hit = cache["details"].get(pid)
+        if fresh(hit, today, 7):
+            details[pid] = hit["d"]
+        else:
+            todo.append(pid)
+    postponed = set()
+    if detail_limit and len(todo) > detail_limit:
+        # 한도를 넘는 것 중 예전에 받아 둔 게 있으면 그걸 쓰고, 처음 보는 공연만 다음으로 미룬다
+        for pid in todo[detail_limit:]:
+            if pid in cache["details"]:
+                details[pid] = cache["details"][pid]["d"]
+            else:
+                postponed.add(pid)
+        todo = todo[:detail_limit]
     # 상세 조회는 한 건씩이라 느리다. 몇 건씩 동시에 부른다.
-    with cf.ThreadPoolExecutor(max_workers=6) as pool:
-        for pid, d in zip(wanted, pool.map(detail_of, wanted)):
+    with cf.ThreadPoolExecutor(max_workers=8) as pool:
+        for pid, d in zip(todo, pool.map(detail_of, todo)):
+            if d is None:
+                old = cache["details"].get(pid)
+                details[pid] = old["d"] if old else {}
+                continue
             details[pid] = d
+            cache["details"][pid] = {"at": today.isoformat(), "d": d}
+    print(f"  · KOPIS 목록 {len(ids)}건 · 상세 새로 조회 {len(todo)}건 · 기억해 둔 상세 {len(ids) - len(todo) - len(postponed)}건"
+          + (f" · 다음 실행으로 미룸 {len(postponed)}건" if postponed else ""))
 
     # 공연장(시설) 좌석 수: 같은 시설은 한 번만 조회한다.
     def place_of(fid: str) -> list[tuple[str, int]]:
@@ -365,11 +431,22 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
             return []
 
     fids = sorted({first(d, "mt10id") for d in details.values() if first(d, "mt10id")})
-    with cf.ThreadPoolExecutor(max_workers=6) as pool:
-        places = dict(zip(fids, pool.map(place_of, fids)))
+    places = {f: [tuple(h) for h in cache["places"][f]["halls"]] for f in fids if fresh(cache["places"].get(f), today, 60)}
+    ask = [f for f in fids if f not in places]
+    with cf.ThreadPoolExecutor(max_workers=8) as pool:
+        for f, halls in zip(ask, pool.map(place_of, ask)):
+            places[f] = halls
+            if halls:
+                cache["places"][f] = {"at": today.isoformat(), "halls": [list(h) for h in halls]}
+    # 지금 목록에 없는 공연의 기억은 지운다 (공연장은 오래 두어도 작다)
+    cache["details"] = {k: v for k, v in cache["details"].items() if k in seen}
+    if not fixtures:
+        save_cache(cache_path, cache)
 
     items, dropped = [], 0
     for pid in ids:
+        if pid in postponed:
+            continue
         d = details.get(pid, {})
         item = kopis_item(seen[pid], d)
         if not item:
@@ -410,9 +487,9 @@ def kopis_item(r: dict, d: dict) -> dict | None:
     if first(d, "child") == "Y" or first(r, "child") == "Y":
         cat, art = "kids", KIDS_ART
         tags += ["가족", "아이"]
-    url = None
+    url = d.get("relateurl") if isinstance(d.get("relateurl"), str) else None
     relates = d.get("relates")
-    if isinstance(relates, ET.Element):
+    if not url and isinstance(relates, ET.Element):
         for rel in relates:
             url = https(rel.findtext("relateurl"))
             if url:
@@ -552,7 +629,7 @@ def image_ext(data: bytes) -> str | None:
     return None
 
 
-def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None) -> int:
+def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None, prefix: str | None = None) -> int:
     """공식 포스터(img)를 내려받아 작게 줄여 folder 에 저장하고, 각 행사에 poster 경로를 단다.
 
     - 이미 받은 포스터는 다시 받지 않는다.
@@ -601,7 +678,7 @@ def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None
     got = 0
     for it, name in zip(items, names):
         if name:
-            it["poster"] = f"{folder.name}/{name}"
+            it["poster"] = f"{prefix or folder.name}/{name}"
             got += 1
     used = {n for n in names if n}
     for p in folder.iterdir():
@@ -638,14 +715,26 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--manual", default=str(DATA_DIR / "manual.csv"))
     ap.add_argument("--days", type=int, default=180, help="오늘부터 며칠 뒤까지 모을지")
     ap.add_argument("--past-days", type=int, default=0, help="이미 끝난 행사를 며칠 전까지 남길지")
-    ap.add_argument("--max-kopis", type=int, default=1200, help="KOPIS에서 가져올 최대 공연 수 (기간마다 나눠 씀)")
-    ap.add_argument("--kopis-detail", type=int, default=1200, help="요금·줄거리를 가져올 상세 조회 건수")
+    ap.add_argument("--max-kopis", type=int, default=0, help="KOPIS에서 가져올 최대 공연 수 (0 = 전부)")
+    ap.add_argument("--kopis-detail", type=int, default=6000, help="한 번 실행에서 새로 물어볼 상세 건수 (0 = 전부)")
+    ap.add_argument("--cache", default=str(CACHE_FILE), help="이미 물어본 공연·공연장 정보를 기억해 둘 파일 ('' = 쓰지 않음)")
     ap.add_argument("--max-culture", type=int, default=400)
     ap.add_argument("--max-seats", type=int, default=300, help="이 좌석 수 이하 공연장만 싣는다 (소극장 기준)")
     ap.add_argument("--fixtures", action="store_true", help="저장된 예시 응답으로 실행 (네트워크·키 불필요)")
     ap.add_argument("--posters-dir", default=str(POSTER_DIR), help="공식 포스터를 내려받아 둘 폴더 (페이지 기준 상대 경로로 쓰임)")
     ap.add_argument("--no-posters", action="store_true", help="포스터를 내려받지 않는다")
+    ap.add_argument("--posters-only", action="store_true",
+                    help="일정은 모으지 않고, --out 파일의 공연 포스터만 --posters-dir 에 받아 poster 경로를 단다 (사이트 올릴 때)")
+    ap.add_argument("--posters-prefix", default="posters", help="페이지에서 포스터를 부를 경로 앞부분")
     args = ap.parse_args(argv)
+
+    if args.posters_only:
+        out = Path(args.out)
+        payload = json.loads(out.read_text(encoding="utf-8"))
+        got = cache_posters(payload["items"], Path(args.posters_dir), prefix=args.posters_prefix)
+        out.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"- 포스터: {len(payload['items'])}건 중 {got}건 준비")
+        return 0
 
     today = dt.datetime.now(KST).date()
     start, end = today - dt.timedelta(days=args.past_days), today + dt.timedelta(days=args.days)
@@ -671,7 +760,8 @@ def main(argv: list[str] | None = None) -> int:
             sources.append({"name": name, "label": label, "count": 0, "ok": False, "error": str(e)[:200]})
 
     run("manual", "운영자 입력", lambda _k: collect_manual(Path(args.manual)))
-    run("kopis", "KOPIS 공연예술통합전산망", lambda k: collect_kopis(k, start, end, args.max_kopis, args.kopis_detail, args.fixtures, args.max_seats), "KOPIS_API_KEY")
+    run("kopis", "KOPIS 공연예술통합전산망", lambda k: collect_kopis(k, start, end, args.max_kopis, args.kopis_detail, args.fixtures,
+                                                              args.max_seats, Path(args.cache) if args.cache else None, today), "KOPIS_API_KEY")
     run("kcisa", "한국문화정보원", lambda k: collect_culture(k, start, end, args.max_culture, args.fixtures), "DATA_GO_KR_KEY")
 
     items = merge(groups, start, end)

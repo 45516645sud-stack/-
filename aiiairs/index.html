@@ -378,6 +378,10 @@ legend + *{clear:both}
 .group.is-folded .group-h{border-bottom:0}
 /* 펼친 달: 일정은 달 칸 안쪽으로 한 단계 들여 놓는다 */
 .group-body{background:var(--wash);padding:14px 20px 20px;border-top:1px solid var(--hair)}
+.more{display:flex;justify-content:center;align-items:baseline;gap:8px;width:100%;margin-top:14px;padding:12px 16px;border:1px solid var(--ink);background:var(--surface);color:var(--ink);font-size:var(--s-1);font-weight:500;border-radius:0}
+.more:hover{background:var(--ink);color:var(--bg)}
+.more span{font-weight:400;color:var(--muted)}
+.more:hover span{color:var(--hair)}
 .group-h[data-fold]{border-bottom:0}
 .group-body .cards{margin:0;border-top:1px solid var(--hair);border-left:1px solid var(--hair)}
 .group-body .card-text{padding:18px 18px 16px}
@@ -1551,6 +1555,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   // 묶음은 −면 달 이름(과 한 줄 미리보기)만, +면 그 달 일정 전체를 보여준다.
   // 맨 위 묶음만 처음에 펼쳐 두고 나머지는 접어 둔다.
   const groupOpen = new Map();
+  // 펼친 묶음도 처음엔 24개만 그리고 '더 보기'로 늘린다 (전국 공연이 많아도 빨리 뜨게)
+  const PAGE = 24;
+  const groupShown = new Map();
   function groupHTML(big, isWord, label, sub, list, whyMap, defOpen) {
     const key = label;
     const open = list.some(f => f.id === state.openId) || (groupOpen.has(key) ? groupOpen.get(key) : !!defOpen);
@@ -1560,11 +1567,18 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<span class="g-label"><b>${label}</b><i>${sub}</i>${open ? '' : `<span class="g-peek">${peek}</span>`}</span>` +
       `<span class="g-side"><span class="g-count">${list.length}건</span>` +
       `<button type="button" class="fold" aria-expanded="${open}" aria-label="${esc(label)} ${open ? '접기' : '펼치기'}">${open ? '−' : '+'}</button></span></h3>` +
-      (open
-        ? `<div class="group-body">` + (state.view === 'card'
-          ? `<ul class="cards">${list.map(f => cardHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`
-          : `<ul class="fairs">${list.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`) + `</div>`
-        : '') +
+      (open ? (() => {
+        let limit = groupShown.get(key) || PAGE;
+        const at = state.openId ? list.findIndex(f => f.id === state.openId) : -1;
+        if (at >= limit) limit = at + 1;
+        const shown = list.slice(0, limit);
+        const rest = list.length - shown.length;
+        return `<div class="group-body">` + (state.view === 'card'
+          ? `<ul class="cards">${shown.map(f => cardHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`
+          : `<ul class="fairs">${shown.map(f => rowHTML(f, whyMap && whyMap.get(f.id))).join('')}</ul>`) +
+          (rest > 0 ? `<button type="button" class="more" data-more="${esc(key)}" data-at="${limit}">${Math.min(rest, PAGE * 2)}개 더 보기 <span>남은 ${rest}개</span></button>` : '') +
+          `</div>`;
+      })() : '') +
       `</section>`;
   }
   function toggleGroup(key) {
@@ -1889,6 +1903,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   function render(opts = {}) {
     if (!opts.keepRelax) state.relaxed = null;
+    groupShown.clear();  // 조건이 바뀌면 다시 24개부터
     document.querySelectorAll('.view button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === state.view));
     renderRail();
     renderRegions();
@@ -2071,6 +2086,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (row) { toggleFair(row.dataset.id); return; }
     const fb = e.target.closest('[data-fold]');
     if (fb) { toggleGroup(fb.dataset.fold); return; }
+    const more = e.target.closest('[data-more]');
+    if (more) {
+      const at = Number(more.dataset.at);
+      groupShown.set(more.dataset.more, at + PAGE * 2);
+      renderList();
+      // 새로 나온 첫 공연으로 초점을 옮긴다 (키보드·화면 읽기 사용자가 이어서 볼 수 있게)
+      const body = document.querySelector(`.group-h[data-fold="${CSS.escape(more.dataset.more)}"]`)?.parentElement;
+      const next = body && body.querySelectorAll('.card-btn, .row')[at];
+      if (next) next.focus({ preventScroll: true });
+      return;
+    }
     const card = e.target.closest('.card-btn[data-card]');
     if (card) { openDialog(card.dataset.card); return; }
     const vb = e.target.closest('.view button[data-view]');

@@ -155,5 +155,94 @@ class FixtureRunTest(unittest.TestCase):
             self.assertEqual(out.read_text(encoding="utf-8"), "KEEP")
 
 
+def fake_kopis(n_list: int, calls: dict):
+    """KOPIS 대신 답하는 가짜 fetch. 목록은 n_list 건 (100건씩 쪽 나눔), 상세·공연장은 어느 공연이든 소극장."""
+    def fetch(url, **_):
+        if "/prfplc/" in url:
+            calls["place"] = calls.get("place", 0) + 1
+            return (HERE / "fixtures" / "kopis_place.xml").read_bytes()
+        m = __import__("re").search(r"/pblprfr/(PF\d+)", url)
+        if m:
+            calls["detail"] = calls.get("detail", 0) + 1
+            pid = m.group(1)
+            return (f"<dbs><db><mt20id>{pid}</mt20id><prfnm>공연 {pid}</prfnm><mt10id>FC000001</mt10id>"
+                    f"<fcltynm>예시소극장</fcltynm><area>서울특별시</area><genrenm>연극</genrenm>"
+                    f"<pcseguidance>전석 20,000원</pcseguidance></db></dbs>").encode()
+        calls["list"] = calls.get("list", 0) + 1
+        page = int(__import__("re").search(r"cpage=(\d+)", url).group(1))
+        lo, hi = (page - 1) * 100, min(n_list, page * 100)
+        rows = "".join(f"<db><mt20id>PF{i:06d}</mt20id><prfnm>공연 {i}</prfnm><prfpdfrom>2026.10.01</prfpdfrom>"
+                       f"<prfpdto>2026.10.30</prfpdto><fcltynm>예시소극장</fcltynm><area>서울특별시</area></db>"
+                       for i in range(lo, hi))
+        return f"<dbs>{rows}</dbs>".encode()
+    return fetch
+
+
+class KopisAllTest(unittest.TestCase):
+    def setUp(self):
+        self.real = collect.fetch
+
+    def tearDown(self):
+        collect.fetch = self.real
+
+    def run_once(self, n, cache, detail_limit=0, today=dt.date(2026, 10, 6)):
+        calls = {}
+        collect.fetch = fake_kopis(n, calls)
+        got = collect.collect_kopis("KEY", dt.date(2026, 10, 1), dt.date(2026, 10, 31), 0, detail_limit, False,
+                                    300, cache, today)
+        return got, calls
+
+    def test_no_cap_and_cache(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / "kopis.json"
+            got, calls = self.run_once(250, cache)
+            # 한 달에 200건 제한 없이 3쪽(250건)을 전부 가져온다
+            self.assertEqual(len(got), 250)
+            self.assertEqual(calls["list"], 3)
+            self.assertEqual(calls["detail"], 250)
+            self.assertEqual(calls["place"], 1)  # 같은 공연장은 한 번만
+            self.assertEqual(got[0]["seats"], 120)
+            # 다음 날: 기억해 둔 상세·공연장은 다시 묻지 않는다
+            got2, calls2 = self.run_once(250, cache, today=dt.date(2026, 10, 7))
+            self.assertEqual(len(got2), 250)
+            self.assertNotIn("detail", calls2)
+            self.assertNotIn("place", calls2)
+            # 8일 뒤에는 상세를 다시 확인한다
+            _, calls3 = self.run_once(250, cache, today=dt.date(2026, 10, 14))
+            self.assertEqual(calls3["detail"], 250)
+
+    def test_detail_limit_postpones_new_shows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / "kopis.json"
+            got, calls = self.run_once(30, cache, detail_limit=10)
+            # 처음 보는 공연 중 한도를 넘는 20건은 큰 공연장인지 모르니 이번엔 싣지 않는다
+            self.assertEqual(calls["detail"], 10)
+            self.assertEqual(len(got), 10)
+            got2, calls2 = self.run_once(30, cache, detail_limit=10, today=dt.date(2026, 10, 7))
+            self.assertEqual(calls2["detail"], 10)
+            self.assertEqual(len(got2), 20)
+
+
+class PostersOnlyTest(unittest.TestCase):
+    def test_posters_only(self):
+        gif = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+        real = collect.fetch
+        collect.fetch = lambda url, **_: gif
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp) / "fairs.json"
+                out.write_text(json.dumps({"items": [{"id": "kopis-pf1", "img": "https://a.kr/1.gif"}, {"id": "m-2"}]}), encoding="utf-8")
+                cache_dir = Path(tmp) / "poster-cache"
+                code = collect.main(["--posters-only", "--out", str(out), "--posters-dir", str(cache_dir)])
+                self.assertEqual(code, 0)
+                items = json.loads(out.read_text(encoding="utf-8"))["items"]
+                # 저장 폴더 이름과 상관없이 페이지에서는 posters/ 로 부른다
+                self.assertTrue(items[0]["poster"].startswith("posters/kopis-pf1."))
+                self.assertNotIn("poster", items[1])
+                self.assertTrue(any(cache_dir.iterdir()))
+        finally:
+            collect.fetch = real
+
+
 if __name__ == "__main__":
     unittest.main()
