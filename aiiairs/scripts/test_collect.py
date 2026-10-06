@@ -53,6 +53,16 @@ class ParseTest(unittest.TestCase):
         self.assertFalse(collect.is_small("예시아트센터 (대극장)", 1200, 300))
         self.assertFalse(collect.is_small("예시아레나 (대공연장)", None, 300))
         self.assertTrue(collect.is_small("재즈클럽 그루브", None, 300))
+        # 좌석 수를 모를 때 이름에 '라이브'가 있어도 아레나·경기장이면 큰 공연장
+        self.assertFalse(collect.is_small("올림픽공원 (티켓링크 라이브 아레나 (핸드볼경기장))", None, 300))
+        self.assertFalse(collect.is_small("엑스코(exco) (제1전시장(서관))", None, 300))
+        self.assertFalse(collect.is_small("창원광장 (특설무대)", None, 300))
+        self.assertFalse(collect.is_small("유니플렉스 (2관(중극장))", None, 300))
+        self.assertFalse(collect.is_small("부산콘서트홀", None, 300))
+        # 큰 공연장 안의 소극장·소공연장은 작은 무대
+        self.assertTrue(collect.is_small("대구콘서트하우스 (챔버홀 (소공연장) )", None, 300))
+        self.assertTrue(collect.is_small("대전평송청소년문화센터 (어울림홀(소극장))", None, 300))
+        self.assertTrue(collect.is_small("KT&G 상상마당 라이브홀 [마포]", None, 300))
         self.assertEqual(collect.seats_for("예시아트센터 (소극장)", [("대극장", 1200), ("소극장", 180)]), 180)
         self.assertIsNone(collect.seats_for("예시아트센터 (야외)", [("대극장", 1200), ("소극장", 180)]))
         self.assertEqual(collect.seats_for("예시홀", [("예시홀", 90)]), 90)

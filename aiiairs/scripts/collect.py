@@ -145,7 +145,8 @@ def realm_to_cat(realm: str) -> str | None:
 # ------------------------------------------------------------------ 소극장 판별
 
 # 좌석 수를 모를 때 공연장 이름으로 판단한다.
-BIG_WORDS = ("대극장", "대공연장", "체육관", "아레나", "경기장", "올림픽홀", "돔", "컨벤션", "대강당", "세종문화회관", "예술의전당 오페라")
+BIG_WORDS = ("대극장", "대공연장", "중극장", "체육관", "아레나", "경기장", "올림픽홀", "돔", "컨벤션", "대강당", "세종문화회관",
+             "예술의전당 오페라", "전시장", "엑스코", "킨텍스", "벡스코", "특설무대", "광장", "콘서트홀", "야구장", "운동장")
 SMALL_WORDS = ("소극장", "소공연장", "블랙박스", "라이브", "클럽", "스튜디오", "살롱", "카페", "갤러리")
 
 
@@ -154,9 +155,13 @@ def is_small(venue: str, seats: int | None, max_seats: int) -> bool:
     if seats is not None:
         return seats <= max_seats
     v = venue or ""
-    if any(w in v for w in SMALL_WORDS):
+    # 괄호 속 시설 이름이 '소극장'처럼 작으면 작은 무대 (큰 아트센터 안의 소극장)
+    if any(w in hall_of(v) for w in SMALL_WORDS):
         return True
-    return not any(w in v for w in BIG_WORDS)
+    # 그다음엔 큰 공연장 말을 먼저 본다. '티켓링크 라이브 아레나'의 '라이브'에 속지 않도록
+    if any(w in v for w in BIG_WORDS):
+        return False
+    return True
 
 
 def hall_of(venue: str) -> str:
