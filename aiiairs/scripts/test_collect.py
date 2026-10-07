@@ -53,6 +53,16 @@ class ParseTest(unittest.TestCase):
         self.assertFalse(collect.is_small("예시아트센터 (대극장)", 1200, 300))
         self.assertFalse(collect.is_small("예시아레나 (대공연장)", None, 300))
         self.assertTrue(collect.is_small("재즈클럽 그루브", None, 300))
+        # 좌석 수를 모를 때 이름에 '라이브'가 있어도 아레나·경기장이면 큰 공연장
+        self.assertFalse(collect.is_small("올림픽공원 (티켓링크 라이브 아레나 (핸드볼경기장))", None, 300))
+        self.assertFalse(collect.is_small("엑스코(exco) (제1전시장(서관))", None, 300))
+        self.assertFalse(collect.is_small("창원광장 (특설무대)", None, 300))
+        self.assertFalse(collect.is_small("유니플렉스 (2관(중극장))", None, 300))
+        self.assertFalse(collect.is_small("부산콘서트홀", None, 300))
+        # 큰 공연장 안의 소극장·소공연장은 작은 무대
+        self.assertTrue(collect.is_small("대구콘서트하우스 (챔버홀 (소공연장) )", None, 300))
+        self.assertTrue(collect.is_small("대전평송청소년문화센터 (어울림홀(소극장))", None, 300))
+        self.assertTrue(collect.is_small("KT&G 상상마당 라이브홀 [마포]", None, 300))
         self.assertEqual(collect.seats_for("예시아트센터 (소극장)", [("대극장", 1200), ("소극장", 180)]), 180)
         self.assertIsNone(collect.seats_for("예시아트센터 (야외)", [("대극장", 1200), ("소극장", 180)]))
         self.assertEqual(collect.seats_for("예시홀", [("예시홀", 90)]), 90)
@@ -143,6 +153,95 @@ class FixtureRunTest(unittest.TestCase):
             code = collect.main(["--manual", str(empty), "--out", str(out)])
             self.assertEqual(code, 1)
             self.assertEqual(out.read_text(encoding="utf-8"), "KEEP")
+
+
+def fake_kopis(n_list: int, calls: dict):
+    """KOPIS 대신 답하는 가짜 fetch. 목록은 n_list 건 (100건씩 쪽 나눔), 상세·공연장은 어느 공연이든 소극장."""
+    def fetch(url, **_):
+        if "/prfplc/" in url:
+            calls["place"] = calls.get("place", 0) + 1
+            return (HERE / "fixtures" / "kopis_place.xml").read_bytes()
+        m = __import__("re").search(r"/pblprfr/(PF\d+)", url)
+        if m:
+            calls["detail"] = calls.get("detail", 0) + 1
+            pid = m.group(1)
+            return (f"<dbs><db><mt20id>{pid}</mt20id><prfnm>공연 {pid}</prfnm><mt10id>FC000001</mt10id>"
+                    f"<fcltynm>예시소극장</fcltynm><area>서울특별시</area><genrenm>연극</genrenm>"
+                    f"<pcseguidance>전석 20,000원</pcseguidance></db></dbs>").encode()
+        calls["list"] = calls.get("list", 0) + 1
+        page = int(__import__("re").search(r"cpage=(\d+)", url).group(1))
+        lo, hi = (page - 1) * 100, min(n_list, page * 100)
+        rows = "".join(f"<db><mt20id>PF{i:06d}</mt20id><prfnm>공연 {i}</prfnm><prfpdfrom>2026.10.01</prfpdfrom>"
+                       f"<prfpdto>2026.10.30</prfpdto><fcltynm>예시소극장</fcltynm><area>서울특별시</area></db>"
+                       for i in range(lo, hi))
+        return f"<dbs>{rows}</dbs>".encode()
+    return fetch
+
+
+class KopisAllTest(unittest.TestCase):
+    def setUp(self):
+        self.real = collect.fetch
+
+    def tearDown(self):
+        collect.fetch = self.real
+
+    def run_once(self, n, cache, detail_limit=0, today=dt.date(2026, 10, 6)):
+        calls = {}
+        collect.fetch = fake_kopis(n, calls)
+        got = collect.collect_kopis("KEY", dt.date(2026, 10, 1), dt.date(2026, 10, 31), 0, detail_limit, False,
+                                    300, cache, today)
+        return got, calls
+
+    def test_no_cap_and_cache(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / "kopis.json"
+            got, calls = self.run_once(250, cache)
+            # 한 달에 200건 제한 없이 3쪽(250건)을 전부 가져온다
+            self.assertEqual(len(got), 250)
+            self.assertEqual(calls["list"], 3)
+            self.assertEqual(calls["detail"], 250)
+            self.assertEqual(calls["place"], 1)  # 같은 공연장은 한 번만
+            self.assertEqual(got[0]["seats"], 120)
+            # 다음 날: 기억해 둔 상세·공연장은 다시 묻지 않는다
+            got2, calls2 = self.run_once(250, cache, today=dt.date(2026, 10, 7))
+            self.assertEqual(len(got2), 250)
+            self.assertNotIn("detail", calls2)
+            self.assertNotIn("place", calls2)
+            # 8일 뒤에는 상세를 다시 확인한다
+            _, calls3 = self.run_once(250, cache, today=dt.date(2026, 10, 14))
+            self.assertEqual(calls3["detail"], 250)
+
+    def test_detail_limit_postpones_new_shows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / "kopis.json"
+            got, calls = self.run_once(30, cache, detail_limit=10)
+            # 처음 보는 공연 중 한도를 넘는 20건은 큰 공연장인지 모르니 이번엔 싣지 않는다
+            self.assertEqual(calls["detail"], 10)
+            self.assertEqual(len(got), 10)
+            got2, calls2 = self.run_once(30, cache, detail_limit=10, today=dt.date(2026, 10, 7))
+            self.assertEqual(calls2["detail"], 10)
+            self.assertEqual(len(got2), 20)
+
+
+class PostersOnlyTest(unittest.TestCase):
+    def test_posters_only(self):
+        gif = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+        real = collect.fetch
+        collect.fetch = lambda url, **_: gif
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp) / "fairs.json"
+                out.write_text(json.dumps({"items": [{"id": "kopis-pf1", "img": "https://a.kr/1.gif"}, {"id": "m-2"}]}), encoding="utf-8")
+                cache_dir = Path(tmp) / "poster-cache"
+                code = collect.main(["--posters-only", "--out", str(out), "--posters-dir", str(cache_dir)])
+                self.assertEqual(code, 0)
+                items = json.loads(out.read_text(encoding="utf-8"))["items"]
+                # 저장 폴더 이름과 상관없이 페이지에서는 posters/ 로 부른다
+                self.assertTrue(items[0]["poster"].startswith("posters/kopis-pf1."))
+                self.assertNotIn("poster", items[1])
+                self.assertTrue(any(cache_dir.iterdir()))
+        finally:
+            collect.fetch = real
 
 
 if __name__ == "__main__":
