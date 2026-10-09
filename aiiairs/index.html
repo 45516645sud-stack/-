@@ -2156,6 +2156,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   // 실제 포스터를 못 불러오면 그 자리를 행사 정보로 만든 포스터로 바꾼다.
   document.addEventListener('error', e => {
     const img = e.target;
+    // 그림 포스터 속 장르 그림까지 못 불러오면 깨진 그림 표시 대신 그림만 뺀다 (색 면과 글자만 남김)
+    if (img instanceof SVGImageElement) { img.remove(); return; }
     if (!(img instanceof HTMLImageElement) || !img.dataset.poster) return;
     const f = BY_ID.get(img.dataset.poster);
     if (f) img.outerHTML = posterHTML({ ...f, img: null });
