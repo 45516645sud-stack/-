@@ -28,6 +28,18 @@ class VerifyTest(unittest.TestCase):
         self.assertFalse(vh.in_region("전남광주통합특별시 순천시 장명로 30", "광주"))
         self.assertTrue(vh.in_region("전남광주통합특별시 순천시 장명로 30", "전남"))
 
+    def test_city_from_address(self):
+        self.assertEqual(vh.city_from("경북 포항시 북구 양덕동 1", "경북"), "포항시")
+        self.assertEqual(vh.city_from("서울 관악구 신림동 1", "서울"), "관악구")
+        self.assertEqual(vh.city_from("전남광주통합특별시 광산구 송정동 1", "광주"), "광산구")
+        self.assertEqual(vh.city_from("세종특별자치시 나성동 1", "세종"), "세종")
+
+    def test_fill_cities(self):
+        local = {"hoods": {"경북": [{"id": "a", "name": "포항 양덕동", "q": "포항 양덕동"}, {"id": "b", "name": "구미역", "city": "구미시"}]}}
+        f = fake(lambda p: [{"address": "경북 포항시 북구 양덕동", "x": "129.3", "y": "36.0"}])
+        self.assertEqual(vh.fill_cities(f, local), 1)
+        self.assertEqual([h.get("city") for h in local["hoods"]["경북"]], ["포항시", "구미시"])
+
     def test_judge(self):
         # 코인노래방이나 오락실 중 하나라도 있으면 통과
         self.assertTrue(vh.judge({"코인노래방": 1, "오락실": 0})[0])

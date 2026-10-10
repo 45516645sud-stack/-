@@ -74,6 +74,32 @@ def find_center(fetch: Fetch, region: str, q: str) -> dict | None:
     return None
 
 
+def city_from(address: str, region: str) -> str:
+    """주소에서 시·군·구: '경북 포항시 북구 …' → 포항시, '서울 관악구 …' → 관악구, 세종 → 세종"""
+    parts = address.split()
+    if len(parts) > 1 and parts[1][-1:] in ("시", "군", "구"):
+        return parts[1]
+    return region
+
+
+def fill_cities(fetch: Fetch, local: dict) -> int:
+    """city 가 없는 동네에 시·군·구를 채운다 (동네 고르기 창에서 묶어 보여 주려고)"""
+    filled = 0
+    for region, hs in local["hoods"].items():
+        for h in hs:
+            if h.get("city"):
+                continue
+            try:
+                center = find_center(fetch, region, h.get("q") or h["name"])
+            except Exception as e:
+                print(f"  시·군·구 못 채움 {region} {h['name']}: {e}")
+                continue
+            if center:
+                h["city"] = city_from(center["address"], region)
+                filled += 1
+    return filled
+
+
 def count_fun(fetch: Fetch, center: dict) -> dict[str, int]:
     out = {}
     for kw in PROBES:
@@ -111,7 +137,7 @@ def verify_one(fetch: Fetch, region: str, cand: list) -> dict:
         return {"id": hid, "region": region, "name": name, "ok": False, "why": f"확인 실패: {e}", "retry": True}
     ok, why = judge(counts)
     return {"id": hid, "region": region, "name": name, "q": q, "desc": desc, "ok": ok, "why": why,
-            "lat": center["lat"], "lng": center["lng"], "counts": counts}
+            "lat": center["lat"], "lng": center["lng"], "counts": counts, "city": city_from(center["address"], region)}
 
 
 def merge(local: dict, results: list[dict]) -> int:
@@ -131,7 +157,7 @@ def merge(local: dict, results: list[dict]) -> int:
             office = r["q"].split()[-1]
             name += " (시청 주변)" if office.endswith("시청") else " (군청 주변)" if office.endswith("군청") else " (구청 주변)"
         local["hoods"].setdefault(r["region"], []).append(
-            {"id": r["id"], "name": name, "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"]})
+            {"id": r["id"], "name": name, "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"], "city": r.get("city", "")})
         have.add(r["id"])
         added += 1
     return added
@@ -161,6 +187,8 @@ def main(argv: list[str] | None = None, fetch: Fetch = http_fetch) -> int:
         return 1
 
     added = merge(local, results)
+    filled = fill_cities(fetch, local)
+    print(f"시·군·구 채움 {filled}곳")
     rejected = [{k: r[k] for k in ("region", "id", "name", "why")} for r in results if not r["ok"]]
     for r in results:
         if not r["ok"] and r["why"].startswith("이미 있는"):
