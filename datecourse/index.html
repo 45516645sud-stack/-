@@ -136,6 +136,12 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .open-line.closed { background: #fdecec; color: #a12a2a; }
 :root[data-mode="dark"] .open-line.closed { background: #3a1d1d; color: #ffb4b4; }
 .open-line.maybe { background: var(--accent-soft); color: var(--accent-text); }
+.stop-picks { margin: 8px 0 0; }
+.stop-picks small { display: block; font-size: 11px; color: var(--faint); margin-bottom: 4px; }
+.pick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick-chip { display: inline-flex; align-items: baseline; gap: 5px; max-width: 100%; padding: 6px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--ink); text-decoration: none; font-size: 13px; }
+.pick-chip b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
+.pick-chip span { font-size: 11px; color: var(--sub); }
 .link-pill.h24 { background: var(--accent-soft); color: var(--accent-text); font-weight: 700; }
 
 /* 동네 고르기 */
@@ -1074,6 +1080,46 @@ function fitsAct(a, p) {
   return a.match.some(has) && !(a.not || []).some(has);
 }
 
+/* 놀코 서버로 가게 찾기: 동네 가운데에서 2km 안을 놀거리 이름 몇 가지로 찾아 합친다
+   (동네 이름을 붙이면 결과가 확 줄어서 붙이지 않음). 종류 규칙으로 거른 가까운 순 목록, 서버가 없거나 실패하면 null */
+const placeCache = new Map();
+function serverPlaces(a, keyword, center) {
+  const endpoint = photoEndpoint();
+  if (!endpoint) return Promise.resolve(null);
+  const key = `${a ? a.id : keyword}|${center.lat.toFixed(4)},${center.lng.toFixed(4)}`;
+  if (!placeCache.has(key)) placeCache.set(key, (async () => {
+    const kws = (a && Array.isArray(a.kws) && a.kws.length) ? a.kws : [keyword];
+    const get = async (page, kw = kws[0]) => {
+      const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(kw)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return (Array.isArray(data.places) ? data.places : []).map((p) => ({
+        place_name: p.name, category_name: p.path || p.category, road_address_name: p.address, address_name: p.address,
+        phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
+      }));
+    };
+    const pick = (list) => {
+      const seen = new Set();
+      return list.filter((p) => {
+        const k = `${p.place_name}|${p.road_address_name || p.address_name}`;
+        if (seen.has(k) || !fitsAct(a, p)) return false;
+        seen.add(k);
+        return true;
+      });
+    };
+    try {
+      const pages = await Promise.all(kws.map((kw) => get(1, kw).catch(() => null)));
+      if (pages.every((x) => x === null)) return null;
+      let list = pages.flatMap((x) => x || []);
+      // 종류가 다른 가게를 빼고 나면 적을 수 있어 한 쪽 더
+      if ((pages[0] || []).length >= 15 && pick(list).length < 5) list = list.concat((await get(2).catch(() => null)) || []);
+      list.sort((x, y) => (Number(x.distance) || 0) - (Number(y.distance) || 0));
+      return pick(list);
+    } catch { return null; }
+  })().then((r) => { if (r === null) placeCache.delete(key); return r; }));
+  return placeCache.get(key);
+}
+
 async function showPlaces(keyword, h, q, a) {
   const box = $("placeList");
   const fallback = (why) => {
@@ -1105,31 +1151,11 @@ async function showPlaces(keyword, h, q, a) {
   };
 
   // 1) 놀코 서버(Supabase)가 카카오 REST 키로 대신 검색: 브라우저 쪽 지도 키 설정과 상관없이 동작
-  const endpoint = photoEndpoint();
-  if (endpoint) {
-    try {
-      // 동네 가운데에서 2km 안을 놀거리 이름 몇 가지로 찾는다 (동네 이름을 붙이면 결과가 확 줄어서 붙이지 않음)
-      const kws = (a && Array.isArray(a.kws) && a.kws.length) ? a.kws : [keyword];
-      const get = async (page, kw = kws[0]) => {
-        const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(kw)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        return (Array.isArray(data.places) ? data.places : []).map((p) => ({
-          place_name: p.name, category_name: p.path || p.category, road_address_name: p.address, address_name: p.address,
-          phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
-        }));
-      };
-      const pages = await Promise.all(kws.map((kw) => get(1, kw).catch(() => null)));
-      let list = pages.every((x) => x === null) ? null : pages.flatMap((x) => x || []);
-      if (list) {
-        list.sort((x, y) => (Number(x.distance) || 0) - (Number(y.distance) || 0));
-        // 종류가 다른 가게를 빼고 나면 적을 수 있어 한 쪽 더
-        if ((pages[0] || []).length >= 15 && pick(list).length < 5) list = list.concat((await get(2).catch(() => null)) || []);
-        if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
-        draw(list);
-        return;
-      }
-    } catch { /* 아래 방법으로 */ }
+  const list = await serverPlaces(a, keyword, center);
+  if (list) {
+    if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
+    draw(list);
+    return;
   }
 
   // 2) 카카오 지도 JavaScript 키로 브라우저에서 검색
@@ -1463,11 +1489,12 @@ function openCourse(id, { push = true } = {}) {
           <div class="stop-name">${esc(s.name)}</div>
           <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : s.priceNote ? "보통 " + s.priceNote : ""].filter(Boolean).map(esc).join(" · ")}</span>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
+          ${c.source === "local" && s.act ? `<div class="stop-picks" data-act="${esc(s.act)}"><span class="note">근처 실제 가게를 찾는 중…</span></div>` : ""}
           <div class="links">${mapLinks(s)}</div>
           ${i < c.stops.length - 1 ? moveHint(s, c.stops[i + 1]) : ""}
         </li>`).join("")}
     </ol>
-    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : c.source === "local" ? "가게는 지도 검색 결과에서 골라 주세요. 가격은 대략이고 가게마다 달라요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
+    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : c.source === "local" ? "가게는 동네 가운데에서 가까운 실제 가게예요(카카오 지도 검색). 가격은 대략이고 가게마다 달라요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
     <section class="reviews" aria-labelledby="reviewHead">
       <h3 id="reviewHead">리뷰</h3>
       <div id="reviewForm"></div>
@@ -1495,10 +1522,40 @@ function openCourse(id, { push = true } = {}) {
   if (!sheet.open) sheet.showModal();
   sheet.scrollTop = 0;
   drawMap(c);
+  fillStopPicks(c);
   renderReviewForm(c.id);
   renderReviewList(c.id);
   renderMaker(c);
   if (push) history.pushState({ id }, "", "#c=" + encodeURIComponent(id));
+}
+
+// 동네 코스: 단계마다 가까운 실제 가게 3곳 (앞 단계에서 고른 가게는 빼고)
+async function fillStopPicks(c) {
+  const h = c.source === "local" ? hoodById(c.hoodId) : null;
+  const boxes = [...document.querySelectorAll(".stop-picks")];
+  if (!h || !boxes.length) return;
+  const center = { lat: h.lat, lng: h.lng };
+  const used = new Set();
+  for (const box of boxes) {
+    const a = LOCAL.acts[box.dataset.act];
+    const list = a ? await serverPlaces(a, `${h.q} ${a.kw}`, center) : null;
+    if (openId !== c.id || !box.isConnected) return;
+    const picks = (list || []).filter((p) => !used.has(p.place_name)).slice(0, 3);
+    picks.forEach((p) => used.add(p.place_name));
+    if (!picks.length) { box.innerHTML = list ? `<span class="note">2km 안에서 못 찾았어요. 아래 지도에서 찾아보세요.</span>` : ""; continue; }
+    box.innerHTML = `<small>근처 실제 가게</small><div class="pick-chips"></div>`;
+    const chips = box.querySelector(".pick-chips");
+    for (const p of picks) {
+      const url = /^https:\/\/place\.map\.kakao\.com\//.test(p.place_url) ? p.place_url
+        : `https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}`;
+      const el = document.createElement("a");
+      el.className = "pick-chip"; el.href = url; el.target = "_blank"; el.rel = "noopener";
+      const d = Number(p.distance);
+      el.innerHTML = `<b></b><span>${Number.isFinite(d) && p.distance !== "" ? (d < 1000 ? d + "m" : (d / 1000).toFixed(1) + "km") : ""}</span>`;
+      el.querySelector("b").textContent = p.place_name;
+      chips.appendChild(el);
+    }
+  }
 }
 
 function closeCourse() {
