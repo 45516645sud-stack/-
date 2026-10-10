@@ -128,7 +128,11 @@ type Sb = any;
 let db: Sb = null;
 function database() {
   const url = Deno.env.get("SUPABASE_URL");
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  // 예전 키(service_role) 또는 새 키 체계(SUPABASE_SECRET_KEYS: {"default": "sb_secret_…"})
+  let key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  if (!key) {
+    try { key = String(Object.values(JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}"))[0] ?? ""); } catch { key = ""; }
+  }
   if (!url || !key) return null;
   db ??= createClient(url, key, { auth: { persistSession: false } });
   return db;
