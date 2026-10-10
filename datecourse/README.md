@@ -116,6 +116,10 @@ supabase functions deploy place-photos
 함수 주소는 `index.html`의 `<meta name="nolco-photo-endpoint">` 에 들어 있어요. 지금 올라간 함수 이름은 `bright-action`이에요(웹 편집기로 올리면서 자동으로 붙은 이름, 코드는 `place-photos` 폴더와 같음). 비우면 사진 없이 동작해요.
 함수 테스트: `deno test supabase/functions/place-photos/photos_test.ts`
 
+**자동 배포**: `.github/workflows/nolco-functions.yml` 이 기본 브랜치에서 `supabase/functions/place-photos/` 가 바뀔 때마다
+테스트 후 Supabase 에 `bright-action` 이름으로 올려요. 처음 한 번 저장소 Actions 시크릿에 `SUPABASE_ACCESS_TOKEN`
+(Supabase 대시보드 → 계정 → Access Tokens)을 넣어 두면 돼요. Actions 탭에서 '놀코 서버 함수 배포' → Run workflow 로 바로 돌릴 수도 있어요.
+
 ## 사이트 공개 (GitHub Pages)
 
 `.github/workflows/aiiairs-pages.yml` 이 AIIairs 사이트와 함께 놀코를 `https://45516645sud-stack.github.io/-/nolco/` 에 올려요.
