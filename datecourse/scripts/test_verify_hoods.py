@@ -22,6 +22,12 @@ class VerifyTest(unittest.TestCase):
         self.assertFalse(r["ok"])
         self.assertTrue(r.get("retry"))
 
+    def test_gwangju_unified_address(self):
+        self.assertTrue(vh.in_region("전남광주통합특별시 광산구 광산로29번길 15", "광주"))
+        self.assertTrue(vh.in_region("광주 서구 경열로 33", "광주"))
+        self.assertFalse(vh.in_region("전남광주통합특별시 순천시 장명로 30", "광주"))
+        self.assertTrue(vh.in_region("전남광주통합특별시 순천시 장명로 30", "전남"))
+
     def test_judge(self):
         # 코인노래방이나 오락실 중 하나라도 있으면 통과
         self.assertTrue(vh.judge({"코인노래방": 1, "오락실": 0})[0])

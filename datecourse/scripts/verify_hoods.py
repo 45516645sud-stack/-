@@ -50,13 +50,24 @@ def http_fetch(params: dict) -> dict:
     return {}
 
 
+# 카카오 주소의 시·도 표기가 앱의 지역 이름과 다른 경우
+# (광주·전남은 '전남광주통합특별시'로 나온다: 광주 쪽은 동·서·남·북·광산구)
+REGION_PREFIXES = {
+    "광주": ["광주", *[f"전남광주통합특별시 {g}" for g in ("동구", "서구", "남구", "북구", "광산구")]],
+}
+
+
+def in_region(address: str, region: str) -> bool:
+    return any(address.startswith(p) for p in REGION_PREFIXES.get(region, [region]))
+
+
 def find_center(fetch: Fetch, region: str, q: str) -> dict | None:
     """검색어 첫 결과 중 그 시·도 주소인 곳의 위치"""
     data = fetch({"mode": "places", "q": q, "size": 5})
     if "places" not in data:   # 서버·카카오 오류: '못 찾음'이 아니라 다음에 다시
         raise RuntimeError(data.get("error", "응답 없음"))
     for p in data.get("places", []):
-        if str(p.get("address", "")).startswith(region):
+        if in_region(str(p.get("address", "")), region):
             return {"lat": round(float(p["y"]), 4), "lng": round(float(p["x"]), 4), "address": p["address"]}
     first = [p.get("address", "") for p in data.get("places", [])[:2]]
     print(f"  '{q}' 첫 결과 주소: {first or '없음'}")
