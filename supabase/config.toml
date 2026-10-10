@@ -5,3 +5,7 @@ project_id = "hzomhheyccapnzuwtzxh"
 # 호환되지 않는다. 대신 함수 코드(auth.ts)에서 Authorization 토큰이 실제
 # Supabase 세션인지 직접 검증한다.
 verify_jwt = false
+
+[functions.place-photos]
+# 놀코 웹 앱은 로그인 없이 쓰므로 JWT 대신 함수 안에서 요청한 사이트(Origin)를 확인한다.
+verify_jwt = false
