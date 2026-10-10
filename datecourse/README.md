@@ -98,6 +98,9 @@ claude.ai 링크에서는 보안 정책 때문에 카카오에 접속할 수 없
 
 ## 가게 사진 띄우기 (카카오 이미지 검색, 선택)
 
+가게 목록도 같은 함수가 카카오 로컬 키워드 검색으로 대신 찾아 줘요(`mode=places`). 그래서 브라우저 쪽 JavaScript 키 설정이
+맞지 않아도 목록이 떠요. 함수가 안 되면 JavaScript 키로 브라우저에서 찾고, 그것도 안 되면 지도 버튼을 보여 줘요.
+
 가게 목록의 가게마다 '가게 이름 + 구'로 카카오 이미지 검색을 해서 사진을 최대 4장 붙여요.
 사진은 블로그 등에 올라온 검색 결과라 다른 가게 사진이 섞일 수 있고, 누르면 원래 글로 가요.
 
@@ -112,6 +115,10 @@ supabase functions deploy place-photos
 
 함수 주소는 `index.html`의 `<meta name="nolco-photo-endpoint">` 에 들어 있어요. 지금 올라간 함수 이름은 `bright-action`이에요(웹 편집기로 올리면서 자동으로 붙은 이름, 코드는 `place-photos` 폴더와 같음). 비우면 사진 없이 동작해요.
 함수 테스트: `deno test supabase/functions/place-photos/photos_test.ts`
+
+**자동 배포**: `.github/workflows/nolco-functions.yml` 이 기본 브랜치에서 `supabase/functions/place-photos/` 가 바뀔 때마다
+테스트 후 Supabase 에 `bright-action` 이름으로 올려요. 처음 한 번 저장소 Actions 시크릿에 `SUPABASE_ACCESS_TOKEN`
+(Supabase 대시보드 → 계정 → Access Tokens)을 넣어 두면 돼요. Actions 탭에서 '놀코 서버 함수 배포' → Run workflow 로 바로 돌릴 수도 있어요.
 
 ## 사이트 공개 (GitHub Pages)
 
