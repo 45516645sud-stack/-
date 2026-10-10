@@ -63,7 +63,7 @@ python3 -m http.server 8000
   "summary": "한두 문장 소개",
   "with": ["date", "friends"],      // date / friends / family / solo
   "tags": ["카페", "산책", "노을"],  // 필터 태그: 야경 바다 카페 맛집 산책 전통 실내 비오는날 액티비티 노을 자연 시장
-  "budget": 2,                      // 1: 1인 3만 원 안팎, 2: 3~7만 원, 3: 7만 원 이상
+  "budget": 2,                      // 0: 무료, 1: 1인 3만 원 안팎, 2: 3~7만 원, 3: 7만 원 이상
   "hours": 5,
   "best": "오후",
   "stops": [

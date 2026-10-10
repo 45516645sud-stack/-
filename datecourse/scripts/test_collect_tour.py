@@ -86,7 +86,7 @@ class SeedDataTest(unittest.TestCase):
         self.assertEqual({c["region"] for c in courses}, set(ct.AREAS.values()))  # 17개 시·도 모두
         self.assertEqual(len({c["id"] for c in courses}), len(courses))
         for c in courses:
-            self.assertIn(c["budget"], (1, 2, 3), c["id"])
+            self.assertIn(c["budget"], (0, 1, 2, 3), c["id"])
             self.assertTrue(set(c["with"]) <= {"date", "friends", "family", "solo"}, c["id"])
             for s in c["stops"]:
                 self.assertTrue(33 < s["lat"] < 39 and 124 < s["lng"] < 132, (c["id"], s["name"]))
