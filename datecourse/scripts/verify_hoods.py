@@ -58,6 +58,8 @@ def find_center(fetch: Fetch, region: str, q: str) -> dict | None:
     for p in data.get("places", []):
         if str(p.get("address", "")).startswith(region):
             return {"lat": round(float(p["y"]), 4), "lng": round(float(p["x"]), 4), "address": p["address"]}
+    first = [p.get("address", "") for p in data.get("places", [])[:2]]
+    print(f"  '{q}' 첫 결과 주소: {first or '없음'}")
     return None
 
 
