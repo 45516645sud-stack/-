@@ -114,6 +114,17 @@ header.top {
 .route span.arrow { color: var(--muted); }
 .tags { display: flex; gap: 4px; flex-wrap: wrap; }
 .tag { font-size: 12px; color: var(--muted); }
+.card .hint {
+  font-size: 13px; color: var(--accent-text); background: var(--accent-soft); border-radius: 10px; padding: 6px 9px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.details { margin: 12px 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--accent-soft); border-radius: 14px; }
+.details h3 { margin: 0; font-size: 15px; }
+.details ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.details li { display: flex; gap: 8px; font-size: 14px; line-height: 1.5; }
+.details .d-kind { flex: none; font-weight: 700; color: var(--accent-text); white-space: nowrap; }
+.detail-edit { display: flex; flex-direction: column; gap: 6px; }
+.detail-edit .stop-edit-row select { flex: none; width: 9.5em; }
 .empty { text-align: center; padding: 48px 16px; color: var(--muted); }
 
 /* 상세 시트 */
@@ -259,7 +270,8 @@ textarea { resize: vertical; }
 
 /* ---------- 고정 값 ---------- */
 const REGIONS = ["서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"];
-const WITH = { date: "💑 연인", friends: "👯 친구", family: "👨‍👩‍👧 가족", solo: "🚶 혼자" };
+const WITH = { date: "💑 연인", friends: "👯 친구", family: "👨‍👩‍👧 가족", solo: "🚶 혼자", student: "🎒 학생" };
+const DETAIL = { photo: "📸 사진 명소", time: "⏰ 좋은 시간", move: "🚇 이동", tip: "💡 꿀팁", snack: "🍦 간식" };
 const TAGS = ["야경", "바다", "카페", "맛집", "산책", "전통", "실내", "비오는날", "액티비티", "노을", "자연", "시장"];
 const BUDGET = { 0: "₩0 무료", 1: "₩ 가볍게", 2: "₩₩ 적당히", 3: "₩₩₩ 넉넉히" };
 const BUDGET_HINT = { 0: "돈 안 드는 코스", 1: "1인 3만 원 안팎", 2: "1인 3~7만 원", 3: "1인 7만 원 이상" };
@@ -324,7 +336,8 @@ function distanceTo(c) {
 
 /* ---------- 거르기 ---------- */
 function haystack(c) {
-  return [c.title, c.summary, c.region, c.area, ...(c.tags || []), ...c.stops.map((s) => s.name + " " + (s.tip || ""))]
+  return [c.title, c.summary, c.region, c.area, ...(c.tags || []), ...c.stops.map((s) => s.name + " " + (s.tip || "")),
+    ...(c.details || []).map((d) => d.text)]
     .join(" ").toLowerCase().replace(/\s+/g, "");
 }
 function matches(c) {
@@ -389,6 +402,18 @@ function renderFilters() {
   $("userOnlyBtn").textContent = (state.userOnly ? "✓ " : "👥 ") + "모두가 만든 코스" + (shared.userCourses.length ? ` ${shared.userCourses.length}` : "");
 }
 
+// 카드에는 사진 명소를 먼저, 없으면 첫 디테일
+function firstDetail(c) {
+  const ds = (c.details || []).filter((d) => d && DETAIL[d.kind] && d.text);
+  return ds.find((d) => d.kind === "photo") || ds[0] || null;
+}
+function detailsBox(c) {
+  const ds = (c.details || []).filter((d) => d && DETAIL[d.kind] && d.text);
+  if (!ds.length) return "";
+  return `<section class="details" aria-labelledby="detailsHead"><h3 id="detailsHead">✨ 소소한 디테일</h3>
+    <ul>${ds.map((d) => `<li><span class="d-kind">${esc(DETAIL[d.kind])}</span><span>${esc(d.text)}</span></li>`).join("")}</ul></section>`;
+}
+
 function routeLine(c) {
   return c.stops.map((s) => `<span>${esc(s.name)}</span>`).join('<span class="arrow">→</span>');
 }
@@ -413,6 +438,7 @@ function card(c) {
     <h3>${esc(c.title)}</h3>
     <p>${esc(c.summary)}</p>
     <div class="route">${routeLine(c)}</div>
+    ${firstDetail(c) ? `<div class="hint">${esc(DETAIL[firstDetail(c).kind].split(" ")[0])} ${esc(firstDetail(c).text)}</div>` : ""}
     <div class="tags">${(c.tags || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join(" ")}</div>`;
   b.addEventListener("click", () => openCourse(c.id));
   return b;
@@ -493,6 +519,7 @@ function openCourse(id, { push = true } = {}) {
         : `<div class="fact"><b>${esc((BUDGET[c.budget] || "-").split(" ")[0])}</b><small>${esc(BUDGET_HINT[c.budget] || "예산")}</small></div>`}
       <div class="fact"><b>${esc(c.best || "-")}</b><small>추천 시간대</small></div>
     </div>
+    ${detailsBox(c)}
     <div id="map"></div>
     <ol class="stops">
       ${c.stops.map((s, i) => `
@@ -652,6 +679,8 @@ function cleanCourse(id, c, author) {
     tags: (Array.isArray(c.tags) ? c.tags : []).filter((t) => TAGS.includes(t)),
     budget: BUDGET[c.budget] ? Number(c.budget) : 2, hours: int(c.hours, 0, 48), best: str(c.best, 10),
     stops, at: str(c.at, 40),
+    details: (Array.isArray(c.details) ? c.details : []).slice(0, 3)
+      .map((d) => ({ kind: DETAIL[d && d.kind] ? d.kind : "tip", text: str(d && d.text, 100) })).filter((d) => d.text),
   };
 }
 
@@ -922,6 +951,14 @@ function openBuilder(editId = "") {
         <label class="field"><span>걸리는 시간</span><input id="f-hours" type="number" min="1" max="48" inputmode="numeric"></label>
         <label class="field"><span>추천 시간대</span><select id="f-best">${BEST.map((b) => `<option value="${b}">${b || "-"}</option>`).join("")}</select></label>
       </div>
+      <fieldset class="field"><legend>소소한 디테일 (선택, 3개까지)</legend>
+        <div class="detail-edit">
+          ${[0, 1, 2].map((i) => `<div class="stop-edit-row">
+            <select id="d-kind-${i}" aria-label="${i + 1}번째 디테일 종류">${Object.entries(DETAIL).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
+            <input id="d-text-${i}" maxlength="100" placeholder="${["예: 2층 창가에서 바다가 꽉 차게 찍혀요", "예: 해 지기 30분 전이 제일 예뻐요", "예: 주차는 공영주차장이 편해요"][i]}" aria-label="${i + 1}번째 디테일">
+          </div>`).join("")}
+        </div>
+      </fieldset>
       <fieldset class="field"><legend>장소 (순서대로, 2~6곳) *</legend>
         <ol class="stop-edit" id="stopEdit"></ol>
         <div class="price-total"><span>1인 총 비용</span><b id="priceTotal" aria-live="polite"></b></div>
@@ -943,6 +980,11 @@ function openBuilder(editId = "") {
   $("f-budget").value = String(c.budget);
   $("f-hours").value = c.hours || "";
   $("f-best").value = BEST.includes(c.best) ? c.best : "";
+  [0, 1, 2].forEach((i) => {
+    const d = (c.details || [])[i];
+    $("d-kind-" + i).value = d ? d.kind : ["photo", "time", "tip"][i];
+    $("d-text-" + i).value = d ? d.text : "";
+  });
 
   let stopsDraft = c.stops.map((s) => ({ ...s }));
   const readStops = () => {
@@ -1017,6 +1059,7 @@ function openBuilder(editId = "") {
       budget: +$("f-budget").value, hours: +$("f-hours").value || 0, best: $("f-best").value,
       stops: stopsDraft.map((s) => ({ name: (s.name || "").trim(), kind: s.kind, stay: +s.stay || 0, tip: (s.tip || "").trim(), price: priceOf(s.price) })).filter((s) => s.name),
       at: old ? old.at : new Date().toISOString(),
+      details: [0, 1, 2].map((i) => ({ kind: $("d-kind-" + i).value, text: $("d-text-" + i).value.trim() })).filter((d) => d.text),
     };
     const msg = $("builderMsg");
     if (!raw.title.trim()) { msg.textContent = "코스 이름을 적어 주세요."; $("f-title").focus(); return; }

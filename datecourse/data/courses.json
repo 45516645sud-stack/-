@@ -48,7 +48,21 @@
      "lng": 127.0669
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "서울숲 은행나무길은 가을 오후 햇살이 비칠 때 인스타 사진이 제일 잘 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "주말 성수 카페는 오후 2~4시가 가장 붐벼요. 오전에 가면 자리 잡기 쉬워요."
+    },
+    {
+     "kind": "move",
+     "text": "서울숲역(수인분당선)에서 내리면 숲 입구까지 바로예요."
+    }
+   ]
   },
   {
    "id": "seoul-jongno-retro",
@@ -59,7 +73,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "전통",
@@ -104,7 +119,21 @@
      "lng": 126.985
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "익선동 한옥 골목은 기와지붕과 간판이 같이 나오게 아래에서 위로 찍으면 레트로 느낌이 살아요."
+    },
+    {
+     "kind": "snack",
+     "text": "광장시장 빈대떡은 둘이 한 장이면 충분해요. 여러 가지 맛보는 게 이득."
+    },
+    {
+     "kind": "tip",
+     "text": "창덕궁은 월요일, 경복궁은 화요일에 쉬어요."
+    }
+   ]
   },
   {
    "id": "seoul-namsan-night",
@@ -149,7 +178,21 @@
      "lng": 126.9857
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "남산타워 전망대보다 남산 팔각정 근처에서 타워를 올려다보며 찍는 사진이 더 인기예요."
+    },
+    {
+     "kind": "time",
+     "text": "해 지기 30분 전에 올라가면 노을과 야경을 한 번에 볼 수 있어요."
+    },
+    {
+     "kind": "move",
+     "text": "남산 순환버스(01번)가 케이블카 줄보다 빠를 때가 많아요."
+    }
+   ]
   },
   {
    "id": "seoul-yeouido",
@@ -160,7 +203,8 @@
    "with": [
     "date",
     "friends",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "피크닉",
@@ -197,7 +241,21 @@
      "lng": 126.9583
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "더현대 서울 5층 실내 정원 '사운즈 포레스트'는 천장 빛이 예뻐 실내 인생샷 명소예요."
+    },
+    {
+     "kind": "tip",
+     "text": "한강공원에선 돗자리·그늘막 대여점이 있어서 빈손으로 가도 돼요."
+    },
+    {
+     "kind": "time",
+     "text": "봄엔 여의도 윤중로 벚꽃길이 함께 열려요."
+    }
+   ]
   },
   {
    "id": "seoul-coex-rain",
@@ -244,7 +302,17 @@
      "lng": 127.0573
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "별마당도서관은 2층 난간에서 책장 전체가 나오게 내려다보며 찍어 보세요."
+    },
+    {
+     "kind": "tip",
+     "text": "코엑스는 지하로 다 이어져 있어서 비 와도 우산 꺼낼 일이 거의 없어요."
+    }
+   ]
   },
   {
    "id": "seoul-yeonnam",
@@ -255,7 +323,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "산책",
@@ -292,7 +361,21 @@
      "lng": 126.895
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "연트럴파크 잔디밭은 해 질 녘 역광으로 찍으면 감성 사진이 나와요."
+    },
+    {
+     "kind": "snack",
+     "text": "망원시장 고로케·닭강정 사 들고 한강 가는 게 국룰."
+    },
+    {
+     "kind": "time",
+     "text": "홍대 버스킹은 주말 저녁 7시 이후가 제일 활발해요."
+    }
+   ]
   },
   {
    "id": "seoul-bukchon",
@@ -347,7 +430,21 @@
      "lng": 126.983
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "북촌 가회동 언덕길(북촌 8경)에서 한옥 지붕 너머 서울 도심이 같이 나오는 사진이 유명해요."
+    },
+    {
+     "kind": "tip",
+     "text": "한복을 입으면 경복궁 입장이 무료예요."
+    },
+    {
+     "kind": "tip",
+     "text": "북촌은 주민이 사는 곳이라 관광 허용 시간이 정해진 구역이 있어요. 조용히 다녀요."
+    }
+   ]
   },
   {
    "id": "busan-haeundae",
@@ -403,7 +500,21 @@
      "lng": 129.191
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "해변열차 창가 자리에서 바다가 꽉 차게 찍히는 사진이 인스타 단골이에요."
+    },
+    {
+     "kind": "tip",
+     "text": "스카이캡슐(작은 2인 레일카)은 커플에게 인기라 미리 예매하는 게 좋아요."
+    },
+    {
+     "kind": "time",
+     "text": "청사포는 해 질 무렵 빨간·하얀 등대가 예뻐요."
+    }
+   ]
   },
   {
    "id": "busan-gwangan-night",
@@ -450,7 +561,21 @@
      "lng": 129.082
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "민락수변공원 쪽에서 광안대교를 정면으로 두고 찍으면 다리 조명이 다 담겨요."
+    },
+    {
+     "kind": "time",
+     "text": "드론쇼는 주로 토요일 저녁에 열려요. 가기 전 일정 확인!"
+    },
+    {
+     "kind": "move",
+     "text": "황령산 전망대는 대중교통이 불편해서 택시가 편해요."
+    }
+   ]
   },
   {
    "id": "busan-nampo",
@@ -461,7 +586,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "사진",
@@ -506,7 +632,21 @@
      "lng": 129.0324
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "감천문화마을 어린왕자 동상 옆자리는 대기 줄이 있어요. 아침 일찍 가면 한산해요."
+    },
+    {
+     "kind": "snack",
+     "text": "BIFF광장 씨앗호떡은 부산 3대 간식 중 하나로 꼽혀요."
+    },
+    {
+     "kind": "move",
+     "text": "감천마을은 언덕이라 토성역에서 마을버스를 타고 올라가는 게 편해요."
+    }
+   ]
   },
   {
    "id": "busan-yeongdo",
@@ -516,7 +656,8 @@
    "summary": "바다 절벽 마을 흰여울, 깡깡이마을, 태종대 해안 절경.",
    "with": [
     "date",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "바다",
@@ -553,7 +694,21 @@
      "lng": 129.087
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "흰여울마을 해안터널 안에서 바다 쪽을 향해 찍으면 액자 같은 사진이 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "흰여울마을은 오후 늦게 가면 바다에 비친 햇빛이 반짝여요."
+    },
+    {
+     "kind": "tip",
+     "text": "주민 거주지라 집 안이 보이는 사진은 피해 주세요."
+    }
+   ]
   },
   {
    "id": "busan-gijang",
@@ -600,7 +755,17 @@
      "lng": 129.234
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "해동용궁사는 입구 계단 위에서 바다와 절이 한 번에 나오는 구도가 명당이에요."
+    },
+    {
+     "kind": "time",
+     "text": "새해 첫날엔 해돋이 보러 온 사람으로 매우 붐벼요."
+    }
+   ]
   },
   {
    "id": "daegu-modern",
@@ -611,7 +776,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "골목",
@@ -648,7 +814,21 @@
      "lng": 128.581
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "김광석길 벽화 앞 기타 치는 동상 옆이 대표 포토존이에요."
+    },
+    {
+     "kind": "photo",
+     "text": "청라언덕 계단(3·1만세운동길)은 위에서 아래로 찍으면 근대 건물이 함께 나와요."
+    },
+    {
+     "kind": "snack",
+     "text": "서문시장 납작만두와 칼제비는 꼭 먹어 보세요."
+    }
+   ]
   },
   {
    "id": "daegu-apsan",
@@ -685,7 +865,17 @@
      "lng": 128.585
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "앞산 전망대 하트 조형물 사이로 대구 야경을 담는 게 커플 인증샷 코스예요."
+    },
+    {
+     "kind": "time",
+     "text": "케이블카 막차 시간을 꼭 확인하세요. 내려올 땐 줄이 길어요."
+    }
+   ]
   },
   {
    "id": "daegu-suseong",
@@ -724,7 +914,21 @@
      "lng": 128.62
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "수성못 데크길에서 물에 비친 조명을 같이 찍으면 반영 사진이 예뻐요."
+    },
+    {
+     "kind": "time",
+     "text": "여름밤엔 음악 분수 공연이 있는 날이 있어요."
+    },
+    {
+     "kind": "tip",
+     "text": "오리배는 해 지기 전에 타야 운영 시간에 맞아요."
+    }
+   ]
   },
   {
    "id": "daegu-eworld",
@@ -771,7 +975,17 @@
      "lng": 128.566
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "이월드 야간 별빛축제 땐 조명 터널이 인기 포토존이에요."
+    },
+    {
+     "kind": "tip",
+     "text": "83타워 전망대는 이월드 자유이용권과 별도 입장일 수 있으니 확인하세요."
+    }
+   ]
   },
   {
    "id": "incheon-chinatown",
@@ -782,7 +996,8 @@
    "with": [
     "date",
     "friends",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "전통",
@@ -827,7 +1042,21 @@
      "lng": 126.596
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "차이나타운 붉은 패루(중화가 입구 문) 앞이 대표 인증샷 장소예요."
+    },
+    {
+     "kind": "snack",
+     "text": "짜장면박물관 근처 가게들에서 짜장면 원조의 맛을 볼 수 있어요."
+    },
+    {
+     "kind": "move",
+     "text": "인천역(1호선) 바로 앞이라 지하철로 가기 편해요."
+    }
+   ]
   },
   {
    "id": "incheon-songdo",
@@ -873,7 +1102,17 @@
      "lng": 126.643
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "센트럴파크 수로에 비친 고층 빌딩 야경은 '한국의 뉴욕' 느낌 사진이 나와요."
+    },
+    {
+     "kind": "tip",
+     "text": "수상택시는 저녁 시간이 분위기가 제일 좋아요."
+    }
+   ]
   },
   {
    "id": "incheon-eurwangni",
@@ -920,7 +1159,21 @@
      "lng": 126.377
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "선녀바위 쪽 해변은 노을 질 때 바위 실루엣과 함께 찍으면 분위기 있어요."
+    },
+    {
+     "kind": "time",
+     "text": "서해 노을은 해 지기 20~30분 전부터가 하이라이트예요."
+    },
+    {
+     "kind": "tip",
+     "text": "물때(밀물·썰물)에 따라 해변 모습이 많이 달라져요."
+    }
+   ]
   },
   {
    "id": "gwangju-yangnim",
@@ -931,7 +1184,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "골목",
@@ -968,7 +1222,17 @@
      "lng": 126.927
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "펭귄마을 정크아트 골목은 시계·간판 모은 벽 앞이 사진 명소예요."
+    },
+    {
+     "kind": "tip",
+     "text": "국립아시아문화전당 옥상 정원은 무료로 개방돼 쉬어 가기 좋아요."
+    }
+   ]
   },
   {
    "id": "gwangju-songjeong",
@@ -979,7 +1243,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "시장",
@@ -1007,7 +1272,17 @@
      "lng": 126.794
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "1913송정역시장 입구 레트로 간판 아래가 대표 포토존이에요."
+    },
+    {
+     "kind": "move",
+     "text": "KTX 광주송정역에서 걸어서 바로라 기차 여행 코스로 딱이에요."
+    }
+   ]
   },
   {
    "id": "gwangju-mudeung",
@@ -1018,7 +1293,8 @@
    "with": [
     "date",
     "family",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "등산",
@@ -1055,7 +1331,17 @@
      "lng": 126.985
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "증심사 가는 숲길 계곡 다리 위에서 단풍 사진이 예쁘게 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "가을 단풍철(10월 말~11월 초)이 가장 아름다워요."
+    }
+   ]
   },
   {
    "id": "daejeon-bakery",
@@ -1066,7 +1352,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "빵",
@@ -1103,7 +1390,21 @@
      "lng": 127.441
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "성심당 본점 간판 앞 빵 봉투 인증샷은 대전 여행 필수 코스예요."
+    },
+    {
+     "kind": "time",
+     "text": "성심당은 주말 오전에도 줄이 길어요. 평일에 가면 훨씬 수월해요."
+    },
+    {
+     "kind": "photo",
+     "text": "소제동 철도관사촌은 낮은 지붕 골목이라 필름 사진 느낌이 나요."
+    }
+   ]
   },
   {
    "id": "daejeon-expo",
@@ -1113,7 +1414,8 @@
    "summary": "도심 수목원 산책, 미술관 관람, 갑천 엑스포다리 야경.",
    "with": [
     "date",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "산책",
@@ -1150,7 +1452,17 @@
      "lng": 127.388
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "엑스포다리 무지개 조명과 한빛탑이 같이 나오게 찍으면 대전 야경 대표 사진이에요."
+    },
+    {
+     "kind": "tip",
+     "text": "한밭수목원은 월요일에 쉬어요."
+    }
+   ]
   },
   {
    "id": "daejeon-daecheong",
@@ -1189,7 +1501,17 @@
      "lng": 127.49
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "대청호 억새밭은 가을 오후 역광에 억새가 반짝이는 사진이 예뻐요."
+    },
+    {
+     "kind": "move",
+     "text": "대중교통이 불편해서 차로 가는 게 좋아요."
+    }
+   ]
   },
   {
    "id": "ulsan-taehwa",
@@ -1200,7 +1522,8 @@
    "with": [
     "date",
     "family",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "자연",
@@ -1237,7 +1560,21 @@
      "lng": 129.31
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "십리대숲 은하수길은 밤에 대나무 사이 조명 터널이 생겨 인생샷 명소예요."
+    },
+    {
+     "kind": "time",
+     "text": "봄 꽃양귀비·가을 국화 때 정원이 가장 화려해요."
+    },
+    {
+     "kind": "tip",
+     "text": "국가정원·대숲·태화루 모두 입장료 없이 둘러볼 수 있어요."
+    }
+   ]
   },
   {
    "id": "ulsan-daewangam",
@@ -1247,7 +1584,8 @@
    "summary": "대왕암공원 해안 산책, 출렁다리, 장생포 고래문화마을.",
    "with": [
     "date",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "바다",
@@ -1284,7 +1622,17 @@
      "lng": 129.387
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "대왕암 출렁다리 가운데서 바다를 배경으로 찍으면 아찔한 사진이 나와요."
+    },
+    {
+     "kind": "tip",
+     "text": "대왕암공원 해송숲길은 그늘이 많아 여름에도 걷기 좋아요."
+    }
+   ]
   },
   {
    "id": "ulsan-ganjeolgot",
@@ -1294,7 +1642,8 @@
    "summary": "한반도 육지에서 가장 먼저 해가 뜨는 곳 중 하나, 진하 해변까지.",
    "with": [
     "date",
-    "friends"
+    "friends",
+    "student"
    ],
    "tags": [
     "바다",
@@ -1322,7 +1671,21 @@
      "lng": 129.346
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "간절곶 소망우체통 옆에 서면 크기 대비가 재미있는 사진이 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "새해 첫 해돋이 명소라 1월 1일은 교통이 많이 막혀요."
+    },
+    {
+     "kind": "tip",
+     "text": "등대 주변 잔디 언덕은 돗자리 펴고 쉬기 좋아요."
+    }
+   ]
   },
   {
    "id": "sejong-lake",
@@ -1333,7 +1696,8 @@
    "with": [
     "date",
     "family",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "호수",
@@ -1370,7 +1734,21 @@
      "lng": 127.285
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "세종호수공원 수상무대섬은 물 위에 떠 있는 것처럼 찍혀요."
+    },
+    {
+     "kind": "photo",
+     "text": "국립세종도서관 건물은 책 한 장을 펼친 듯한 곡선이 사진 포인트예요."
+    },
+    {
+     "kind": "tip",
+     "text": "국립세종수목원은 월요일에 쉬어요."
+    }
+   ]
   },
   {
    "id": "sejong-jochiwon",
@@ -1408,7 +1786,17 @@
      "lng": 127.298
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "베어트리파크는 봄 꽃과 가을 단풍 정원길이 사진 맛집이에요."
+    },
+    {
+     "kind": "snack",
+     "text": "여름엔 조치원 복숭아를 꼭 맛보세요."
+    }
+   ]
   },
   {
    "id": "gg-suwon",
@@ -1419,7 +1807,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "전통",
@@ -1464,7 +1853,21 @@
      "lng": 127.016
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "방화수류정 아래 용연 연못에서 정자가 물에 비치는 반영 사진이 유명해요."
+    },
+    {
+     "kind": "time",
+     "text": "해 질 무렵 성곽길에 조명이 켜질 때 가장 예뻐요."
+    },
+    {
+     "kind": "snack",
+     "text": "수원 통닭거리는 양념·후라이드 반반이 기본이에요."
+    }
+   ]
   },
   {
    "id": "gg-gapyeong",
@@ -1511,7 +1914,21 @@
      "lng": 127.352
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "남이섬 메타세쿼이아길 한가운데서 길 끝까지 보이게 찍으면 겨울연가 느낌!"
+    },
+    {
+     "kind": "time",
+     "text": "아침고요수목원 오색별빛정원은 겨울 저녁에 열려요."
+    },
+    {
+     "kind": "move",
+     "text": "남이섬은 가평 선착장에서 배를 타고 들어가요."
+    }
+   ]
   },
   {
    "id": "gg-paju",
@@ -1523,7 +1940,8 @@
     "date",
     "friends",
     "family",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "예술",
@@ -1560,7 +1978,21 @@
      "lng": 126.74
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "지혜의숲 높은 책장 앞에서 올려다보는 사진이 인기예요."
+    },
+    {
+     "kind": "tip",
+     "text": "헤이리 예술마을은 월요일에 쉬는 곳이 많아요."
+    },
+    {
+     "kind": "photo",
+     "text": "임진각 바람의 언덕 바람개비는 바람 부는 날 움직임이 담겨 더 예뻐요."
+    }
+   ]
   },
   {
    "id": "gg-yangpyeong",
@@ -1570,7 +2002,8 @@
    "summary": "남한강·북한강이 만나는 두물머리와 세미원, 강변 카페.",
    "with": [
     "date",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "자연",
@@ -1607,7 +2040,17 @@
      "lng": 127.34
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "두물머리 느티나무와 액자 포토존은 이른 아침 물안개가 있을 때 몽환적으로 찍혀요."
+    },
+    {
+     "kind": "snack",
+     "text": "두물머리 연핫도그는 꼭 먹어 보는 명물 간식이에요."
+    }
+   ]
   },
   {
    "id": "gg-yongin",
@@ -1638,7 +2081,21 @@
      "lng": 127.202
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "에버랜드 포시즌스가든은 계절마다 꽃이 바뀌어 사진 배경으로 최고예요."
+    },
+    {
+     "kind": "time",
+     "text": "인기 놀이기구는 개장 직후에 타면 대기가 짧아요."
+    },
+    {
+     "kind": "tip",
+     "text": "사파리·판다월드는 앱에서 스마트줄서기를 활용하세요."
+    }
+   ]
   },
   {
    "id": "gg-minsokchon",
@@ -1678,7 +2135,17 @@
      "lng": 126.866
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "한국민속촌 장터 거리는 한복 입고 사극 느낌으로 찍기 좋아요."
+    },
+    {
+     "kind": "tip",
+     "text": "광명동굴은 안이 서늘해서 여름에도 겉옷을 챙기세요."
+    }
+   ]
   },
   {
    "id": "gw-gangneung",
@@ -1734,7 +2201,21 @@
      "lng": 128.947
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "안목해변 카페 2·3층 창가에서 바다가 꽉 찬 창문 사진이 시그니처예요."
+    },
+    {
+     "kind": "snack",
+     "text": "초당 순두부 젤라또는 강릉에서만 맛볼 수 있는 이색 디저트예요."
+    },
+    {
+     "kind": "time",
+     "text": "경포호는 해 질 무렵 호수에 노을이 비쳐 산책하기 딱 좋아요."
+    }
+   ]
   },
   {
    "id": "gw-sokcho",
@@ -1790,7 +2271,21 @@
      "lng": 128.602
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "영금정 정자 위에서 파도가 바위에 부서지는 순간을 찍어 보세요."
+    },
+    {
+     "kind": "snack",
+     "text": "속초 중앙시장 닭강정은 식어도 맛있어서 포장해 가기 좋아요."
+    },
+    {
+     "kind": "time",
+     "text": "설악산 케이블카는 주말 오전에 일찍 가야 대기가 짧아요."
+    }
+   ]
   },
   {
    "id": "gw-chuncheon",
@@ -1837,7 +2332,17 @@
      "lng": 127.728
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "삼악산 호수케이블카 크리스탈 캐빈은 발밑으로 의암호가 보여서 사진이 짜릿해요."
+    },
+    {
+     "kind": "snack",
+     "text": "닭갈비 먹고 막국수 한 그릇까지가 춘천 정석이에요."
+    }
+   ]
   },
   {
    "id": "gw-yangyang",
@@ -1884,7 +2389,21 @@
      "lng": 128.629
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "서피비치 해먹·선베드 존은 이국적인 해변 사진 명소예요."
+    },
+    {
+     "kind": "time",
+     "text": "낙산사 의상대는 일출 명소라 새벽에 가면 장관이에요."
+    },
+    {
+     "kind": "tip",
+     "text": "서핑 강습은 초보도 2시간이면 보드에 일어설 수 있어요."
+    }
+   ]
   },
   {
    "id": "cb-danyang",
@@ -1932,7 +2451,21 @@
      "lng": 128.365
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "만천하스카이워크 끝 전망대에서 남한강이 굽이치는 모습이 다 담겨요."
+    },
+    {
+     "kind": "photo",
+     "text": "도담삼봉은 강 건너편에서 세 봉우리가 한 화면에 나오게 찍어 보세요."
+    },
+    {
+     "kind": "snack",
+     "text": "단양구경시장 마늘 떡갈비·흑마늘 닭강정이 별미예요."
+    }
+   ]
   },
   {
    "id": "cb-cheongju",
@@ -1943,7 +2476,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "미술관",
@@ -1980,7 +2514,17 @@
      "lng": 127.495
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "수암골 언덕 카페 테라스에서 청주 시내 야경을 배경으로 찍어 보세요."
+    },
+    {
+     "kind": "tip",
+     "text": "국립현대미술관 청주는 수장고를 직접 볼 수 있는 독특한 미술관이에요."
+    }
+   ]
   },
   {
    "id": "cb-jecheon",
@@ -2019,7 +2563,17 @@
      "lng": 128.212
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "청풍호반케이블카 비봉산 정상 전망대에서 '내륙의 바다' 청풍호가 한눈에 보여요."
+    },
+    {
+     "kind": "photo",
+     "text": "의림지 용추폭포 유리전망대는 발아래로 폭포가 보여 짜릿한 사진이 나와요."
+    }
+   ]
   },
   {
    "id": "cn-gongju",
@@ -2030,7 +2584,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2067,7 +2622,21 @@
      "lng": 127.11
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "공산성 금서루 성곽 위에서 금강을 내려다보는 사진이 명당이에요."
+    },
+    {
+     "kind": "time",
+     "text": "공산성은 밤에 조명이 켜져 야경 산책이 좋아요."
+    },
+    {
+     "kind": "snack",
+     "text": "공주는 밤(알밤)이 유명해요. 밤빵·밤 디저트를 맛보세요."
+    }
+   ]
   },
   {
    "id": "cn-buyeo",
@@ -2077,7 +2646,8 @@
    "summary": "연꽃 연못 궁남지, 부소산성, 백제 왕궁 재현 단지.",
    "with": [
     "date",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2113,7 +2683,17 @@
      "lng": 126.906
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "궁남지 연못 가운데 포룡정으로 이어진 다리에서 연꽃과 함께 찍어 보세요."
+    },
+    {
+     "kind": "time",
+     "text": "7월 연꽃 필 때 가장 아름다워요."
+    }
+   ]
   },
   {
    "id": "cn-taean",
@@ -2159,7 +2739,21 @@
      "lng": 126.336
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "꽃지해수욕장 할미·할아비바위 사이로 해가 질 때가 최고의 순간이에요."
+    },
+    {
+     "kind": "time",
+     "text": "썰물 때는 바위 가까이 걸어갈 수 있어요. 물때표를 확인하세요."
+    },
+    {
+     "kind": "tip",
+     "text": "안면암 부교는 물이 들어올 때만 떠 있는 모습을 볼 수 있어요."
+    }
+   ]
   },
   {
    "id": "cn-asan",
@@ -2205,7 +2799,17 @@
      "lng": 127.004
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "외암민속마을 돌담길과 초가지붕은 가을 은행·감나무와 함께 찍으면 예뻐요."
+    },
+    {
+     "kind": "time",
+     "text": "현충사 은행나무길은 11월 초 노랗게 물들 때가 절정이에요."
+    }
+   ]
   },
   {
    "id": "jb-jeonju",
@@ -2216,7 +2820,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2261,7 +2866,21 @@
      "lng": 127.146
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "전동성당 앞은 한옥마을에서 가장 유명한 한복 사진 장소예요."
+    },
+    {
+     "kind": "photo",
+     "text": "자만벽화마을 언덕에서 한옥마을 기와지붕이 바다처럼 펼쳐진 사진을 찍어 보세요."
+    },
+    {
+     "kind": "snack",
+     "text": "남부시장 야시장은 금·토 저녁에 열려요. 콩나물국밥은 아침에 먹는 게 정석."
+    }
+   ]
   },
   {
    "id": "jb-gunsan",
@@ -2272,7 +2891,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "레트로",
@@ -2317,7 +2937,21 @@
      "lng": 126.729
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "경암동 철길마을에서 교복 대여 후 철길 위에서 찍는 사진이 인기예요."
+    },
+    {
+     "kind": "snack",
+     "text": "이성당은 단팥빵·야채빵이 빨리 동나요. 오전에 가는 게 좋아요."
+    },
+    {
+     "kind": "tip",
+     "text": "초원사진관 앞에 영화 속 하늘색 트럭이 있어요."
+    }
+   ]
   },
   {
    "id": "jb-namwon",
@@ -2326,7 +2960,8 @@
    "title": "춘향 데이트 남원",
    "summary": "광한루원 오작교 산책, 요천 강변, 추어탕.",
    "with": [
-    "date"
+    "date",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2354,7 +2989,17 @@
      "lng": 127.383
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "광한루원 오작교 위에서 커플 사진을 찍으면 오래 간다는 이야기가 있어요."
+    },
+    {
+     "kind": "time",
+     "text": "5월 춘향제 기간엔 볼거리가 많아요."
+    }
+   ]
   },
   {
    "id": "jb-buan",
@@ -2364,7 +3009,8 @@
    "summary": "책을 쌓은 듯한 해안 절벽 채석강, 전나무숲길 내소사.",
    "with": [
     "date",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "바다",
@@ -2393,7 +3039,21 @@
      "lng": 126.471
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "채석강 해식 절벽은 썰물 때 절벽 아래로 걸어 들어가 올려다보며 찍어 보세요."
+    },
+    {
+     "kind": "photo",
+     "text": "내소사 전나무숲길은 길이 곧게 뻗어 원근감 있는 사진이 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "채석강은 해 질 녘 노을도 아름다워요."
+    }
+   ]
   },
   {
    "id": "jn-yeosu",
@@ -2448,7 +3108,21 @@
      "lng": 127.742
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "돌산공원에서 돌산대교와 바다 위 케이블카가 같이 나오는 야경이 여수 대표 사진이에요."
+    },
+    {
+     "kind": "time",
+     "text": "'여수 밤바다'는 저녁 7시 이후 조명이 켜질 때 감성이 살아요."
+    },
+    {
+     "kind": "snack",
+     "text": "이순신광장 근처 딸기모찌는 줄 서서 먹는 명물이에요."
+    }
+   ]
   },
   {
    "id": "jn-suncheon",
@@ -2459,7 +3133,8 @@
    "with": [
     "date",
     "family",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "자연",
@@ -2496,7 +3171,21 @@
      "lng": 127.516
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "용산전망대에서 S자 물길과 갈대밭이 함께 담기는 노을 사진이 최고예요."
+    },
+    {
+     "kind": "time",
+     "text": "갈대는 10~11월에 가장 풍성해요."
+    },
+    {
+     "kind": "move",
+     "text": "순천만습지와 국가정원 사이는 스카이큐브로 오갈 수 있어요."
+    }
+   ]
   },
   {
    "id": "jn-damyang",
@@ -2507,7 +3196,8 @@
    "with": [
     "date",
     "friends",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "자연",
@@ -2552,7 +3242,21 @@
      "lng": 126.989
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "메타세쿼이아길은 길 한가운데서 양옆 나무가 대칭으로 나오게 찍으면 예뻐요."
+    },
+    {
+     "kind": "photo",
+     "text": "죽녹원 대숲 속 오솔길은 위를 올려다보며 찍으면 하늘이 대나무로 둘러싸여요."
+    },
+    {
+     "kind": "snack",
+     "text": "담양은 떡갈비와 대통밥이 대표 음식이에요."
+    }
+   ]
   },
   {
    "id": "jn-mokpo",
@@ -2599,7 +3303,17 @@
      "lng": 126.431
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "목포해상케이블카 고하도 쪽 전망대에서 목포대교와 바다가 한눈에 보여요."
+    },
+    {
+     "kind": "time",
+     "text": "평화광장 춤추는 바다분수는 계절·요일에 따라 운영해요. 가기 전 확인하세요."
+    }
+   ]
   },
   {
    "id": "gb-gyeongju-night",
@@ -2610,7 +3324,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2655,7 +3370,21 @@
      "lng": 129.227
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "동궁과 월지는 연못 건너편에서 전각이 물에 비친 반영 사진이 경주 야경 대표 사진이에요."
+    },
+    {
+     "kind": "photo",
+     "text": "대릉원 고분 사이 목련 한 그루(봄)는 줄 서서 찍는 포토존이에요."
+    },
+    {
+     "kind": "time",
+     "text": "첨성대 주변은 가을 핑크뮬리가 필 때 특히 예뻐요."
+    }
+   ]
   },
   {
    "id": "gb-gyeongju-bomun",
@@ -2694,7 +3423,17 @@
      "lng": 129.285
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "불국사 청운교·백운교 계단을 정면으로 담으면 교과서 속 그 사진이 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "보문호 벚꽃은 4월 초가 절정이에요."
+    }
+   ]
   },
   {
    "id": "gb-andong",
@@ -2705,7 +3444,8 @@
    "with": [
     "date",
     "friends",
-    "family"
+    "family",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2741,7 +3481,21 @@
      "lng": 128.76
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "부용대에 오르면 물길에 둘러싸인 하회마을 전체가 한 장에 담겨요."
+    },
+    {
+     "kind": "photo",
+     "text": "월영교는 밤 조명이 켜지면 다리가 물에 비쳐 로맨틱해요."
+    },
+    {
+     "kind": "snack",
+     "text": "안동 구시장 찜닭골목이 원조예요."
+    }
+   ]
   },
   {
    "id": "gb-pohang",
@@ -2751,7 +3505,8 @@
    "summary": "롤러코스터 모양 조형물 스페이스워크, 영일대, 호미곶 상생의 손.",
    "with": [
     "date",
-    "friends"
+    "friends",
+    "student"
    ],
    "tags": [
     "바다",
@@ -2788,7 +3543,21 @@
      "lng": 129.378
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "호미곶 '상생의 손' 손가락 사이로 해가 걸리게 찍는 일출 사진이 유명해요."
+    },
+    {
+     "kind": "photo",
+     "text": "스페이스워크는 아래에서 올려다보면 롤러코스터 같은 곡선이 예쁘게 나와요."
+    },
+    {
+     "kind": "tip",
+     "text": "스페이스워크는 바람이 세면 운영을 멈출 때가 있어요."
+    }
+   ]
   },
   {
    "id": "gn-tongyeong",
@@ -2844,7 +3613,21 @@
      "lng": 128.424
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "동피랑 꼭대기에서 통영항이 내려다보이는 벽화 앞이 대표 포토존이에요."
+    },
+    {
+     "kind": "snack",
+     "text": "통영 꿀빵과 충무김밥은 꼭 먹어 보세요."
+    },
+    {
+     "kind": "tip",
+     "text": "루지는 여러 번 탈 수 있는 묶음권이 이득이에요."
+    }
+   ]
   },
   {
    "id": "gn-namhae",
@@ -2891,7 +3674,21 @@
      "lng": 127.893
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "독일마을 언덕 위에서 주황 지붕과 바다가 함께 나오는 사진이 그림 같아요."
+    },
+    {
+     "kind": "photo",
+     "text": "다랭이마을은 마을 위 전망대에서 계단식 논과 바다를 한 번에 담아 보세요."
+    },
+    {
+     "kind": "move",
+     "text": "남해는 대중교통이 불편해서 차로 다니는 게 좋아요."
+    }
+   ]
   },
   {
    "id": "gn-jinju",
@@ -2901,7 +3698,8 @@
    "summary": "진주성과 촉석루, 남강 산책, 육회비빔밥.",
    "with": [
     "date",
-    "friends"
+    "friends",
+    "student"
    ],
    "tags": [
     "전통",
@@ -2937,7 +3735,17 @@
      "lng": 128.081
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "남강 건너편에서 촉석루와 진주성 야경이 강물에 비치는 사진이 예뻐요."
+    },
+    {
+     "kind": "time",
+     "text": "10월 남강유등축제 땐 강 위가 등불로 가득해요."
+    }
+   ]
   },
   {
    "id": "gn-geoje",
@@ -2947,7 +3755,8 @@
    "summary": "풍차가 있는 바람의 언덕, 신선대, 몽돌해변.",
    "with": [
     "date",
-    "friends"
+    "friends",
+    "student"
    ],
    "tags": [
     "바다",
@@ -2983,7 +3792,21 @@
      "lng": 128.64
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "바람의 언덕 풍차 앞은 거제 대표 인스타 포토존이에요. 바다를 등지고 찍어 보세요."
+    },
+    {
+     "kind": "tip",
+     "text": "바람이 세서 모자·스카프가 날아가기 쉬워요."
+    },
+    {
+     "kind": "tip",
+     "text": "바람의 언덕·신선대·몽돌해변 모두 입장료 없이 둘러볼 수 있어요."
+    }
+   ]
   },
   {
    "id": "jeju-east",
@@ -3031,7 +3854,21 @@
      "lng": 126.796
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "성산일출봉은 광치기해변에서 바라보며 찍으면 봉우리 전체가 담겨요."
+    },
+    {
+     "kind": "photo",
+     "text": "월정리 해변 앞 의자 포토존에서 에메랄드 바다를 배경으로 찍어 보세요."
+    },
+    {
+     "kind": "time",
+     "text": "성산일출봉 정상 일출은 해 뜨기 1시간 전에 출발해야 해요."
+    }
+   ]
   },
   {
    "id": "jeju-west",
@@ -3079,7 +3916,21 @@
      "lng": 126.239
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "협재해수욕장은 썰물 때 비양도를 배경으로 투명한 물빛 사진이 나와요."
+    },
+    {
+     "kind": "photo",
+     "text": "오설록 녹차밭 사이 길에 앉아 찍으면 초록초록한 사진이 완성돼요."
+    },
+    {
+     "kind": "snack",
+     "text": "오설록 녹차 아이스크림·롤케이크가 인기예요."
+    }
+   ]
   },
   {
    "id": "jeju-south",
@@ -3126,7 +3977,21 @@
      "lng": 126.559
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "쇠소깍 투명카약 위에서 위로 찍으면 물빛과 바위가 함께 나와요."
+    },
+    {
+     "kind": "time",
+     "text": "천지연폭포는 밤에도 개방해서 조명 켜진 폭포를 볼 수 있어요."
+    },
+    {
+     "kind": "snack",
+     "text": "매일올레시장 흑돼지 꼬치·귤 디저트를 맛보세요."
+    }
+   ]
   },
   {
    "id": "jeju-hallasan",
@@ -3137,7 +4002,8 @@
    "with": [
     "date",
     "friends",
-    "solo"
+    "solo",
+    "student"
    ],
    "tags": [
     "자연",
@@ -3174,7 +4040,21 @@
      "lng": 126.528
     }
    ],
-   "source": "curated"
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "사려니숲길 삼나무 사이로 빛이 내리는 사진은 비 온 다음 날 특히 신비로워요."
+    },
+    {
+     "kind": "time",
+     "text": "1100고지는 겨울 눈꽃 시즌에 드라이브 명소예요."
+    },
+    {
+     "kind": "snack",
+     "text": "동문시장 야시장은 저녁에 열려요. 흑돼지·전복김밥이 인기."
+    }
+   ]
   }
  ]
 }

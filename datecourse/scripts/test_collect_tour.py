@@ -87,7 +87,10 @@ class SeedDataTest(unittest.TestCase):
         self.assertEqual(len({c["id"] for c in courses}), len(courses))
         for c in courses:
             self.assertIn(c["budget"], (0, 1, 2, 3), c["id"])
-            self.assertTrue(set(c["with"]) <= {"date", "friends", "family", "solo"}, c["id"])
+            self.assertTrue(set(c["with"]) <= {"date", "friends", "family", "solo", "student"}, c["id"])
+            self.assertTrue(c["details"], c["id"])
+            for d in c["details"]:
+                self.assertIn(d["kind"], ("photo", "time", "move", "tip", "snack"), c["id"])
             for s in c["stops"]:
                 self.assertTrue(33 < s["lat"] < 39 and 124 < s["lng"] < 132, (c["id"], s["name"]))
 

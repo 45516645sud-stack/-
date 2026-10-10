@@ -61,11 +61,14 @@ python3 -m http.server 8000
   "area": "성수",
   "title": "성수 숲길 산책 + 카페 투어",
   "summary": "한두 문장 소개",
-  "with": ["date", "friends"],      // date / friends / family / solo
+  "with": ["date", "friends"],      // date / friends / family / solo / student(학생)
   "tags": ["카페", "산책", "노을"],  // 필터 태그: 야경 바다 카페 맛집 산책 전통 실내 비오는날 액티비티 노을 자연 시장
   "budget": 2,                      // 0: 무료, 1: 1인 3만 원 안팎, 2: 3~7만 원, 3: 7만 원 이상
   "hours": 5,
   "best": "오후",
+  "details": [                      // 소소한 디테일: photo(사진 명소) time(좋은 시간) move(이동) tip(꿀팁) snack(간식)
+    { "kind": "photo", "text": "서울숲 은행나무길은 가을 오후 햇살에 사진이 잘 나와요." }
+  ],
   "stops": [
     { "name": "서울숲", "kind": "walk", "stay": 60, "tip": "한 줄 팁", "lat": 37.5444, "lng": 127.0374 }
   ]
