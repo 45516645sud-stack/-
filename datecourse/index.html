@@ -954,11 +954,12 @@ function kakaoPlaces() {
 }
 
 /* 놀거리 종류에 맞는 가게인지: 카카오 분류(예: 음식점 > 카페 > 테마카페 > 보드카페)와 가게 이름으로 가려낸다.
-   match 중 하나는 있어야 하고, not 중 하나라도 있으면 뺀다 (예: 보드게임카페에 호프, 디저트 카페에 보드게임카페) */
+   match 중 하나는 있어야 하고, not 중 하나라도 있으면 뺀다 (예: 보드게임카페에 호프, 디저트 카페에 보드게임카페).
+   '코인+노래'처럼 +로 이으면 둘 다 있어야 한다. 규칙은 data/local.json, 실제 카카오 결과로 scripts/check_kinds.py 로 점검 */
 function fitsAct(a, p) {
   if (!a || !Array.isArray(a.match)) return true;
   const text = `${p.category_name || ""} ${p.place_name || ""}`.toLowerCase();
-  const has = (w) => text.includes(String(w).toLowerCase());
+  const has = (w) => String(w).toLowerCase().split("+").every((part) => text.includes(part));
   return a.match.some(has) && !(a.not || []).some(has);
 }
 
@@ -996,8 +997,10 @@ async function showPlaces(keyword, h, q, a) {
   const endpoint = photoEndpoint();
   if (endpoint) {
     try {
-      const get = async (page) => {
-        const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(keyword)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
+      // 동네 가운데에서 2km 안을 놀거리 이름 몇 가지로 찾는다 (동네 이름을 붙이면 결과가 확 줄어서 붙이지 않음)
+      const kws = (a && Array.isArray(a.kws) && a.kws.length) ? a.kws : [keyword];
+      const get = async (page, kw = kws[0]) => {
+        const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(kw)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
         if (!res.ok) return null;
         const data = await res.json();
         return (Array.isArray(data.places) ? data.places : []).map((p) => ({
@@ -1005,10 +1008,12 @@ async function showPlaces(keyword, h, q, a) {
           phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
         }));
       };
-      let list = await get(1);
+      const pages = await Promise.all(kws.map((kw) => get(1, kw).catch(() => null)));
+      let list = pages.every((x) => x === null) ? null : pages.flatMap((x) => x || []);
       if (list) {
+        list.sort((x, y) => (Number(x.distance) || 0) - (Number(y.distance) || 0));
         // 종류가 다른 가게를 빼고 나면 적을 수 있어 한 쪽 더
-        if (list.length >= 15 && pick(list).length < 5) list = list.concat((await get(2)) || []);
+        if ((pages[0] || []).length >= 15 && pick(list).length < 5) list = list.concat((await get(2).catch(() => null)) || []);
         if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
         draw(list);
         return;
@@ -1019,7 +1024,7 @@ async function showPlaces(keyword, h, q, a) {
   // 2) 카카오 지도 JavaScript 키로 브라우저에서 검색
   const places = await kakaoPlaces();
   if (!places) { fallback("지도 앱에서 지금 영업 중인 가게를 바로 볼 수 있어요."); return; }
-  places.keywordSearch(keyword, (data, status) => {
+  places.keywordSearch((a && a.kws && a.kws[0]) || keyword, (data, status) => {
     if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
     const S = window.kakao.maps.services.Status;
     if (status === S.ZERO_RESULT) { empty(); return; }
