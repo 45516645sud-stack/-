@@ -300,12 +300,50 @@ main.wrap { padding-bottom: calc(var(--tab-h) + 28px + env(safe-area-inset-botto
 .empty { text-align: center; padding: 56px 16px; color: var(--sub); grid-column: 1 / -1; }
 .empty b { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
 
+
+/* 이번 주말 */
+body.weekend .seg, body.weekend .hscroll:has(#hoodRow), body.weekend .hscroll:has(#quickRow), body.weekend #hoodRow, body.weekend #quickRow { display: none !important; }
+.wk-head { margin: 18px 0 10px; }
+.wk-head h2 { font-size: 21px; margin: 0; }
+.wk-head small { color: var(--sub); font-size: 13px; }
+.wk-chips { margin: 0 0 10px; }
+.ev-list { display: flex; flex-direction: column; }
+@media (min-width: 760px) { .ev-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; } .ev-list .sec-title, .ev-list .wk-more { grid-column: 1 / -1; } }
+.ev { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: start; width: 100%; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; color: var(--ink); }
+.ev-pic { width: 72px; height: 96px; border-radius: 10px; overflow: hidden; background: var(--fill); display: grid; place-items: center; }
+.ev-pic img { width: 100%; height: 100%; object-fit: cover; }
+.ev-pic svg.il { width: 44px; height: 44px; }
+.ev-body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ev-top { display: flex; gap: 6px; align-items: center; }
+.ev-cat { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: var(--fill); color: var(--sub); }
+.ev-cat.festival { background: var(--accent-soft); color: var(--accent-text); }
+.ev-flag { font-size: 11px; font-weight: 700; }
+.ev-flag.end { color: #d23c3c; }
+.ev-flag.new { color: var(--accent-text); }
+.ev-title { font-size: 15px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ev-place, .ev-when { font-size: 12px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wk-more { margin: 14px auto; }
+.ev-hero { margin: 4px 0 12px; border-radius: 14px; overflow: hidden; background: var(--fill); display: grid; place-items: center; max-height: 360px; }
+.ev-hero img { width: 100%; max-height: 360px; object-fit: contain; }
+.ev-hero svg.il { width: 120px; height: 120px; margin: 24px; }
+.ev-at { display: flex; gap: 6px; align-items: center; }
+.ev-at svg.i { width: 16px; height: 16px; flex: none; }
+.weekend-entry { margin: 14px 0 0; }
+.wk-entry { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); text-align: left; }
+.wk-entry .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; flex: none; }
+.wk-entry .ic svg.il { width: 32px; height: 32px; }
+.wk-entry > span:nth-child(2) { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.wk-entry small { color: var(--sub); font-size: 12px; }
+.wk-entry .go { display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; color: var(--accent-text); }
+.wk-entry .go svg.i { width: 15px; height: 15px; }
+
 /* ── 아래 탭 바 ── */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--bg); box-shadow: var(--shadow-up);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.tabbar .wrap { display: grid; grid-template-columns: repeat(4, 1fr); height: var(--tab-h); padding-left: 8px; padding-right: 8px; }
+.tabbar .wrap { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; height: var(--tab-h); padding-left: 8px; padding-right: 8px; }
+.tabbar button[hidden] { display: none; }
 .tabbar button {
   border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   font-size: 11px; color: var(--faint); position: relative;
@@ -493,7 +531,9 @@ textarea { resize: vertical; }
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="weekendView" hidden></main>
+<main class="wrap" id="courseView">
+  <section class="weekend-entry" id="weekendEntry" hidden></section>
   <section class="local-box" id="localBox" hidden></section>
   <section class="feature" id="featureBox" hidden></section>
   <button class="pick" id="randomBtn" type="button">
@@ -510,8 +550,9 @@ textarea { resize: vertical; }
 <nav class="tabbar" aria-label="메뉴">
   <div class="wrap">
     <button type="button" id="tabHome" aria-current="page"></button>
-    <button type="button" id="userOnlyBtn"></button>
+    <button type="button" id="weekendBtn"></button>
     <button type="button" id="makeBtn" class="make"></button>
+    <button type="button" id="userOnlyBtn"></button>
     <button type="button" id="favBtn"></button>
   </div>
 </nav>
@@ -598,6 +639,7 @@ const ICON = {
   spark: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z",
   edit: "M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4",
   chev: "M9 6l6 6-6 6",
+  calendar: "M5 6h14v14H5zM5 10.5h14M9 3.5v4M15 3.5v4M8.5 14h2M13.5 14h2M8.5 17h2",
   mic: "M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6",
   dice: "M5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4zM8.5 8.5h.01M15.5 15.5h.01M12 12h.01M15.5 8.5h.01M8.5 15.5h.01",
   key: "M8 15a4 4 0 1 1 0-8a4 4 0 0 1 0 8zM12 11h8.5M17.5 11v3M20.5 11v2.5",
@@ -687,6 +729,10 @@ const ILLU = {
     <circle cx="24" cy="18" r="5.8" fill="${C.w}"/><path d="M15 12a10 10 0 0 1 5-5" stroke="${C.rl}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
 };
 ILLU.cafe = ILLU.cup;
+ILLU.show = `<g transform="rotate(-10 24 24)"><path d="M6 15h36v6a3 3 0 0 0 0 6v6H6v-6a3 3 0 0 0 0-6z" fill="${C.r}"/><path d="M31 15v18" stroke="${C.rl}" stroke-width="1.6" stroke-dasharray="2.5 2.5"/>
+    <path d="M17 19.5l1.6 3.2 3.5.5-2.5 2.5.6 3.5-3.2-1.7-3.2 1.7.6-3.5-2.5-2.5 3.5-.5z" fill="${C.y}"/></g>`;
+ILLU.festival = `<path d="M24 6v9M24 33v9M6 24h9M33 24h9M11.3 11.3l6.4 6.4M30.3 30.3l6.4 6.4M36.7 11.3l-6.4 6.4M17.7 30.3l-6.4 6.4" stroke="${C.y}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="24" cy="24" r="5" fill="${C.r}"/><circle cx="9" cy="8" r="2.4" fill="${C.p}"/><circle cx="40" cy="9" r="2" fill="${C.m}"/><circle cx="40" cy="40" r="2.4" fill="${C.s}"/><circle cx="8" cy="39" r="2" fill="${C.v}"/>`;
 function illu(name) {
   return ILLU[name] ? `<svg class="il" viewBox="0 0 48 48" aria-hidden="true">${ILLU[name]}</svg>` : icon(name);
 }
@@ -712,6 +758,7 @@ const state = {
   region: "", who: "", tags: new Set(), budget: null, short: false,
   q: "", favOnly: false, userOnly: false, here: null,
   // 우리 동네: 관광지 대신 노래방·보드게임카페 같은 일상 놀거리
+  view: "courses",   // courses: 코스 목록 / weekend: 이번 주말 공연·축제
   mode: "trip", hood: "", local: [], act: "",   // act: '노래방 코스 보기'로 고른 놀거리
 };
 let fav = new Set(load(STORE.fav, []));
@@ -806,6 +853,7 @@ function setRegion(r) {
   }
 }
 function setMode(m) {
+  state.view = "courses";
   state.mode = m;
   state.act = "";
   save(STORE.mode, m);
@@ -962,12 +1010,13 @@ function renderFilters() {
   $("filterApply").textContent = `코스 ${visible().length}개 보기`;
 
   // 아래 탭 바
-  const mode = state.favOnly ? "fav" : state.userOnly ? "user" : "home";
+  const mode = state.view === "weekend" ? "weekend" : state.favOnly ? "fav" : state.userOnly ? "user" : "home";
   const tab = (id, ic, label, active, badge = 0) => {
     $(id).innerHTML = `${icon(ic, active && ic === "heart" ? "fillc" : "")}<span>${label}</span>${badge ? `<span class="badge-n">${badge}</span>` : ""}`;
     if (active) $(id).setAttribute("aria-current", "page"); else $(id).removeAttribute("aria-current");
   };
   tab("tabHome", "home", "홈", mode === "home");
+  tab("weekendBtn", "calendar", "이번 주말", mode === "weekend");
   tab("userOnlyBtn", "users", "모두의 코스", mode === "user");
   tab("favBtn", "heart", "찜", mode === "fav", fav.size);
   $("makeBtn").innerHTML = `<span class="plus">${icon("plus")}</span><span>만들기</span>`;
@@ -1442,7 +1491,7 @@ function renderList() {
   grid.replaceChildren(...list.map(card));
 }
 
-function update() { renderFilters(); renderList(); }
+function update() { renderFilters(); renderList(); renderWeekend(); }
 
 /* 다시 올 이유: 리뷰가 좋은 인기 코스, 새로 올라온 코스 (여행 코스 홈), 찜 옮기기 (찜 탭) */
 function miniCard(c, sub) {
@@ -1502,6 +1551,188 @@ function favFromHash() {
   history.replaceState(null, "", location.pathname + location.search);
   toast(fav.size > before ? `찜 ${fav.size - before}개를 옮겨 왔어요` : "이미 찜한 코스들이에요");
   return true;
+}
+
+
+/* ---------- 이번 주말: 공연·축제 (코스와 따로 보는 기능) ----------
+   data/events.json 은 사이트를 올릴 때 만든다 (scripts/build_events.py: KOPIS 공연 + 관광공사 축제) */
+const WK = { list: null, loading: null, period: "weekend", cat: "", shown: 30 };
+const WK_PERIOD = { weekend: "이번 주말", week: "이번 주", month: "한 달" };
+function loadEvents() {
+  WK.loading ??= fetchJson("data/events.json").then((d) => {
+    WK.list = (d && Array.isArray(d.events) ? d.events : []).filter((e) => e && e.title && e.start && e.end && Array.isArray(e.regions));
+    $("weekendBtn").hidden = !WK.list.length;   // 데이터가 없는 곳(파일로 연 앱 등)에서는 탭을 숨긴다
+    if (!WK.list.length && state.view === "weekend") state.view = "courses";
+    renderWeekend();
+    renderWeekendEntry();
+  });
+  return WK.loading;
+}
+const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+function wkRange(period = WK.period, now = new Date()) {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (period === "week") return [today, addDays(today, 6)];
+  if (period === "month") return [today, addDays(today, 30)];
+  const dow = today.getDay();   // 일 0 … 토 6. 토·일이면 이번 주말, 아니면 다가오는 토·일
+  const sat = dow === 6 ? today : dow === 0 ? today : addDays(today, 6 - dow);
+  const sun = dow === 0 ? today : addDays(sat, 1);
+  return [sat, sun];
+}
+const WEEK = "일월화수목금토";
+// 10.17(토), 올해가 아니면 27.1.3(일)
+const md = (iso) => { const d = new Date(iso + "T00:00:00"); const y = d.getFullYear() !== new Date().getFullYear() ? String(d.getFullYear()).slice(2) + "." : ""; return `${y}${d.getMonth() + 1}.${d.getDate()}(${WEEK[d.getDay()]})`; };
+function eventsFor(region = state.region, period = WK.period, cat = WK.cat, q = state.q) {
+  if (!WK.list) return [];
+  const [from, to] = wkRange(period).map(isoDay);
+  const words = (q || "").toLowerCase().split(/\s+/).filter(Boolean);
+  return WK.list.filter((e) => e.start <= to && e.end >= from
+    && (!region || e.regions.includes(region))
+    && (!cat || (cat === "공연" ? e.kind === "show" : e.cat === cat))
+    && words.every((w) => `${e.title} ${e.place} ${e.cat} ${e.regions.join(" ")}`.toLowerCase().includes(w)));
+}
+function eventCard(e) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "ev";
+  const today = isoDay(new Date());
+  const soonEnd = !e.long && e.end >= today && e.end <= isoDay(addDays(new Date(), 6));
+  const fresh = !e.long && e.start >= isoDay(addDays(new Date(), -3)) && e.start <= isoDay(addDays(new Date(), 6));
+  const when = e.long ? `${md(e.end)}까지` : e.start === e.end ? md(e.start) : `${md(e.start)} ~ ${md(e.end)}`;
+  b.innerHTML = `<span class="ev-pic">${e.poster ? `<img alt="" loading="lazy" referrerpolicy="no-referrer">` : illu(e.kind === "festival" ? "festival" : "show")}</span>
+    <span class="ev-body">
+      <span class="ev-top"><span class="ev-cat ${e.kind}"></span>${soonEnd ? `<span class="ev-flag end">곧 끝나요</span>` : fresh ? `<span class="ev-flag new">새로 시작</span>` : ""}</span>
+      <b class="ev-title"></b>
+      <span class="ev-place"></span>
+      <span class="ev-when">${esc(when)}${Number.isFinite(e.price) ? ` · ${e.price === 0 ? "무료" : won(e.price)}` : ""}</span>
+    </span>`;
+  b.querySelector(".ev-cat").textContent = e.cat;
+  b.querySelector(".ev-title").textContent = e.title;
+  b.querySelector(".ev-place").textContent = `${e.regions.join("·")} · ${e.place}`;
+  const img = b.querySelector("img");
+  if (img) {
+    img.src = e.poster;
+    img.addEventListener("error", () => { img.parentElement.innerHTML = illu(e.kind === "festival" ? "festival" : "show"); });
+  }
+  b.addEventListener("click", () => openEvent(e));
+  return b;
+}
+function renderWeekend() {
+  const on = state.view === "weekend";
+  document.body.classList.toggle("weekend", on);
+  $("weekendView").hidden = !on;
+  $("courseView").hidden = on;
+  if (!on) { renderWeekendEntry(); return; }
+  const box = $("weekendView");
+  const where = state.region || "전국";
+  const [from, to] = wkRange();
+  const span = isoDay(from) === isoDay(to) ? md(isoDay(from)) : `${md(isoDay(from))} ~ ${md(isoDay(to))}`;
+  if (!WK.list) {
+    box.innerHTML = `<div class="wk-head"><h2>${esc(WK_PERIOD[WK.period])} 뭐 하지</h2></div><p class="note">공연·축제를 불러오는 중이에요…</p>`;
+    loadEvents();
+    return;
+  }
+  const all = eventsFor(state.region, WK.period, "");
+  const cats = ["공연", "축제", "뮤지컬", "연극", "콘서트", "클래식", "무용", "아이와"]
+    .map((c) => [c, all.filter((e) => (c === "공연" ? e.kind === "show" : e.cat === c)).length]).filter(([, n]) => n);
+  if (WK.cat && !cats.some(([c]) => c === WK.cat)) WK.cat = "";
+  const list = eventsFor();
+  const now = list.filter((e) => !e.long), always = list.filter((e) => e.long);
+  box.innerHTML = `
+    <div class="wk-head">
+      <h2>${esc(where)} ${esc(WK_PERIOD[WK.period])} 뭐 하지</h2>
+      <small>${esc(span)} · 공연·축제 ${list.length}개</small>
+    </div>
+    <div class="chips wk-chips" id="wkPeriod" role="group" aria-label="기간"></div>
+    <div class="chips wk-chips" id="wkCat" role="group" aria-label="종류"></div>
+    <div class="ev-list" id="wkList"></div>
+    <p class="note">공연은 KOPIS(공연예술통합전산망), 축제는 한국관광공사 정보예요. 일정·가격은 바뀔 수 있으니 예매처에서 꼭 확인하세요.</p>`;
+  $("wkPeriod").replaceChildren(...Object.entries(WK_PERIOD).map(([k, v]) => chip(v, WK.period === k, () => { WK.period = k; WK.shown = 30; renderWeekend(); })));
+  $("wkCat").replaceChildren(chip("전체", !WK.cat, () => { WK.cat = ""; WK.shown = 30; renderWeekend(); }),
+    ...cats.map(([c, n]) => chip(`${c} ${n}`, WK.cat === c, () => { WK.cat = WK.cat === c ? "" : c; WK.shown = 30; renderWeekend(); })));
+  const wl = $("wkList");
+  if (!list.length) {
+    wl.innerHTML = `<div class="empty"><b>${esc(where)}에 ${esc(WK_PERIOD[WK.period])} 일정이 없어요</b>기간을 '한 달'로 늘리거나 다른 지역을 골라 보세요.</div>`;
+    return;
+  }
+  wl.append(...now.slice(0, WK.shown).map(eventCard));
+  if (now.length > WK.shown) {
+    const more = document.createElement("button");
+    more.type = "button"; more.className = "btn wk-more"; more.textContent = `더 보기 (${now.length - WK.shown}개 더)`;
+    more.addEventListener("click", () => { WK.shown += 30; renderWeekend(); });
+    wl.append(more);
+  }
+  if (always.length && now.length <= WK.shown) {
+    const h = document.createElement("h3");
+    h.className = "sec-title"; h.textContent = `늘 하는 공연 ${always.length}`;
+    wl.append(h, ...always.slice(0, 20).map(eventCard));
+  }
+}
+// 코스 홈 맨 위 입구: '이번 주말 부산 공연 12 · 축제 3'
+function renderWeekendEntry() {
+  const box = $("weekendEntry");
+  const show = state.view !== "weekend" && browsing() && !state.q && WK.list && WK.list.length;
+  box.hidden = !show;
+  if (!show) return;
+  const list = eventsFor(state.region, "weekend", "", "");
+  if (!list.length) { box.hidden = true; return; }
+  const shows = list.filter((e) => e.kind === "show").length, fests = list.length - shows;
+  box.innerHTML = `<button type="button" class="wk-entry">
+    <span class="ic">${illu(fests ? "festival" : "show")}</span>
+    <span><b>이번 주말 ${esc(state.region || "전국")}에서</b><small>공연 ${shows}${fests ? ` · 축제 ${fests}` : ""}개가 열려요</small></span>
+    <span class="go">보기 ${icon("chev")}</span></button>`;
+  box.querySelector("button").addEventListener("click", () => { WK.period = "weekend"; openWeekend(); });
+}
+function openWeekend() {
+  state.view = "weekend";
+  state.favOnly = false; state.userOnly = false;
+  WK.shown = 30;
+  update();
+  window.scrollTo({ top: 0 });
+}
+function openEvent(e) {
+  openId = "";
+  const when = e.start === e.end ? md(e.start) : `${md(e.start)} ~ ${md(e.end)}`;
+  const q = encodeURIComponent(e.place || e.title);
+  const safe = (u) => (/^https:\/\//.test(u || "") ? u : "");
+  $("sheetBody").innerHTML = `
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <div><div class="where">${esc(e.regions.join("·"))} · ${esc(e.cat)}</div><h2 id="sheetTitle"></h2></div>
+      <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
+    </div>
+    <div class="ev-hero">${e.poster ? `<img alt="" referrerpolicy="no-referrer">` : illu(e.kind === "festival" ? "festival" : "show")}</div>
+    <div class="facts">
+      <div class="fact"><small>기간</small><b style="font-size:13px">${esc(e.long ? md(e.end) + "까지 (오래 하는 공연)" : when)}</b></div>
+      <div class="fact"><small>가격</small><b class="price" style="font-size:13px">${Number.isFinite(e.price) ? (e.price === 0 ? "무료" : won(e.price)) : "확인 필요"}</b>${e.note ? `<em></em>` : ""}</div>
+    </div>
+    <p class="summary ev-at">${icon("pin")}<span></span></p>
+    <div class="row-actions">
+      ${safe(e.link) ? `<a class="btn primary grow" href="${esc(e.link)}" target="_blank" rel="noopener">${e.kind === "show" ? "예매·자세히 보기" : "축제 정보 보기"}</a>` : ""}
+      <a class="btn" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">길찾기</a>
+    </div>
+    <button class="course-link" type="button" id="evCourses">
+      <span>${icon("shuffle")}${esc(e.regions[0])}에서 공연 전후로 갈 놀코 코스</span>
+      <span class="go">코스 보기 ${icon("chev")}</span>
+    </button>
+    <p class="note">일정·가격·예매는 바뀔 수 있어요. 가기 전에 예매처에서 확인하세요.</p>`;
+  $("sheetTitle").textContent = e.title;
+  $("sheetBody").querySelector(".ev-at span").textContent = e.place || e.regions.join("·");
+  const em = $("sheetBody").querySelector(".fact em");
+  if (em) em.textContent = e.note;
+  const img = $("sheetBody").querySelector(".ev-hero img");
+  if (img) { img.src = e.poster; img.addEventListener("error", () => { img.parentElement.innerHTML = illu(e.kind === "festival" ? "festival" : "show"); }); }
+  $("closeBtn").addEventListener("click", closeCourse);
+  $("evCourses").addEventListener("click", () => {
+    closeCourse();
+    state.view = "courses"; state.mode = "trip"; save(STORE.mode, "trip");
+    setRegion(e.regions[0]);
+    update();
+    window.scrollTo({ top: 0 });
+  });
+  const sheet = $("sheet");
+  if (!sheet.open) sheet.showModal();
+  sheet.scrollTop = 0;
 }
 
 /* ---------- 지도 링크 (키 없이 쓰는 공개 주소) ---------- */
@@ -2315,12 +2546,13 @@ function courseFromHash() {
 applyTheme(load(STORE.theme, ""));
 $("themeBtn").addEventListener("click", toggleTheme);
 $("randomBtn").addEventListener("click", () => pickRandom(""));
-const goTab = (fav_, user_) => { state.favOnly = fav_; state.userOnly = user_; update(); window.scrollTo({ top: 0 }); };
+const goTab = (fav_, user_) => { state.view = "courses"; state.favOnly = fav_; state.userOnly = user_; update(); window.scrollTo({ top: 0 }); };
 $("tabHome").addEventListener("click", () => goTab(false, false));
 $("modeTrip").addEventListener("click", () => setMode("trip"));
 $("modeLocal").addEventListener("click", () => setMode("local"));
 $("favBtn").addEventListener("click", () => goTab(true, false));
 $("userOnlyBtn").addEventListener("click", () => goTab(false, true));
+$("weekendBtn").addEventListener("click", () => openWeekend());
 $("filterClose").innerHTML = icon("close");
 ["regionRow", "hoodRow", "quickRow"].forEach((id) => enableHScroll($(id)));
 $("hoodClose").innerHTML = icon("close");
@@ -2339,7 +2571,7 @@ $("makeBtn").addEventListener("click", () => openBuilder());
 let qTimer = 0;
 $("q").addEventListener("input", (e) => {
   clearTimeout(qTimer);
-  qTimer = setTimeout(() => { state.q = e.target.value.trim(); renderList(); }, 150);
+  qTimer = setTimeout(() => { state.q = e.target.value.trim(); renderList(); renderWeekend(); }, 150);
 });
 $("sheet").addEventListener("close", () => {
   openId = "";
@@ -2367,6 +2599,7 @@ window.addEventListener("popstate", () => {
   if (id && findCourse(id)) openCourse(id, { push: false });
   else if (id) pendingId = id;
   initShared().catch(() => {});
+  loadEvents();
 })();
 
 if ("serviceWorker" in navigator && location.protocol === "https:") {

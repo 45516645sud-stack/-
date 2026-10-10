@@ -80,6 +80,12 @@ jobs:
           ls _site/posters | wc -l
           du -sh _site
 
+      # 놀코 '이번 주말': 위 일정(포스터 경로까지 단 것)을 읽어 놀코 전용 events.json 을 만든다. 실패해도 사이트는 올린다
+      - name: 놀코 이번 주말 데이터
+        env:
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+        run: python datecourse/scripts/build_events.py --fairs _site/data/fairs.json --out _site/nolco/data/events.json || echo "::warning::놀코 이번 주말 데이터를 만들지 못했어요"
+
       - name: 받은 포스터 남겨 두기
         uses: actions/cache/save@v4
         with:
