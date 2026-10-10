@@ -4,10 +4,11 @@
     python scripts/verify_hoods.py                 # 놀코 서버(Supabase 함수)로 확인
     python scripts/verify_hoods.py --dry-run       # 결과만 출력, 파일은 그대로
 
-data/hood_candidates.json 의 후보마다
+data/hood_candidates.json 의 후보(hoods: 번화가, towns: 전국 시·군·구청 주변)마다
   1) 검색어로 동네 가운데 위치를 찾고 (주소가 그 시·도인지 확인)
-  2) 반경 1.5km 안에 놀거리(노래방·PC방·보드게임카페 등)가 실제로 있는지 센다.
-놀거리 종류가 충분한 곳만 local.json 의 hoods 에 더하고, 빠진 곳은 data/hood_rejected.json 에 이유를 남긴다.
+  2) 반경 2km 안에 코인노래방이나 오락실이 실제로 있는지 센다.
+하나라도 있으면 local.json 의 hoods 에 더한다. 이미 있는 동네와 1.2km 안이면 같은 동네로 보고 뺀다.
+빠진 곳은 data/hood_rejected.json 에 이유를 남긴다.
 이미 local.json 에 있는 동네는 건드리지 않는다. Python 표준 라이브러리만 쓴다.
 """
 from __future__ import annotations
@@ -27,11 +28,10 @@ ROOT = Path(__file__).resolve().parent.parent
 ENDPOINT = "https://hzomhheyccapnzuwtzxh.supabase.co/functions/v1/bright-action"
 ORIGIN = "https://45516645sud-stack.github.io"
 
-# 동네에 이 중 몇 종류가 있어야 '놀 데가 있는 동네'로 본다
-PROBES = ["노래방", "코인노래방", "PC방", "보드게임카페", "방탈출", "볼링장", "만화카페", "카페"]
-MIN_KINDS = 5          # 위 8종류 중 최소 몇 종류
-MIN_TOTAL = 20         # 찾은 가게 수 합계 최소
-RADIUS = 1500
+# 놀거리 기준: 코인노래방이나 오락실이 한 곳이라도 있으면 '놀 데가 있는 동네'
+PROBES = ["코인노래방", "오락실"]
+RADIUS = 2000
+SAME_HOOD_KM = 1.2     # 이미 있는 동네와 이보다 가까우면 중복
 
 Fetch = Callable[[dict], dict]
 
@@ -74,10 +74,16 @@ def count_fun(fetch: Fetch, center: dict) -> dict[str, int]:
 
 
 def judge(counts: dict[str, int]) -> tuple[bool, str]:
-    kinds = sum(1 for n in counts.values() if n > 0)
-    total = sum(counts.values())
-    ok = kinds >= MIN_KINDS and total >= MIN_TOTAL
-    return ok, f"놀거리 {kinds}종류·{total}곳" + ("" if ok else f" (기준 {MIN_KINDS}종류·{MIN_TOTAL}곳)")
+    ok = any(n > 0 for n in counts.values())
+    found = ", ".join(f"{k} {n}곳" for k, n in counts.items())
+    return ok, found + ("" if ok else " (코인노래방·오락실 없음)")
+
+
+def km(a: dict, b: dict) -> float:
+    import math
+    r = math.pi / 180
+    h = math.sin((b["lat"] - a["lat"]) * r / 2) ** 2 + math.cos(a["lat"] * r) * math.cos(b["lat"] * r) * math.sin((b["lng"] - a["lng"]) * r / 2) ** 2
+    return 2 * 6371 * math.asin(math.sqrt(h))
 
 
 def verify_one(fetch: Fetch, region: str, cand: list) -> dict:
@@ -98,11 +104,16 @@ def verify_one(fetch: Fetch, region: str, cand: list) -> dict:
 
 
 def merge(local: dict, results: list[dict]) -> int:
-    """통과한 후보를 지역별로 뒤에 붙인다. 이미 있는 id 는 건너뛴다."""
+    """통과한 후보를 지역별로 뒤에 붙인다. 이미 있는 id, 이미 있는 동네와 가까운 곳은 건너뛴다."""
     have = {h["id"] for hs in local["hoods"].values() for h in hs}
     added = 0
     for r in results:
         if not r["ok"] or r["id"] in have:
+            continue
+        near = [h for h in local["hoods"].get(r["region"], []) if "lat" in h and km(h, r) < SAME_HOOD_KM]
+        if near:
+            r["ok"] = False
+            r["why"] = f"이미 있는 '{near[0]['name']}'와 같은 동네"
             continue
         local["hoods"].setdefault(r["region"], []).append(
             {"id": r["id"], "name": r["name"], "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"]})
@@ -119,9 +130,10 @@ def main(argv: list[str] | None = None, fetch: Fetch = http_fetch) -> int:
 
     local_path = ROOT / "data" / "local.json"
     local = json.loads(local_path.read_text(encoding="utf-8"))
-    cands = json.loads((ROOT / "data" / "hood_candidates.json").read_text(encoding="utf-8"))["hoods"]
+    data = json.loads((ROOT / "data" / "hood_candidates.json").read_text(encoding="utf-8"))
     have = {h["id"] for hs in local["hoods"].values() for h in hs}
-    todo = [(region, c) for region, cs in cands.items() for c in cs if c[0] not in have]
+    todo = [(region, c) for group in ("hoods", "towns") for region, cs in data.get(group, {}).items()
+            for c in cs if c[0] not in have]
     print(f"확인할 후보 {len(todo)}곳 (이미 있는 동네 {len(have)}곳은 그대로)")
 
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as ex:
@@ -135,6 +147,9 @@ def main(argv: list[str] | None = None, fetch: Fetch = http_fetch) -> int:
 
     added = merge(local, results)
     rejected = [{k: r[k] for k in ("region", "id", "name", "why")} for r in results if not r["ok"]]
+    for r in results:
+        if not r["ok"] and r["why"].startswith("이미 있는"):
+            print(f"중복 {r['region']} {r['name']}: {r['why']}")
     print(f"추가 {added}곳, 제외 {len(rejected)}곳")
     if args.dry_run:
         return 0
