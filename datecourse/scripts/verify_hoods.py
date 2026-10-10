@@ -50,17 +50,54 @@ def http_fetch(params: dict) -> dict:
     return {}
 
 
+# 카카오 주소의 시·도 표기가 앱의 지역 이름과 다른 경우
+# (광주·전남은 '전남광주통합특별시'로 나온다: 광주 쪽은 동·서·남·북·광산구)
+REGION_PREFIXES = {
+    "광주": ["광주", *[f"전남광주통합특별시 {g}" for g in ("동구", "서구", "남구", "북구", "광산구")]],
+}
+
+
+def in_region(address: str, region: str) -> bool:
+    return any(address.startswith(p) for p in REGION_PREFIXES.get(region, [region]))
+
+
 def find_center(fetch: Fetch, region: str, q: str) -> dict | None:
     """검색어 첫 결과 중 그 시·도 주소인 곳의 위치"""
     data = fetch({"mode": "places", "q": q, "size": 5})
     if "places" not in data:   # 서버·카카오 오류: '못 찾음'이 아니라 다음에 다시
         raise RuntimeError(data.get("error", "응답 없음"))
     for p in data.get("places", []):
-        if str(p.get("address", "")).startswith(region):
+        if in_region(str(p.get("address", "")), region):
             return {"lat": round(float(p["y"]), 4), "lng": round(float(p["x"]), 4), "address": p["address"]}
     first = [p.get("address", "") for p in data.get("places", [])[:2]]
     print(f"  '{q}' 첫 결과 주소: {first or '없음'}")
     return None
+
+
+def city_from(address: str, region: str) -> str:
+    """주소에서 시·군·구: '경북 포항시 북구 …' → 포항시, '서울 관악구 …' → 관악구, 세종 → 세종"""
+    parts = address.split()
+    if len(parts) > 1 and parts[1][-1:] in ("시", "군", "구"):
+        return parts[1]
+    return region
+
+
+def fill_cities(fetch: Fetch, local: dict) -> int:
+    """city 가 없는 동네에 시·군·구를 채운다 (동네 고르기 창에서 묶어 보여 주려고)"""
+    filled = 0
+    for region, hs in local["hoods"].items():
+        for h in hs:
+            if h.get("city"):
+                continue
+            try:
+                center = find_center(fetch, region, h.get("q") or h["name"])
+            except Exception as e:
+                print(f"  시·군·구 못 채움 {region} {h['name']}: {e}")
+                continue
+            if center:
+                h["city"] = city_from(center["address"], region)
+                filled += 1
+    return filled
 
 
 def count_fun(fetch: Fetch, center: dict) -> dict[str, int]:
@@ -100,7 +137,7 @@ def verify_one(fetch: Fetch, region: str, cand: list) -> dict:
         return {"id": hid, "region": region, "name": name, "ok": False, "why": f"확인 실패: {e}", "retry": True}
     ok, why = judge(counts)
     return {"id": hid, "region": region, "name": name, "q": q, "desc": desc, "ok": ok, "why": why,
-            "lat": center["lat"], "lng": center["lng"], "counts": counts}
+            "lat": center["lat"], "lng": center["lng"], "counts": counts, "city": city_from(center["address"], region)}
 
 
 def merge(local: dict, results: list[dict]) -> int:
@@ -115,8 +152,12 @@ def merge(local: dict, results: list[dict]) -> int:
             r["ok"] = False
             r["why"] = f"이미 있는 '{near[0]['name']}'와 같은 동네"
             continue
+        name = r["name"]
+        if any(h["name"] == name for h in local["hoods"].get(r["region"], [])):
+            office = r["q"].split()[-1]
+            name += " (시청 주변)" if office.endswith("시청") else " (군청 주변)" if office.endswith("군청") else " (구청 주변)"
         local["hoods"].setdefault(r["region"], []).append(
-            {"id": r["id"], "name": r["name"], "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"]})
+            {"id": r["id"], "name": name, "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"], "city": r.get("city", "")})
         have.add(r["id"])
         added += 1
     return added
@@ -146,6 +187,8 @@ def main(argv: list[str] | None = None, fetch: Fetch = http_fetch) -> int:
         return 1
 
     added = merge(local, results)
+    filled = fill_cities(fetch, local)
+    print(f"시·군·구 채움 {filled}곳")
     rejected = [{k: r[k] for k in ("region", "id", "name", "why")} for r in results if not r["ok"]]
     for r in results:
         if not r["ok"] and r["why"].startswith("이미 있는"):

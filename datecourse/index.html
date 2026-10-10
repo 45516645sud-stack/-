@@ -124,6 +124,22 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .act .ic svg.i { width: 26px; height: 26px; stroke-width: 1.7; }
 .act span:last-child { word-break: keep-all; }
 
+/* 동네 고르기 */
+.hood-pick { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 34px; padding: 0 12px; border-radius: 999px;
+  border: 0; background: var(--ink); color: var(--bg); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.hood-pick svg.i { width: 16px; height: 16px; }
+.hood-pick .chev { transform: rotate(90deg); }
+.hood-search { margin: 12px 0 4px; background: var(--fill); color: var(--sub); }
+.hood-search input { color: var(--ink); }
+.hood-list { padding-bottom: 12px; }
+.hood-group h3 { margin: 18px 0 6px; font-size: 13px; color: var(--sub); font-weight: 700; display: flex; justify-content: space-between; }
+.hood-group .opts { display: flex; flex-direction: column; }
+.hood-opt { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; padding: 12px 4px; border: 0;
+  border-bottom: 1px solid var(--line); background: transparent; text-align: left; color: var(--ink); font-size: 15px; }
+.hood-opt small { color: var(--sub); font-size: 12px; text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hood-opt[aria-current="true"] { font-weight: 800; color: var(--accent-text); }
+.hood-empty { color: var(--sub); text-align: center; padding: 32px 0; }
+
 /* 실제 가게 목록 */
 .places { display: flex; flex-direction: column; }
 /* 놀거리 화면: 코스로 넘어가는 한 줄 (가게 목록을 가리지 않게 정보 칸 바로 아래) */
@@ -168,6 +184,26 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 /* 빠른 필터 줄 */
 .quick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 10px 0; }
 .quick::-webkit-scrollbar { display: none; }
+/* 옆으로 넘기는 줄: 컴퓨터에서는 휠·끌기·화살표로 넘긴다 */
+.hscroll { position: relative; }
+.hscroll.dragging > * { cursor: grabbing; user-select: none; }
+.hs-btn {
+  display: none; position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg);
+  box-shadow: 0 2px 8px rgba(31, 28, 21, .12); color: var(--ink); place-items: center; padding: 0;
+}
+.hs-btn svg.i { width: 18px; height: 18px; }
+.hs-btn.prev { left: -6px; }
+.hs-btn.next { right: -6px; }
+.hs-btn.prev svg { transform: scaleX(-1); }
+@media (hover: hover) and (pointer: fine) {
+  .hscroll.can-prev .hs-btn.prev, .hscroll.can-next .hs-btn.next { display: grid; }
+  .hscroll.can-next::after, .hscroll.can-prev::before {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 40px; pointer-events: none; z-index: 1;
+  }
+  .hscroll.can-next::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+  .hscroll.can-prev::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+}
 .chip {
   flex: none; display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px;
   border: 1px solid var(--line); background: var(--bg); border-radius: 999px; font-size: 14px; color: var(--ink); white-space: nowrap;
@@ -463,6 +499,21 @@ textarea { resize: vertical; }
   </div>
 </dialog>
 
+<dialog class="sheet" id="hoodSheet" aria-labelledby="hoodTitle">
+  <div class="sheet-in">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <h2 id="hoodTitle">동네 고르기</h2>
+      <button class="icon-btn" id="hoodClose" aria-label="닫기"></button>
+    </div>
+    <label class="search hood-search" id="hoodSearchBox">
+      <span class="sr">동네 검색</span>
+      <input id="hoodQ" type="search" placeholder="동네·시·군·구 이름 (예: 양덕, 포항)" autocomplete="off">
+    </label>
+    <div id="hoodList" class="hood-list"></div>
+  </div>
+</dialog>
+
 <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
   <div class="sheet-in" id="sheetBody"></div>
 </dialog>
@@ -619,6 +670,18 @@ async function loadLocal() {
   return out;
 }
 const hoodsOf = (region) => LOCAL.hoods[region] || [];
+// 동네가 속한 시·군·구: 데이터의 city, 없으면 시·군·구청 주변 후보는 설명에서, 아니면 이름 첫 단어
+function cityOf(h) {
+  if (h.city) return h.city;
+  const m = /^(\S+?[시군구]) 중심가$/.exec(h.desc || "");
+  if (m) return m[1];
+  if (!h.name.includes(" ")) return "그 밖의 동네";
+  // '포항 양덕동' → 같은 지역 시·군·구청 후보 중 '포항시'
+  const first = h.name.split(" ")[0];
+  const region = Object.keys(LOCAL.hoods).find((r) => LOCAL.hoods[r].includes(h));
+  const known = (LOCAL.hoods[region] || []).map((x) => (/^(\S+?[시군구]) 중심가$/.exec(x.desc || "") || [])[1]).filter(Boolean);
+  return known.find((c) => c.startsWith(first) && c.length === first.length + 1) || first;
+}
 // 노래방·코인노래방처럼 비슷한 놀거리는 같은 묶음으로 본다
 const actGroup = (id) => (LOCAL.acts[id] || {}).group || id;
 const hoodById = (id) => Object.values(LOCAL.hoods).flat().find((h) => h.id === id) || null;
@@ -762,8 +825,18 @@ function renderFilters() {
   const hoodRow = $("hoodRow");
   hoodRow.hidden = !(local && state.region);
   if (!hoodRow.hidden) {
-    hoodRow.replaceChildren(...hoodsOf(state.region).map((h) =>
+    const cur = hoodById(state.hood);
+    const pick = document.createElement("button");
+    pick.type = "button";
+    pick.className = "hood-pick";
+    pick.innerHTML = `${icon("pin")}<span></span>${icon("chev", "chev")}`;
+    pick.querySelector("span").textContent = cur ? cityOf(cur) : "동네 고르기";
+    pick.setAttribute("aria-label", `다른 동네 고르기, 지금: ${cur ? cityOf(cur) + " " + cur.name : "없음"}`);
+    pick.addEventListener("click", openHoodPicker);
+    const sameCity = cur ? hoodsOf(state.region).filter((h) => cityOf(h) === cityOf(cur)) : [];
+    hoodRow.replaceChildren(pick, ...sameCity.map((h) =>
       chip(h.name, state.hood === h.id, () => { state.hood = h.id; save(STORE.hood, h.id); update(); })));
+    requestAnimationFrame(() => revealPressed(hoodRow));
   }
   renderLocalBox();
 
@@ -992,6 +1065,110 @@ async function addPhotos(el, p) {
     }
     el.querySelector(".links").before(strip);
   } catch { /* 사진 없이 */ }
+}
+
+/* 옆으로 넘기는 줄 (지역 탭·동네·빠른 필터): 휠을 옆으로, 마우스로 끌기, 양 끝 화살표 */
+function enableHScroll(row) {
+  const wrap = document.createElement("div");
+  wrap.className = "hscroll";
+  row.parentNode.insertBefore(wrap, row);
+  wrap.appendChild(row);
+  const prev = document.createElement("button");
+  const next = document.createElement("button");
+  prev.type = next.type = "button";
+  prev.className = "hs-btn prev";
+  next.className = "hs-btn next";
+  prev.setAttribute("aria-label", "왼쪽으로 넘기기");
+  next.setAttribute("aria-label", "오른쪽으로 넘기기");
+  prev.innerHTML = next.innerHTML = icon("chev");
+  wrap.append(prev, next);
+  const sync = () => {
+    const max = row.scrollWidth - row.clientWidth;
+    wrap.classList.toggle("can-prev", row.scrollLeft > 4);
+    wrap.classList.toggle("can-next", row.scrollLeft < max - 4);
+  };
+  const page = (dir) => row.scrollBy({ left: dir * Math.max(160, row.clientWidth * 0.7), behavior: "smooth" });
+  prev.addEventListener("click", () => page(-1));
+  next.addEventListener("click", () => page(1));
+  row.addEventListener("scroll", sync, { passive: true });
+  row.addEventListener("wheel", (e) => {
+    if (row.scrollWidth <= row.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const max = row.scrollWidth - row.clientWidth;
+    if ((e.deltaY < 0 && row.scrollLeft <= 0) || (e.deltaY > 0 && row.scrollLeft >= max)) return;   // 끝이면 페이지 스크롤
+    e.preventDefault();
+    row.scrollLeft += e.deltaY;
+  }, { passive: false });
+  // 마우스로 끌기 (터치는 원래 잘 넘어가서 건드리지 않음)
+  let start = null, moved = false;
+  row.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    start = { x: e.clientX, left: row.scrollLeft };
+    moved = false;
+  });
+  window.addEventListener("pointermove", (e) => {
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    if (Math.abs(dx) > 5) { moved = true; wrap.classList.add("dragging"); }
+    if (moved) row.scrollLeft = start.left - dx;
+  });
+  window.addEventListener("pointerup", () => { start = null; setTimeout(() => wrap.classList.remove("dragging"), 0); });
+  row.addEventListener("click", (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  new MutationObserver(() => requestAnimationFrame(sync)).observe(row, { childList: true });
+  new ResizeObserver(sync).observe(row);
+  sync();
+}
+
+// 골라 둔 칩이 보이게 가운데로
+function revealPressed(row) {
+  const on = row.querySelector('[aria-pressed="true"]');
+  if (!on) return;
+  const left = on.offsetLeft - (row.clientWidth - on.offsetWidth) / 2;
+  if (on.offsetLeft < row.scrollLeft || on.offsetLeft + on.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = left;
+}
+
+function openHoodPicker() {
+  $("hoodTitle").textContent = `${state.region} 동네 고르기`;
+  $("hoodQ").value = "";
+  renderHoodList();
+  const d = $("hoodSheet");
+  if (!d.open) d.showModal();
+  d.querySelector(".sheet-in").scrollTop = 0;
+}
+
+function renderHoodList() {
+  const q = $("hoodQ").value.trim().replace(/\s+/g, "");
+  const hs = hoodsOf(state.region).filter((h) => !q || (h.name + cityOf(h) + (h.desc || "")).replace(/\s+/g, "").includes(q));
+  const groups = new Map();
+  for (const h of hs) {
+    const c = cityOf(h);
+    if (!groups.has(c)) groups.set(c, []);
+    groups.get(c).push(h);
+  }
+  const box = $("hoodList");
+  if (!hs.length) { box.innerHTML = `<p class="hood-empty">'${esc(q)}'에 맞는 동네가 없어요.</p>`; return; }
+  box.replaceChildren(...[...groups.entries()].sort((a, b) => a[0].localeCompare(b[0], "ko")).map(([city, list]) => {
+    const g = document.createElement("section");
+    g.className = "hood-group";
+    g.innerHTML = `<h3><span></span><span>${list.length}곳</span></h3><div class="opts"></div>`;
+    g.querySelector("h3 span").textContent = city;
+    g.querySelector(".opts").replaceChildren(...list.map((h) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "hood-opt";
+      b.setAttribute("aria-current", String(h.id === state.hood));
+      b.innerHTML = "<span></span><small></small>";
+      b.firstChild.textContent = h.name;
+      b.lastChild.textContent = h.desc || "";
+      b.addEventListener("click", () => {
+        state.hood = h.id;
+        save(STORE.hood, h.id);
+        $("hoodSheet").close();
+        update();
+      });
+      return b;
+    }));
+    return g;
+  }));
 }
 
 function openFilters() {
@@ -1774,6 +1951,12 @@ $("modeLocal").addEventListener("click", () => setMode("local"));
 $("favBtn").addEventListener("click", () => goTab(true, false));
 $("userOnlyBtn").addEventListener("click", () => goTab(false, true));
 $("filterClose").innerHTML = icon("close");
+["regionRow", "hoodRow", "quickRow"].forEach((id) => enableHScroll($(id)));
+$("hoodClose").innerHTML = icon("close");
+$("hoodClose").addEventListener("click", () => $("hoodSheet").close());
+$("hoodSheet").addEventListener("click", (e) => { if (e.target === $("hoodSheet")) $("hoodSheet").close(); });
+$("hoodSearchBox").insertAdjacentHTML("afterbegin", icon("search"));
+$("hoodQ").addEventListener("input", renderHoodList);
 $("filterClose").addEventListener("click", () => $("filterSheet").close());
 $("filterApply").addEventListener("click", () => $("filterSheet").close());
 $("filterReset").addEventListener("click", () => { state.who = ""; state.tags.clear(); state.budget = null; state.short = false; update(); });
