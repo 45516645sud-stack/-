@@ -53,6 +53,8 @@ def http_fetch(params: dict) -> dict:
 def find_center(fetch: Fetch, region: str, q: str) -> dict | None:
     """검색어 첫 결과 중 그 시·도 주소인 곳의 위치"""
     data = fetch({"mode": "places", "q": q, "size": 5})
+    if "places" not in data:   # 서버·카카오 오류: '못 찾음'이 아니라 다음에 다시
+        raise RuntimeError(data.get("error", "응답 없음"))
     for p in data.get("places", []):
         if str(p.get("address", "")).startswith(region):
             return {"lat": round(float(p["y"]), 4), "lng": round(float(p["x"]), 4), "address": p["address"]}
@@ -63,7 +65,9 @@ def count_fun(fetch: Fetch, center: dict) -> dict[str, int]:
     out = {}
     for kw in PROBES:
         data = fetch({"mode": "places", "q": kw, "lat": center["lat"], "lng": center["lng"], "radius": RADIUS, "size": 15})
-        out[kw] = len(data.get("places", []))
+        if "places" not in data:
+            raise RuntimeError(data.get("error", "응답 없음"))
+        out[kw] = len(data["places"])
     return out
 
 

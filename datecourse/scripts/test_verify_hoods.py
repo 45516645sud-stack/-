@@ -17,6 +17,11 @@ class VerifyTest(unittest.TestCase):
         self.assertEqual(vh.find_center(f, "서울", "강남역")["lat"], 37.5)
         self.assertIsNone(vh.find_center(fake(lambda p: [{"address": "부산 진구", "x": "1", "y": "2"}]), "서울", "x"))
 
+    def test_server_error_is_retry_not_rejection(self):
+        r = vh.verify_one(lambda p: {"error": "가게 목록을 가져오지 못했어요."}, "광주", ["suwan", "수완지구", "광주 수완지구", "x"])
+        self.assertFalse(r["ok"])
+        self.assertTrue(r.get("retry"))
+
     def test_judge(self):
         busy = {k: 5 for k in vh.PROBES}
         self.assertTrue(vh.judge(busy)[0])
@@ -40,8 +45,11 @@ class VerifyTest(unittest.TestCase):
     def test_candidates_file(self):
         data = json.loads((vh.ROOT / "data" / "hood_candidates.json").read_text(encoding="utf-8"))
         local = json.loads((vh.ROOT / "data" / "local.json").read_text(encoding="utf-8"))
-        ids = [c[0] for cs in data["hoods"].values() for c in cs] + [h["id"] for hs in local["hoods"].values() for h in hs]
-        self.assertEqual(len(ids), len(set(ids)), "id 중복")
+        # 통과한 후보는 local.json 에도 들어가므로, 후보끼리·local 끼리만 겹치지 않으면 된다
+        cand_ids = [c[0] for cs in data["hoods"].values() for c in cs]
+        local_ids = [h["id"] for hs in local["hoods"].values() for h in hs]
+        self.assertEqual(len(cand_ids), len(set(cand_ids)), "후보 id 중복")
+        self.assertEqual(len(local_ids), len(set(local_ids)), "동네 id 중복")
         for region, cs in data["hoods"].items():
             self.assertIn(region, local["hoods"])
             for c in cs:
