@@ -1,0 +1,49 @@
+# 놀코 여행 코스 늘리기: data/course_candidates.json 후보의 장소 위치를 카카오 지도로 찾아 courses.json 에 넣는다.
+# 놀코 서버 함수(Supabase)를 거쳐 카카오에 묻는다. 못 찾은 코스는 data/course_rejected.json 에 남는다.
+name: 놀코 코스 위치 확인
+
+on:
+  push:
+    paths:
+      - "datecourse/data/course_candidates.json"
+      - "datecourse/scripts/resolve_courses.py"
+      - ".github/workflows/nolco-courses.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nolco-data
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 테스트
+        run: python -m unittest discover -s datecourse/scripts
+
+      - name: 위치 확인
+        run: python datecourse/scripts/resolve_courses.py
+
+      - name: 바뀐 코스 커밋
+        run: |
+          if [ -z "$(git status --porcelain -- datecourse/data/courses.json datecourse/data/course_rejected.json)" ]; then
+            echo "바뀐 코스 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datecourse/data/courses.json datecourse/data/course_rejected.json
+          git commit -m "놀코: 새 여행 코스 위치 확인 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push

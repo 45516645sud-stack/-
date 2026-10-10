@@ -113,7 +113,7 @@ svg.i.fillc { fill: currentColor; stroke: none; }
   height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); font-size: 15px; font-weight: 600; color: var(--ink);
 }
 .region-pick button.near { grid-column: 1 / -1; background: var(--accent-soft); border-color: transparent; color: var(--accent-text); display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.acts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 6px; }
+.acts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 6px; }
 @media (min-width: 640px) { .acts { grid-template-columns: repeat(7, 1fr); } }
 .act {
   border: 0; background: transparent; padding: 8px 2px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -126,6 +126,33 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .act:hover .ic svg.il, .act:focus-visible .ic svg.il { transform: translateY(-2px) rotate(-4deg); }
 .act .ic svg.il { transition: transform .15s ease; }
 .act span:last-child { word-break: keep-all; }
+.act .ic { position: relative; }
+.act.shut .ic svg.il { opacity: .45; filter: grayscale(.5); }
+.act .badge { position: absolute; left: 50%; top: -7px; transform: translateX(-50%); white-space: nowrap; font-style: normal;
+  font-size: 10px; font-weight: 700; line-height: 1; padding: 3px 6px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+.act .badge.alt { background: var(--accent); color: var(--accent-ink); }
+.open-line { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; font-size: 13px; background: var(--fill); color: var(--ink); }
+.open-line svg.i { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.open-line.closed { background: #fdecec; color: #a12a2a; }
+:root[data-mode="dark"] .open-line.closed { background: #3a1d1d; color: #ffb4b4; }
+.open-line.maybe { background: var(--accent-soft); color: var(--accent-text); }
+.feature { margin: 4px 0 8px; }
+.feature-title { display: flex; align-items: center; gap: 6px; font-size: 17px; margin: 14px 0 10px; }
+.feature-title svg.i { width: 17px; height: 17px; color: var(--star, #ffc93a); }
+.mini-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.mini-row::-webkit-scrollbar { display: none; }
+.mini { flex: none; width: 132px; display: flex; flex-direction: column; gap: 4px; border: 0; padding: 0; background: transparent; text-align: left; color: var(--ink); }
+.mini .thumb { width: 132px; height: 92px; }
+.mini b { font-size: 13px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mini small { font-size: 11px; color: var(--sub); display: flex; align-items: center; gap: 3px; }
+.mini small svg.i { width: 11px; height: 11px; color: var(--star, #ffc93a); }
+.stop-picks { margin: 8px 0 0; }
+.stop-picks small { display: block; font-size: 11px; color: var(--faint); margin-bottom: 4px; }
+.pick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick-chip { display: inline-flex; align-items: baseline; gap: 5px; max-width: 100%; padding: 6px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--ink); text-decoration: none; font-size: 13px; }
+.pick-chip b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
+.pick-chip span { font-size: 11px; color: var(--sub); }
+.link-pill.h24 { background: var(--accent-soft); color: var(--accent-text); font-weight: 700; }
 
 /* 동네 고르기 */
 .hood-pick { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 34px; padding: 0 12px; border-radius: 999px;
@@ -359,6 +386,9 @@ ol.stops li:not(:last-child)::after { content: ""; position: absolute; left: 11p
 .btn.square { width: 48px; padding: 0; flex: none; }
 .btn.square[aria-pressed="true"] { color: #e5484d; }
 .btn.small { height: 34px; padding: 0 12px; font-size: 13px; font-weight: 600; border-radius: 9px; }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--faint); }
+.nick-row { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 13px; color: var(--sub); }
+.nick-row input { flex: 1; min-width: 0; height: 38px; border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; font: inherit; color: var(--ink); background: var(--bg); }
 .btn:disabled { opacity: .4; cursor: default; }
 
 /* 필터 시트 */
@@ -465,6 +495,7 @@ textarea { resize: vertical; }
 
 <main class="wrap">
   <section class="local-box" id="localBox" hidden></section>
+  <section class="feature" id="featureBox" hidden></section>
   <button class="pick" id="randomBtn" type="button">
     <span><b>어디 갈지 모르겠다면</b><small>조건에 맞는 코스 하나 골라 드려요</small></span>
     <span class="go" id="randomGo">뽑기</span>
@@ -959,7 +990,7 @@ function renderLocalBox() {
   const h = hoodById(state.hood);
   box.innerHTML = `<h2>${esc(h ? h.name : state.region)}에서 뭐 하고 놀지</h2>
     <p>${esc(h ? h.desc : "")} · 누르면 지도에서 가게를 찾아 드려요</p>
-    <div class="acts">${LOCAL.actList.map((a) => `<button type="button" class="act" data-a="${a.id}"><span class="ic">${illu(a.id)}</span><span>${esc(a.name)}</span></button>`).join("")}</div>`;
+    <div class="acts">${LOCAL.actList.map((a) => { const st = openNow(a); return `<button type="button" class="act ${st === "closed" ? "shut" : ""}" data-a="${a.id}"><span class="ic">${illu(a.id)}${st === "closed" ? `<em class="badge">닫았을 수도</em>` : a.open24 && st !== "open" ? `<em class="badge alt">24시 찾기</em>` : ""}</span><span>${esc(a.name)}</span></button>`; }).join("")}</div>`;
   box.querySelectorAll("[data-a]").forEach((b) => b.addEventListener("click", () => openActivity(b.dataset.a)));
 }
 
@@ -968,6 +999,25 @@ function josa(word, a, b) {
   const code = word.charCodeAt(word.length - 1) - 0xac00;
   return code >= 0 && code <= 11171 && code % 28 ? a : b;
 }
+
+/* 보통 영업시간: 카카오 검색은 가게별 영업시간을 주지 않아서, 놀거리마다 흔한 시간대로 '지금 열었을까'를 알려 준다.
+   open: [여는 시, 닫는 시] (24 넘으면 다음 날 새벽), open24: 24시간 하는 곳이 흔함 */
+const hh = (h) => { const x = h % 24; return x === 0 ? (h >= 24 ? "자정" : "0시") : x < 12 ? (h >= 24 ? "새벽 " : "오전 ") + x + "시" : x === 12 ? "낮 12시" : "오후 " + (x - 12) + "시"; };
+function openText(a) {
+  if (!Array.isArray(a.open)) return "";
+  const [o, c] = a.open;
+  return c - o >= 24 ? "보통 24시간" : `보통 ${hh(o)}~${hh(c)}`;
+}
+// 지금 열었을 가능성: "open" | "maybe" (24시간 곳만) | "closed" | ""
+function openNow(a, now = new Date()) {
+  if (!Array.isArray(a.open)) return "";
+  const [o, c] = a.open;
+  if (c - o >= 24) return "open";
+  const h = now.getHours() + now.getMinutes() / 60;
+  const inside = (h >= o && h < c) || (h + 24 >= o && h + 24 < c);
+  return inside ? "open" : a.open24 ? "maybe" : "closed";
+}
+const OPEN_MSG = { open: "지금은 대부분 영업 중이에요", maybe: "지금은 24시간 하는 곳만 열었을 수 있어요", closed: "지금은 대부분 문을 닫았을 시간이에요" };
 
 // 놀거리 하나: 그 동네의 실제 가게 목록을 먼저, 코스는 '코스 보기'를 누를 때
 function openActivity(actId) {
@@ -990,6 +1040,7 @@ function openActivity(actId) {
       <div class="fact"><small>보통 시간</small><b>${a.stay >= 60 ? Math.round(a.stay / 6) / 10 + "시간" : a.stay + "분"}</b></div>
       <div class="fact"><small>날씨</small><b>${a.indoor ? "실내" : "야외"}</b></div>
     </div>
+    ${openText(a) ? `<p class="open-line ${openNow(a)}">${icon("clock")}<span><b>${esc(openText(a))}</b> · ${esc(OPEN_MSG[openNow(a)])}</span></p>` : ""}
     ${courseN ? `<button class="course-link" type="button" id="actCourses">
       <span>${icon("shuffle")}${esc(a.name)}${josa(a.name, "이", "가")} 들어간 코스 <b>${courseN}</b></span>
       <span class="go">코스 보기 ${icon("chev")}</span>
@@ -999,7 +1050,7 @@ function openActivity(actId) {
       <a class="map-link" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 보기</a>
     </div>
     <div class="places" id="placeList" aria-live="polite"><p class="note">가게를 찾는 중이에요…</p></div>
-    <p class="note">가격은 대략이에요. 영업시간·실제 가격은 가게 페이지에서 확인해 주세요. 사진은 카카오 이미지 검색 결과(블로그·카페 후기, 뉴스·관공서 사진은 뺌)라 다른 가게 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
+    <p class="note">가격·영업시간은 대략이에요. 가게마다 다르니 '가게 정보'에서 꼭 확인해 주세요. 사진은 이 가게 이름이 나오는 블로그·카페 후기 사진이에요(뉴스·관공서 글은 뺌). 드물게 다른 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
   $("closeBtn").addEventListener("click", closeCourse);
   if ($("actCourses")) $("actCourses").addEventListener("click", () => {
     state.act = actId;
@@ -1040,6 +1091,46 @@ function fitsAct(a, p) {
   return a.match.some(has) && !(a.not || []).some(has);
 }
 
+/* 놀코 서버로 가게 찾기: 동네 가운데에서 2km 안을 놀거리 이름 몇 가지로 찾아 합친다
+   (동네 이름을 붙이면 결과가 확 줄어서 붙이지 않음). 종류 규칙으로 거른 가까운 순 목록, 서버가 없거나 실패하면 null */
+const placeCache = new Map();
+function serverPlaces(a, keyword, center) {
+  const endpoint = photoEndpoint();
+  if (!endpoint) return Promise.resolve(null);
+  const key = `${a ? a.id : keyword}|${center.lat.toFixed(4)},${center.lng.toFixed(4)}`;
+  if (!placeCache.has(key)) placeCache.set(key, (async () => {
+    const kws = (a && Array.isArray(a.kws) && a.kws.length) ? a.kws : [keyword];
+    const get = async (page, kw = kws[0]) => {
+      const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(kw)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return (Array.isArray(data.places) ? data.places : []).map((p) => ({
+        place_name: p.name, category_name: p.path || p.category, road_address_name: p.address, address_name: p.address,
+        phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
+      }));
+    };
+    const pick = (list) => {
+      const seen = new Set();
+      return list.filter((p) => {
+        const k = `${p.place_name}|${p.road_address_name || p.address_name}`;
+        if (seen.has(k) || !fitsAct(a, p)) return false;
+        seen.add(k);
+        return true;
+      });
+    };
+    try {
+      const pages = await Promise.all(kws.map((kw) => get(1, kw).catch(() => null)));
+      if (pages.every((x) => x === null)) return null;
+      let list = pages.flatMap((x) => x || []);
+      // 종류가 다른 가게를 빼고 나면 적을 수 있어 한 쪽 더
+      if ((pages[0] || []).length >= 15 && pick(list).length < 5) list = list.concat((await get(2).catch(() => null)) || []);
+      list.sort((x, y) => (Number(x.distance) || 0) - (Number(y.distance) || 0));
+      return pick(list);
+    } catch { return null; }
+  })().then((r) => { if (r === null) placeCache.delete(key); return r; }));
+  return placeCache.get(key);
+}
+
 async function showPlaces(keyword, h, q, a) {
   const box = $("placeList");
   const fallback = (why) => {
@@ -1071,31 +1162,11 @@ async function showPlaces(keyword, h, q, a) {
   };
 
   // 1) 놀코 서버(Supabase)가 카카오 REST 키로 대신 검색: 브라우저 쪽 지도 키 설정과 상관없이 동작
-  const endpoint = photoEndpoint();
-  if (endpoint) {
-    try {
-      // 동네 가운데에서 2km 안을 놀거리 이름 몇 가지로 찾는다 (동네 이름을 붙이면 결과가 확 줄어서 붙이지 않음)
-      const kws = (a && Array.isArray(a.kws) && a.kws.length) ? a.kws : [keyword];
-      const get = async (page, kw = kws[0]) => {
-        const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(kw)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        return (Array.isArray(data.places) ? data.places : []).map((p) => ({
-          place_name: p.name, category_name: p.path || p.category, road_address_name: p.address, address_name: p.address,
-          phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
-        }));
-      };
-      const pages = await Promise.all(kws.map((kw) => get(1, kw).catch(() => null)));
-      let list = pages.every((x) => x === null) ? null : pages.flatMap((x) => x || []);
-      if (list) {
-        list.sort((x, y) => (Number(x.distance) || 0) - (Number(y.distance) || 0));
-        // 종류가 다른 가게를 빼고 나면 적을 수 있어 한 쪽 더
-        if ((pages[0] || []).length >= 15 && pick(list).length < 5) list = list.concat((await get(2).catch(() => null)) || []);
-        if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
-        draw(list);
-        return;
-      }
-    } catch { /* 아래 방법으로 */ }
+  const list = await serverPlaces(a, keyword, center);
+  if (list) {
+    if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
+    draw(list);
+    return;
   }
 
   // 2) 카카오 지도 JavaScript 키로 브라우저에서 검색
@@ -1124,6 +1195,7 @@ function placeItem(p) {
       ${/^https:\/\/place\.map\.kakao\.com\//.test(p.place_url) ? `<a class="link-pill" href="${esc(p.place_url)}" target="_blank" rel="noopener">가게 정보</a>` : ""}
       <a class="link-pill" href="https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}" target="_blank" rel="noopener">길찾기</a>
       ${p.phone ? `<span class="link-pill tel"></span>` : ""}
+      ${/24\s*시|24\s*h|24hour/i.test(p.place_name || "") ? `<span class="link-pill h24">24시간</span>` : ""}
     </div>`;
   el.querySelector("b").textContent = p.place_name || "";
   el.querySelector(".cat").textContent = cat;
@@ -1134,7 +1206,7 @@ function placeItem(p) {
   return el;
 }
 
-/* 가게 사진: '가게 이름 + 구'로 카카오 이미지 검색 (블로그 등). 누르면 원래 글로 */
+/* 가게 사진: '가게 이름 + 구'로 카카오 블로그·카페 글을 찾아, 가게 이름이 나오는 글의 사진만. 누르면 원래 글로 */
 const photoCache = new Map();
 function photoEndpoint() {
   return ((document.querySelector('meta[name="nolco-photo-endpoint"]') || {}).content || "").trim();
@@ -1148,7 +1220,8 @@ async function addPhotos(el, p) {
   const q = `${p.place_name} ${gu}`.trim();
   try {
     if (!photoCache.has(q)) {
-      photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&size=4`)
+      // name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글의 사진만 받는다
+      photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
         .then((r) => (r.ok ? r.json() : { photos: [] }))
         .then((d) => (Array.isArray(d.photos) ? d.photos : []))
         .catch(() => []));
@@ -1337,6 +1410,7 @@ function card(c) {
 }
 
 function renderList() {
+  renderFeature();
   const list = visible();
   const grid = $("grid");
   const localPick = state.mode === "local" && browsing() && !state.region && !state.q;
@@ -1369,6 +1443,66 @@ function renderList() {
 }
 
 function update() { renderFilters(); renderList(); }
+
+/* 다시 올 이유: 리뷰가 좋은 인기 코스, 새로 올라온 코스 (여행 코스 홈), 찜 옮기기 (찜 탭) */
+function miniCard(c, sub) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "mini";
+  const [tone, pic] = c.source === "local" ? ["fun", (c.stops[0] || {}).act || "pin"] : themeOf(c);
+  b.innerHTML = `<span class="thumb ${tone}">${illu(pic)}</span><b></b><small></small>`;
+  b.querySelector("b").textContent = c.title;
+  b.querySelector("small").innerHTML = sub;
+  b.addEventListener("click", () => openCourse(c.id));
+  return b;
+}
+function renderFeature() {
+  const box = $("featureBox");
+  box.replaceChildren();
+  if (state.favOnly) {
+    box.hidden = !fav.size;
+    if (!fav.size) return;
+    box.innerHTML = `<button class="btn small" type="button" id="favMove">${icon("copy")}찜 목록을 다른 기기로 옮기기</button>
+      <p class="note">링크를 다른 폰·컴퓨터에서 열면 찜한 코스가 그대로 옮겨져요.</p>`;
+    $("favMove").addEventListener("click", moveFav);
+    return;
+  }
+  const show = state.mode === "trip" && browsing() && !state.q;
+  const inRegion = (c) => !state.region || c.region === state.region;
+  const rated = show ? state.courses.filter(inRegion).map((c) => [c, ratingOf(c.id)]).filter(([, r]) => r)
+    .sort((x, y) => (y[1].avg * Math.log2(y[1].n + 1)) - (x[1].avg * Math.log2(x[1].n + 1))).slice(0, 8) : [];
+  const fresh = show ? shared.userCourses.filter(inRegion).slice(0, 8) : [];
+  box.hidden = !rated.length && !fresh.length;
+  const row = (title, items) => {
+    if (!items.length) return;
+    const sec = document.createElement("div");
+    sec.innerHTML = `<h2 class="feature-title">${title}</h2><div class="mini-row"></div>`;
+    sec.querySelector(".mini-row").append(...items);
+    box.appendChild(sec);
+  };
+  row(`${icon("star", "fillc")}리뷰가 좋은 코스`, rated.map(([c, r]) => miniCard(c, `${icon("star", "fillc")}${r.avg.toFixed(1)} · 리뷰 ${r.n} · ${esc(c.region)}`)));
+  row(`${icon("spark")}새로 올라온 코스`, fresh.map((c) => miniCard(c, `${esc(c.region)}${c.area ? " " + esc(c.area) : ""} · ${esc(day(c.at))}`)));
+}
+async function moveFav() {
+  const url = location.href.split("#")[0] + "#fav=" + [...fav].map(encodeURIComponent).join(",");
+  try {
+    if (navigator.share) { await navigator.share({ title: "놀코 찜 목록", url }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(url); toast("찜 목록 링크를 복사했어요. 다른 기기에서 열어 주세요"); }
+  catch { prompt("이 주소를 다른 기기에서 열어 주세요", url); }
+}
+// '#fav=a,b' 로 들어오면 찜에 더한다
+function favFromHash() {
+  const m = location.hash.match(/^#fav=(.*)$/);
+  if (!m) return false;
+  const ids = m[1].split(",").map((x) => { try { return decodeURIComponent(x); } catch { return ""; } }).filter((x) => /^[\w-]{1,80}$/.test(x)).slice(0, 300);
+  const before = fav.size;
+  ids.forEach((x) => fav.add(x));
+  save(STORE.fav, [...fav]);
+  history.replaceState(null, "", location.pathname + location.search);
+  toast(fav.size > before ? `찜 ${fav.size - before}개를 옮겨 왔어요` : "이미 찜한 코스들이에요");
+  return true;
+}
 
 /* ---------- 지도 링크 (키 없이 쓰는 공개 주소) ---------- */
 function mapLinks(s) {
@@ -1427,11 +1561,12 @@ function openCourse(id, { push = true } = {}) {
           <div class="stop-name">${esc(s.name)}</div>
           <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : s.priceNote ? "보통 " + s.priceNote : ""].filter(Boolean).map(esc).join(" · ")}</span>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
+          ${c.source === "local" && s.act ? `<div class="stop-picks" data-act="${esc(s.act)}"><span class="note">근처 실제 가게를 찾는 중…</span></div>` : ""}
           <div class="links">${mapLinks(s)}</div>
           ${i < c.stops.length - 1 ? moveHint(s, c.stops[i + 1]) : ""}
         </li>`).join("")}
     </ol>
-    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : c.source === "local" ? "가게는 지도 검색 결과에서 골라 주세요. 가격은 대략이고 가게마다 달라요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
+    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : c.source === "local" ? "가게는 동네 가운데에서 가까운 실제 가게예요(카카오 지도 검색). 가격은 대략이고 가게마다 달라요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
     <section class="reviews" aria-labelledby="reviewHead">
       <h3 id="reviewHead">리뷰</h3>
       <div id="reviewForm"></div>
@@ -1459,10 +1594,40 @@ function openCourse(id, { push = true } = {}) {
   if (!sheet.open) sheet.showModal();
   sheet.scrollTop = 0;
   drawMap(c);
+  fillStopPicks(c);
   renderReviewForm(c.id);
   renderReviewList(c.id);
   renderMaker(c);
   if (push) history.pushState({ id }, "", "#c=" + encodeURIComponent(id));
+}
+
+// 동네 코스: 단계마다 가까운 실제 가게 3곳 (앞 단계에서 고른 가게는 빼고)
+async function fillStopPicks(c) {
+  const h = c.source === "local" ? hoodById(c.hoodId) : null;
+  const boxes = [...document.querySelectorAll(".stop-picks")];
+  if (!h || !boxes.length) return;
+  const center = { lat: h.lat, lng: h.lng };
+  const used = new Set();
+  for (const box of boxes) {
+    const a = LOCAL.acts[box.dataset.act];
+    const list = a ? await serverPlaces(a, `${h.q} ${a.kw}`, center) : null;
+    if (openId !== c.id || !box.isConnected) return;
+    const picks = (list || []).filter((p) => !used.has(p.place_name)).slice(0, 3);
+    picks.forEach((p) => used.add(p.place_name));
+    if (!picks.length) { box.innerHTML = list ? `<span class="note">2km 안에서 못 찾았어요. 아래 지도에서 찾아보세요.</span>` : ""; continue; }
+    box.innerHTML = `<small>근처 실제 가게</small><div class="pick-chips"></div>`;
+    const chips = box.querySelector(".pick-chips");
+    for (const p of picks) {
+      const url = /^https:\/\/place\.map\.kakao\.com\//.test(p.place_url) ? p.place_url
+        : `https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}`;
+      const el = document.createElement("a");
+      el.className = "pick-chip"; el.href = url; el.target = "_blank"; el.rel = "noopener";
+      const d = Number(p.distance);
+      el.innerHTML = `<b></b><span>${Number.isFinite(d) && p.distance !== "" ? (d < 1000 ? d + "m" : (d / 1000).toFixed(1) + "km") : ""}</span>`;
+      el.querySelector("b").textContent = p.place_name;
+      chips.appendChild(el);
+    }
+  }
 }
 
 function closeCourse() {
@@ -1525,7 +1690,7 @@ function pickRandom(exceptId) {
   if (wasOpen) history.replaceState({ id: c.id }, "", "#c=" + encodeURIComponent(c.id));
 }
 
-/* ---------- 리뷰·직접 만든 코스 (claude.ai 공유 저장소) ----------
+/* ---------- 리뷰·직접 만든 코스 (놀코 서버 저장소, claude.ai 미리보기에서는 그 공유 저장소) ----------
    사람마다 문서 하나씩만 쓴다.
      rv/<내 id> = { reviews: { 코스id: { rating, text, at } } }
      uc/<내 id> = { courses: { 코스id: { title, region, stops, … } } }
@@ -1591,9 +1756,77 @@ function mergeCourses() {
   state.courses = [...state.base, ...shared.userCourses.filter((c) => !seen.has(c.id))];
 }
 
+/* 놀코 서버(Supabase 함수)에 저장: claude.ai 저장소와 같은 모양(collection().onSnapshot, doc().set)으로 감싼다.
+   로그인이 없어서 이 브라우저가 만든 비밀 값으로 '내 글'을 알아본다 (다른 기기·브라우저에서는 새 사람). */
+const NICK_KEY = "nolco.nick";
+const getNick = () => String(load(NICK_KEY, "") || "").slice(0, 12);
+async function serverBackend(endpoint) {
+  let token = load("nolco.token", "");
+  if (!/^[a-f0-9]{32,64}$/.test(token)) {
+    token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    save("nolco.token", token);
+  }
+  if (!crypto.subtle) return null;
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("nolco:" + token));
+  const me = [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 24);
+  const subs = { rv: [], uc: [] };
+  const nicks = {};
+  async function pull(col) {
+    const res = await fetch(`${endpoint}?mode=docs&col=${col}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("docs " + res.status);
+    const data = await res.json();
+    const docs = (Array.isArray(data.docs) ? data.docs : []).filter((d) => d && typeof d.id === "string");
+    for (const d of docs) nicks[d.id] = String((d.data && d.data.nick) || "").slice(0, 12);
+    const snap = { docs: docs.map((d) => ({ id: d.id, data: () => d.data })) };
+    subs[col].forEach(([ok]) => ok(snap));
+  }
+  const pullAll = () => Promise.all(Object.keys(subs).map((c) => pull(c).catch((e) => subs[c].forEach(([, bad]) => bad && bad(e)))));
+  async function post(msg) {
+    const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...msg, token }) });
+    if (!res.ok) {
+      const e = new Error("post " + res.status);
+      e.code = res.status === 429 ? "rate_limited" : res.status === 413 ? "quota_exceeded" : "failed";
+      throw e;
+    }
+    return res.json();
+  }
+  // 1분마다, 화면을 다시 볼 때 새 글 받기
+  setInterval(() => { if (document.visibilityState === "visible") pullAll(); }, 60000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pullAll(); });
+  const db = {
+    server: true,
+    collection(col) {
+      const q = { limit: () => q, onSnapshot(ok, bad) { (subs[col] || []).push([ok, bad]); pull(col).catch((e) => bad && bad(e)); return () => {}; } };
+      return q;
+    },
+    doc(path) {
+      const [col, id] = path.split("/");
+      return {
+        async set(body) {
+          if (id !== me) { const e = new Error("not mine"); e.code = "invalid_argument"; throw e; }
+          await post({ mode: "set", col, body: { ...body, nick: getNick() } });
+          nicks[me] = getNick();
+          pull(col).catch(() => {});
+        },
+      };
+    },
+    report: (col, doc, item) => post({ mode: "report", col, doc, item }),
+  };
+  const user = {
+    id: async () => me, isOwner: async () => false, can: async () => true,
+    profiles: async (ids) => Object.fromEntries(ids.map((x) => [x, { name: nicks[x] || "" }])),
+  };
+  return { db, user };
+}
+
 async function initShared() {
-  if (!window.claude || typeof window.claude.use !== "function") return;
-  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  let db, user;
+  if (window.claude && typeof window.claude.use === "function") {
+    [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  } else if (photoEndpoint()) {
+    const b = await serverBackend(photoEndpoint()).catch(() => null);
+    if (b) ({ db, user } = b);
+  }
   if (!db) return;
   shared.db = db;
   shared.user = user;
@@ -1677,10 +1910,11 @@ async function writeDoc(path, body) {
     return true;
   } catch (e) {
     const code = e && e.code;
-    toast(code === "invalid_argument" ? "쓸 권한이 없어요. 앱 주인에게 참여자 권한을 받아 주세요"
+    toast(code === "invalid_argument" ? (shared.db && shared.db.server ? "내 글만 고칠 수 있어요" : "쓸 권한이 없어요. 앱 주인에게 참여자 권한을 받아 주세요")
       : code === "quota_exceeded" ? "저장 공간이 꽉 찼어요. 앱 주인에게 알려 주세요"
+      : code === "rate_limited" ? "너무 자주 저장했어요. 잠시 뒤에 다시 해 주세요"
       : "저장하지 못했어요. 잠시 뒤에 다시 해 주세요");
-    if (code === "invalid_argument") { shared.canWrite = false; renderFilters(); }
+    if (code === "invalid_argument" && !(shared.db && shared.db.server)) { shared.canWrite = false; renderFilters(); }
     return false;
   } finally {
     shared.writing = false;
@@ -1692,7 +1926,7 @@ function renderReviewForm(courseId) {
   const box = $("reviewForm");
   if (!box) return;
   if (!shared.db) {
-    box.innerHTML = `<p class="note">리뷰는 claude.ai에 공개된 앱 링크에서 남길 수 있어요.</p>`;
+    box.innerHTML = `<p class="note">리뷰 저장소에 연결하지 못했어요. 잠시 뒤에 다시 열어 주세요.</p>`;
     return;
   }
   if (!shared.canWrite) {
@@ -1707,6 +1941,7 @@ function renderReviewForm(courseId) {
         ${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="star" data-n="${n}" aria-label="별 ${n}개" aria-pressed="false">${icon("star")}</button>`).join("")}
         <span class="star-label" id="starLabel"></span>
       </div>
+      ${shared.db.server ? `<label class="nick-row"><span>닉네임</span><input id="reviewNick" maxlength="12" placeholder="안 적으면 '누군가'"></label>` : ""}
       <label class="sr" for="reviewText">리뷰 내용</label>
       <textarea id="reviewText" maxlength="500" rows="3" placeholder="다녀온 느낌, 팁, 아쉬운 점을 적어 주세요"></textarea>
       <div class="row-actions">
@@ -1715,6 +1950,10 @@ function renderReviewForm(courseId) {
       </div>
     </form>`;
   $("reviewText").value = mine ? mine.text : "";
+  if ($("reviewNick")) {
+    $("reviewNick").value = getNick();
+    $("reviewNick").addEventListener("change", () => save(NICK_KEY, $("reviewNick").value.trim().slice(0, 12)));
+  }
   const paint = () => {
     box.querySelectorAll(".star").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.n <= rating)));
     $("starLabel").textContent = rating ? `${rating}점` : "별을 눌러 점수를 골라 주세요";
@@ -1724,6 +1963,7 @@ function renderReviewForm(courseId) {
   $("reviewFormEl").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!rating) { toast("별점을 먼저 골라 주세요"); return; }
+    if ($("reviewNick")) save(NICK_KEY, $("reviewNick").value.trim().slice(0, 12));
     const reviews = { ...(shared.reviewDocs[shared.me] || {}) };
     reviews[courseId] = { rating, text: $("reviewText").value.trim().slice(0, 500), at: new Date().toISOString() };
     if (await writeDoc("rv/" + shared.me, { reviews })) {
@@ -1766,13 +2006,16 @@ async function renderReviewList(courseId) {
     li.innerHTML = `
       <div class="review-top">
         <b class="who"></b><span class="stars" aria-label="별 ${x.rating}개">${[1, 2, 3, 4, 5].map((n) => icon("star", n > x.rating ? "off" : "")).join("")}</span><span class="when">${esc(day(x.at))}</span>
-        ${shared.owner && !isMe ? `<button class="btn small" type="button">관리: 지우기</button>` : ""}
+        ${shared.owner && !isMe ? `<button class="btn small" type="button" data-act="del">관리: 지우기</button>` : ""}
+        ${shared.db && shared.db.report && !isMe ? `<button class="btn small ghost" type="button" data-act="report">신고</button>` : ""}
       </div>
       <p class="review-text"></p>`;
     li.querySelector(".who").textContent = isMe ? "나" : ((ps[x.author] && ps[x.author].name) || "누군가");
     li.querySelector(".review-text").textContent = x.text;
-    const del = li.querySelector("button");
+    const del = li.querySelector('[data-act="del"]');
     if (del) del.addEventListener("click", () => removeReview(x.author, courseId));
+    const rep = li.querySelector('[data-act="report"]');
+    if (rep) rep.addEventListener("click", () => reportItem("rv", x.author, courseId, rep));
     return li;
   }));
 }
@@ -1786,12 +2029,23 @@ async function renderMaker(c) {
   if (openId !== c.id) return;
   box.innerHTML = `<span class="maker"><span class="who"></span></span>
     ${isMe ? `<button class="btn small" type="button" id="editCourse">고치기</button>` : ""}
-    ${isMe || shared.owner ? `<button class="btn small" type="button" id="deleteCourse">${isMe ? "지우기" : "관리: 지우기"}</button>` : ""}`;
+    ${isMe || shared.owner ? `<button class="btn small" type="button" id="deleteCourse">${isMe ? "지우기" : "관리: 지우기"}</button>` : ""}
+    ${!isMe && shared.db && shared.db.report ? `<button class="btn small ghost" type="button" id="reportCourse">신고</button>` : ""}`;
   box.querySelector(".who").textContent = isMe ? "내가 만든 코스" : `${(ps[c.author] && ps[c.author].name) || "누군가"} 님이 만든 코스`;
   const edit = $("editCourse");
   if (edit) edit.addEventListener("click", () => openBuilder(c.id));
   const del = $("deleteCourse");
   if (del) del.addEventListener("click", () => askDelete(c, del));
+  const rep = $("reportCourse");
+  if (rep) rep.addEventListener("click", () => reportItem("uc", c.author, c.id, rep));
+}
+
+// 신고: 서로 다른 세 사람이 신고하면 서버가 숨긴다. 한 번 더 눌러야 보냄
+async function reportItem(col, author, item, btn) {
+  if (btn.dataset.sure !== "1") { btn.dataset.sure = "1"; btn.textContent = "신고할까요? 한 번 더"; return; }
+  btn.disabled = true;
+  try { await shared.db.report(col, author, item); btn.textContent = "신고했어요"; toast("신고했어요. 여러 명이 신고하면 숨겨져요"); }
+  catch { btn.disabled = false; btn.textContent = "신고"; toast("신고하지 못했어요. 잠시 뒤에 다시 해 주세요"); }
 }
 
 function askDelete(c, btn) {
@@ -1825,7 +2079,7 @@ function openBuilder(editId = "") {
     </div>`;
   if (!shared.db || !shared.canWrite) {
     body.innerHTML = head + `<p>다른 사람들이 볼 수 있는 코스를 직접 만들어 올리는 곳이에요.</p>
-      <p class="note">${!shared.db ? "코스 만들기는 claude.ai에 공개된 앱 링크에서 할 수 있어요."
+      <p class="note">${!shared.db ? "코스 저장소에 연결하지 못했어요. 잠시 뒤에 다시 열어 주세요."
         : "코스를 올리려면 앱 주인에게 <b>참여자(Contributor)</b> 권한을 받아야 해요."}</p>`;
     $("closeBtn").addEventListener("click", closeCourse);
     if (!sheet.open) sheet.showModal();
@@ -1872,6 +2126,11 @@ function openBuilder(editId = "") {
       </div>
       <p class="note">올린 코스는 이 앱을 여는 모든 사람에게 보여요. 장소 이름을 정확히 쓰면 지도 검색이 잘 돼요.</p>
     </form>`;
+  if (shared.db.server) {
+    $("f-title").closest("label, .field, div").insertAdjacentHTML("beforebegin",
+      `<label class="nick-row"><span>닉네임</span><input id="f-nick" maxlength="12" placeholder="안 적으면 '누군가'"></label>`);
+    $("f-nick").value = getNick();
+  }
 
   $("f-title").value = c.title;
   $("f-summary").value = c.summary;
@@ -1954,6 +2213,7 @@ function openBuilder(editId = "") {
     e.preventDefault();
     readStops();
     const id = old ? old.id : "u-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    if ($("f-nick")) save(NICK_KEY, $("f-nick").value.trim().slice(0, 12));
     const raw = {
       title: $("f-title").value, summary: $("f-summary").value, region: $("f-region").value, area: $("f-area").value,
       with: [...body.querySelectorAll('input[name="with"]:checked')].map((x) => x.value),
@@ -2101,6 +2361,7 @@ window.addEventListener("popstate", () => {
     if (saved) { state.hood = saved.id; state.region = Object.keys(LOCAL.hoods).find((r) => hoodsOf(r).includes(saved)); }
   }
   mergeCourses();
+  if (favFromHash()) { state.favOnly = true; state.userOnly = false; }
   update();
   const id = courseFromHash();
   if (id && findCourse(id)) openCourse(id, { push: false });
