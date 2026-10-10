@@ -168,6 +168,26 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 /* 빠른 필터 줄 */
 .quick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 10px 0; }
 .quick::-webkit-scrollbar { display: none; }
+/* 옆으로 넘기는 줄: 컴퓨터에서는 휠·끌기·화살표로 넘긴다 */
+.hscroll { position: relative; }
+.hscroll.dragging > * { cursor: grabbing; user-select: none; }
+.hs-btn {
+  display: none; position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg);
+  box-shadow: 0 2px 8px rgba(31, 28, 21, .12); color: var(--ink); place-items: center; padding: 0;
+}
+.hs-btn svg.i { width: 18px; height: 18px; }
+.hs-btn.prev { left: -6px; }
+.hs-btn.next { right: -6px; }
+.hs-btn.prev svg { transform: scaleX(-1); }
+@media (hover: hover) and (pointer: fine) {
+  .hscroll.can-prev .hs-btn.prev, .hscroll.can-next .hs-btn.next { display: grid; }
+  .hscroll.can-next::after, .hscroll.can-prev::before {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 40px; pointer-events: none; z-index: 1;
+  }
+  .hscroll.can-next::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+  .hscroll.can-prev::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+}
 .chip {
   flex: none; display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px;
   border: 1px solid var(--line); background: var(--bg); border-radius: 999px; font-size: 14px; color: var(--ink); white-space: nowrap;
@@ -764,6 +784,7 @@ function renderFilters() {
   if (!hoodRow.hidden) {
     hoodRow.replaceChildren(...hoodsOf(state.region).map((h) =>
       chip(h.name, state.hood === h.id, () => { state.hood = h.id; save(STORE.hood, h.id); update(); })));
+    requestAnimationFrame(() => revealPressed(hoodRow));
   }
   renderLocalBox();
 
@@ -992,6 +1013,65 @@ async function addPhotos(el, p) {
     }
     el.querySelector(".links").before(strip);
   } catch { /* 사진 없이 */ }
+}
+
+/* 옆으로 넘기는 줄 (지역 탭·동네·빠른 필터): 휠을 옆으로, 마우스로 끌기, 양 끝 화살표 */
+function enableHScroll(row) {
+  const wrap = document.createElement("div");
+  wrap.className = "hscroll";
+  row.parentNode.insertBefore(wrap, row);
+  wrap.appendChild(row);
+  const prev = document.createElement("button");
+  const next = document.createElement("button");
+  prev.type = next.type = "button";
+  prev.className = "hs-btn prev";
+  next.className = "hs-btn next";
+  prev.setAttribute("aria-label", "왼쪽으로 넘기기");
+  next.setAttribute("aria-label", "오른쪽으로 넘기기");
+  prev.innerHTML = next.innerHTML = icon("chev");
+  wrap.append(prev, next);
+  const sync = () => {
+    const max = row.scrollWidth - row.clientWidth;
+    wrap.classList.toggle("can-prev", row.scrollLeft > 4);
+    wrap.classList.toggle("can-next", row.scrollLeft < max - 4);
+  };
+  const page = (dir) => row.scrollBy({ left: dir * Math.max(160, row.clientWidth * 0.7), behavior: "smooth" });
+  prev.addEventListener("click", () => page(-1));
+  next.addEventListener("click", () => page(1));
+  row.addEventListener("scroll", sync, { passive: true });
+  row.addEventListener("wheel", (e) => {
+    if (row.scrollWidth <= row.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const max = row.scrollWidth - row.clientWidth;
+    if ((e.deltaY < 0 && row.scrollLeft <= 0) || (e.deltaY > 0 && row.scrollLeft >= max)) return;   // 끝이면 페이지 스크롤
+    e.preventDefault();
+    row.scrollLeft += e.deltaY;
+  }, { passive: false });
+  // 마우스로 끌기 (터치는 원래 잘 넘어가서 건드리지 않음)
+  let start = null, moved = false;
+  row.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    start = { x: e.clientX, left: row.scrollLeft };
+    moved = false;
+  });
+  window.addEventListener("pointermove", (e) => {
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    if (Math.abs(dx) > 5) { moved = true; wrap.classList.add("dragging"); }
+    if (moved) row.scrollLeft = start.left - dx;
+  });
+  window.addEventListener("pointerup", () => { start = null; setTimeout(() => wrap.classList.remove("dragging"), 0); });
+  row.addEventListener("click", (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  new MutationObserver(() => requestAnimationFrame(sync)).observe(row, { childList: true });
+  new ResizeObserver(sync).observe(row);
+  sync();
+}
+
+// 골라 둔 칩이 보이게 가운데로
+function revealPressed(row) {
+  const on = row.querySelector('[aria-pressed="true"]');
+  if (!on) return;
+  const left = on.offsetLeft - (row.clientWidth - on.offsetWidth) / 2;
+  if (on.offsetLeft < row.scrollLeft || on.offsetLeft + on.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = left;
 }
 
 function openFilters() {
@@ -1774,6 +1854,7 @@ $("modeLocal").addEventListener("click", () => setMode("local"));
 $("favBtn").addEventListener("click", () => goTab(true, false));
 $("userOnlyBtn").addEventListener("click", () => goTab(false, true));
 $("filterClose").innerHTML = icon("close");
+["regionRow", "hoodRow", "quickRow"].forEach((id) => enableHScroll($(id)));
 $("filterClose").addEventListener("click", () => $("filterSheet").close());
 $("filterApply").addEventListener("click", () => $("filterSheet").close());
 $("filterReset").addEventListener("click", () => { state.who = ""; state.tags.clear(); state.budget = null; state.short = false; update(); });

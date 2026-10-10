@@ -126,8 +126,12 @@ def merge(local: dict, results: list[dict]) -> int:
             r["ok"] = False
             r["why"] = f"이미 있는 '{near[0]['name']}'와 같은 동네"
             continue
+        name = r["name"]
+        if any(h["name"] == name for h in local["hoods"].get(r["region"], [])):
+            office = r["q"].split()[-1]
+            name += " (시청 주변)" if office.endswith("시청") else " (군청 주변)" if office.endswith("군청") else " (구청 주변)"
         local["hoods"].setdefault(r["region"], []).append(
-            {"id": r["id"], "name": r["name"], "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"]})
+            {"id": r["id"], "name": name, "q": r["q"], "lat": r["lat"], "lng": r["lng"], "desc": r["desc"]})
         have.add(r["id"])
         added += 1
     return added
