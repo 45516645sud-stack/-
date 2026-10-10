@@ -52,4 +52,5 @@ if __name__ == "__main__":
     (out / "data").mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(build((ROOT / "index.html").read_text(encoding="utf-8")), encoding="utf-8")
     shutil.copy(ROOT / "data" / "courses.json", out / "data" / "courses.json")
+    shutil.copy(ROOT / "data" / "local.json", out / "data" / "local.json")
     print("ok", out)

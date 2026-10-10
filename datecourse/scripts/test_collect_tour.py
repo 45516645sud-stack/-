@@ -95,5 +95,25 @@ class SeedDataTest(unittest.TestCase):
                 self.assertTrue(33 < s["lat"] < 39 and 124 < s["lng"] < 132, (c["id"], s["name"]))
 
 
+class LocalDataTest(unittest.TestCase):
+    """'우리 동네' 데이터: 17개 시·도 모두 동네가 있고, 코스 틀이 있는 놀거리만 쓴다."""
+
+    def test_local(self):
+        data = json.loads((ct.ROOT / "data" / "local.json").read_text(encoding="utf-8"))
+        acts = {a["id"] for a in data["activities"]}
+        self.assertEqual(set(data["hoods"]), set(ct.AREAS.values()))
+        ids = [h["id"] for hs in data["hoods"].values() for h in hs]
+        self.assertEqual(len(ids), len(set(ids)))
+        for hs in data["hoods"].values():
+            self.assertTrue(hs)
+            for h in hs:
+                self.assertTrue(33 < h["lat"] < 39 and 124 < h["lng"] < 132, h["id"])
+                self.assertRegex(h["id"], r"^[a-z0-9]+$")
+        for t in data["templates"]:
+            self.assertIn("{hood}", t["title"])
+            self.assertTrue(set(t["stops"]) <= acts, t["id"])
+            self.assertIn(t["budget"], (0, 1, 2, 3))
+
+
 if __name__ == "__main__":
     unittest.main()

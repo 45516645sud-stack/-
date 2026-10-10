@@ -53,6 +53,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--ink); font-family: var(--font);
@@ -87,6 +88,36 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: #1f1c15; font-size: 15px; }
 .search input::placeholder { color: #a6a091; }
 .search input::-webkit-search-cancel-button { filter: grayscale(1); }
+
+/* 여행 코스 / 우리 동네 */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(31, 28, 21, .10); }
+.seg button {
+  border: 0; height: 36px; border-radius: 9px; background: transparent; font-size: 14px; font-weight: 600; color: #4a4434;
+}
+.seg button[aria-selected="true"] { background: #fff; color: #1f1c15; font-weight: 800; box-shadow: 0 1px 3px rgba(31, 28, 21, .15); }
+
+/* 동네 고르기 */
+.hoods { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 10px 0 0; }
+.hoods::-webkit-scrollbar { display: none; }
+.local-box { padding: 6px 0 4px; }
+.local-box h2 { margin: 10px 0 4px; font-size: 17px; letter-spacing: -0.03em; }
+.local-box > p { margin: 0 0 12px; color: var(--sub); font-size: 13px; }
+.region-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (min-width: 640px) { .region-pick { grid-template-columns: repeat(6, 1fr); } }
+.region-pick button {
+  height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); font-size: 15px; font-weight: 600; color: var(--ink);
+}
+.region-pick button.near { grid-column: 1 / -1; background: var(--accent-soft); border-color: transparent; color: var(--accent-text); display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.acts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 6px; }
+@media (min-width: 640px) { .acts { grid-template-columns: repeat(7, 1fr); } }
+.act {
+  border: 0; background: transparent; padding: 8px 2px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--ink); text-align: center; line-height: 1.3; min-width: 0;
+}
+.act:hover { background: var(--fill); }
+.act .ic { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--fill); color: var(--ink); }
+.act .ic svg.i { width: 26px; height: 26px; stroke-width: 1.7; }
+.act span:last-child { word-break: keep-all; }
 
 /* 지역 탭 */
 .tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); }
@@ -342,15 +373,21 @@ textarea { resize: vertical; }
         <span class="sr">코스 검색</span>
         <input id="q" type="search" placeholder="지역, 장소, 분위기 검색 (예: 강릉 바다)" autocomplete="off">
       </label>
+      <div class="seg" role="tablist" aria-label="보기">
+        <button type="button" role="tab" id="modeTrip">여행 코스</button>
+        <button type="button" role="tab" id="modeLocal">우리 동네</button>
+      </div>
     </div>
   </div>
   <div class="wrap">
     <nav class="tabs" id="regionRow" aria-label="지역"></nav>
+    <div class="hoods" id="hoodRow" role="group" aria-label="동네" hidden></div>
     <div class="quick" id="quickRow" role="group" aria-label="빠른 필터"></div>
   </div>
 </header>
 
 <main class="wrap">
+  <section class="local-box" id="localBox" hidden></section>
   <button class="pick" id="randomBtn" type="button">
     <span><b>어디 갈지 모르겠다면</b><small>조건에 맞는 코스 하나 골라 드려요</small></span>
     <span class="go" id="randomGo">뽑기</span>
@@ -437,6 +474,19 @@ const ICON = {
   cup: "M5 9h11v4.5A5.5 5.5 0 0 1 5 13.5zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3.5v2.5M11 3.5v2.5M14 3.5v2.5",
   spark: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z",
   edit: "M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4",
+  mic: "M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6",
+  dice: "M5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4zM8.5 8.5h.01M15.5 15.5h.01M12 12h.01M15.5 8.5h.01M8.5 15.5h.01",
+  key: "M8 15a4 4 0 1 1 0-8a4 4 0 0 1 0 8zM12 11h8.5M17.5 11v3M20.5 11v2.5",
+  bowling: "M12 3.5a8.5 8.5 0 1 0 0 17a8.5 8.5 0 1 0 0-17zM10 8.5h.01M13.5 8h.01M12 11h.01",
+  target: "M12 3.5a8.5 8.5 0 1 0 0 17a8.5 8.5 0 1 0 0-17zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8zM12 12h.01",
+  gamepad: "M7 8h10a4 4 0 0 1 4 4v1a3 3 0 0 1-5.4 1.8L14.5 14h-5l-1.1 1.8A3 3 0 0 1 3 13v-1a4 4 0 0 1 4-4zM8 10.5v3M6.5 12h3M15.5 11h.01M17.5 13h.01",
+  book: "M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3zM21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z",
+  mountain: "M3 19l6.5-11 4 6.5 2-3L21 19z",
+  monitor: "M4 5h16v11H4zM9 20h6M12 16v4",
+  vr: "M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4l-3-3-3 3H5a2 2 0 0 1-2-2z",
+  flame: "M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.6 1 2.5 2 3 0-3 .5-5.5.5-8z",
+  film: "M4 5h16v14H4zM8 5v14M16 5v14M4 9h4M4 15h4M16 9h4M16 15h4",
+  bowl: "M3.5 11h17a8.5 8.5 0 0 1-17 0zM8 7.5c0-1 1-1.5 1-2.5M12 7.5c0-1 1-1.5 1-2.5M16 7.5c0-1 1-1.5 1-2.5",
 };
 const FILLED = new Set(["star"]);
 function icon(name, extra = "") {
@@ -456,13 +506,15 @@ function themeOf(c) {
   if (has("액티비티", "놀이공원")) return ["fun", "spark"];
   return ["base", "pin"];
 }
-const STORE = { fav: "datecourse.fav", theme: "datecourse.theme.v2" };
+const STORE = { fav: "datecourse.fav", theme: "datecourse.theme.v2", mode: "datecourse.mode", hood: "datecourse.hood" };
 
 /* ---------- 상태 ---------- */
 const state = {
   courses: [], base: [],
   region: "", who: "", tags: new Set(), budget: null, short: false,
   q: "", favOnly: false, userOnly: false, here: null,
+  // 우리 동네: 관광지 대신 노래방·보드게임카페 같은 일상 놀거리
+  mode: "trip", hood: "", local: [],
 };
 let fav = new Set(load(STORE.fav, []));
 
@@ -495,6 +547,60 @@ async function loadCourses() {
     }
   }
   return list;
+}
+
+/* ---------- 우리 동네 ----------
+   local.json 에는 가게 이름이 없다(자주 바뀌니까). 동네 × 놀거리 종류로 코스를 만들고,
+   각 장소는 '동네 + 놀거리' 지도 검색으로 연결한다. */
+const LOCAL = { acts: {}, actList: [], hoods: {}, tpls: [] };
+
+async function loadLocal() {
+  const data = await fetchJson("data/local.json");
+  if (!data || !Array.isArray(data.activities)) return [];
+  LOCAL.actList = data.activities;
+  LOCAL.acts = Object.fromEntries(data.activities.map((a) => [a.id, a]));
+  LOCAL.hoods = data.hoods || {};
+  LOCAL.tpls = data.templates || [];
+  const out = [];
+  for (const [region, hs] of Object.entries(LOCAL.hoods)) {
+    for (const h of hs) {
+      for (const t of LOCAL.tpls) {
+        out.push({
+          id: `l-${t.id}-${h.id}`, source: "local", region, area: h.name, hoodId: h.id,
+          title: t.title.replace("{hood}", h.name), summary: t.summary,
+          with: t.with, tags: t.tags, budget: t.budget, hours: t.hours, best: t.best, details: t.details,
+          stops: t.stops.map((id) => {
+            const a = LOCAL.acts[id];
+            return { name: a.name, kind: a.kind, stay: a.stay, tip: a.tip, q: `${h.q} ${a.kw}`, priceNote: a.price, icon: a.icon };
+          }),
+        });
+      }
+    }
+  }
+  return out;
+}
+const hoodsOf = (region) => LOCAL.hoods[region] || [];
+const hoodById = (id) => Object.values(LOCAL.hoods).flat().find((h) => h.id === id) || null;
+const allCourses = () => [...state.courses, ...state.local];
+const findCourse = (id) => state.courses.find((c) => c.id === id) || state.local.find((c) => c.id === id);
+const browsing = () => !state.favOnly && !state.userOnly;   // 홈 탭(찜·모두의 코스가 아닐 때)
+
+function setRegion(r) {
+  state.region = r;
+  if (state.mode === "local") {
+    const hs = hoodsOf(r);
+    if (!hs.some((h) => h.id === state.hood)) state.hood = hs.length ? hs[0].id : "";
+    save(STORE.hood, state.hood);
+  }
+}
+function setMode(m) {
+  state.mode = m;
+  save(STORE.mode, m);
+  state.favOnly = false;
+  state.userOnly = false;
+  if (m === "local") setRegion(state.region);
+  update();
+  window.scrollTo({ top: 0 });
 }
 
 /* ---------- 거리 ---------- */
@@ -537,7 +643,15 @@ function matches(c) {
   return true;
 }
 function visible() {
-  const list = state.courses.filter(matches);
+  let pool;
+  if (state.favOnly) pool = allCourses();
+  else if (state.userOnly) pool = state.courses;
+  else if (state.mode === "local") {
+    // 동네를 고르기 전에는 비워 두고, 검색할 땐 고른 지역 전체에서 찾는다
+    if (!state.region && !state.q) return [];
+    pool = state.local.filter((c) => state.q || !state.hood || c.hoodId === state.hood);
+  } else pool = state.courses;
+  const list = pool.filter(matches);
   if (state.here) list.sort((a, b) => distanceTo(a) - distanceTo(b));
   return list;
 }
@@ -569,7 +683,7 @@ function renderFilters() {
       b.className = "tab";
       b.textContent = r || "전국";
       b.setAttribute("aria-pressed", String(state.region === r));
-      b.addEventListener("click", () => { state.region = r; update(); b.scrollIntoView({ inline: "center", block: "nearest" }); });
+      b.addEventListener("click", () => { setRegion(r); update(); b.scrollIntoView({ inline: "center", block: "nearest" }); });
       return b;
     }),
   );
@@ -577,8 +691,9 @@ function renderFilters() {
   const n = filterCount();
   const fb = chip("", n > 0, openFilters);
   fb.innerHTML = `${icon("sliders")}필터${n ? `<span class="count">${n}</span>` : ""}`;
+  const local = state.mode === "local" && browsing();
   const near = chip("", !!state.here, toggleNear);
-  near.innerHTML = `${icon("pin")}${state.here ? "가까운 순" : "내 주변"}`;
+  near.innerHTML = `${icon("pin")}${local ? "내 주변 동네" : state.here ? "가까운 순" : "내 주변"}`;
   const on = [];
   const off = (label, fn) => {
     const b = chip("", false, () => { fn(); update(); }, "removable");
@@ -591,6 +706,17 @@ function renderFilters() {
   if (state.short) off("반나절", () => { state.short = false; });
   for (const t of state.tags) off("#" + t, () => state.tags.delete(t));
   $("quickRow").replaceChildren(fb, near, ...on);
+
+  // 여행 / 우리 동네
+  $("modeTrip").setAttribute("aria-selected", String(state.mode === "trip"));
+  $("modeLocal").setAttribute("aria-selected", String(state.mode === "local"));
+  const hoodRow = $("hoodRow");
+  hoodRow.hidden = !(local && state.region);
+  if (!hoodRow.hidden) {
+    hoodRow.replaceChildren(...hoodsOf(state.region).map((h) =>
+      chip(h.name, state.hood === h.id, () => { state.hood = h.id; save(STORE.hood, h.id); update(); })));
+  }
+  renderLocalBox();
 
   // 필터 시트 안
   $("withRow").replaceChildren(
@@ -615,6 +741,67 @@ function renderFilters() {
   tab("userOnlyBtn", "users", "모두의 코스", mode === "user");
   tab("favBtn", "heart", "찜", mode === "fav", fav.size);
   $("makeBtn").innerHTML = `<span class="plus">${icon("plus")}</span><span>만들기</span>`;
+}
+
+function renderLocalBox() {
+  const box = $("localBox");
+  box.hidden = !(state.mode === "local" && browsing());
+  if (box.hidden) return;
+  if (!state.region) {
+    box.innerHTML = `<h2>어느 동네에서 놀아요?</h2><p>사는 곳을 고르면 관광지 말고 동네 놀거리를 보여 드려요.</p>
+      <div class="region-pick">
+        <button type="button" class="near" data-near="1">${icon("pin")}내 위치로 가까운 동네 찾기</button>
+        ${REGIONS.map((r) => `<button type="button" data-r="${r}">${r}</button>`).join("")}
+      </div>`;
+    box.querySelectorAll("[data-r]").forEach((b) => b.addEventListener("click", () => { setRegion(b.dataset.r); update(); }));
+    box.querySelector("[data-near]").addEventListener("click", toggleNear);
+    return;
+  }
+  const h = hoodById(state.hood);
+  box.innerHTML = `<h2>${esc(h ? h.name : state.region)}에서 뭐 하고 놀지</h2>
+    <p>${esc(h ? h.desc : "")} · 누르면 지도에서 가게를 찾아 드려요</p>
+    <div class="acts">${LOCAL.actList.map((a) => `<button type="button" class="act" data-a="${a.id}"><span class="ic">${icon(a.icon)}</span><span>${esc(a.name)}</span></button>`).join("")}</div>`;
+  box.querySelectorAll("[data-a]").forEach((b) => b.addEventListener("click", () => openActivity(b.dataset.a)));
+}
+
+// 받침이 있으면 a(이·을), 없으면 b(가·를)
+function josa(word, a, b) {
+  const code = word.charCodeAt(word.length - 1) - 0xac00;
+  return code >= 0 && code <= 11171 && code % 28 ? a : b;
+}
+
+// 놀거리 하나: 대략 가격·시간과 지도 검색
+function openActivity(actId) {
+  const a = LOCAL.acts[actId];
+  const h = hoodById(state.hood);
+  if (!a || !h) return;
+  openId = "";
+  const q = encodeURIComponent(`${h.q} ${a.kw}`);
+  const related = state.local.filter((c) => c.hoodId === h.id && c.stops.some((s) => s.name === a.name));
+  $("sheetBody").innerHTML = `
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <div><div class="where">${esc(h.name)} · 놀거리</div><h2 id="sheetTitle">${esc(a.name)}</h2></div>
+      <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
+    </div>
+    <p class="summary">${esc(a.tip)}</p>
+    <div class="facts">
+      <div class="fact"><small>보통 가격</small><b class="price" style="font-size:13px">${esc(a.price)}</b></div>
+      <div class="fact"><small>보통 시간</small><b>${a.stay >= 60 ? Math.round(a.stay / 6) / 10 + "시간" : a.stay + "분"}</b></div>
+      <div class="fact"><small>날씨</small><b>${a.indoor ? "실내" : "야외"}</b></div>
+    </div>
+    ${related.length ? `<h3 class="sec-title">${esc(a.name)}${josa(a.name, "이", "가")} 들어간 코스</h3><div id="relatedList"></div>` : ""}
+    <p class="note">가게 이름·영업시간·실제 가격은 지도 검색 결과에서 확인해 주세요. 가격은 대략이에요.</p>
+    <div class="sheet-bar">
+      <a class="btn grow" href="https://map.naver.com/p/search/${q}" target="_blank" rel="noopener">네이버지도</a>
+      <a class="btn primary grow" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">${icon("search")}카카오맵</a>
+    </div>`;
+  if (related.length) $("relatedList").replaceChildren(...related.map(card));
+  $("closeBtn").addEventListener("click", closeCourse);
+  const sheet = $("sheet");
+  if (!sheet.open) sheet.showModal();
+  sheet.scrollTop = 0;
+  if (map) { map.remove(); map = null; }
 }
 
 function openFilters() {
@@ -642,7 +829,9 @@ function card(c) {
   const d = distanceTo(c);
   const rate = ratingOf(c.id);
   const total = totalPrice(c);
-  const [tone, pic] = themeOf(c);
+  const [tone, pic] = c.source === "local"
+    ? [{ food: "food", cafe: "food", culture: "night" }[c.stops[0].kind] || "fun", c.stops[0].icon]
+    : themeOf(c);
   const hint = firstDetail(c);
   const b = document.createElement("button");
   b.type = "button";
@@ -672,13 +861,19 @@ function card(c) {
 function renderList() {
   const list = visible();
   const grid = $("grid");
+  const localPick = state.mode === "local" && browsing() && !state.region && !state.q;
+  $("randomBtn").hidden = localPick;
+  $("listTitle").parentElement.hidden = localPick;
+  if (localPick) { grid.replaceChildren(); return; }
   if (!state.courses.length) {
     $("status").textContent = "코스를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.";
     grid.replaceChildren();
     return;
   }
   const where = state.region || "전국";
-  const what = state.favOnly ? "찜한 코스" : state.userOnly ? "모두가 만든 코스" : `${where} 코스`;
+  const hood = hoodById(state.hood);
+  const what = state.favOnly ? "찜한 코스" : state.userOnly ? "모두가 만든 코스"
+    : state.mode === "local" ? (state.q ? `${where} 동네 코스` : `${hood ? hood.name : where} 일상 코스`) : `${where} 코스`;
   $("listTitle").innerHTML = `${esc(what)}<span>${list.length}</span>`;
   $("status").textContent = state.here ? "가까운 순" : state.q ? `'${state.q}' 검색` : "";
   if (!list.length) {
@@ -699,7 +894,7 @@ function update() { renderFilters(); renderList(); }
 
 /* ---------- 지도 링크 (키 없이 쓰는 공개 주소) ---------- */
 function mapLinks(s) {
-  const name = encodeURIComponent(s.name);
+  const name = encodeURIComponent(s.q || s.name);
   const links = [];
   if (hasPos(s)) {
     links.push(["카카오맵", `https://map.kakao.com/link/map/${name},${s.lat},${s.lng}`]);
@@ -722,7 +917,7 @@ function moveHint(a, b) {
 let map = null;
 
 function openCourse(id, { push = true } = {}) {
-  const c = state.courses.find((x) => x.id === id);
+  const c = findCourse(id);
   if (!c) return;
   openId = id;
   const stayMin = c.stops.reduce((n, s) => n + (s.stay || 0), 0);
@@ -752,13 +947,13 @@ function openCourse(id, { push = true } = {}) {
       ${c.stops.map((s, i) => `
         <li data-n="${i + 1}">
           <div class="stop-name">${esc(s.name)}</div>
-          <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : ""].filter(Boolean).map(esc).join(" · ")}</span>
+          <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : s.priceNote ? "보통 " + s.priceNote : ""].filter(Boolean).map(esc).join(" · ")}</span>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
           <div class="links">${mapLinks(s)}</div>
           ${i < c.stops.length - 1 ? moveHint(s, c.stops[i + 1]) : ""}
         </li>`).join("")}
     </ol>
-    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
+    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : c.source === "local" ? "가게는 지도 검색 결과에서 골라 주세요. 가격은 대략이고 가게마다 달라요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
     <section class="reviews" aria-labelledby="reviewHead">
       <h3 id="reviewHead">리뷰</h3>
       <div id="reviewForm"></div>
@@ -844,7 +1039,7 @@ async function share(c) {
 
 function pickRandom(exceptId) {
   const pool = visible().filter((c) => c.id !== exceptId);
-  const list = pool.length ? pool : state.courses.filter((c) => c.id !== exceptId);
+  const list = pool.length ? pool : (state.mode === "local" && state.hood ? state.local.filter((c) => c.hoodId === state.hood) : state.courses).filter((c) => c.id !== exceptId);
   if (!list.length) { toast("고를 코스가 없어요"); return; }
   const c = list[Math.floor(Math.random() * list.length)];
   const wasOpen = $("sheet").open;
@@ -1315,12 +1510,31 @@ function openBuilder(editId = "") {
 
 /* ---------- 내 위치 ---------- */
 function toggleNear() {
-  if (state.here) { state.here = null; update(); return; }
+  const localMode = state.mode === "local" && browsing();
+  if (state.here && !localMode) { state.here = null; update(); return; }
   if (!navigator.geolocation) { toast("이 브라우저는 위치를 지원하지 않아요"); return; }
   toast("위치를 찾는 중이에요");
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      state.here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      if (localMode) {
+        let best = null;
+        for (const [region, hs] of Object.entries(LOCAL.hoods)) {
+          for (const h of hs) {
+            const d = km(here, h);
+            if (!best || d < best.d) best = { region, h, d };
+          }
+        }
+        if (best) {
+          state.region = best.region;
+          state.hood = best.h.id;
+          save(STORE.hood, state.hood);
+          update();
+          toast(`가까운 동네: ${best.h.name}`);
+        }
+        return;
+      }
+      state.here = here;
       state.region = "";
       update();
       toast("가까운 코스부터 보여 드려요");
@@ -1365,6 +1579,8 @@ $("themeBtn").addEventListener("click", toggleTheme);
 $("randomBtn").addEventListener("click", () => pickRandom(""));
 const goTab = (fav_, user_) => { state.favOnly = fav_; state.userOnly = user_; update(); window.scrollTo({ top: 0 }); };
 $("tabHome").addEventListener("click", () => goTab(false, false));
+$("modeTrip").addEventListener("click", () => setMode("trip"));
+$("modeLocal").addEventListener("click", () => setMode("local"));
 $("favBtn").addEventListener("click", () => goTab(true, false));
 $("userOnlyBtn").addEventListener("click", () => goTab(false, true));
 $("filterClose").innerHTML = icon("close");
@@ -1392,11 +1608,18 @@ window.addEventListener("popstate", () => {
 });
 
 (async () => {
-  state.base = await loadCourses();
+  const [base, local] = await Promise.all([loadCourses(), loadLocal()]);
+  state.base = base;
+  state.local = local;
+  state.mode = load(STORE.mode, "trip") === "local" && local.length ? "local" : "trip";
+  if (state.mode === "local") {
+    const saved = hoodById(load(STORE.hood, ""));
+    if (saved) { state.hood = saved.id; state.region = Object.keys(LOCAL.hoods).find((r) => hoodsOf(r).includes(saved)); }
+  }
   mergeCourses();
   update();
   const id = courseFromHash();
-  if (id && state.courses.some((c) => c.id === id)) openCourse(id, { push: false });
+  if (id && findCourse(id)) openCourse(id, { push: false });
   else if (id) pendingId = id;
   initShared().catch(() => {});
 })();
