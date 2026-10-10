@@ -33,7 +33,7 @@
   --radius: 18px;
   color-scheme: light;
 }
-:root[data-theme="dark"] {
+:root[data-mode="dark"] {
   --bg: #17150b; --surface: #221f12; --ink: #f8f2da; --muted: #b5aa82;
   --line: #3a341a; --accent: #ffd43b; --accent-ink: #231e08; --accent-text: #ffd43b; --accent-soft: #3b3312;
   --hero: #2f2a10; --chip: #2c2812; --shadow: 0 6px 22px rgba(0, 0, 0, .35); color-scheme: dark;
@@ -541,11 +541,11 @@ function toast(msg) {
 }
 
 function applyTheme(theme) {
-  if (theme) document.documentElement.setAttribute("data-theme", theme);
-  else document.documentElement.removeAttribute("data-theme");
+  if (theme) document.documentElement.setAttribute("data-mode", theme);
+  else document.documentElement.removeAttribute("data-mode");
 }
 function toggleTheme() {
-  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const dark = document.documentElement.getAttribute("data-mode") === "dark";
   const next = dark ? "light" : "dark";
   applyTheme(next);
   save(STORE.theme, next);
