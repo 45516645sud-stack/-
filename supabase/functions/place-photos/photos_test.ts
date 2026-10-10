@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos } from "./photos.ts";
 
 Deno.test("검색어 정리", () => {
   assertEquals(cleanQuery("  서면   OO노래방  부산진구 "), "서면 OO노래방 부산진구");
@@ -72,4 +72,20 @@ Deno.test("뉴스·관공서 사진은 빼기", () => {
     { thumbnail_url: "https://t1.daumcdn.net/ok", doc_url: "https://blog.naver.com/5", display_sitename: "네이버블로그", collection: "blog" },
   ];
   assertEquals(toPhotos(docs, 4).map((p) => p.thumb), ["https://t1.daumcdn.net/ok"]);
+});
+
+Deno.test("가게 이름 핵심", () => {
+  assertEquals(coreName("벌툰 인더스트리얼 안동옥동점"), "벌툰인더스트리얼");
+  assertEquals(coreName("구미펍코로나"), "구미펍코로나");
+  assertEquals(coreName("놀숲 안동점"), "놀숲");
+});
+
+Deno.test("가게 이름이 나오는 글의 사진만", () => {
+  const docs = [
+    { title: "<b>구미</b> 맛집 탐방", contents: "다른 가게 이야기", url: "https://blog.naver.com/1", blogname: "a", thumbnail: "https://search1.kakaocdn.net/1" },
+    { title: "구미 술집", contents: "<b>구미펍 코로나</b> 다녀왔어요", url: "https://blog.naver.com/2", blogname: "b", thumbnail: "https://search1.kakaocdn.net/2" },
+    { title: "구미펍코로나 사건", contents: "", url: "https://news.example.com/3", blogname: "OO뉴스", thumbnail: "https://search1.kakaocdn.net/3" },
+    { title: "구미펍코로나", contents: "", url: "https://cafe.daum.net/4", cafename: "구미맘", thumbnail: "" },
+  ];
+  assertEquals(toPostPhotos(docs, "구미펍코로나", 4), [{ thumb: "https://search1.kakaocdn.net/2", link: "https://blog.naver.com/2", site: "b" }]);
 });

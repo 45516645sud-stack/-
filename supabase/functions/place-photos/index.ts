@@ -1,10 +1,11 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos } from "./photos.ts";
 import { authorId, cleanBody, cleanCol, cleanItem, HIDE_AT, validToken, withoutHidden } from "./community.ts";
 
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
 // 카카오 REST API 키는 비밀이라 앱 화면에 둘 수 없어서, 이 함수가 대신 카카오에 물어본다.
-//   사진: GET ?q=<가게 이름 + 구>&size=4            → { photos: [{ thumb, link, site }] }
+//   사진: GET ?q=<가게 이름 + 구>&name=<가게 이름>&size=4 → { photos: [{ thumb, link, site }] }
+//         name 이 있으면 블로그·카페 글 중 가게 이름이 나오는 글의 사진만 (없으면 예전처럼 이미지 검색)
 //   가게: GET ?mode=places&q=<동네 + 놀거리>&lat=&lng=&radius=2000&size=10[&page=2]
 //                                                    → { places: [{ name, category, path, address, phone, url, distance, x, y }] }
 //   리뷰·코스: GET ?mode=docs&col=rv|uc               → { docs: [{ id, data }] }
@@ -14,6 +15,8 @@ import { authorId, cleanBody, cleanCol, cleanItem, HIDE_AT, validToken, withoutH
 
 const KAKAO_IMAGE_SEARCH = "https://dapi.kakao.com/v2/search/image";
 const KAKAO_PLACE_SEARCH = "https://dapi.kakao.com/v2/local/search/keyword.json";
+const KAKAO_BLOG_SEARCH = "https://dapi.kakao.com/v2/search/blog";
+const KAKAO_CAFE_SEARCH = "https://dapi.kakao.com/v2/search/cafe";
 const DEFAULT_ORIGINS = "https://45516645sud-stack.github.io,http://localhost:8000";
 
 Deno.serve(async (req) => {
@@ -73,6 +76,27 @@ Deno.serve(async (req) => {
     } catch (error) {
       console.error("place search error:", error);
       return json({ error: "가게 목록을 가져오지 못했어요." }, 502);
+    }
+  }
+
+  const name = cleanQuery(url.searchParams.get("name"));
+  if (name) {
+    try {
+      const ask = async (base: string, n: number) => {
+        const api = new URL(base);
+        api.searchParams.set("query", q);
+        api.searchParams.set("size", String(n));
+        const res = await fetch(api, { headers: { Authorization: `KakaoAK ${key}` } });
+        if (!res.ok) { console.warn("kakao post search failed:", base, res.status); return []; }
+        const data = await res.json();
+        return Array.isArray(data?.documents) ? data.documents : [];
+      };
+      const [blog, cafe] = await Promise.all([ask(KAKAO_BLOG_SEARCH, 30), ask(KAKAO_CAFE_SEARCH, 20)]);
+      const photos = toPostPhotos([...blog, ...cafe], name, size);
+      return json({ photos }, 200, { "Cache-Control": "public, max-age=86400" });
+    } catch (error) {
+      console.error("post photos error:", error);
+      return json({ error: "사진을 가져오지 못했어요." }, 502);
     }
   }
 

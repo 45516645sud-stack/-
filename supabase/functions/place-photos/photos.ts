@@ -53,6 +53,45 @@ export function toPhotos(docs: KakaoImageDoc[], size: number): Photo[] {
   return out;
 }
 
+/* ---------- 가게 사진 (블로그·카페 글) ---------- */
+
+export type KakaoPostDoc = {
+  title?: string;
+  contents?: string;
+  url?: string;
+  blogname?: string;
+  cafename?: string;
+  thumbnail?: string;
+};
+
+const plain = (s: unknown) => String(s ?? "").replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, "").replace(/\s+/g, "").toLowerCase();
+
+/** 가게 이름 핵심: 공백을 없애고, 끝의 지점명('OO점')은 뺀다. '벌툰 인더스트리얼 안동옥동점' → '벌툰인더스트리얼' */
+export function coreName(name: string): string {
+  const parts = name.replace(/\(.*?\)/g, " ").trim().split(/\s+/).filter(Boolean);
+  if (parts.length > 1 && /점$/.test(parts[parts.length - 1])) parts.pop();
+  return parts.join("").toLowerCase();
+}
+
+/** 글 제목이나 본문에 가게 이름이 실제로 나오는 글의 썸네일만. 뉴스·관공서 글은 뺀다 */
+export function toPostPhotos(docs: KakaoPostDoc[], name: string, size: number): Photo[] {
+  const core = coreName(name);
+  if (core.length < 2) return [];
+  const seen = new Set<string>();
+  const out: Photo[] = [];
+  for (const d of docs) {
+    const thumb = d.thumbnail;
+    if (!isHttps(thumb) || !isHttp(d.url) || seen.has(thumb)) continue;
+    const site = String(d.blogname ?? d.cafename ?? "");
+    if (!goodSource({ doc_url: d.url, display_sitename: site })) continue;
+    if (!(plain(d.title) + plain(d.contents)).includes(core)) continue;
+    seen.add(thumb);
+    out.push({ thumb, link: d.url, site: site.slice(0, 40) });
+    if (out.length >= size) break;
+  }
+  return out;
+}
+
 /** 허용한 사이트에서 온 요청인지. ALLOWED_ORIGINS 는 쉼표로 구분 */
 export function allowedOrigin(origin: string | null, allowList: string): string | null {
   if (!origin) return null;

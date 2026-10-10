@@ -1002,7 +1002,7 @@ function openActivity(actId) {
       <a class="map-link" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 보기</a>
     </div>
     <div class="places" id="placeList" aria-live="polite"><p class="note">가게를 찾는 중이에요…</p></div>
-    <p class="note">가격은 대략이에요. 영업시간·실제 가격은 가게 페이지에서 확인해 주세요. 사진은 카카오 이미지 검색 결과(블로그·카페 후기, 뉴스·관공서 사진은 뺌)라 다른 가게 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
+    <p class="note">가격은 대략이에요. 영업시간·실제 가격은 가게 페이지에서 확인해 주세요. 사진은 이 가게 이름이 나오는 블로그·카페 후기 사진이에요(뉴스·관공서 글은 뺌). 드물게 다른 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
   $("closeBtn").addEventListener("click", closeCourse);
   if ($("actCourses")) $("actCourses").addEventListener("click", () => {
     state.act = actId;
@@ -1137,7 +1137,7 @@ function placeItem(p) {
   return el;
 }
 
-/* 가게 사진: '가게 이름 + 구'로 카카오 이미지 검색 (블로그 등). 누르면 원래 글로 */
+/* 가게 사진: '가게 이름 + 구'로 카카오 블로그·카페 글을 찾아, 가게 이름이 나오는 글의 사진만. 누르면 원래 글로 */
 const photoCache = new Map();
 function photoEndpoint() {
   return ((document.querySelector('meta[name="nolco-photo-endpoint"]') || {}).content || "").trim();
@@ -1151,7 +1151,8 @@ async function addPhotos(el, p) {
   const q = `${p.place_name} ${gu}`.trim();
   try {
     if (!photoCache.has(q)) {
-      photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&size=4`)
+      // name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글의 사진만 받는다
+      photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
         .then((r) => (r.ok ? r.json() : { photos: [] }))
         .then((d) => (Array.isArray(d.photos) ? d.photos : []))
         .catch(() => []));
