@@ -21,7 +21,7 @@ from verify_hoods import ROOT, http_fetch  # noqa: E402
 
 SAMPLE = ["andongdowntown", "andongokdong", "seomyeon", "hongdae", "dongseongro", "bupyeong", "chungjang",
           "eunhaeng", "seongan", "gumi", "gaeksa", "dujeong", "samsan"]
-BRANDS = ["벌툰", "놀숲", "레드버튼", "홈즈앤루팡", "나인블럭", "인생네컷", "포토이즘", "하루필름", "코인노래방", "오락실",
+BRANDS = ["벌툰", "놀숲", "만화방", "놀숲 만화카페", "레드버튼", "홈즈앤루팡", "나인블럭", "인생네컷", "포토이즘", "하루필름", "코인노래방", "오락실",
           "만화카페", "보드게임카페", "방탈출", "스크린야구", "VR"]
 
 
@@ -64,22 +64,36 @@ def main(argv=None) -> int:
     jobs = [(hoods[i], a) for i in ids for a in acts]
     with ThreadPoolExecutor(max_workers=4) as ex:
         results = list(ex.map(run, jobs))
+    from collections import defaultdict
+    by_act = defaultdict(list)
     for h, a, got in results:
-        ok = [p for p in got if fits(a, p.get("path") or p["category"], p["name"])]
-        print(f"\n## {h['name']} / {a['name']}: 결과 {len(got)}곳 → 통과 {len(ok)}곳")
-        for p in got:
-            mark = "O" if p in ok else "X"
-            print(f"  {mark} {p['name']} | {p.get('path') or p['category']} | {p.get('distance')}m")
+        by_act[a["id"]].append((h, a, got))
+    for aid, rows in by_act.items():
+        a = rows[0][1]
+        print(f"\n## {a['name']}  " + " ".join(f"{h['name']}:{sum(fits(a, p.get('path') or p['category'], p['name']) for p in got)}/{len(got)}" for h, _, got in rows))
+        paths = defaultdict(list)
+        for h, _, got in rows:
+            for p in got:
+                path = p.get("path") or p["category"]
+                paths[(fits(a, path, p["name"]), path)].append(p["name"])
+        for (ok, path), names in sorted(paths.items(), key=lambda kv: (not kv[0][0], -len(kv[1]))):
+            print(f"  {'O' if ok else 'X'} {len(names):3d} {path} | 예: {', '.join(names[:3])}")
 
     print("\n\n######## 체인 이름으로 찾기 (반경 5km) ########")
     def brand(job):
         h, b = job
         return h, b, places(b, h, 1, 5000)
+    seen = set()
     with ThreadPoolExecutor(max_workers=4) as ex:
         for h, b, ps in ex.map(brand, [(hoods[i], b) for i in ids for b in BRANDS]):
-            for p in ps[:6]:
-                into = [a["name"] for a in acts if fits(a, p.get("path") or p["category"], p["name"])]
-                print(f"[{h['name']}] '{b}' {p['name']} | {p.get('path') or p['category']} | {p.get('distance')}m | → {', '.join(into) or '어디에도 안 들어감'}")
+            for p in ps[:8]:
+                path = p.get("path") or p["category"]
+                into = [a["name"] for a in acts if fits(a, path, p["name"])]
+                key = (b, path, tuple(into))
+                if key in seen:
+                    continue
+                seen.add(key)
+                print(f"'{b}' {p['name']} ({h['name']}) | {path} | → {', '.join(into) or '어디에도 안 들어감'}")
     return 0
 
 
