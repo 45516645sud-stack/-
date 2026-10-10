@@ -1,4 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
+import { SCHEMA } from "./schema.ts";
 import { authorId, cleanBody, cleanCol, cleanNick, validToken, withoutHidden } from "./community.ts";
 
 Deno.test("col·token 확인", () => {
@@ -29,4 +30,9 @@ Deno.test("신고 쌓인 항목 숨기기", () => {
   const out = withoutHidden("rv", "d1", { nick: "a", reviews: { c1: { rating: 5 }, c2: { rating: 1 } } }, new Set(["rv/d1/c2"]));
   assertEquals(out, { nick: "a", reviews: { c1: { rating: 5 } } });
   assertEquals(cleanNick("가나다라마바사아자차카타파하"), "가나다라마바사아자차카타");
+});
+
+Deno.test("함수 안 표 정의가 migrations SQL 과 같음", async () => {
+  const file = await Deno.readTextFile(new URL("../../migrations/20261011000000_nolco_community.sql", import.meta.url));
+  assertEquals(SCHEMA, file);
 });
