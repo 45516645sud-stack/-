@@ -11,9 +11,9 @@ on:
       - "aiiairs/**"
       - "datecourse/**"
       - ".github/workflows/aiiairs-pages.yml"
-  # 일정 수집이 끝났을 때. 수집 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
+  # 일정 수집·놀코 동네 확인이 끝났을 때. 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
   workflow_run:
-    workflows: ["AIIairs 일정 수집"]
+    workflows: ["AIIairs 일정 수집", "놀코 동네 확인"]
     types: [completed]
   # Actions 탭에서 바로 실행
   workflow_dispatch:
