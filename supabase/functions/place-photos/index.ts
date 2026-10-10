@@ -1,4 +1,6 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import postgres from "npm:postgres@3.4.5";
+import { SCHEMA } from "./schema.ts";
 import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos } from "./photos.ts";
 import { authorId, cleanBody, cleanCol, cleanItem, HIDE_AT, validToken, withoutHidden } from "./community.ts";
 
@@ -160,9 +162,31 @@ async function tooMany(sb: Sb, req: Request): Promise<boolean> {
   return false;
 }
 
+// 표가 없으면 만든다 (함수가 켜질 때 한 번). 만든 뒤 API 가 새 표를 알도록 스키마를 다시 읽게 한다
+let tablesReady: Promise<void> | null = null;
+function ensureTables(): Promise<void> {
+  tablesReady ??= (async () => {
+    const dbUrl = Deno.env.get("SUPABASE_DB_URL");
+    if (!dbUrl) return;
+    const sql = postgres(dbUrl, { max: 1, prepare: false });
+    try {
+      const [{ n }] = await sql`select count(*)::int as n from information_schema.tables where table_schema = 'public' and table_name in ('nolco_docs', 'nolco_reports', 'nolco_hits')`;
+      if (n < 3) {
+        await sql.unsafe(SCHEMA);
+        await sql.unsafe("notify pgrst, 'reload schema'");
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    } finally {
+      await sql.end();
+    }
+  })().catch((e) => { console.error("ensureTables:", e); tablesReady = null; });
+  return tablesReady;
+}
+
 async function community(req: Request, url: URL, json: Json): Promise<Response> {
   const sb = database();
   if (!sb) return json({ error: "저장소가 아직 설정되지 않았어요." }, 503);
+  await ensureTables();
   try {
     if (req.method === "GET") {
       const col = cleanCol(url.searchParams.get("col"));
