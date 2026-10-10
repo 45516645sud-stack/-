@@ -11,9 +11,9 @@ on:
       - "aiiairs/**"
       - "datecourse/**"
       - ".github/workflows/aiiairs-pages.yml"
-  # 일정 수집·놀코 동네 확인이 끝났을 때. 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
+  # 일정 수집·놀코 동네·코스 확인이 끝났을 때. 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
   workflow_run:
-    workflows: ["AIIairs 일정 수집", "놀코 동네 확인"]
+    workflows: ["AIIairs 일정 수집", "놀코 동네 확인", "놀코 코스 위치 확인", "놀코 관광공사 코스 수집"]
     types: [completed]
   # Actions 탭에서 바로 실행
   workflow_dispatch:
