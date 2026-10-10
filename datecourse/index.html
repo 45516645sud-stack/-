@@ -91,6 +91,7 @@ header.top {
   display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
 }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
 .btn.small { padding: 7px 11px; font-size: 13px; font-weight: 500; }
 
 .status { color: var(--muted); font-size: 13px; margin: 10px 0; }
@@ -147,6 +148,54 @@ ol.stops li:not(:last-child)::after {
 .move { font-size: 12px; color: var(--muted); margin-top: 8px; }
 .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
 
+/* 리뷰 */
+.reviews { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 14px; }
+.reviews h3 { margin: 0 0 8px; font-size: 17px; }
+.review-form { display: flex; flex-direction: column; gap: 8px; background: var(--chip); border-radius: 14px; padding: 12px; }
+.star-pick { display: flex; align-items: center; gap: 2px; }
+.star { border: 0; background: transparent; font-size: 28px; line-height: 1; padding: 2px; color: var(--surface); -webkit-text-stroke: 1px var(--muted); }
+.star[aria-pressed="true"] { color: var(--accent); -webkit-text-stroke: 1px var(--accent-text); }
+.star-label { font-size: 13px; color: var(--muted); margin-left: 6px; }
+textarea, .builder input, .builder select {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+  padding: 9px 10px; min-width: 0;
+}
+textarea { resize: vertical; }
+:is(textarea, input, select, button):focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+#reviewList { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.review { border-bottom: 1px dashed var(--line); padding-bottom: 10px; }
+.review-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; }
+.review-top .when { color: var(--muted); font-size: 12px; }
+.rate { color: var(--accent-text); font-weight: 700; letter-spacing: 1px; }
+.review-text { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.maker-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0; font-size: 14px; }
+.maker { background: var(--accent-soft); color: var(--accent-text); border-radius: 8px; padding: 3px 9px; font-weight: 600; }
+.mine-badge { background: var(--accent); color: var(--accent-ink); border-radius: 6px; padding: 2px 7px; font-weight: 600; font-size: 12px; }
+
+/* 코스 만들기 */
+.builder { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.field { display: flex; flex-direction: column; gap: 4px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.field > span, .field > legend { font-size: 13px; font-weight: 600; color: var(--muted); padding: 0; margin-bottom: 4px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.field-row.three { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 480px) { .field-row.three { grid-template-columns: 1fr 1fr; } }
+.checks { display: flex; flex-wrap: wrap; gap: 6px; }
+.check { display: inline-flex; align-items: center; gap: 4px; background: var(--chip); border-radius: 999px; padding: 6px 11px; font-size: 14px; cursor: pointer; }
+.check input { width: auto; accent-color: var(--accent-text); }
+.check:has(input:checked) { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.stop-edit { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.stop-edit li { background: var(--chip); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.stop-edit-row { display: flex; gap: 6px; align-items: center; }
+.stop-edit-row > * { min-width: 0; }
+.stop-edit-row .s-kind { flex: 1.4; }
+.stop-edit-row .s-stay { flex: 1; }
+.stop-edit .num {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font-weight: 700; font-size: 13px;
+}
+.stop-edit .icon-btn { width: 34px; height: 34px; }
+.stop-edit .icon-btn:disabled { opacity: .35; }
+
 .toast {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 1000;
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px;
@@ -181,6 +230,8 @@ ol.stops li:not(:last-child)::after {
     <button class="btn primary" id="randomBtn">🎲 아무 코스나 골라줘</button>
     <button class="btn" id="nearBtn">📍 내 주변 코스</button>
     <button class="btn" id="favBtn" aria-pressed="false">♡ 찜한 코스</button>
+    <button class="btn" id="userOnlyBtn" aria-pressed="false">👥 모두가 만든 코스</button>
+    <button class="btn primary" id="makeBtn">✏️ 코스 만들기</button>
   </div>
 </section>
 
@@ -213,9 +264,9 @@ const STORE = { fav: "datecourse.fav", theme: "datecourse.theme.v2" };
 
 /* ---------- 상태 ---------- */
 const state = {
-  courses: [],
+  courses: [], base: [],
   region: "", who: "", tags: new Set(), budget: 0, short: false,
-  q: "", favOnly: false, here: null,
+  q: "", favOnly: false, userOnly: false, here: null,
 };
 let fav = new Set(load(STORE.fav, []));
 
@@ -271,6 +322,7 @@ function haystack(c) {
 }
 function matches(c) {
   if (state.favOnly && !fav.has(c.id)) return false;
+  if (state.userOnly && c.source !== "user") return false;
   if (state.region && c.region !== state.region) return false;
   if (state.who && !(c.with || []).includes(state.who)) return false;
   if (state.budget && (c.budget || 2) > state.budget) return false;
@@ -322,6 +374,8 @@ function renderFilters() {
   $("favBtn").setAttribute("aria-pressed", String(state.favOnly));
   $("favBtn").textContent = (state.favOnly ? "♥" : "♡") + " 찜한 코스" + (fav.size ? ` ${fav.size}` : "");
   $("nearBtn").textContent = state.here ? "📍 가까운 순 끄기" : "📍 내 주변 코스";
+  $("userOnlyBtn").setAttribute("aria-pressed", String(state.userOnly));
+  $("userOnlyBtn").textContent = (state.userOnly ? "✓ " : "👥 ") + "모두가 만든 코스" + (shared.userCourses.length ? ` ${shared.userCourses.length}` : "");
 }
 
 function routeLine(c) {
@@ -330,6 +384,7 @@ function routeLine(c) {
 
 function card(c) {
   const d = distanceTo(c);
+  const rate = ratingOf(c.id);
   const b = document.createElement("button");
   b.type = "button";
   b.className = "card";
@@ -339,6 +394,8 @@ function card(c) {
       <span>${c.hours ? "약 " + c.hours + "시간" : ""}</span>
       <span>${esc(BUDGET[c.budget] || "")}</span>
       ${Number.isFinite(d) ? `<span>📍 ${d < 1 ? "1km 안" : Math.round(d) + "km"}</span>` : ""}
+      ${rate ? `<span class="rate">★ ${rate.avg.toFixed(1)} (${rate.n})</span>` : ""}
+      ${c.source === "user" ? `<span class="${c.author === shared.me ? "mine-badge" : ""}">${c.author === shared.me ? "내 코스" : "✏️ 직접 만든 코스"}</span>` : ""}
       ${fav.has(c.id) ? "<span>♥</span>" : ""}
     </div>
     <h3>${esc(c.title)}</h3>
@@ -366,7 +423,9 @@ function renderList() {
     div.className = "empty";
     div.innerHTML = state.favOnly && !fav.size
       ? "아직 찜한 코스가 없어요.<br>마음에 드는 코스에서 ♡를 눌러 보세요."
-      : "조건에 맞는 코스가 없어요.<br>필터를 하나씩 풀어 보세요.";
+      : state.userOnly && !shared.userCourses.length
+        ? "아직 아무도 코스를 만들지 않았어요.<br>✏️ 코스 만들기로 첫 코스를 올려 보세요."
+        : "조건에 맞는 코스가 없어요.<br>필터를 하나씩 풀어 보세요.";
     grid.replaceChildren(div);
     return;
   }
@@ -402,6 +461,7 @@ let map = null;
 function openCourse(id, { push = true } = {}) {
   const c = state.courses.find((x) => x.id === id);
   if (!c) return;
+  openId = id;
   const total = c.stops.reduce((n, s) => n + (s.stay || 0), 0);
   $("sheetBody").innerHTML = `
     <div class="sheet-head">
@@ -412,6 +472,7 @@ function openCourse(id, { push = true } = {}) {
       </div>
       <button class="icon-btn" id="closeBtn" aria-label="닫기">✕</button>
     </div>
+    ${c.source === "user" ? `<div class="maker-box" id="makerBox"></div>` : ""}
     <p>${esc(c.summary)}</p>
     <div class="facts">
       <div class="fact"><b>${c.hours ? "약 " + c.hours + "시간" : total ? "약 " + Math.round(total / 60) + "시간" : "-"}</b><small>머무는 시간</small></div>
@@ -433,7 +494,12 @@ function openCourse(id, { push = true } = {}) {
       <button class="btn" id="shareBtn">🔗 공유하기</button>
       <button class="btn" id="againBtn">🎲 다른 코스</button>
     </div>
-    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>`;
+    <p class="note">${c.source === "tourapi" ? "출처: 한국관광공사 TourAPI 추천코스. " : c.source === "user" ? "이용자가 직접 만든 코스예요. " : ""}운영 시간·요금·휴무는 바뀔 수 있으니 가기 전에 확인하세요. 거리는 직선거리예요.</p>
+    <section class="reviews" aria-labelledby="reviewHead">
+      <h3 id="reviewHead">리뷰</h3>
+      <div id="reviewForm"></div>
+      <div id="reviewList"></div>
+    </section>`;
 
   $("closeBtn").addEventListener("click", closeCourse);
   $("favToggle").addEventListener("click", () => {
@@ -450,6 +516,9 @@ function openCourse(id, { push = true } = {}) {
   if (!sheet.open) sheet.showModal();
   sheet.scrollTop = 0;
   drawMap(c);
+  renderReviewForm(c.id);
+  renderReviewList(c.id);
+  renderMaker(c);
   if (push) history.pushState({ id }, "", "#c=" + encodeURIComponent(id));
 }
 
@@ -513,6 +582,415 @@ function pickRandom(exceptId) {
   if (wasOpen) history.replaceState({ id: c.id }, "", "#c=" + encodeURIComponent(c.id));
 }
 
+/* ---------- 리뷰·직접 만든 코스 (claude.ai 공유 저장소) ----------
+   사람마다 문서 하나씩만 쓴다.
+     rv/<내 id> = { reviews: { 코스id: { rating, text, at } } }
+     uc/<내 id> = { courses: { 코스id: { title, region, stops, … } } }
+   모두가 읽고, 자기 문서만 고친다. 앱 주인은 관리용으로 남의 것도 지울 수 있다.
+   공유 저장소가 없는 화면(파일로 연 앱 등)에서는 읽기 안내만 보여 준다. */
+const shared = {
+  db: null, user: null, me: null, owner: false, canWrite: false, ready: false,
+  reviewDocs: {},        // 작성자 id → { 코스id: 리뷰 }
+  courseDocs: {},        // 작성자 id → { 코스id: 코스 }
+  reviews: new Map(),    // 코스id → [{ author, rating, text, at }]
+  userCourses: [],
+  writing: false,
+};
+let pendingId = "";      // 공유 주소로 들어왔는데 아직 안 받은 '직접 만든 코스'
+let openId = "";         // 지금 열려 있는 코스
+
+const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+const int = (v, lo, hi) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : 0; };
+
+// 남이 쓴 데이터는 믿지 않는다: 모양과 길이를 다시 맞춘다
+function cleanReview(r) {
+  if (!r || typeof r !== "object") return null;
+  const rating = int(r.rating, 0, 5);
+  if (!rating) return null;
+  return { rating, text: str(r.text, 500), at: str(r.at, 40) };
+}
+function cleanCourse(id, c, author) {
+  if (!/^u-[\w-]{4,40}$/.test(id) || !c || typeof c !== "object") return null;
+  const stops = (Array.isArray(c.stops) ? c.stops : []).slice(0, 8).map((s) => ({
+    name: str(s && s.name, 40), kind: KIND[s && s.kind] ? s.kind : "", stay: int(s && s.stay, 0, 600), tip: str(s && s.tip, 120),
+  })).filter((s) => s.name);
+  const title = str(c.title, 40);
+  if (!title || stops.length < 2) return null;
+  return {
+    id, author, source: "user",
+    region: REGIONS.includes(c.region) ? c.region : "서울",
+    area: str(c.area, 20), title, summary: str(c.summary, 120),
+    with: (Array.isArray(c.with) ? c.with : []).filter((w) => WITH[w]),
+    tags: (Array.isArray(c.tags) ? c.tags : []).filter((t) => TAGS.includes(t)),
+    budget: int(c.budget, 1, 3) || 2, hours: int(c.hours, 0, 48), best: str(c.best, 10),
+    stops, at: str(c.at, 40),
+  };
+}
+
+function mergeCourses() {
+  const seen = new Set(state.base.map((c) => c.id));
+  state.courses = [...state.base, ...shared.userCourses.filter((c) => !seen.has(c.id))];
+}
+
+async function initShared() {
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (!db) return;
+  shared.db = db;
+  shared.user = user;
+  if (user) {
+    const [me, owner, can] = await Promise.all([user.id(), user.isOwner(), user.can("data.write")]);
+    shared.me = me;
+    shared.owner = owner;
+    shared.canWrite = !!me && can !== false;
+  }
+  shared.ready = true;
+
+  db.collection("rv").limit(1000).onSnapshot((snap) => {
+    const docs = {};
+    const byCourse = new Map();
+    for (const d of snap.docs) {
+      const body = d.data() || {};
+      const mine = {};
+      for (const [cid, raw] of Object.entries(body.reviews || {})) {
+        const r = cleanReview(raw);
+        if (!r) continue;
+        mine[cid] = r;
+        if (!byCourse.has(cid)) byCourse.set(cid, []);
+        byCourse.get(cid).push({ author: d.id, ...r });
+      }
+      docs[d.id] = mine;
+    }
+    for (const list of byCourse.values()) list.sort((a, b) => (b.at || "").localeCompare(a.at || ""));
+    shared.reviewDocs = docs;
+    shared.reviews = byCourse;
+    renderList();
+    if (openId) renderReviewList(openId);
+  }, () => { /* 끊기면 리뷰 없이 계속 쓴다 */ });
+
+  db.collection("uc").limit(1000).onSnapshot((snap) => {
+    const docs = {};
+    const list = [];
+    for (const d of snap.docs) {
+      const mine = {};
+      for (const [cid, raw] of Object.entries((d.data() || {}).courses || {})) {
+        const c = cleanCourse(cid, raw, d.id);
+        if (!c) continue;
+        mine[cid] = raw;
+        list.push(c);
+      }
+      docs[d.id] = mine;
+    }
+    list.sort((a, b) => (b.at || "").localeCompare(a.at || ""));
+    shared.courseDocs = docs;
+    shared.userCourses = list;
+    mergeCourses();
+    renderList();
+    if (pendingId && state.courses.some((c) => c.id === pendingId)) {
+      const id = pendingId;
+      pendingId = "";
+      openCourse(id, { push: false });
+    }
+  }, () => {});
+
+  renderFilters();
+  if (openId) renderReviewForm(openId);
+}
+
+function ratingOf(id) {
+  const list = shared.reviews.get(id) || [];
+  if (!list.length) return null;
+  return { avg: list.reduce((n, r) => n + r.rating, 0) / list.length, n: list.length };
+}
+const stars = (n) => "★".repeat(n) + "☆".repeat(5 - n);
+const day = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("ko-KR"); };
+
+async function names(ids) {
+  if (!shared.user || !ids.length) return {};
+  try { return await shared.user.profiles(ids); } catch { return {}; }
+}
+
+// 한 사람 문서에 쓰기: 앞 쓰기가 끝나야 다음 쓰기
+async function writeDoc(path, body) {
+  if (shared.writing) return false;
+  shared.writing = true;
+  try {
+    await shared.db.doc(path).set(body);
+    return true;
+  } catch (e) {
+    const code = e && e.code;
+    toast(code === "invalid_argument" ? "쓸 권한이 없어요. 앱 주인에게 참여자 권한을 받아 주세요"
+      : code === "quota_exceeded" ? "저장 공간이 꽉 찼어요. 앱 주인에게 알려 주세요"
+      : "저장하지 못했어요. 잠시 뒤에 다시 해 주세요");
+    if (code === "invalid_argument") { shared.canWrite = false; renderFilters(); }
+    return false;
+  } finally {
+    shared.writing = false;
+  }
+}
+
+/* 리뷰 */
+function renderReviewForm(courseId) {
+  const box = $("reviewForm");
+  if (!box) return;
+  if (!shared.db) {
+    box.innerHTML = `<p class="note">리뷰는 claude.ai에 공개된 앱 링크에서 남길 수 있어요.</p>`;
+    return;
+  }
+  if (!shared.canWrite) {
+    box.innerHTML = `<p class="note">리뷰를 남기려면 앱 주인에게 <b>참여자(Contributor)</b> 권한을 받아야 해요.</p>`;
+    return;
+  }
+  const mine = (shared.reviewDocs[shared.me] || {})[courseId];
+  let rating = mine ? mine.rating : 0;
+  box.innerHTML = `
+    <form class="review-form" id="reviewFormEl">
+      <div class="star-pick" role="group" aria-label="별점">
+        ${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="star" data-n="${n}" aria-label="별 ${n}개" aria-pressed="false">★</button>`).join("")}
+        <span class="star-label" id="starLabel"></span>
+      </div>
+      <label class="sr" for="reviewText">리뷰 내용</label>
+      <textarea id="reviewText" maxlength="500" rows="3" placeholder="다녀온 느낌, 팁, 아쉬운 점을 적어 주세요"></textarea>
+      <div class="actions">
+        <button class="btn primary" type="submit" id="reviewSave">${mine ? "리뷰 고치기" : "리뷰 남기기"}</button>
+        ${mine ? `<button class="btn" type="button" id="reviewDelete">내 리뷰 지우기</button>` : ""}
+      </div>
+    </form>`;
+  $("reviewText").value = mine ? mine.text : "";
+  const paint = () => {
+    box.querySelectorAll(".star").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.n <= rating)));
+    $("starLabel").textContent = rating ? `${rating}점` : "별을 눌러 점수를 골라 주세요";
+  };
+  box.querySelectorAll(".star").forEach((b) => b.addEventListener("click", () => { rating = +b.dataset.n; paint(); }));
+  paint();
+  $("reviewFormEl").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!rating) { toast("별점을 먼저 골라 주세요"); return; }
+    const reviews = { ...(shared.reviewDocs[shared.me] || {}) };
+    reviews[courseId] = { rating, text: $("reviewText").value.trim().slice(0, 500), at: new Date().toISOString() };
+    if (await writeDoc("rv/" + shared.me, { reviews })) {
+      toast(mine ? "리뷰를 고쳤어요" : "리뷰를 남겼어요");
+      shared.reviewDocs[shared.me] = reviews;  // 저장소가 알려 주기 전에도 내 리뷰로 보이게
+      renderReviewForm(courseId);
+    }
+  });
+  const del = $("reviewDelete");
+  if (del) del.addEventListener("click", () => removeReview(shared.me, courseId));
+}
+
+async function removeReview(author, courseId) {
+  const reviews = { ...(shared.reviewDocs[author] || {}) };
+  delete reviews[courseId];
+  if (await writeDoc("rv/" + author, { reviews })) {
+    toast("리뷰를 지웠어요");
+    shared.reviewDocs[author] = reviews;
+    if (author === shared.me) renderReviewForm(courseId);
+  }
+}
+
+async function renderReviewList(courseId) {
+  const box = $("reviewList");
+  const head = $("reviewHead");
+  if (!box || !head) return;
+  const list = shared.reviews.get(courseId) || [];
+  const r = ratingOf(courseId);
+  head.textContent = r ? `리뷰 ${r.n}개 · 평균 ★ ${r.avg.toFixed(1)}` : "리뷰";
+  if (!list.length) {
+    box.innerHTML = shared.db ? `<p class="note">아직 리뷰가 없어요. 첫 리뷰를 남겨 주세요.</p>` : "";
+    return;
+  }
+  const ps = await names(list.map((x) => x.author));
+  if (openId !== courseId) return;
+  box.replaceChildren(...list.map((x) => {
+    const li = document.createElement("div");
+    li.className = "review";
+    const isMe = x.author === shared.me;
+    li.innerHTML = `
+      <div class="review-top">
+        <b class="who"></b><span class="rate">${stars(x.rating)}</span><span class="when">${esc(day(x.at))}</span>
+        ${shared.owner && !isMe ? `<button class="btn small" type="button">관리: 지우기</button>` : ""}
+      </div>
+      <p class="review-text"></p>`;
+    li.querySelector(".who").textContent = isMe ? "나" : ((ps[x.author] && ps[x.author].name) || "누군가");
+    li.querySelector(".review-text").textContent = x.text;
+    const del = li.querySelector("button");
+    if (del) del.addEventListener("click", () => removeReview(x.author, courseId));
+    return li;
+  }));
+}
+
+/* 직접 만든 코스: 만든 사람과 고치기·지우기 */
+async function renderMaker(c) {
+  const box = $("makerBox");
+  if (!box || c.source !== "user") return;
+  const isMe = c.author === shared.me;
+  const ps = isMe ? {} : await names([c.author]);
+  if (openId !== c.id) return;
+  box.innerHTML = `<span class="maker">✏️ <span class="who"></span></span>
+    ${isMe ? `<button class="btn small" type="button" id="editCourse">고치기</button>` : ""}
+    ${isMe || shared.owner ? `<button class="btn small" type="button" id="deleteCourse">${isMe ? "지우기" : "관리: 지우기"}</button>` : ""}`;
+  box.querySelector(".who").textContent = isMe ? "내가 만든 코스" : `${(ps[c.author] && ps[c.author].name) || "누군가"} 님이 만든 코스`;
+  const edit = $("editCourse");
+  if (edit) edit.addEventListener("click", () => openBuilder(c.id));
+  const del = $("deleteCourse");
+  if (del) del.addEventListener("click", () => askDelete(c, del));
+}
+
+function askDelete(c, btn) {
+  // confirm() 대신 한 번 더 누르게 한다
+  if (btn.dataset.sure !== "1") {
+    btn.dataset.sure = "1";
+    btn.textContent = "정말 지울까요? 한 번 더 누르기";
+    return;
+  }
+  const courses = { ...(shared.courseDocs[c.author] || {}) };
+  delete courses[c.id];
+  writeDoc("uc/" + c.author, { courses }).then((ok) => {
+    if (!ok) return;
+    toast("코스를 지웠어요");
+    closeCourse();
+  });
+}
+
+/* 코스 만들기 */
+const BEST = ["", "낮", "오후", "저녁", "오후~저녁", "하루", "언제나"];
+
+function openBuilder(editId = "") {
+  const sheet = $("sheet");
+  openId = "";
+  const body = $("sheetBody");
+  const head = `
+    <div class="sheet-head">
+      <div><span class="badge">✏️ 코스 만들기</span><h2 id="sheetTitle">${editId ? "내 코스 고치기" : "나만의 코스 만들기"}</h2></div>
+      <button class="icon-btn" id="closeBtn" aria-label="닫기">✕</button>
+    </div>`;
+  if (!shared.db || !shared.canWrite) {
+    body.innerHTML = head + `<p>다른 사람들이 볼 수 있는 코스를 직접 만들어 올리는 곳이에요.</p>
+      <p class="note">${!shared.db ? "코스 만들기는 claude.ai에 공개된 앱 링크에서 할 수 있어요."
+        : "코스를 올리려면 앱 주인에게 <b>참여자(Contributor)</b> 권한을 받아야 해요."}</p>`;
+    $("closeBtn").addEventListener("click", closeCourse);
+    if (!sheet.open) sheet.showModal();
+    return;
+  }
+  const old = editId ? cleanCourse(editId, (shared.courseDocs[shared.me] || {})[editId], shared.me) : null;
+  const c = old || { region: state.region || "서울", area: "", title: "", summary: "", with: ["date"], tags: [], budget: 2, hours: 4, best: "오후",
+    stops: [{ name: "", kind: "walk", stay: 60, tip: "" }, { name: "", kind: "cafe", stay: 60, tip: "" }] };
+  body.innerHTML = head + `
+    <form class="builder" id="builder" novalidate>
+      <label class="field"><span>코스 이름 *</span><input id="f-title" maxlength="40" required placeholder="예: 비 오는 날 성수 실내 데이트"></label>
+      <label class="field"><span>한 줄 소개</span><input id="f-summary" maxlength="120" placeholder="어떤 코스인지 한두 문장으로"></label>
+      <div class="field-row">
+        <label class="field"><span>지역 *</span><select id="f-region">${REGIONS.map((r) => `<option>${r}</option>`).join("")}</select></label>
+        <label class="field"><span>동네</span><input id="f-area" maxlength="20" placeholder="예: 성수"></label>
+      </div>
+      <fieldset class="field"><legend>누구와</legend><div class="checks">
+        ${Object.entries(WITH).map(([k, v]) => `<label class="check"><input type="checkbox" name="with" value="${k}" id="f-with-${k}"> ${v}</label>`).join("")}
+      </div></fieldset>
+      <fieldset class="field"><legend>분위기</legend><div class="checks">
+        ${TAGS.map((t, i) => `<label class="check"><input type="checkbox" name="tags" value="${t}" id="f-tag-${i}"> #${t}</label>`).join("")}
+      </div></fieldset>
+      <div class="field-row three">
+        <label class="field"><span>예산</span><select id="f-budget">${Object.entries(BUDGET).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
+        <label class="field"><span>걸리는 시간</span><input id="f-hours" type="number" min="1" max="48" inputmode="numeric"></label>
+        <label class="field"><span>추천 시간대</span><select id="f-best">${BEST.map((b) => `<option value="${b}">${b || "-"}</option>`).join("")}</select></label>
+      </div>
+      <fieldset class="field"><legend>장소 (순서대로, 2~6곳) *</legend>
+        <ol class="stop-edit" id="stopEdit"></ol>
+        <button class="btn small" type="button" id="addStop">+ 장소 추가</button>
+      </fieldset>
+      <p class="note" id="builderMsg" role="alert"></p>
+      <div class="actions">
+        <button class="btn primary" type="submit">${old ? "고친 내용 올리기" : "코스 올리기"}</button>
+      </div>
+      <p class="note">올린 코스는 이 앱을 여는 모든 사람에게 보여요. 장소 이름을 정확히 쓰면 지도 검색이 잘 돼요.</p>
+    </form>`;
+
+  $("f-title").value = c.title;
+  $("f-summary").value = c.summary;
+  $("f-region").value = c.region;
+  $("f-area").value = c.area;
+  body.querySelectorAll('input[name="with"]').forEach((x) => { x.checked = c.with.includes(x.value); });
+  body.querySelectorAll('input[name="tags"]').forEach((x) => { x.checked = c.tags.includes(x.value); });
+  $("f-budget").value = String(c.budget);
+  $("f-hours").value = c.hours || "";
+  $("f-best").value = BEST.includes(c.best) ? c.best : "";
+
+  let stopsDraft = c.stops.map((s) => ({ ...s }));
+  const readStops = () => {
+    $("stopEdit").querySelectorAll("li").forEach((li, i) => {
+      stopsDraft[i] = {
+        name: li.querySelector(".s-name").value, kind: li.querySelector(".s-kind").value,
+        stay: li.querySelector(".s-stay").value, tip: li.querySelector(".s-tip").value,
+      };
+    });
+  };
+  const paintStops = () => {
+    $("stopEdit").innerHTML = stopsDraft.map((s, i) => `
+      <li>
+        <div class="stop-edit-row">
+          <span class="num">${i + 1}</span>
+          <input class="s-name" id="s-name-${i}" maxlength="40" placeholder="장소 이름" aria-label="${i + 1}번째 장소 이름">
+          <button class="icon-btn s-del" type="button" aria-label="${i + 1}번째 장소 빼기" ${stopsDraft.length <= 2 ? "disabled" : ""}>✕</button>
+        </div>
+        <div class="stop-edit-row">
+          <select class="s-kind" id="s-kind-${i}" aria-label="종류">${Object.entries(KIND).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
+          <input class="s-stay" id="s-stay-${i}" type="number" min="0" max="600" step="10" inputmode="numeric" placeholder="분" aria-label="머무는 시간(분)">
+        </div>
+        <input class="s-tip" id="s-tip-${i}" maxlength="120" placeholder="한 줄 팁 (선택)" aria-label="팁">
+      </li>`).join("");
+    $("stopEdit").querySelectorAll("li").forEach((li, i) => {
+      const s = stopsDraft[i];
+      li.querySelector(".s-name").value = s.name || "";
+      li.querySelector(".s-kind").value = KIND[s.kind] ? s.kind : "walk";
+      li.querySelector(".s-stay").value = s.stay || "";
+      li.querySelector(".s-tip").value = s.tip || "";
+      li.querySelector(".s-del").addEventListener("click", () => { readStops(); stopsDraft.splice(i, 1); paintStops(); });
+    });
+    $("addStop").disabled = stopsDraft.length >= 6;
+  };
+  paintStops();
+  $("addStop").addEventListener("click", () => {
+    readStops();
+    if (stopsDraft.length < 6) stopsDraft.push({ name: "", kind: "food", stay: 60, tip: "" });
+    paintStops();
+    $("s-name-" + (stopsDraft.length - 1)).focus();
+  });
+
+  $("builder").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    readStops();
+    const id = old ? old.id : "u-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const raw = {
+      title: $("f-title").value, summary: $("f-summary").value, region: $("f-region").value, area: $("f-area").value,
+      with: [...body.querySelectorAll('input[name="with"]:checked')].map((x) => x.value),
+      tags: [...body.querySelectorAll('input[name="tags"]:checked')].map((x) => x.value),
+      budget: +$("f-budget").value, hours: +$("f-hours").value || 0, best: $("f-best").value,
+      stops: stopsDraft.map((s) => ({ name: (s.name || "").trim(), kind: s.kind, stay: +s.stay || 0, tip: (s.tip || "").trim() })).filter((s) => s.name),
+      at: old ? old.at : new Date().toISOString(),
+    };
+    const msg = $("builderMsg");
+    if (!raw.title.trim()) { msg.textContent = "코스 이름을 적어 주세요."; $("f-title").focus(); return; }
+    if (raw.stops.length < 2) { msg.textContent = "장소를 두 곳 이상 적어 주세요."; return; }
+    const course = cleanCourse(id, raw, shared.me);
+    const { id: _id, author: _author, source: _source, ...stored } = course;
+    const courses = { ...(shared.courseDocs[shared.me] || {}), [id]: stored };
+    msg.textContent = "";
+    if (!(await writeDoc("uc/" + shared.me, { courses }))) return;
+    toast(old ? "코스를 고쳤어요" : "코스를 올렸어요");
+    // 저장소가 알려 주기 전에도 바로 보이게 먼저 넣어 둔다
+    shared.courseDocs[shared.me] = courses;
+    shared.userCourses = [course, ...shared.userCourses.filter((x) => x.id !== id)];
+    mergeCourses();
+    renderList();
+    openCourse(id, { push: false });
+  });
+
+  $("closeBtn").addEventListener("click", closeCourse);
+  if (!sheet.open) sheet.showModal();
+  sheet.scrollTop = 0;
+  if (map) { map.remove(); map = null; }
+}
+
 /* ---------- 내 위치 ---------- */
 function toggleNear() {
   if (state.here) { state.here = null; update(); return; }
@@ -562,12 +1040,15 @@ $("themeBtn").addEventListener("click", toggleTheme);
 $("randomBtn").addEventListener("click", () => pickRandom(""));
 $("nearBtn").addEventListener("click", toggleNear);
 $("favBtn").addEventListener("click", () => { state.favOnly = !state.favOnly; update(); });
+$("userOnlyBtn").addEventListener("click", () => { state.userOnly = !state.userOnly; update(); });
+$("makeBtn").addEventListener("click", () => openBuilder());
 let qTimer = 0;
 $("q").addEventListener("input", (e) => {
   clearTimeout(qTimer);
   qTimer = setTimeout(() => { state.q = e.target.value.trim(); renderList(); }, 150);
 });
 $("sheet").addEventListener("close", () => {
+  openId = "";
   if (courseFromHash()) history.pushState(null, "", location.pathname + location.search);
 });
 $("sheet").addEventListener("click", (e) => { if (e.target === $("sheet")) closeCourse(); });
@@ -577,10 +1058,13 @@ window.addEventListener("popstate", () => {
 });
 
 (async () => {
-  state.courses = await loadCourses();
+  state.base = await loadCourses();
+  mergeCourses();
   update();
   const id = courseFromHash();
-  if (id) openCourse(id, { push: false });
+  if (id && state.courses.some((c) => c.id === id)) openCourse(id, { push: false });
+  else if (id) pendingId = id;
+  initShared().catch(() => {});
 })();
 
 if ("serviceWorker" in navigator && location.protocol === "https:") {
