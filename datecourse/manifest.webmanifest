@@ -1,0 +1,14 @@
+{
+  "name": "어디가지 코스",
+  "short_name": "어디가지",
+  "description": "전국 놀거리·데이트 코스 추천",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff7f3",
+  "theme_color": "#ff5a5f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "_note": "테스트용 가상 응답. 실제 TourAPI 데이터가 아니다.",
+  "areaBasedList2": {
+    "1": [{"contentid": "9001", "title": "가상 서울 산책 코스", "cat2": "C0115", "addr1": "서울특별시 종로구 가상로 1", "mapx": "126.98", "mapy": "37.57", "modifiedtime": "20261001000000", "firstimage": ""}],
+    "39": {"contentid": "9002", "title": "가상 제주 바다 코스", "cat2": "C0114", "addr1": "제주특별자치도 서귀포시 가상리", "mapx": "126.5", "mapy": "33.25", "modifiedtime": "20261002000000"}
+  },
+  "detailInfo2": {
+    "9001": [
+      {"subnum": "1", "subcontentid": "8102", "subname": "가상 궁궐", "subdetailoverview": "<p>조선의 &amp; 궁궐이다.</p> 한옥이 아름답다."},
+      {"subnum": "0", "subcontentid": "8101", "subname": "가상 시장", "subdetailoverview": "먹거리가 많은 시장"}
+    ],
+    "9002": [
+      {"subnum": "0", "subcontentid": "8201", "subname": "가상 해변", "subdetailoverview": "바다가 맑다."},
+      {"subnum": "1", "subcontentid": "8202", "subname": "가상 숲길", "subdetailoverview": "숲이 우거졌다."}
+    ]
+  },
+  "detailCommon2": {
+    "9001": {"overview": "서울 도심을 걷는 코스."},
+    "9002": {"overview": "제주 남쪽 바다 코스."},
+    "8101": {"mapx": "126.99", "mapy": "37.570"},
+    "8102": {"mapx": "126.991", "mapy": "37.579"},
+    "8201": {"mapx": "126.56", "mapy": "33.24"},
+    "8202": {"mapx": "0", "mapy": "0"}
+  },
+  "detailIntro2": {
+    "9001": {"taketime": "4시간"},
+    "9002": {"taketime": "1박2일"}
+  }
+}
