@@ -189,6 +189,12 @@ textarea { resize: vertical; }
 .stop-edit-row > * { min-width: 0; }
 .stop-edit-row .s-kind { flex: 1.4; }
 .stop-edit-row .s-stay { flex: 1; }
+.price-input { position: relative; flex: 1; }
+.price-input input { padding-right: 34px; font-variant-numeric: tabular-nums; }
+.price-input .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+.price-total { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; background: var(--accent-soft); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+.price-total b { font-size: 18px; color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.price { font-variant-numeric: tabular-nums; }
 .stop-edit .num {
   flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
   display: grid; place-items: center; font-weight: 700; font-size: 13px;
@@ -393,6 +399,7 @@ function card(c) {
       <span class="badge">${esc(c.region)}${c.area ? " · " + esc(c.area) : ""}</span>
       <span>${c.hours ? "약 " + c.hours + "시간" : ""}</span>
       <span>${esc(BUDGET[c.budget] || "")}</span>
+      ${totalPrice(c) !== null ? `<span class="price">💰 1인 ${won(totalPrice(c))}</span>` : ""}
       ${Number.isFinite(d) ? `<span>📍 ${d < 1 ? "1km 안" : Math.round(d) + "km"}</span>` : ""}
       ${rate ? `<span class="rate">★ ${rate.avg.toFixed(1)} (${rate.n})</span>` : ""}
       ${c.source === "user" ? `<span class="${c.author === shared.me ? "mine-badge" : ""}">${c.author === shared.me ? "내 코스" : "✏️ 직접 만든 코스"}</span>` : ""}
@@ -476,14 +483,16 @@ function openCourse(id, { push = true } = {}) {
     <p>${esc(c.summary)}</p>
     <div class="facts">
       <div class="fact"><b>${c.hours ? "약 " + c.hours + "시간" : total ? "약 " + Math.round(total / 60) + "시간" : "-"}</b><small>머무는 시간</small></div>
-      <div class="fact"><b>${esc((BUDGET[c.budget] || "-").split(" ")[0])}</b><small>${esc(BUDGET_HINT[c.budget] || "예산")}</small></div>
+      ${totalPrice(c) !== null
+        ? `<div class="fact"><b class="price">${won(totalPrice(c))}</b><small>1인 총 비용 · ${esc((BUDGET[c.budget] || "").split(" ")[0])}</small></div>`
+        : `<div class="fact"><b>${esc((BUDGET[c.budget] || "-").split(" ")[0])}</b><small>${esc(BUDGET_HINT[c.budget] || "예산")}</small></div>`}
       <div class="fact"><b>${esc(c.best || "-")}</b><small>추천 시간대</small></div>
     </div>
     <div id="map"></div>
     <ol class="stops">
       ${c.stops.map((s, i) => `
         <li data-n="${i + 1}">
-          <div class="stop-name">${esc(s.name)}<span class="stop-kind">${esc(KIND[s.kind] || "")}${s.stay ? " · " + s.stay + "분" : ""}</span></div>
+          <div class="stop-name">${esc(s.name)}<span class="stop-kind">${esc(KIND[s.kind] || "")}${s.stay ? " · " + s.stay + "분" : ""}${Number.isFinite(s.price) ? ` · <span class="price">${won(s.price)}</span>` : ""}</span></div>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
           <div class="links">${mapLinks(s)}</div>
           ${i < c.stops.length - 1 ? moveHint(s, c.stops[i + 1]) : ""}
@@ -599,6 +608,19 @@ const shared = {
 let pendingId = "";      // 공유 주소로 들어왔는데 아직 안 받은 '직접 만든 코스'
 let openId = "";         // 지금 열려 있는 코스
 
+// 1인 가격(원): 숫자가 아니거나 비어 있으면 null(안 적음), 0 은 무료
+function priceOf(v) {
+  if (v === null || v === undefined || v === "") return null;
+  const digits = String(v).replace(/[^\d]/g, "");
+  if (!digits) return null;
+  return Math.min(10000000, Number(digits));
+}
+const won = (n) => (n === 0 ? "무료" : n.toLocaleString("ko-KR") + "원");
+// 장소 가격을 하나라도 적었으면 1인 합계, 아니면 null
+function totalPrice(c) {
+  const ps = (c.stops || []).map((s) => s.price).filter((p) => Number.isFinite(p));
+  return ps.length ? ps.reduce((a, b) => a + b, 0) : null;
+}
 const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const int = (v, lo, hi) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : 0; };
 
@@ -613,6 +635,7 @@ function cleanCourse(id, c, author) {
   if (!/^u-[\w-]{4,40}$/.test(id) || !c || typeof c !== "object") return null;
   const stops = (Array.isArray(c.stops) ? c.stops : []).slice(0, 8).map((s) => ({
     name: str(s && s.name, 40), kind: KIND[s && s.kind] ? s.kind : "", stay: int(s && s.stay, 0, 600), tip: str(s && s.tip, 120),
+    price: priceOf(s && s.price),
   })).filter((s) => s.name);
   const title = str(c.title, 40);
   if (!title || stops.length < 2) return null;
@@ -874,7 +897,7 @@ function openBuilder(editId = "") {
   }
   const old = editId ? cleanCourse(editId, (shared.courseDocs[shared.me] || {})[editId], shared.me) : null;
   const c = old || { region: state.region || "서울", area: "", title: "", summary: "", with: ["date"], tags: [], budget: 2, hours: 4, best: "오후",
-    stops: [{ name: "", kind: "walk", stay: 60, tip: "" }, { name: "", kind: "cafe", stay: 60, tip: "" }] };
+    stops: [{ name: "", kind: "walk", stay: 60, tip: "", price: null }, { name: "", kind: "cafe", stay: 60, tip: "", price: null }] };
   body.innerHTML = head + `
     <form class="builder" id="builder" novalidate>
       <label class="field"><span>코스 이름 *</span><input id="f-title" maxlength="40" required placeholder="예: 비 오는 날 성수 실내 데이트"></label>
@@ -896,6 +919,7 @@ function openBuilder(editId = "") {
       </div>
       <fieldset class="field"><legend>장소 (순서대로, 2~6곳) *</legend>
         <ol class="stop-edit" id="stopEdit"></ol>
+        <div class="price-total"><span>1인 총 비용</span><b id="priceTotal" aria-live="polite"></b></div>
         <button class="btn small" type="button" id="addStop">+ 장소 추가</button>
       </fieldset>
       <p class="note" id="builderMsg" role="alert"></p>
@@ -921,6 +945,7 @@ function openBuilder(editId = "") {
       stopsDraft[i] = {
         name: li.querySelector(".s-name").value, kind: li.querySelector(".s-kind").value,
         stay: li.querySelector(".s-stay").value, tip: li.querySelector(".s-tip").value,
+        price: priceOf(li.querySelector(".s-price").value),
       };
     });
   };
@@ -936,6 +961,12 @@ function openBuilder(editId = "") {
           <select class="s-kind" id="s-kind-${i}" aria-label="종류">${Object.entries(KIND).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
           <input class="s-stay" id="s-stay-${i}" type="number" min="0" max="600" step="10" inputmode="numeric" placeholder="분" aria-label="머무는 시간(분)">
         </div>
+        <div class="stop-edit-row">
+          <label class="price-input"><span class="sr">${i + 1}번째 장소 1인 가격</span>
+            <input class="s-price" id="s-price-${i}" type="text" inputmode="numeric" maxlength="12" placeholder="1인 가격 (무료면 0)">
+            <span class="unit" aria-hidden="true">원</span>
+          </label>
+        </div>
         <input class="s-tip" id="s-tip-${i}" maxlength="120" placeholder="한 줄 팁 (선택)" aria-label="팁">
       </li>`).join("");
     $("stopEdit").querySelectorAll("li").forEach((li, i) => {
@@ -943,15 +974,29 @@ function openBuilder(editId = "") {
       li.querySelector(".s-name").value = s.name || "";
       li.querySelector(".s-kind").value = KIND[s.kind] ? s.kind : "walk";
       li.querySelector(".s-stay").value = s.stay || "";
+      const price = li.querySelector(".s-price");
+      price.value = Number.isFinite(s.price) ? s.price.toLocaleString("ko-KR") : "";
+      price.addEventListener("input", () => {
+        // 숫자만 남기고 세 자리마다 쉼표
+        const digits = price.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+        price.value = digits ? Number(digits).toLocaleString("ko-KR") : "";
+        readStops();
+        paintTotal();
+      });
       li.querySelector(".s-tip").value = s.tip || "";
       li.querySelector(".s-del").addEventListener("click", () => { readStops(); stopsDraft.splice(i, 1); paintStops(); });
     });
     $("addStop").disabled = stopsDraft.length >= 6;
+    paintTotal();
+  };
+  const paintTotal = () => {
+    const t = totalPrice({ stops: stopsDraft.map((s) => ({ price: priceOf(s.price) })) });
+    $("priceTotal").textContent = t === null ? "가격을 적으면 여기서 더해 드려요" : won(t);
   };
   paintStops();
   $("addStop").addEventListener("click", () => {
     readStops();
-    if (stopsDraft.length < 6) stopsDraft.push({ name: "", kind: "food", stay: 60, tip: "" });
+    if (stopsDraft.length < 6) stopsDraft.push({ name: "", kind: "food", stay: 60, tip: "", price: null });
     paintStops();
     $("s-name-" + (stopsDraft.length - 1)).focus();
   });
@@ -965,7 +1010,7 @@ function openBuilder(editId = "") {
       with: [...body.querySelectorAll('input[name="with"]:checked')].map((x) => x.value),
       tags: [...body.querySelectorAll('input[name="tags"]:checked')].map((x) => x.value),
       budget: +$("f-budget").value, hours: +$("f-hours").value || 0, best: $("f-best").value,
-      stops: stopsDraft.map((s) => ({ name: (s.name || "").trim(), kind: s.kind, stay: +s.stay || 0, tip: (s.tip || "").trim() })).filter((s) => s.name),
+      stops: stopsDraft.map((s) => ({ name: (s.name || "").trim(), kind: s.kind, stay: +s.stay || 0, tip: (s.tip || "").trim(), price: priceOf(s.price) })).filter((s) => s.name),
       at: old ? old.at : new Date().toISOString(),
     };
     const msg = $("builderMsg");
