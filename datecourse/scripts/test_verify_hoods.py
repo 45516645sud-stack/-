@@ -23,34 +23,36 @@ class VerifyTest(unittest.TestCase):
         self.assertTrue(r.get("retry"))
 
     def test_judge(self):
-        busy = {k: 5 for k in vh.PROBES}
-        self.assertTrue(vh.judge(busy)[0])
-        quiet = {k: 0 for k in vh.PROBES} | {"카페": 15, "노래방": 3}
-        ok, why = vh.judge(quiet)
+        # 코인노래방이나 오락실 중 하나라도 있으면 통과
+        self.assertTrue(vh.judge({"코인노래방": 1, "오락실": 0})[0])
+        self.assertTrue(vh.judge({"코인노래방": 0, "오락실": 2})[0])
+        ok, why = vh.judge({"코인노래방": 0, "오락실": 0})
         self.assertFalse(ok)
-        self.assertIn("2종류", why)
+        self.assertIn("없음", why)
 
     def test_verify_and_merge(self):
         def places(p):
             if "lat" not in p:   # 위치 찾기
                 return [{"address": "서울 관악구 신림동", "x": "126.9297", "y": "37.4842"}]
-            return [{"address": "서울", "x": "0", "y": "0"}] * (3 if p["q"] != "VR" else 0)
+            return [{"address": "서울", "x": "0", "y": "0"}] * (3 if p["q"] == "오락실" else 0)
         r = vh.verify_one(fake(places), "서울", ["sillim", "신림", "신림역", "서남부 최대 번화가"])
         self.assertTrue(r["ok"])
         self.assertEqual((r["lat"], r["lng"]), (37.4842, 126.9297))
-        local = {"hoods": {"서울": [{"id": "hongdae"}]}}
-        self.assertEqual(vh.merge(local, [r, dict(r, id="hongdae"), dict(r, id="x", ok=False)]), 1)
+        local = {"hoods": {"서울": [{"id": "hongdae", "name": "홍대", "lat": 37.5563, "lng": 126.9236}]}}
+        near = dict(r, id="near", lat=37.5565, lng=126.9240)   # 홍대와 거의 같은 자리
+        self.assertEqual(vh.merge(local, [r, dict(r, id="hongdae"), dict(r, id="x", ok=False), near]), 1)
         self.assertEqual([h["id"] for h in local["hoods"]["서울"]], ["hongdae", "sillim"])
+        self.assertIn("홍대", near["why"])
 
     def test_candidates_file(self):
         data = json.loads((vh.ROOT / "data" / "hood_candidates.json").read_text(encoding="utf-8"))
         local = json.loads((vh.ROOT / "data" / "local.json").read_text(encoding="utf-8"))
         # 통과한 후보는 local.json 에도 들어가므로, 후보끼리·local 끼리만 겹치지 않으면 된다
-        cand_ids = [c[0] for cs in data["hoods"].values() for c in cs]
+        cand_ids = [c[0] for g in ("hoods", "towns") for cs in data.get(g, {}).values() for c in cs]
         local_ids = [h["id"] for hs in local["hoods"].values() for h in hs]
         self.assertEqual(len(cand_ids), len(set(cand_ids)), "후보 id 중복")
         self.assertEqual(len(local_ids), len(set(local_ids)), "동네 id 중복")
-        for region, cs in data["hoods"].items():
+        for region, cs in list(data["hoods"].items()) + list(data.get("towns", {}).items()):
             self.assertIn(region, local["hoods"])
             for c in cs:
                 self.assertEqual(len(c), 4)
