@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { allowedOrigin, cleanQuery, cleanSize, toPhotos } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces } from "./photos.ts";
 
 Deno.test("검색어 정리", () => {
   assertEquals(cleanQuery("  서면   OO노래방  부산진구 "), "서면 OO노래방 부산진구");
@@ -36,4 +36,29 @@ Deno.test("허용한 사이트만", () => {
   assertEquals(allowedOrigin("http://localhost:8000", list), "http://localhost:8000");
   assertEquals(allowedOrigin("https://evil.example", list), null);
   assertEquals(allowedOrigin(null, list), null);
+});
+
+Deno.test("좌표·반경 정리", () => {
+  assertEquals(cleanCoord("35.158", "129.06"), { lat: 35.158, lng: 129.06 });
+  assertEquals(cleanCoord("40", "129"), null);
+  assertEquals(cleanCoord("abc", "129"), null);
+  assertEquals(cleanRadius(null), 2000);
+  assertEquals(cleanRadius("50"), 100);
+  assertEquals(cleanRadius("99999"), 20000);
+});
+
+Deno.test("가게 목록 모양 맞추기", () => {
+  const docs = [
+    { place_name: "세븐스타코인노래연습장 서면점", category_name: "가정,생활 > 여가시설 > 노래방", road_address_name: "부산 부산진구 중앙대로680번가길 47",
+      address_name: "부산 부산진구 부전동 168-94", phone: "051-000-0000", place_url: "http://place.map.kakao.com/123456", distance: "85", x: "129.06", y: "35.158" },
+    { place_name: "", x: "1", y: "2" },
+    { place_name: "좌표 없음" },
+    { place_name: "이상한 링크", place_url: "javascript:alert(1)", x: "129", y: "35", distance: "" },
+  ];
+  assertEquals(toPlaces(docs, 10), [
+    { name: "세븐스타코인노래연습장 서면점", category: "노래방", address: "부산 부산진구 중앙대로680번가길 47", phone: "051-000-0000",
+      url: "https://place.map.kakao.com/123456", distance: 85, x: 129.06, y: 35.158 },
+    { name: "이상한 링크", category: "", address: "", phone: "", url: "", distance: null, x: 129, y: 35 },
+  ]);
+  assertEquals(toPlaces(docs, 1).length, 1);
 });

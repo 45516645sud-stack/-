@@ -891,16 +891,41 @@ async function showPlaces(keyword, h, q) {
       </div>
       <small>'${esc(keyword)}'로 검색돼요.</small></div>`;
   };
+  const center = state.here || { lat: h.lat, lng: h.lng };
+  const draw = (list) => {
+    box.replaceChildren(...list.slice(0, 10).map(placeItem));
+    box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
+  };
+
+  // 1) 놀코 서버(Supabase)가 카카오 REST 키로 대신 검색: 브라우저 쪽 지도 키 설정과 상관없이 동작
+  const endpoint = photoEndpoint();
+  if (endpoint) {
+    try {
+      const url = `${endpoint}?mode=places&q=${encodeURIComponent(keyword)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=10`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
+        const list = (Array.isArray(data.places) ? data.places : []).map((p) => ({
+          place_name: p.name, category_name: p.category, road_address_name: p.address, address_name: p.address,
+          phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
+        }));
+        if (!list.length) { fallback("근처에서 찾은 가게가 없어요. 지도에서 넓게 찾아보세요."); return; }
+        draw(list);
+        return;
+      }
+    } catch { /* 아래 방법으로 */ }
+  }
+
+  // 2) 카카오 지도 JavaScript 키로 브라우저에서 검색
   const places = await kakaoPlaces();
   if (!places) { fallback("지도 앱에서 지금 영업 중인 가게를 바로 볼 수 있어요."); return; }
-  const center = state.here || { lat: h.lat, lng: h.lng };
   places.keywordSearch(keyword, (data, status) => {
     if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
     const S = window.kakao.maps.services.Status;
     if (status === S.ZERO_RESULT) { fallback("근처에서 찾은 가게가 없어요. 지도에서 넓게 찾아보세요."); return; }
     if (status !== S.OK) { fallback("가게 목록을 불러오지 못했어요."); return; }
-    box.replaceChildren(...data.slice(0, 10).map(placeItem));
-    box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
+    draw(data);
   }, {
     location: new window.kakao.maps.LatLng(center.lat, center.lng),
     radius: 2000, sort: window.kakao.maps.services.SortBy.DISTANCE, size: 10,
