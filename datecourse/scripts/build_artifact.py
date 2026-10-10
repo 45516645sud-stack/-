@@ -27,6 +27,7 @@ def build(s: str) -> str:
         assert n, pat
     s = s.replace('<style>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">\n<style>', 1)
     s = must(s, '--font: "Pretendard Variable", Pretendard,', '--font: "Noto Sans KR",')
+    s = re.sub(r'(<meta name="nolco-photo-endpoint" content=")[^"]*', r'\1', s)
     s = must(s, '.appbar { position: sticky; top: 0;', '.appbar { position: sticky; top: env(safe-area-inset-top, 0px);')
     # 아티팩트 링크는 #코스id 하나만 넘긴다
     s = must(s, '''  const url = location.href.split("#")[0] + "#c=" + encodeURIComponent(c.id);\n''', '')

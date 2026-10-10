@@ -1,4 +1,5 @@
 # AIIairs 사이트 공개: aiiairs/ 폴더를 GitHub Pages 로 올린다.
+# 놀코(datecourse/)도 같은 Pages 의 /nolco/ 아래에 함께 올린다. (Pages 는 저장소마다 하나라서)
 # 처음 한 번 저장소 Settings → Pages → Build and deployment → Source 를 "GitHub Actions" 로 바꿔야 한다.
 # 주소: https://<계정>.github.io/<저장소>/
 name: AIIairs 사이트 공개
@@ -8,6 +9,7 @@ on:
   push:
     paths:
       - "aiiairs/**"
+      - "datecourse/**"
       - ".github/workflows/aiiairs-pages.yml"
   # 일정 수집이 끝났을 때. 수집 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
   workflow_run:
@@ -49,6 +51,10 @@ jobs:
           cp -r aiiairs/img aiiairs/data _site/
           # 운영용 파일(직접 입력 원본 표)은 올리지 않는다
           rm -f _site/data/manual.csv
+          # 놀코: https://<계정>.github.io/<저장소>/nolco/
+          mkdir -p _site/nolco
+          cp datecourse/index.html datecourse/manifest.webmanifest datecourse/sw.js datecourse/icon.svg _site/nolco/
+          cp -r datecourse/data _site/nolco/
           touch _site/.nojekyll
 
       # 공식 포스터: 저장소에 쌓지 않고 사이트를 올릴 때 받는다. 받아 둔 것은 Actions 캐시에 두고 새것만 받는다.

@@ -96,6 +96,29 @@ python3 -m http.server 8000
 claude.ai 링크에서는 보안 정책 때문에 카카오에 접속할 수 없어서, 실제 가게 목록은 GitHub Pages 같은 진짜 주소에 올렸을 때만 떠요.
 별점·영업시간은 카카오 API가 주지 않아서 '가게 정보'를 눌러 카카오맵에서 봐야 해요.
 
+## 가게 사진 띄우기 (카카오 이미지 검색, 선택)
+
+가게 목록의 가게마다 '가게 이름 + 구'로 카카오 이미지 검색을 해서 사진을 최대 4장 붙여요.
+사진은 블로그 등에 올라온 검색 결과라 다른 가게 사진이 섞일 수 있고, 누르면 원래 글로 가요.
+
+카카오 **REST API 키**는 비밀 키라 화면 코드에 넣지 않고 Supabase 함수(`supabase/functions/place-photos`)에만 둬요.
+
+```bash
+supabase secrets set KAKAO_REST_API_KEY=<REST API 키>
+# 사이트 주소가 바뀌면 (쉼표로 여러 개)
+supabase secrets set ALLOWED_ORIGINS=https://45516645sud-stack.github.io,http://localhost:8000
+supabase functions deploy place-photos
+```
+
+함수 주소는 `index.html`의 `<meta name="nolco-photo-endpoint">` 에 들어 있어요. 비우면 사진 없이 동작해요.
+함수 테스트: `deno test supabase/functions/place-photos/photos_test.ts`
+
+## 사이트 공개 (GitHub Pages)
+
+`.github/workflows/aiiairs-pages.yml` 이 AIIairs 사이트와 함께 놀코를 `https://45516645sud-stack.github.io/-/nolco/` 에 올려요.
+GitHub Actions의 Pages 배포는 **기본 브랜치**에 합쳐진 뒤에만 돌아가요.
+카카오 개발자 사이트의 Web 플랫폼 사이트 도메인에는 `https://45516645sud-stack.github.io` 를 등록하세요.
+
 ## 한국관광공사 추천코스 더하기 (선택)
 
 기본 코스만으로는 시·군 단위까지 다 채우기 어려워서, 한국관광공사 **TourAPI의 추천코스(관광타입 25)** 를
