@@ -121,7 +121,7 @@ class LocalDataTest(unittest.TestCase):
 
         def fits(a, cat, name):  # index.html 의 fitsAct 와 같은 규칙
             text = f"{cat} {name}".lower()
-            has = lambda w: w.lower() in text
+            has = lambda w: all(part in text for part in w.lower().split("+"))
             return any(map(has, a["match"])) and not any(map(has, a["not"]))
 
         for a in acts.values():
@@ -141,6 +141,18 @@ class LocalDataTest(unittest.TestCase):
         self.assertTrue(fits(acts["karaoke"], *sing))
         self.assertFalse(fits(acts["karaoke"], *coin))
         self.assertFalse(fits(acts["meal"], *pub))
+        # 실제 카카오 결과에서 찾은 경우들 (scripts/check_kinds.py)
+        self.assertTrue(fits(acts["boardgame"], "가정,생활 > 여가시설 > 보드카페", "명탐정보드게임카페 광주점"))  # '주점' 오해 X
+        self.assertTrue(fits(acts["boardgame"], "가정,생활 > 여가시설 > 만화방 > 만화카페 > 벌툰", "벌툰 인더스트리얼 안동남문로점"))
+        self.assertTrue(fits(acts["manga"], "가정,생활 > 여가시설 > 만화방 > 만화카페 > 놀숲", "놀숲 안동점"))
+        self.assertTrue(fits(acts["cafe"], "음식점 > 카페 > 테마카페 > 디저트카페 > 설빙", "설빙 안동옥동점"))
+        self.assertFalse(fits(acts["cafe"], "가정,생활 > 여가시설 > 만화방 > 만화카페 > 벌툰", "벌툰"))
+        self.assertTrue(fits(acts["coinsing"], "가정,생활 > 여가시설 > 노래방", "동띵동COIN노래연습장"))
+        self.assertFalse(fits(acts["karaoke"], "가정,생활 > 유흥시설 > 유흥주점", "세연가요방"))
+        self.assertTrue(fits(acts["arcade"], "가정,생활 > 여가시설 > 게임방,PC방", "궁전경품오락실"))
+        self.assertTrue(fits(acts["class"], "문화,예술 > 미술,공예", "글라앙글라"))
+        self.assertFalse(fits(acts["pc"], "가정,생활 > 여가시설 > 게임방,PC방", "VR스카이가상현실체험"))
+        self.assertTrue(fits(acts["bowling"], "스포츠,레저 > 볼링 > 볼링장", "K1볼링장 전주점"))
 
 
 if __name__ == "__main__":

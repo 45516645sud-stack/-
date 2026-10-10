@@ -27,7 +27,7 @@ BRANDS = ["벌툰", "놀숲", "만화방", "놀숲 만화카페", "레드버튼"
 
 def fits(a: dict, cat: str, name: str) -> bool:
     text = f"{cat} {name}".lower()
-    has = lambda w: w.lower() in text  # noqa: E731
+    has = lambda w: all(part in text for part in w.lower().split("+"))  # noqa: E731
     return any(map(has, a.get("match", []))) and not any(map(has, a.get("not", [])))
 
 
@@ -51,7 +51,7 @@ def main(argv=None) -> int:
         got, seen = [], set()
         for kw in kws:
             for page in (1, 2):
-                ps = places(f"{h['q']} {kw}", h, page)
+                ps = places(kw, h, page)
                 for p in ps:
                     k = (p["name"], p["address"])
                     if k not in seen:
