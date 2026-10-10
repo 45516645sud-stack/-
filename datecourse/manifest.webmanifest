@@ -1,7 +1,7 @@
 {
-  "name": "어디가지 코스",
-  "short_name": "어디가지",
-  "description": "전국 놀거리·데이트 코스 추천",
+  "name": "놀코",
+  "short_name": "놀코",
+  "description": "놀거리 코스: 전국 놀거리·데이트 코스와 우리 동네 놀거리",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",

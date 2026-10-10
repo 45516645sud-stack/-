@@ -1,4 +1,4 @@
-// 어디가지 코스 — 오프라인에서도 마지막으로 본 코스를 열 수 있게 한다.
+// 놀코 — 오프라인에서도 마지막으로 본 코스를 열 수 있게 한다.
 const CACHE = "datecourse-v1";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon.svg", "data/courses.json"];
 
