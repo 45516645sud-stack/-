@@ -5,6 +5,7 @@ export type KakaoImageDoc = {
   image_url?: string;
   doc_url?: string;
   display_sitename?: string;
+  collection?: string;
 };
 
 export type Photo = { thumb: string; link: string; site: string };
@@ -28,12 +29,23 @@ export function cleanSize(raw: string | null): number {
 const isHttps = (u: unknown): u is string => typeof u === "string" && /^https:\/\//.test(u);
 const isHttp = (u: unknown): u is string => typeof u === "string" && /^https?:\/\//.test(u);
 
-/** https 썸네일과 http(s) 출처가 있는 것만, 같은 썸네일은 한 번만 */
+// 뉴스·관공서 사진은 사건 사고·단속 사진이 많아 가게 이미지를 해칠 수 있어 뺀다 (블로그·카페 후기 위주로)
+const NEWS_SITE = /뉴스|news|일보|신문|방송|기자|타임스|타임즈|times|press|헤럴드|투데이|매일|경제|KBS|MBC|SBS|YTN|JTBC|MBN|채널A|TV조선|연합|뉴시스|노컷|시청|군청|구청|도청|경찰|소방|정부|공사|위키/i;
+const NEWS_URL = /news|v\.daum\.net|\/article|\.go\.kr|\.or\.kr|police|wiki/i;
+
+/** 가게 사진으로 쓰기 괜찮은 출처인지 */
+export function goodSource(d: KakaoImageDoc): boolean {
+  if (d.collection === "news") return false;
+  if (NEWS_SITE.test(String(d.display_sitename ?? ""))) return false;
+  return !NEWS_URL.test(String(d.doc_url ?? ""));
+}
+
+/** https 썸네일과 http(s) 출처가 있는 것만, 뉴스·관공서 사진은 빼고, 같은 썸네일은 한 번만 */
 export function toPhotos(docs: KakaoImageDoc[], size: number): Photo[] {
   const seen = new Set<string>();
   const out: Photo[] = [];
   for (const d of docs) {
-    if (!isHttps(d.thumbnail_url) || !isHttp(d.doc_url) || seen.has(d.thumbnail_url)) continue;
+    if (!isHttps(d.thumbnail_url) || !isHttp(d.doc_url) || seen.has(d.thumbnail_url) || !goodSource(d)) continue;
     seen.add(d.thumbnail_url);
     out.push({ thumb: d.thumbnail_url, link: d.doc_url, site: String(d.display_sitename ?? "").slice(0, 40) });
     if (out.length >= size) break;
@@ -65,6 +77,7 @@ export type KakaoPlaceDoc = {
 export type Place = {
   name: string;
   category: string;
+  path: string;
   address: string;
   phone: string;
   url: string;
@@ -101,6 +114,7 @@ export function toPlaces(docs: KakaoPlaceDoc[], size: number): Place[] {
     out.push({
       name,
       category: String(d.category_name ?? "").split(">").pop()!.trim().slice(0, 30),
+      path: String(d.category_name ?? "").slice(0, 80), // 전체 분류 (예: 음식점 > 카페 > 테마카페 > 보드카페) — 앱이 종류를 가려낼 때 씀
       address: String(d.road_address_name || d.address_name || "").slice(0, 80),
       phone: String(d.phone ?? "").replace(/[^\d-]/g, "").slice(0, 20),
       url,

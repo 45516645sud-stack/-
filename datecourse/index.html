@@ -922,7 +922,7 @@ function openActivity(actId) {
       <a class="map-link" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 보기</a>
     </div>
     <div class="places" id="placeList" aria-live="polite"><p class="note">가게를 찾는 중이에요…</p></div>
-    <p class="note">가격은 대략이에요. 영업시간·실제 가격은 가게 페이지에서 확인해 주세요. 사진은 카카오 이미지 검색 결과(블로그 등)라 다른 가게 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
+    <p class="note">가격은 대략이에요. 영업시간·실제 가격은 가게 페이지에서 확인해 주세요. 사진은 카카오 이미지 검색 결과(블로그·카페 후기, 뉴스·관공서 사진은 뺌)라 다른 가게 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
   $("closeBtn").addEventListener("click", closeCourse);
   if ($("actCourses")) $("actCourses").addEventListener("click", () => {
     state.act = actId;
@@ -934,7 +934,7 @@ function openActivity(actId) {
   if (!sheet.open) sheet.showModal();
   sheet.scrollTop = 0;
   if (map) { map.remove(); map = null; }
-  showPlaces(keyword, h, q);
+  showPlaces(keyword, h, q, a);
 }
 
 /* 실제 가게 찾기: 카카오 지도 키가 있으면 앱 안에서 검색, 없으면 지도 앱으로 연결 */
@@ -953,7 +953,16 @@ function kakaoPlaces() {
   return kakaoReady;
 }
 
-async function showPlaces(keyword, h, q) {
+/* 놀거리 종류에 맞는 가게인지: 카카오 분류(예: 음식점 > 카페 > 테마카페 > 보드카페)와 가게 이름으로 가려낸다.
+   match 중 하나는 있어야 하고, not 중 하나라도 있으면 뺀다 (예: 보드게임카페에 호프, 디저트 카페에 보드게임카페) */
+function fitsAct(a, p) {
+  if (!a || !Array.isArray(a.match)) return true;
+  const text = `${p.category_name || ""} ${p.place_name || ""}`.toLowerCase();
+  const has = (w) => text.includes(String(w).toLowerCase());
+  return a.match.some(has) && !(a.not || []).some(has);
+}
+
+async function showPlaces(keyword, h, q, a) {
   const box = $("placeList");
   const fallback = (why) => {
     if (!$("placeList")) return;
@@ -966,7 +975,19 @@ async function showPlaces(keyword, h, q) {
       <small>'${esc(keyword)}'로 검색돼요.</small></div>`;
   };
   const center = state.here || { lat: h.lat, lng: h.lng };
+  const pick = (list) => {
+    const seen = new Set();
+    return list.filter((p) => {
+      const k = `${p.place_name}|${p.road_address_name || p.address_name}`;
+      if (seen.has(k) || !fitsAct(a, p)) return false;
+      seen.add(k);
+      return true;
+    });
+  };
+  const empty = () => fallback(`근처에서 '${esc(a ? a.name : keyword)}' 가게를 못 찾았어요. 지도에서 넓게 찾아보세요.`);
   const draw = (list) => {
+    list = pick(list);
+    if (!list.length) { empty(); return; }
     box.replaceChildren(...list.slice(0, 10).map(placeItem));
     box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
   };
@@ -975,16 +996,20 @@ async function showPlaces(keyword, h, q) {
   const endpoint = photoEndpoint();
   if (endpoint) {
     try {
-      const url = `${endpoint}?mode=places&q=${encodeURIComponent(keyword)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=10`;
-      const res = await fetch(url);
-      if (res.ok) {
+      const get = async (page) => {
+        const res = await fetch(`${endpoint}?mode=places&q=${encodeURIComponent(keyword)}&lat=${center.lat}&lng=${center.lng}&radius=2000&size=15&page=${page}`);
+        if (!res.ok) return null;
         const data = await res.json();
-        if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
-        const list = (Array.isArray(data.places) ? data.places : []).map((p) => ({
-          place_name: p.name, category_name: p.category, road_address_name: p.address, address_name: p.address,
+        return (Array.isArray(data.places) ? data.places : []).map((p) => ({
+          place_name: p.name, category_name: p.path || p.category, road_address_name: p.address, address_name: p.address,
           phone: p.phone, place_url: p.url, distance: p.distance === null || p.distance === undefined ? "" : String(p.distance), x: p.x, y: p.y,
         }));
-        if (!list.length) { fallback("근처에서 찾은 가게가 없어요. 지도에서 넓게 찾아보세요."); return; }
+      };
+      let list = await get(1);
+      if (list) {
+        // 종류가 다른 가게를 빼고 나면 적을 수 있어 한 쪽 더
+        if (list.length >= 15 && pick(list).length < 5) list = list.concat((await get(2)) || []);
+        if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
         draw(list);
         return;
       }
@@ -997,12 +1022,12 @@ async function showPlaces(keyword, h, q) {
   places.keywordSearch(keyword, (data, status) => {
     if (!$("placeList") || box !== $("placeList")) return;   // 그사이 다른 화면으로 바뀜
     const S = window.kakao.maps.services.Status;
-    if (status === S.ZERO_RESULT) { fallback("근처에서 찾은 가게가 없어요. 지도에서 넓게 찾아보세요."); return; }
+    if (status === S.ZERO_RESULT) { empty(); return; }
     if (status !== S.OK) { fallback("가게 목록을 불러오지 못했어요."); return; }
     draw(data);
   }, {
     location: new window.kakao.maps.LatLng(center.lat, center.lng),
-    radius: 2000, sort: window.kakao.maps.services.SortBy.DISTANCE, size: 10,
+    radius: 2000, sort: window.kakao.maps.services.SortBy.DISTANCE, size: 15,
   });
 }
 
@@ -1032,6 +1057,8 @@ const photoCache = new Map();
 function photoEndpoint() {
   return ((document.querySelector('meta[name="nolco-photo-endpoint"]') || {}).content || "").trim();
 }
+const NEWS_SITE = /뉴스|news|일보|신문|방송|기자|타임스|타임즈|times|press|헤럴드|투데이|매일|경제|KBS|MBC|SBS|YTN|JTBC|MBN|채널A|TV조선|연합|뉴시스|노컷|시청|군청|구청|도청|경찰|소방|정부|공사|위키/i;
+const NEWS_URL = /news|v\.daum\.net|\/article|\.go\.kr|\.or\.kr|police|wiki/i;
 async function addPhotos(el, p) {
   const endpoint = photoEndpoint();
   if (!endpoint || !p.place_name) return;
@@ -1044,7 +1071,9 @@ async function addPhotos(el, p) {
         .then((d) => (Array.isArray(d.photos) ? d.photos : []))
         .catch(() => []));
     }
-    const photos = (await photoCache.get(q)).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link));
+    // 뉴스·관공서 사진(사건·단속 사진 등)은 가게 이미지를 해칠 수 있어 빼고 블로그·카페 후기 위주로 (서버도 같은 규칙)
+    const photos = (await photoCache.get(q)).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link)
+      && !NEWS_SITE.test(x.site || "") && !NEWS_URL.test(x.link));
     if (!photos.length || !el.isConnected) return;
     const strip = document.createElement("div");
     strip.className = "photos";
