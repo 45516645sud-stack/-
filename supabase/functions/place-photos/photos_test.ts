@@ -56,9 +56,20 @@ Deno.test("가게 목록 모양 맞추기", () => {
     { place_name: "이상한 링크", place_url: "javascript:alert(1)", x: "129", y: "35", distance: "" },
   ];
   assertEquals(toPlaces(docs, 10), [
-    { name: "세븐스타코인노래연습장 서면점", category: "노래방", address: "부산 부산진구 중앙대로680번가길 47", phone: "051-000-0000",
+    { name: "세븐스타코인노래연습장 서면점", category: "노래방", path: "가정,생활 > 여가시설 > 노래방", address: "부산 부산진구 중앙대로680번가길 47", phone: "051-000-0000",
       url: "https://place.map.kakao.com/123456", distance: 85, x: 129.06, y: 35.158 },
-    { name: "이상한 링크", category: "", address: "", phone: "", url: "", distance: null, x: 129, y: 35 },
+    { name: "이상한 링크", category: "", path: "", address: "", phone: "", url: "", distance: null, x: 129, y: 35 },
   ]);
   assertEquals(toPlaces(docs, 1).length, 1);
+});
+
+Deno.test("뉴스·관공서 사진은 빼기", () => {
+  const docs = [
+    { thumbnail_url: "https://t1.daumcdn.net/n1", doc_url: "https://www.yna.co.kr/view/1", display_sitename: "연합뉴스" },
+    { thumbnail_url: "https://t1.daumcdn.net/n2", doc_url: "https://v.daum.net/v/2", display_sitename: "다음" },
+    { thumbnail_url: "https://t1.daumcdn.net/n3", doc_url: "https://blog.naver.com/3", collection: "news" },
+    { thumbnail_url: "https://t1.daumcdn.net/n4", doc_url: "https://www.gumi.go.kr/4", display_sitename: "구미시청" },
+    { thumbnail_url: "https://t1.daumcdn.net/ok", doc_url: "https://blog.naver.com/5", display_sitename: "네이버블로그", collection: "blog" },
+  ];
+  assertEquals(toPhotos(docs, 4).map((p) => p.thumb), ["https://t1.daumcdn.net/ok"]);
 });

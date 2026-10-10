@@ -3,8 +3,8 @@ import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
 // 카카오 REST API 키는 비밀이라 앱 화면에 둘 수 없어서, 이 함수가 대신 카카오에 물어본다.
 //   사진: GET ?q=<가게 이름 + 구>&size=4            → { photos: [{ thumb, link, site }] }
-//   가게: GET ?mode=places&q=<동네 + 놀거리>&lat=&lng=&radius=2000&size=10
-//                                                    → { places: [{ name, category, address, phone, url, distance, x, y }] }
+//   가게: GET ?mode=places&q=<동네 + 놀거리>&lat=&lng=&radius=2000&size=10[&page=2]
+//                                                    → { places: [{ name, category, path, address, phone, url, distance, x, y }] }
 // 사진은 썸네일과 출처(블로그 등) 링크뿐이다. 원본 사진은 내려주지 않는다.
 
 const KAKAO_IMAGE_SEARCH = "https://dapi.kakao.com/v2/search/image";
@@ -53,6 +53,8 @@ Deno.serve(async (req) => {
         api.searchParams.set("radius", String(cleanRadius(url.searchParams.get("radius"))));
         api.searchParams.set("sort", "distance");
       }
+      const page = Math.round(Number(url.searchParams.get("page") ?? 1));
+      if (page >= 2 && page <= 5) api.searchParams.set("page", String(page));
       const res = await fetch(api, { headers: { Authorization: `KakaoAK ${key}` } });
       if (!res.ok) {
         console.warn("kakao place search failed:", res.status, await res.text());
@@ -72,7 +74,7 @@ Deno.serve(async (req) => {
     const api = new URL(KAKAO_IMAGE_SEARCH);
     api.searchParams.set("query", q);
     api.searchParams.set("sort", "accuracy");
-    api.searchParams.set("size", String(Math.min(20, size * 3))); // 걸러낼 것을 생각해 넉넉히
+    api.searchParams.set("size", String(Math.min(30, size * 5))); // 걸러낼 것을 생각해 넉넉히
     const res = await fetch(api, { headers: { Authorization: `KakaoAK ${key}` } });
     if (!res.ok) {
       console.warn("kakao image search failed:", res.status, await res.text());

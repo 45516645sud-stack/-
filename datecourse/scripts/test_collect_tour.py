@@ -114,6 +114,34 @@ class LocalDataTest(unittest.TestCase):
             self.assertTrue(set(t["stops"]) <= acts, t["id"])
             self.assertIn(t["budget"], (0, 1, 2, 3))
 
+    def test_activity_kinds(self):
+        """놀거리마다 가게 종류를 가려낼 규칙이 있고, 서로 헷갈리기 쉬운 가게를 제대로 나눈다."""
+        data = json.loads((ct.ROOT / "data" / "local.json").read_text(encoding="utf-8"))
+        acts = {a["id"]: a for a in data["activities"]}
+
+        def fits(a, cat, name):  # index.html 의 fitsAct 와 같은 규칙
+            text = f"{cat} {name}".lower()
+            has = lambda w: w.lower() in text
+            return any(map(has, a["match"])) and not any(map(has, a["not"]))
+
+        for a in acts.values():
+            self.assertTrue(a["match"], a["id"])
+        board = ("음식점 > 카페 > 테마카페 > 보드카페", "레드버튼")
+        dessert = ("음식점 > 카페 > 디저트카페", "설빙")
+        pub = ("음식점 > 술집 > 호프,요리주점", "구미펍코로나")
+        coin = ("가정,생활 > 여가시설 > 노래방", "세븐스타코인노래연습장")
+        sing = ("가정,생활 > 여가시설 > 노래방", "럭셔리 노래방")
+        self.assertTrue(fits(acts["boardgame"], *board))
+        self.assertFalse(fits(acts["boardgame"], *pub))
+        self.assertFalse(fits(acts["boardgame"], *dessert))
+        self.assertTrue(fits(acts["cafe"], *dessert))
+        self.assertFalse(fits(acts["cafe"], *board))
+        self.assertTrue(fits(acts["coinsing"], *coin))
+        self.assertFalse(fits(acts["coinsing"], *sing))
+        self.assertTrue(fits(acts["karaoke"], *sing))
+        self.assertFalse(fits(acts["karaoke"], *coin))
+        self.assertFalse(fits(acts["meal"], *pub))
+
 
 if __name__ == "__main__":
     unittest.main()
