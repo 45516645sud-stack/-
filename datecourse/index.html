@@ -15,7 +15,8 @@
    어디가지 코스 — 전국 놀거리·데이트 코스 추천
    색은 :root 토큰만 쓰고, 다크 모드는 같은 토큰을 바꿔 끼운다.
 ------------------------------------------------------------------- */
-/* 흰 바탕 위에 노랑을 넓게: 머리말은 노랑 띠, 카드는 흰 종이, 선택된 것은 진한 노랑 */
+/* 흰 바탕 위에 노랑을 넓게: 머리말은 노랑 띠, 카드는 흰 종이, 선택된 것은 진한 노랑.
+   컴퓨터 설정과 상관없이 늘 밝은 화면으로 열고, 어둡게는 버튼으로만 바꾼다. */
 :root {
   --bg: #fffbea;
   --surface: #ffffff;
@@ -31,13 +32,6 @@
   --shadow: 0 6px 22px rgba(120, 90, 0, .10);
   --radius: 18px;
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #17150b; --surface: #221f12; --ink: #f8f2da; --muted: #b5aa82;
-    --line: #3a341a; --accent: #ffd43b; --accent-ink: #231e08; --accent-text: #ffd43b; --accent-soft: #3b3312;
-    --hero: #2f2a10; --chip: #2c2812; --shadow: 0 6px 22px rgba(0, 0, 0, .35); color-scheme: dark;
-  }
 }
 :root[data-theme="dark"] {
   --bg: #17150b; --surface: #221f12; --ink: #f8f2da; --muted: #b5aa82;
@@ -215,7 +209,7 @@ const KIND = {
   walk: "🚶 산책", cafe: "☕ 카페", food: "🍜 먹거리", view: "🌄 전망", culture: "🏛️ 문화",
   activity: "🎢 놀거리", shop: "🛍️ 쇼핑", beach: "🏖️ 바다", night: "🌙 밤", stay: "🛏️ 숙소",
 };
-const STORE = { fav: "datecourse.fav", theme: "datecourse.theme" };
+const STORE = { fav: "datecourse.fav", theme: "datecourse.theme.v2" };
 
 /* ---------- 상태 ---------- */
 const state = {
@@ -551,8 +545,7 @@ function applyTheme(theme) {
   else document.documentElement.removeAttribute("data-theme");
 }
 function toggleTheme() {
-  const dark = document.documentElement.getAttribute("data-theme") === "dark" ||
-    (!document.documentElement.hasAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
   const next = dark ? "light" : "dark";
   applyTheme(next);
   save(STORE.theme, next);
