@@ -110,7 +110,7 @@ supabase secrets set ALLOWED_ORIGINS=https://45516645sud-stack.github.io,http://
 supabase functions deploy place-photos
 ```
 
-함수 주소는 `index.html`의 `<meta name="nolco-photo-endpoint">` 에 들어 있어요. 비우면 사진 없이 동작해요.
+함수 주소는 `index.html`의 `<meta name="nolco-photo-endpoint">` 에 들어 있어요. 지금 올라간 함수 이름은 `bright-action`이에요(웹 편집기로 올리면서 자동으로 붙은 이름, 코드는 `place-photos` 폴더와 같음). 비우면 사진 없이 동작해요.
 함수 테스트: `deno test supabase/functions/place-photos/photos_test.ts`
 
 ## 사이트 공개 (GitHub Pages)
