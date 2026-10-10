@@ -153,6 +153,10 @@ class LocalDataTest(unittest.TestCase):
         self.assertTrue(fits(acts["class"], "문화,예술 > 미술,공예", "글라앙글라"))
         self.assertFalse(fits(acts["pc"], "가정,생활 > 여가시설 > 게임방,PC방", "VR스카이가상현실체험"))
         self.assertTrue(fits(acts["bowling"], "스포츠,레저 > 볼링 > 볼링장", "K1볼링장 전주점"))
+        self.assertTrue(fits(acts["arcade"], "가정,생활 > 여가시설 > 뽑기방", "뽑아핑 대전은행점"))  # '은행' 오해 X
+        self.assertFalse(fits(acts["arcade"], "금융,보험 > 금융서비스 > 은행 > ATM", "하나은행365 삼산대가리오락실"))
+        self.assertTrue(fits(acts["escape"], "음식점 > 카페 > 테마카페", "룸즈에이 부산서면점"))
+        self.assertTrue(fits(acts["class"], "가정,생활 > 생활용품점", "오로라캔들공방"))
 
 
 if __name__ == "__main__":
