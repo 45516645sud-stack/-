@@ -122,6 +122,9 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .act:hover { background: var(--fill); }
 .act .ic { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--fill); color: var(--ink); }
 .act .ic svg.i { width: 26px; height: 26px; stroke-width: 1.7; }
+.act .ic svg.il { width: 40px; height: 40px; }
+.act:hover .ic svg.il, .act:focus-visible .ic svg.il { transform: translateY(-2px) rotate(-4deg); }
+.act .ic svg.il { transition: transform .15s ease; }
 .act span:last-child { word-break: keep-all; }
 
 /* 동네 고르기 */
@@ -244,6 +247,7 @@ main.wrap { padding-bottom: calc(var(--tab-h) + 28px + env(safe-area-inset-botto
   display: grid; place-items: center; background: var(--t-base); color: var(--t-base-i);
 }
 .thumb svg.i { width: 30px; height: 30px; stroke-width: 1.7; }
+.thumb svg.il { width: 56px; height: 56px; }
 .thumb.sea { background: var(--t-sea); color: var(--t-sea-i); }
 .thumb.night { background: var(--t-night); color: var(--t-night-i); }
 .thumb.green { background: var(--t-green); color: var(--t-green-i); }
@@ -582,6 +586,79 @@ function icon(name, extra = "") {
   const fill = FILLED.has(name) || extra.includes("fillc");
   return `<svg class="i ${fill ? "fillc" : ""} ${extra}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[name]}"/></svg>`;
 }
+/* 색깔 그림 (48×48): 놀거리·코스 썸네일용. 앱 틀(검색·닫기 등)은 선 아이콘 그대로 */
+const C = { y: "#FFC83D", yd: "#F2A900", yl: "#FFE59A", yp: "#FFF3C4", r: "#FF6B5B", rl: "#FFA69C", m: "#2EC4A6", md: "#22A88E", ml: "#7ED9A8",
+  s: "#5BB8FF", sd: "#3E9BE0", sl: "#9AD3FF", n: "#2D3A4A", p: "#FF9EB5", pd: "#FF7A99", b: "#A0673B", bl: "#E8955A", bd: "#C9743E",
+  v: "#8B7CF6", vl: "#B3A8FF", g: "#8C95A3", gl: "#E6E8EC", w: "#FFFFFF", skin: "#FFD9B8" };
+const ILLU = {
+  coinsing: `<circle cx="35" cy="13" r="8.5" fill="${C.y}"/><circle cx="35" cy="13" r="5.8" fill="${C.yd}"/><rect x="34" y="9.5" width="2" height="7" rx="1" fill="${C.yl}"/>
+    <g transform="rotate(-25 19 30)"><rect x="15.5" y="26" width="7" height="17" rx="3.5" fill="${C.n}"/><rect x="14.5" y="25" width="9" height="4" rx="2" fill="${C.g}"/><circle cx="19" cy="18" r="9" fill="${C.r}"/><circle cx="16" cy="15" r="3" fill="${C.rl}"/></g>`,
+  karaoke: `<path d="M34 9v15" stroke="${C.v}" stroke-width="3" stroke-linecap="round"/><path d="M34 8l8 3v4.5l-8-3z" fill="${C.v}"/><circle cx="30.5" cy="24" r="4.5" fill="${C.v}"/>
+    <g transform="rotate(-25 19 30)"><rect x="15.5" y="26" width="7" height="17" rx="3.5" fill="${C.n}"/><rect x="14.5" y="25" width="9" height="4" rx="2" fill="${C.g}"/><circle cx="19" cy="18" r="9" fill="${C.s}"/><circle cx="16" cy="15" r="3" fill="${C.sl}"/></g>`,
+  boardgame: `<g transform="rotate(-14 16 22)"><rect x="5" y="11" width="22" height="22" rx="6" fill="${C.r}"/><circle cx="11" cy="17" r="2.2" fill="${C.w}"/><circle cx="16" cy="22" r="2.2" fill="${C.w}"/><circle cx="21" cy="27" r="2.2" fill="${C.w}"/></g>
+    <g transform="rotate(12 33 31)"><rect x="22" y="20" width="22" height="22" rx="6" fill="${C.y}"/><circle cx="28" cy="26" r="2.2" fill="${C.n}"/><circle cx="38" cy="26" r="2.2" fill="${C.n}"/><circle cx="28" cy="36" r="2.2" fill="${C.n}"/><circle cx="38" cy="36" r="2.2" fill="${C.n}"/></g>`,
+  escape: `<path d="M13 22v-6a8 8 0 0 1 16 0v6" fill="none" stroke="${C.g}" stroke-width="4"/><rect x="8" y="20" width="26" height="22" rx="6" fill="${C.y}"/><rect x="8" y="20" width="26" height="5" rx="2.5" fill="${C.yd}" opacity=".5"/>
+    <circle cx="21" cy="30" r="3.2" fill="${C.n}"/><rect x="19.8" y="31" width="2.4" height="6" rx="1.2" fill="${C.n}"/>
+    <circle cx="39" cy="14" r="5" fill="none" stroke="${C.r}" stroke-width="3.2"/><path d="M39 19v12M39 25h3.5M39 29.5h3" stroke="${C.r}" stroke-width="3.2" stroke-linecap="round"/>`,
+  bowling: `<path d="M32 5c3 0 4.2 3 3.6 6-.4 2-1.6 3.2-1.6 4.8 0 2 4.5 5.2 4.5 12.5 0 6.5-2.8 14.2-6.5 14.2s-6.5-7.7-6.5-14.2c0-7.3 4.5-10.5 4.5-12.5 0-1.6-1.2-2.8-1.6-4.8C27.8 8 29 5 32 5z" fill="${C.w}" stroke="${C.gl}" stroke-width="1.5"/>
+    <path d="M29.2 15h5.6M28.8 18h6.4" stroke="${C.r}" stroke-width="2"/><circle cx="16" cy="32" r="11.5" fill="${C.s}"/><circle cx="11.5" cy="36" r="3" fill="${C.sl}"/>
+    <circle cx="13.5" cy="27.5" r="1.8" fill="${C.n}"/><circle cx="18.5" cy="26.5" r="1.8" fill="${C.n}"/><circle cx="17" cy="31.5" r="1.8" fill="${C.n}"/>`,
+  billiards: `<circle cx="12" cy="13" r="6.5" fill="${C.r}"/><circle cx="10" cy="11" r="2" fill="${C.rl}"/><path d="M4 45l15-15" stroke="${C.b}" stroke-width="3.5" stroke-linecap="round"/><path d="M16 33l3-3" stroke="${C.s}" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="31" cy="23" r="13" fill="${C.n}"/><circle cx="26" cy="17" r="2.8" fill="#56657A"/><circle cx="31" cy="23" r="6" fill="${C.w}"/>
+    <circle cx="31" cy="21" r="1.7" fill="none" stroke="${C.n}" stroke-width="1.4"/><circle cx="31" cy="24.8" r="2.1" fill="none" stroke="${C.n}" stroke-width="1.4"/>`,
+  arcade: `<rect x="7" y="27" width="34" height="15" rx="5" fill="${C.v}"/><rect x="7" y="25" width="34" height="10" rx="5" fill="${C.vl}"/><rect x="21.5" y="12" width="5" height="18" rx="2.5" fill="${C.n}"/>
+    <circle cx="24" cy="11" r="7.5" fill="${C.r}"/><circle cx="21.5" cy="8.5" r="2.2" fill="${C.rl}"/><circle cx="13.5" cy="30" r="2.8" fill="${C.m}"/><circle cx="34.5" cy="30" r="2.8" fill="${C.y}"/>`,
+  manga: `<path d="M4 20v22c7-2 14-1 20 3 6-4 13-5 20-3V20" fill="${C.r}"/><path d="M7 18c6-1.5 11.5-.5 17 3v21c-5.5-3.5-11-4.5-17-3z" fill="${C.w}" stroke="${C.gl}" stroke-width="1.2"/>
+    <path d="M41 18c-6-1.5-11.5-.5-17 3v21c5.5-3.5 11-4.5 17-3z" fill="${C.w}" stroke="${C.gl}" stroke-width="1.2"/><path d="M11 26h8M11 30h8M29 26h8M29 30h6" stroke="${C.gl}" stroke-width="2" stroke-linecap="round"/>
+    <path d="M27 3h15a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-8l-4.5 3.5V15H27a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="${C.y}"/><circle cx="30" cy="9" r="1.4" fill="${C.n}"/><circle cx="34.5" cy="9" r="1.4" fill="${C.n}"/><circle cx="39" cy="9" r="1.4" fill="${C.n}"/>`,
+  photo: `<rect x="15" y="9" width="14" height="8" rx="3" fill="${C.pd}"/><rect x="5" y="14" width="38" height="27" rx="8" fill="${C.p}"/><rect x="33" y="18" width="6" height="3.4" rx="1.7" fill="${C.y}"/>
+    <circle cx="24" cy="28" r="9.5" fill="${C.n}"/><circle cx="24" cy="28" r="5.5" fill="${C.s}"/><circle cx="21.8" cy="25.8" r="2" fill="${C.w}"/>`,
+  class: `<ellipse cx="24" cy="42" rx="17" ry="3.5" fill="${C.g}"/><path d="M18 9h12v4c0 2.5 7 5 7 14 0 9-5.5 14-13 14s-13-5-13-14c0-9 7-11.5 7-14z" fill="${C.bl}"/>
+    <rect x="15.5" y="6" width="17" height="5.5" rx="2.75" fill="${C.bd}"/><path d="M12 27h24" stroke="${C.y}" stroke-width="3"/><circle cx="18" cy="21" r="2" fill="${C.w}" opacity=".5"/>`,
+  climbing: `<rect x="8" y="4" width="32" height="40" rx="7" fill="${C.m}"/><path d="M24 4v40" stroke="${C.w}" stroke-width="1.6" stroke-dasharray="3 3" opacity=".7"/>
+    <circle cx="15.5" cy="11.5" r="3.6" fill="${C.y}"/><path d="M29 14l4.5-2 2 4-4.5 2z" fill="${C.r}"/><circle cx="18.5" cy="24" r="3.2" fill="${C.v}"/><circle cx="32.5" cy="29" r="3.8" fill="${C.y}"/><path d="M12 35l5-1 1 4.5-5 1z" fill="${C.p}"/>`,
+  screenbase: `<path d="M33 6.5l5 4L19 34.5l-4.5 1.5-1.5-1.5 1-4.5z" fill="${C.bd}"/><path d="M15 31l3 3" stroke="${C.n}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="32" cy="33" r="10.5" fill="${C.w}" stroke="${C.gl}" stroke-width="1.5"/><path d="M25.5 26.5c3 2.5 3 10.5 0 13M38.5 26.5c-3 2.5-3 10.5 0 13" fill="none" stroke="${C.r}" stroke-width="1.8"/>`,
+  pc: `<rect x="5" y="6" width="38" height="26" rx="5" fill="${C.n}"/><rect x="8.5" y="9.5" width="31" height="19" rx="2.5" fill="${C.s}"/><path d="M12 26l6.5-7.5 5 5 3.5-3.5 7 6z" fill="${C.m}"/><circle cx="32" cy="14.5" r="2.6" fill="${C.y}"/>
+    <rect x="21" y="32" width="6" height="4.5" fill="${C.g}"/><rect x="8" y="37" width="32" height="6.5" rx="2.5" fill="${C.gl}"/><path d="M12 40.2h24" stroke="${C.g}" stroke-width="1.6" stroke-dasharray="2 2"/>`,
+  vr: `<path d="M7 24c0-9 34-9 34 0" stroke="${C.n}" stroke-width="3" fill="none"/><rect x="4" y="18" width="40" height="21" rx="9" fill="${C.v}"/><rect x="8" y="22" width="32" height="13" rx="6.5" fill="${C.n}"/>
+    <rect x="11.5" y="24.5" width="9" height="3.2" rx="1.6" fill="${C.vl}" opacity=".8"/><path d="M39 4l1.3 3.2 3.2 1.3-3.2 1.3L39 13l-1.3-3.2-3.2-1.3 3.2-1.3z" fill="${C.y}"/><path d="M9 6l.9 2.1 2.1.9-2.1.9L9 12l-.9-2.1L6 9l2.1-.9z" fill="${C.p}"/>`,
+  jjim: `<circle cx="24" cy="29" r="12.5" fill="${C.skin}"/><circle cx="12.5" cy="18" r="6.5" fill="${C.p}"/><circle cx="35.5" cy="18" r="6.5" fill="${C.p}"/>
+    <path d="M11.5 24a12.5 12.5 0 0 1 25 0v1.5h-25z" fill="${C.p}"/><circle cx="12.5" cy="18" r="2.8" fill="none" stroke="${C.pd}" stroke-width="1.6"/><circle cx="35.5" cy="18" r="2.8" fill="none" stroke="${C.pd}" stroke-width="1.6"/>
+    <path d="M18.5 30.5q1.7-1.7 3.4 0M26.1 30.5q1.7-1.7 3.4 0" stroke="${C.n}" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="17.5" cy="34.5" r="2" fill="${C.rl}"/><circle cx="30.5" cy="34.5" r="2" fill="${C.rl}"/>
+    <path d="M42 30c-2-2 2-3.5 0-6M6 30c-2-2 2-3.5 0-6" stroke="${C.g}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`,
+  cinema: `<circle cx="15" cy="19" r="5.5" fill="${C.yl}"/><circle cx="33" cy="18" r="6" fill="${C.yl}"/><circle cx="22" cy="14" r="6.5" fill="${C.yp}"/><circle cx="29" cy="12" r="5" fill="${C.yl}"/><circle cx="25" cy="19" r="5.5" fill="${C.yp}"/><circle cx="37" cy="21" r="4" fill="${C.yp}"/>
+    <path d="M10 21h28l-3.5 22h-21z" fill="${C.w}" stroke="${C.gl}" stroke-width="1.2"/><path d="M16.5 21l1.5 22h3.5L20.5 21zM27.5 21l-1 22h3.5l1-22z" fill="${C.r}"/>`,
+  meal: `<path d="M31 3l-5 20M37 4l-8 19" stroke="${C.b}" stroke-width="2.6" stroke-linecap="round"/><circle cx="17" cy="24" r="6.5" fill="${C.w}"/><circle cx="24.5" cy="21.5" r="7.5" fill="${C.w}"/><circle cx="31.5" cy="24.5" r="5.5" fill="${C.w}"/>
+    <path d="M5 25h38a19 16 0 0 1-38 0z" fill="${C.s}"/><path d="M8.5 31h31" stroke="${C.sl}" stroke-width="2.5"/><rect x="17" y="39.5" width="14" height="4.5" rx="2.25" fill="${C.sd}"/>`,
+  snack: `<ellipse cx="24" cy="31" rx="20" ry="11" fill="${C.w}" stroke="${C.gl}" stroke-width="1.5"/><ellipse cx="24" cy="30" rx="15.5" ry="7.8" fill="${C.r}"/>
+    <rect x="11" y="25.5" width="12" height="4.6" rx="2.3" fill="#FFC2B8" transform="rotate(-14 17 28)"/><rect x="17" y="31" width="12" height="4.6" rx="2.3" fill="#FFC2B8" transform="rotate(10 23 33)"/><rect x="25" y="25" width="11" height="4.6" rx="2.3" fill="#FFC2B8" transform="rotate(-6 30 27)"/>
+    <path d="M31 30.5l7 .5-3 5z" fill="${C.y}"/><circle cx="15" cy="32" r="1.3" fill="${C.m}"/><circle cx="29" cy="24" r="1.3" fill="${C.m}"/><circle cx="34" cy="33" r="1.3" fill="${C.m}"/>
+    <path d="M18 15c-2-2.5 2-4 0-7M25 13c-2-2.5 2-4 0-7M32 15c-2-2.5 2-4 0-7" stroke="${C.g}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`,
+  cup: `<path d="M14 13c-2-2 2-3.5 0-6M21 13c-2-2 2-3.5 0-6" stroke="${C.g}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>
+    <path d="M27 21h2.5a4.5 4.5 0 0 1 0 9H27" stroke="${C.gl}" stroke-width="3.2" fill="none"/><path d="M6 17h22v13a11 11 0 0 1-22 0z" fill="${C.w}" stroke="${C.gl}" stroke-width="1.5"/><ellipse cx="17" cy="17.5" rx="10" ry="2.6" fill="${C.b}"/>
+    <path d="M29 42V31l15-6.5V42z" fill="${C.yl}"/><path d="M29 36l15-6" stroke="${C.w}" stroke-width="2.2"/><path d="M29 31l15-6.5-4.5-2.2L29 27z" fill="${C.p}"/><circle cx="38" cy="22" r="2.8" fill="${C.r}"/>`,
+  spark: `<path d="M24 20l-9.5 23M24 20l9.5 23" stroke="${C.n}" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="20" r="14" fill="none" stroke="${C.g}" stroke-width="2.6"/>
+    <path d="M24 6v28M10 20h28M14.1 10.1l19.8 19.8M33.9 10.1L14.1 29.9" stroke="${C.g}" stroke-width="1.4"/><circle cx="24" cy="20" r="3" fill="${C.y}"/>
+    <circle cx="24" cy="6" r="3.2" fill="${C.r}"/><circle cx="38" cy="20" r="3.2" fill="${C.y}"/><circle cx="24" cy="34" r="3.2" fill="${C.m}"/><circle cx="10" cy="20" r="3.2" fill="${C.s}"/>
+    <circle cx="33.9" cy="10.1" r="3" fill="${C.v}"/><circle cx="33.9" cy="29.9" r="3" fill="${C.p}"/><circle cx="14.1" cy="29.9" r="3" fill="${C.y}"/><circle cx="14.1" cy="10.1" r="3" fill="${C.m}"/><rect x="8" y="42" width="32" height="3" rx="1.5" fill="${C.n}"/>`,
+  wave: `<circle cx="36" cy="12" r="6.5" fill="${C.y}"/><path d="M18 26V41" stroke="${C.b}" stroke-width="2.2" stroke-linecap="round"/><path d="M5 27a13 10 0 0 1 26 0z" fill="${C.r}"/><path d="M14 27a4 10 0 0 1 8 0z" fill="${C.w}"/>
+    <path d="M2 38c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3 4 3 4 3v8H2z" fill="${C.s}"/><path d="M2 43c4 0 4-2.5 8-2.5s4 2.5 8 2.5 4-2.5 8-2.5 4 2.5 8 2.5 4-2.5 8-2.5 4 2.5 4 2.5v4H2z" fill="${C.sd}"/>`,
+  moon: `<path d="M35 5a9 9 0 1 0 8 13 8 8 0 0 1-8-13z" fill="${C.y}"/><circle cx="10" cy="9" r="1.3" fill="${C.y}"/><circle cx="21" cy="5" r="1" fill="${C.y}"/><circle cx="16" cy="16" r="1" fill="${C.y}"/>
+    <rect x="4" y="24" width="11" height="20" rx="1.5" fill="${C.n}"/><rect x="14" y="16" width="12" height="28" rx="1.5" fill="#3B4A5E"/><rect x="25" y="27" width="10" height="17" rx="1.5" fill="${C.n}"/><rect x="34" y="21" width="10" height="23" rx="1.5" fill="#3B4A5E"/>
+    <path d="M7 28h2M11 28h1M7 33h2M17 20h2M21 20h2M17 25h2M21 30h2M17 35h2M28 31h2M28 36h2M37 25h2M41 25h1M37 30h2M37 35h2" stroke="${C.y}" stroke-width="2"/>`,
+  roof: `<rect x="6" y="39" width="36" height="5" rx="1.5" fill="${C.g}"/><rect x="10" y="21" width="28" height="18" fill="#F0D9B5"/><rect x="10" y="21" width="3" height="18" fill="${C.b}"/><rect x="35" y="21" width="3" height="18" fill="${C.b}"/>
+    <rect x="19" y="26" width="10" height="13" fill="${C.bd}"/><path d="M24 26v13M19 30.5h10M19 35h10" stroke="#F0D9B5" stroke-width="1.2"/>
+    <path d="M2 21c7 2.5 37 2.5 44 0l-5.5-8c-9 1.5-24 1.5-33 0z" fill="${C.n}"/><path d="M7.5 13c9 1.5 24 1.5 33 0l-2-2.5c-8 1.2-21 1.2-29 0z" fill="#56657A"/>`,
+  leaf: `<ellipse cx="24" cy="41.5" rx="17" ry="3.2" fill="${C.ml}"/><rect x="22" y="25" width="4.5" height="17" rx="2.25" fill="${C.b}"/>
+    <circle cx="14.5" cy="23" r="7.5" fill="${C.md}"/><circle cx="33.5" cy="23" r="7.5" fill="${C.md}"/><circle cx="24" cy="17" r="11.5" fill="${C.m}"/><circle cx="19" cy="13" r="3" fill="${C.ml}" opacity=".7"/>`,
+  pin: `<ellipse cx="24" cy="43" rx="8" ry="2.2" fill="#000" opacity=".12"/><path d="M24 4c8.3 0 14.5 6.2 14.5 14.3C38.5 28.5 24 42 24 42S9.5 28.5 9.5 18.3C9.5 10.2 15.7 4 24 4z" fill="${C.r}"/>
+    <circle cx="24" cy="18" r="5.8" fill="${C.w}"/><path d="M15 12a10 10 0 0 1 5-5" stroke="${C.rl}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
+};
+ILLU.cafe = ILLU.cup;
+function illu(name) {
+  return ILLU[name] ? `<svg class="il" viewBox="0 0 48 48" aria-hidden="true">${ILLU[name]}</svg>` : icon(name);
+}
 const DETAIL_ICON = { photo: "camera", time: "clock", move: "bus", tip: "bulb", snack: "cone" };
 // 썸네일: 코스 분위기에 맞춰 색과 그림을 고른다
 function themeOf(c) {
@@ -661,7 +738,7 @@ async function loadLocal() {
           with: t.with, tags: t.tags, budget: t.budget, hours: t.hours, best: t.best, details: t.details,
           stops: t.stops.map((id) => {
             const a = LOCAL.acts[id];
-            return { name: a.name, kind: a.kind, stay: a.stay, tip: a.tip, q: `${h.q} ${a.kw}`, priceNote: a.price, icon: a.icon, group: a.group || a.id };
+            return { act: a.id, name: a.name, kind: a.kind, stay: a.stay, tip: a.tip, q: `${h.q} ${a.kw}`, priceNote: a.price, icon: a.icon, group: a.group || a.id };
           }),
         });
       }
@@ -882,7 +959,7 @@ function renderLocalBox() {
   const h = hoodById(state.hood);
   box.innerHTML = `<h2>${esc(h ? h.name : state.region)}에서 뭐 하고 놀지</h2>
     <p>${esc(h ? h.desc : "")} · 누르면 지도에서 가게를 찾아 드려요</p>
-    <div class="acts">${LOCAL.actList.map((a) => `<button type="button" class="act" data-a="${a.id}"><span class="ic">${icon(a.icon)}</span><span>${esc(a.name)}</span></button>`).join("")}</div>`;
+    <div class="acts">${LOCAL.actList.map((a) => `<button type="button" class="act" data-a="${a.id}"><span class="ic">${illu(a.id)}</span><span>${esc(a.name)}</span></button>`).join("")}</div>`;
   box.querySelectorAll("[data-a]").forEach((b) => b.addEventListener("click", () => openActivity(b.dataset.a)));
 }
 
@@ -1231,14 +1308,14 @@ function card(c) {
   const rate = ratingOf(c.id);
   const total = totalPrice(c);
   const [tone, pic] = c.source === "local"
-    ? [{ food: "food", cafe: "food", culture: "night" }[c.stops[0].kind] || "fun", c.stops[0].icon]
+    ? [{ food: "food", cafe: "food", culture: "night" }[c.stops[0].kind] || "fun", c.stops[0].act || c.stops[0].icon]
     : themeOf(c);
   const hint = firstDetail(c);
   const b = document.createElement("button");
   b.type = "button";
   b.className = "item";
   b.innerHTML = `
-    <span class="thumb ${tone}">${icon(pic)}</span>
+    <span class="thumb ${tone}">${illu(pic)}</span>
     <span class="item-body">
       <span class="item-top">
         <span>${esc(c.region)}${c.area ? " " + esc(c.area) : ""}</span>
