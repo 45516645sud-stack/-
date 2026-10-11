@@ -16,15 +16,11 @@ UA = "nolco-photo-candidates/1.0 (https://github.com/45516645sud-stack/-)"
 API = "https://commons.wikimedia.org/w/api.php"
 OK_LICENSE = re.compile(r"^(CC0|Public domain|PD|CC BY(-SA)? [0-9.]+)", re.I)
 QUERIES = {
-    "coinsing": "karaoke microphone", "karaoke": "karaoke room", "boardgame": "board game dice table",
-    "escape": "escape room", "bowling": "bowling ball pins", "billiards": "billiard balls table",
-    "arcade": "claw crane machine", "manga": "manga comic books shelf", "photo": "photo booth",
-    "class": "pottery wheel hands", "climbing": "indoor climbing wall", "screenbase": "baseball bat ball",
-    "pc": "internet cafe computers", "vr": "virtual reality headset", "jjim": "jjimjilbang",
-    "cinema": "popcorn", "meal": "bibimbap", "snack": "tteokbokki", "cafe": "strawberry cake slice",
-    "cup": "latte art coffee cup", "spark": "ferris wheel", "wave": "beach parasol sea",
-    "moon": "Seoul night skyline", "roof": "hanok", "leaf": "forest trail", "pin": "Korea travel map",
-    "show": "theatre stage audience", "festival": "fireworks festival",
+    "boardgame": "board game pieces cards", "boardgame2": "Catan board game", "bowling": "bowling alley lanes",
+    "bowling2": "bowling ball", "class": "ceramics workshop", "class2": "pottery class", "escape": "padlock puzzle",
+    "escape2": "escape room game", "pc": "gaming keyboard", "pc2": "LAN party", "pin": "travel map compass",
+    "pin2": "Gyeongbokgung", "manga": "manga", "manga2": "comic book store", "screenbase": "batting cage",
+    "jjim": "Korean sauna", "karaoke": "karaoke booth", "arcade": "arcade game machines",
 }
 
 
@@ -38,7 +34,7 @@ def strip(html):
     return re.sub(r"<[^>]+>", "", html or "").strip()
 
 
-def main(out="photo_candidates", per="8"):
+def main(out="photo_candidates2", per="8"):
     per = int(per)
     root = Path(out)
     for name, q in QUERIES.items():
