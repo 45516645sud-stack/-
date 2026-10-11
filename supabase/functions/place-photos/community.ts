@@ -85,7 +85,7 @@ export function cleanHit(raw: unknown): { ev: string; item: string } | null {
 /* ---------- 관리자 ---------- */
 // 관리자 비밀번호의 PBKDF2 해시 ("pbkdf2$반복수$소금$해시"). 비어 있으면 관리자 기능은 꺼져 있다.
 // admin.html 의 '비밀번호 만들기'로 만든 값을 넣는다. 해시만 저장하므로 저장소에 올려도 비밀번호는 알 수 없다.
-export const ADMIN_HASH = "";
+export const ADMIN_HASH = "pbkdf2$150000$9a1e14e97939d2d73eb15bffee208db7$4b3f0c5439b473a15c16e3d29df0e7f1069641cea05b87e982268265fff01516";
 
 const hex = (b: ArrayBuffer) => [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
 const unhex = (h: string) => new Uint8Array((h.match(/../g) ?? []).map((x) => parseInt(x, 16)));
