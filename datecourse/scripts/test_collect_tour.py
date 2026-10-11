@@ -44,6 +44,17 @@ class CollectTest(unittest.TestCase):
         self.assertEqual(seoul["stops"][1]["tip"], "조선의 & 궁궐이다. 한옥이 아름답다.")
         self.assertEqual((seoul["stops"][0]["lat"], seoul["stops"][0]["lng"]), (37.57, 126.99))
 
+    def test_old_courses_dropped(self):
+        today = ct.datetime(2026, 10, 11, tzinfo=ct.KST)
+        self.assertTrue(ct.is_recent("20240101000000", today))
+        self.assertFalse(ct.is_recent("20230516163614", today))
+        self.assertFalse(ct.is_recent("", today))
+        old = {"id": "tour-1", "region": "서울", "modified": "20170101000000", "stops": []}
+        client = ct.Client("k", 100, fetch=fake_fetch, pause=0)
+        courses = ct.collect(client, 5, [old], log=lambda *_: None, today=today)
+        self.assertNotIn("tour-1", [c["id"] for c in courses])
+        self.assertTrue(courses)  # 2026년에 고친 예시 코스는 남음
+
     def test_missing_coords_and_overnight(self):
         _, courses = self.run_collect()
         jeju = courses[1]
@@ -58,7 +69,7 @@ class CollectTest(unittest.TestCase):
         self.assertEqual(first, second)
 
     def test_budget_keeps_previous(self):
-        old = {"id": "tour-1", "region": "부산", "stops": [{"name": "a"}, {"name": "b"}]}
+        old = {"id": "tour-1", "region": "부산", "modified": "20260901000000", "stops": [{"name": "a"}, {"name": "b"}]}
         client, courses = self.run_collect(previous=[old], max_calls=1)
         self.assertEqual(client.calls, 1)
         self.assertIn("tour-1", [c["id"] for c in courses])

@@ -13,8 +13,11 @@ on:
       - ".github/workflows/aiiairs-pages.yml"
   # 일정 수집·놀코 동네·코스 확인이 끝났을 때. 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
   workflow_run:
-    workflows: ["AIIairs 일정 수집", "놀코 동네 확인", "놀코 코스 위치 확인", "놀코 관광공사 코스 수집", "놀코 코스 사진 받기"]
+    workflows: ["AIIairs 일정 수집", "놀코 동네 확인", "놀코 코스 위치 확인", "놀코 관광공사 코스 수집", "놀코 코스 사진 받기", "놀코 코스 장소 점검"]
     types: [completed]
+  # 매일 아침 한 번 더: 놀코 '이번 주말'(공연·축제)을 날짜에 맞게 새로 만든다
+  schedule:
+    - cron: "52 21 * * *"   # 매일 아침 6시 52분 (한국 시간)
   # Actions 탭에서 바로 실행
   workflow_dispatch:
 

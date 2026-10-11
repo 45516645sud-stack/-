@@ -147,6 +147,8 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .mini b { font-size: 13px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .mini small { font-size: 11px; color: var(--sub); display: flex; align-items: center; gap: 3px; }
 .mini small svg.i { width: 11px; height: 11px; color: var(--star, #ffc93a); }
+.stop-warn { margin: 6px 0 0; padding: 6px 10px; border-radius: 8px; font-size: 12px; background: #fdecec; color: #a12a2a; }
+:root[data-mode="dark"] .stop-warn { background: #3a1d1d; color: #ffb4b4; }
 .stop-picks { margin: 8px 0 0; }
 .stop-picks small { display: block; font-size: 11px; color: var(--faint); margin-bottom: 4px; }
 .pick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -792,6 +794,7 @@ async function fetchJson(url) {
 
 /* 코스 썸네일 실제 사진: 직접 고른 코스는 data/course_photos.json (관광공사, 공공누리 1유형), 관광공사 코스는 대표 사진 */
 let COURSE_PHOTO = {};
+let COURSE_MISSING = {};   // 매주 점검에서 지도에 안 나온 정류장 (data/course_check.json)
 function photoOf(c) {
   const p = COURSE_PHOTO[c.id];
   if (p && /^img\/course\/[\w-]+\.webp$/.test(p.img)) return { src: p.img, place: p.place || "", credit: p.credit || "한국관광공사" };
@@ -806,13 +809,17 @@ function thumbHtml(c, tone, pic) {
 
 async function loadCourses() {
   // courses.json: 직접 고른 기본 코스 / tour_courses.json: 한국관광공사 추천코스 수집 결과(있을 때만)
-  const [base, tour, photos] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"), fetchJson("data/course_photos.json")]);
+  const [base, tour, photos, check] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"),
+    fetchJson("data/course_photos.json"), fetchJson("data/course_check.json")]);
   COURSE_PHOTO = (photos && photos.photos) || {};
+  COURSE_MISSING = (check && check.missing) || {};
   const seen = new Set();
   const list = [];
   for (const data of [base, tour]) {
     for (const c of (data && data.courses) || []) {
       if (!c || !c.id || seen.has(c.id) || !Array.isArray(c.stops) || !c.stops.length) continue;
+      // 관광공사가 3년 넘게 손보지 않은 코스는 정보가 낡았을 수 있어 뺀다 (수집기도 같은 규칙)
+      if (c.source === "tourapi" && !(String(c.modified || "").slice(0, 8) >= isoDay(addDays(new Date(), -3 * 365)).replace(/-/g, ""))) continue;
       seen.add(c.id);
       list.push(c);
     }
@@ -1819,6 +1826,7 @@ function openCourse(id, { push = true } = {}) {
           <div class="stop-name">${esc(s.name)}</div>
           <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : s.priceNote ? "보통 " + s.priceNote : ""].filter(Boolean).map(esc).join(" · ")}</span>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
+          ${(COURSE_MISSING[c.id] || []).includes(s.name) ? `<p class="stop-warn">최근 지도에서 확인되지 않았어요. 문을 닫았거나 이름이 바뀌었을 수 있으니 가기 전에 꼭 확인하세요.</p>` : ""}
           ${c.source === "local" && s.act ? `<div class="stop-picks" data-act="${esc(s.act)}"><span class="note">근처 실제 가게를 찾는 중…</span></div>` : ""}
           <div class="links">${mapLinks(s)}</div>
           ${i < c.stops.length - 1 ? moveHint(s, c.stops[i + 1]) : ""}

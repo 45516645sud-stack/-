@@ -208,7 +208,19 @@ def known_coords(previous: list[dict]) -> dict[str, tuple[float, float]]:
     return out
 
 
-def collect(client: Client, per_region: int, previous: list[dict], log=print) -> list[dict]:
+MAX_AGE_DAYS = 3 * 365  # 관광공사가 3년 넘게 손보지 않은 코스는 정보가 낡았을 수 있어 뺀다
+
+
+def is_recent(modified: str, today: datetime | None = None) -> bool:
+    try:
+        when = datetime.strptime(str(modified)[:8], "%Y%m%d").replace(tzinfo=KST)
+    except ValueError:
+        return False
+    return (today or datetime.now(KST)) - when <= timedelta(days=MAX_AGE_DAYS)
+
+
+def collect(client: Client, per_region: int, previous: list[dict], log=print, today: datetime | None = None) -> list[dict]:
+    previous = [c for c in previous if is_recent(c.get("modified", ""), today)]
     coords = known_coords(previous)
     prev_by_id = {c["id"]: c for c in previous}
     fresh: dict[str, dict] = {}
@@ -218,7 +230,7 @@ def collect(client: Client, per_region: int, previous: list[dict], log=print) ->
             log(f"{region}: 코스 {len(items)}개")
             for item in items:
                 cid = str(item.get("contentid") or "")
-                if not cid:
+                if not cid or not is_recent(str(item.get("modifiedtime") or ""), today):
                     continue
                 old = prev_by_id.get(f"tour-{cid}")
                 if old and old.get("modified") and old.get("modified") == str(item.get("modifiedtime") or ""):

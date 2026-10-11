@@ -87,5 +87,15 @@ Deno.test("가게 이름이 나오는 글의 사진만", () => {
     { title: "구미펍코로나 사건", contents: "", url: "https://news.example.com/3", blogname: "OO뉴스", thumbnail: "https://search1.kakaocdn.net/3" },
     { title: "구미펍코로나", contents: "", url: "https://cafe.daum.net/4", cafename: "구미맘", thumbnail: "" },
   ];
-  assertEquals(toPostPhotos(docs, "구미펍코로나", 4), [{ thumb: "https://search1.kakaocdn.net/2", link: "https://blog.naver.com/2", site: "b" }]);
+  const now = new Date("2026-10-11T00:00:00Z");
+  const dated = docs.map((d) => ({ ...d, datetime: "2026-05-01T10:00:00.000+09:00" }));
+  assertEquals(toPostPhotos(dated, "구미펍코로나", 4, now), [{ thumb: "https://search1.kakaocdn.net/2", link: "https://blog.naver.com/2", site: "b" }]);
+  // 2년보다 오래된 글(2017년)과 날짜 없는 글은 빼고, 최신 글부터
+  const mixed = [
+    { title: "구미펍코로나", url: "https://blog.naver.com/old", thumbnail: "https://search1.kakaocdn.net/old", datetime: "2017-03-01T10:00:00.000+09:00" },
+    { title: "구미펍코로나", url: "https://blog.naver.com/a", thumbnail: "https://search1.kakaocdn.net/a", datetime: "2025-01-01T10:00:00.000+09:00" },
+    { title: "구미펍코로나", url: "https://blog.naver.com/b", thumbnail: "https://search1.kakaocdn.net/b", datetime: "2026-09-01T10:00:00.000+09:00" },
+    { title: "구미펍코로나", url: "https://blog.naver.com/c", thumbnail: "https://search1.kakaocdn.net/c" },
+  ];
+  assertEquals(toPostPhotos(mixed, "구미펍코로나", 4, now).map((p) => p.link), ["https://blog.naver.com/b", "https://blog.naver.com/a"]);
 });

@@ -19,12 +19,14 @@ class ShowsTest(unittest.TestCase):
             {"id": "kopis-5", "t": "지역 모름", "cat": "music", "region": "기타", "s": "2026-10-10", "e": "2026-10-12"},
         ]
         out = be.from_fairs(items, TODAY, END, "../")
-        self.assertEqual([x["title"] for x in out], ["연극 A", "오픈런"])
-        a, b = out
+        self.assertEqual([x["title"] for x in out], ["연극 A"])  # 2014년부터 하는 오픈런은 뺌
+        a = out[0]
         self.assertEqual(a["regions"], ["광주", "전남"])
         self.assertEqual(a["cat"], "연극")
         self.assertEqual(a["poster"], "../posters/a.webp")
         self.assertEqual(a["price"], 30000)
+        items[3]["s"] = "2026-03-01"  # 올해 시작한 긴 공연은 남기고 포스터 주소를 https 로
+        b = be.from_fairs(items, TODAY, END, "../")[1]
         self.assertTrue(b["long"])
         self.assertEqual(b["poster"], "https://www.kopis.or.kr/p.gif")
 

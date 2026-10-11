@@ -62,7 +62,10 @@ export type KakaoPostDoc = {
   blogname?: string;
   cafename?: string;
   thumbnail?: string;
+  datetime?: string;
 };
+
+export const MAX_POST_AGE_DAYS = 730; // 2년보다 오래된 글 사진은 쓰지 않는다 (가게가 바뀌었을 수 있음)
 
 const plain = (s: unknown) => String(s ?? "").replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, "").replace(/\s+/g, "").toLowerCase();
 
@@ -73,13 +76,15 @@ export function coreName(name: string): string {
   return parts.join("").toLowerCase();
 }
 
-/** 글 제목이나 본문에 가게 이름이 실제로 나오는 글의 썸네일만. 뉴스·관공서 글은 뺀다 */
-export function toPostPhotos(docs: KakaoPostDoc[], name: string, size: number): Photo[] {
+/** 글 제목이나 본문에 가게 이름이 실제로 나오는 최근 2년 안 글의 썸네일만, 최신 글부터. 뉴스·관공서 글은 뺀다 */
+export function toPostPhotos(docs: KakaoPostDoc[], name: string, size: number, now: Date = new Date()): Photo[] {
   const core = coreName(name);
   if (core.length < 2) return [];
+  const oldest = now.getTime() - MAX_POST_AGE_DAYS * 86400000;
+  const at = (d: KakaoPostDoc) => { const t = Date.parse(String(d.datetime ?? "")); return Number.isFinite(t) ? t : 0; };
   const seen = new Set<string>();
   const out: Photo[] = [];
-  for (const d of docs) {
+  for (const d of [...docs].filter((d) => at(d) >= oldest).sort((a, b) => at(b) - at(a))) {
     const thumb = d.thumbnail;
     if (!isHttps(thumb) || !isHttp(d.url) || seen.has(thumb)) continue;
     const site = String(d.blogname ?? d.cafename ?? "");

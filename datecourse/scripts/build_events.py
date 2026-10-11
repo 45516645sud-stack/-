@@ -63,7 +63,8 @@ def from_fairs(items: list[dict], start: dt.date, end: dt.date, poster_prefix: s
         except (KeyError, ValueError):
             continue
         regs = regions_of(it.get("region", ""))
-        if e < start or s > end or not regs or not it.get("t"):
+        # 몇 년째 하는 오픈런 공연(1년 넘게 전에 시작)은 '이번 주말'에 맞지 않고 정보도 낡기 쉬워 뺀다
+        if e < start or s > end or not regs or not it.get("t") or (start - s).days > 365:
             continue
         poster = poster_prefix + it["poster"] if it.get("poster") else https(it.get("img"))
         out.append({
