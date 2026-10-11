@@ -687,7 +687,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         </fieldset>
 
         <div class="filter-end">
-          <label class="check"><input type="checkbox" id="pastToggle"> 지난 일정도 보기</label>
           <button type="button" class="linkish" id="resetBtn">초기화</button>
         </div>
       </details>
@@ -910,7 +909,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         openrun: f.openrun === true || (parseDate(f.e) - parseDate(f.s)) / DAY > 730,
         free: fee === 0
       };
-    });
+    })
+    // 끝난 공연은 보여주지 않는다. 수집 로봇이 새벽에 빼기 전이라도, 보는 사람의 오늘 날짜로 바로 뺀다.
+    .filter(f => f.end >= TODAY);
   const BY_ID = new Map(FAIRS.map(f => [f.id, f]));
   const REGIONS = [
     ...REGION_ORDER.filter(r => FAIRS.some(f => f.region === r)),
@@ -1402,7 +1403,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const n = (state.cost !== 'all') + (state.budget != null) + (state.regions.size > 0) + (state.period !== 'all') + state.past;
     $('sumState').innerHTML = n ? `<b>${n}</b>개 적용 중` : '적용 없음';
     document.querySelectorAll('#costSeg input').forEach(i => { i.checked = i.value === state.cost; });
-    $('pastToggle').checked = state.past;
   }
 
   function statusOf(f) {
@@ -1896,7 +1896,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
 
     $('sheet').innerHTML = html;
-    $('sheetCount').innerHTML = `<b>${shown}</b>건${state.past ? '' : ' · 지난 일정 제외'}`;
+    $('sheetCount').innerHTML = `<b>${shown}</b>건`;
     renderInterp(it, matched, fellBack);
     renderNotice();
   }
@@ -2078,7 +2078,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     // 달력은 누를 때마다 다시 그려지므로, 원래 눌린 경로로 바깥 클릭인지 판단한다.
     if (cal.pick && !e.composedPath().includes($('periodBox'))) closeCal(false);
   });
-  $('pastToggle').addEventListener('change', e => { state.past = e.target.checked; render(); });
   $('resetBtn').addEventListener('click', () => resetFilters(true));
 
   document.addEventListener('click', e => {
