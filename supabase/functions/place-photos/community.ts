@@ -92,7 +92,7 @@ const unhex = (h: string) => new Uint8Array((h.match(/../g) ?? []).map((x) => pa
 
 export async function pbkdf2(pass: string, salt: Uint8Array, iterations: number): Promise<string> {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
-  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, key, 256));
+  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: salt as BufferSource, iterations }, key, 256));
 }
 
 /** 비밀번호가 맞는지 (해시가 비어 있거나 모양이 이상하면 언제나 false) */
