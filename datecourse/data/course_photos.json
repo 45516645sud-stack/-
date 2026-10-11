@@ -1,0 +1,683 @@
+{
+ "note": "코스 썸네일 사진: 한국관광공사 TourAPI 대표 사진 (공공누리 제1유형, 출처 표시)",
+ "photos": {
+  "seoul-seongsu": {
+   "img": "img/course/seoul-seongsu.webp",
+   "place": "서울숲",
+   "stop": "서울숲",
+   "credit": "한국관광공사"
+  },
+  "seoul-jongno-retro": {
+   "img": "img/course/seoul-jongno-retro.webp",
+   "place": "창덕궁 다래나무",
+   "stop": "창덕궁",
+   "credit": "한국관광공사"
+  },
+  "seoul-yeouido": {
+   "img": "img/course/seoul-yeouido.webp",
+   "place": "여의도한강공원",
+   "stop": "여의도한강공원",
+   "credit": "한국관광공사"
+  },
+  "seoul-coex-rain": {
+   "img": "img/course/seoul-coex-rain.webp",
+   "place": "별마당도서관",
+   "stop": "별마당도서관",
+   "credit": "한국관광공사"
+  },
+  "seoul-yeonnam": {
+   "img": "img/course/seoul-yeonnam.webp",
+   "place": "경의선숲길",
+   "stop": "경의선숲길 (연트럴파크)",
+   "credit": "한국관광공사"
+  },
+  "seoul-bukchon": {
+   "img": "img/course/seoul-bukchon.webp",
+   "place": "경복궁",
+   "stop": "경복궁",
+   "credit": "한국관광공사"
+  },
+  "busan-haeundae": {
+   "img": "img/course/busan-haeundae.webp",
+   "place": "해운대 동백섬",
+   "stop": "동백섬",
+   "credit": "한국관광공사"
+  },
+  "busan-gwangan-night": {
+   "img": "img/course/busan-gwangan-night.webp",
+   "place": "광안리해수욕장",
+   "stop": "광안리해수욕장",
+   "credit": "한국관광공사"
+  },
+  "busan-nampo": {
+   "img": "img/course/busan-nampo.webp",
+   "place": "부산 자갈치시장",
+   "stop": "자갈치시장",
+   "credit": "한국관광공사"
+  },
+  "busan-yeongdo": {
+   "img": "img/course/busan-yeongdo.webp",
+   "place": "흰여울문화마을",
+   "stop": "흰여울문화마을",
+   "credit": "한국관광공사"
+  },
+  "busan-gijang": {
+   "img": "img/course/busan-gijang.webp",
+   "place": "일광해수욕장",
+   "stop": "일광해수욕장",
+   "credit": "한국관광공사"
+  },
+  "daegu-modern": {
+   "img": "img/course/daegu-modern.webp",
+   "place": "김광석다시그리기길",
+   "stop": "김광석다시그리기길",
+   "credit": "한국관광공사"
+  },
+  "daegu-suseong": {
+   "img": "img/course/daegu-suseong.webp",
+   "place": "수성못 유원지",
+   "stop": "수성못",
+   "credit": "한국관광공사"
+  },
+  "daegu-eworld": {
+   "img": "img/course/daegu-eworld.webp",
+   "place": "이월드 83타워",
+   "stop": "이월드",
+   "credit": "한국관광공사"
+  },
+  "incheon-chinatown": {
+   "img": "img/course/incheon-chinatown.webp",
+   "place": "송월동 동화마을",
+   "stop": "송월동 동화마을",
+   "credit": "한국관광공사"
+  },
+  "incheon-songdo": {
+   "img": "img/course/incheon-songdo.webp",
+   "place": "송도 센트럴파크",
+   "stop": "송도 센트럴파크",
+   "credit": "한국관광공사"
+  },
+  "incheon-eurwangni": {
+   "img": "img/course/incheon-eurwangni.webp",
+   "place": "을왕리해수욕장",
+   "stop": "을왕리해수욕장",
+   "credit": "한국관광공사"
+  },
+  "gwangju-yangnim": {
+   "img": "img/course/gwangju-yangnim.webp",
+   "place": "양림동 펭귄마을공예거리",
+   "stop": "양림동 펭귄마을",
+   "credit": "한국관광공사"
+  },
+  "daejeon-bakery": {
+   "img": "img/course/daejeon-bakery.webp",
+   "place": "대전 중앙시장",
+   "stop": "대전 중앙시장",
+   "credit": "한국관광공사"
+  },
+  "daejeon-expo": {
+   "img": "img/course/daejeon-expo.webp",
+   "place": "한밭수목원",
+   "stop": "한밭수목원",
+   "credit": "한국관광공사"
+  },
+  "ulsan-taehwa": {
+   "img": "img/course/ulsan-taehwa.webp",
+   "place": "태화강 국가정원십리대숲",
+   "stop": "태화강 국가정원",
+   "credit": "한국관광공사"
+  },
+  "ulsan-daewangam": {
+   "img": "img/course/ulsan-daewangam.webp",
+   "place": "대왕암공원",
+   "stop": "대왕암공원",
+   "credit": "한국관광공사"
+  },
+  "ulsan-ganjeolgot": {
+   "img": "img/course/ulsan-ganjeolgot.webp",
+   "place": "간절곶",
+   "stop": "간절곶",
+   "credit": "한국관광공사"
+  },
+  "sejong-lake": {
+   "img": "img/course/sejong-lake.webp",
+   "place": "국립세종수목원",
+   "stop": "국립세종수목원",
+   "credit": "한국관광공사"
+  },
+  "gg-suwon": {
+   "img": "img/course/gg-suwon.webp",
+   "place": "방화수류정(동북각루)",
+   "stop": "방화수류정",
+   "credit": "한국관광공사"
+  },
+  "gg-gapyeong": {
+   "img": "img/course/gg-gapyeong.webp",
+   "place": "아침고요수목원",
+   "stop": "아침고요수목원",
+   "credit": "한국관광공사"
+  },
+  "gg-paju": {
+   "img": "img/course/gg-paju.webp",
+   "place": "헤이리 예술마을",
+   "stop": "헤이리 예술마을",
+   "credit": "한국관광공사"
+  },
+  "gg-yangpyeong": {
+   "img": "img/course/gg-yangpyeong.webp",
+   "place": "양평 두물머리",
+   "stop": "두물머리",
+   "credit": "한국관광공사"
+  },
+  "gg-minsokchon": {
+   "img": "img/course/gg-minsokchon.webp",
+   "place": "한국민속촌",
+   "stop": "한국민속촌",
+   "credit": "한국관광공사"
+  },
+  "gw-gangneung": {
+   "img": "img/course/gw-gangneung.webp",
+   "place": "강릉 오죽헌·시립박물관",
+   "stop": "오죽헌",
+   "credit": "한국관광공사"
+  },
+  "gw-sokcho": {
+   "img": "img/course/gw-sokcho.webp",
+   "place": "설악산 케이블카",
+   "stop": "설악산 케이블카",
+   "credit": "한국관광공사"
+  },
+  "gw-chuncheon": {
+   "img": "img/course/gw-chuncheon.webp",
+   "place": "춘천 삼악산 호수케이블카",
+   "stop": "삼악산 호수케이블카",
+   "credit": "한국관광공사"
+  },
+  "gw-yangyang": {
+   "img": "img/course/gw-yangyang.webp",
+   "place": "하조대",
+   "stop": "하조대",
+   "credit": "한국관광공사"
+  },
+  "cb-danyang": {
+   "img": "img/course/cb-danyang.webp",
+   "place": "도담삼봉",
+   "stop": "도담삼봉",
+   "credit": "한국관광공사"
+  },
+  "cb-cheongju": {
+   "img": "img/course/cb-cheongju.webp",
+   "place": "청주 성안길",
+   "stop": "성안길",
+   "credit": "한국관광공사"
+  },
+  "cb-jecheon": {
+   "img": "img/course/cb-jecheon.webp",
+   "place": "청풍호반케이블카",
+   "stop": "청풍호반케이블카",
+   "credit": "한국관광공사"
+  },
+  "cn-gongju": {
+   "img": "img/course/cn-gongju.webp",
+   "place": "공주 공산성 [유네스코 세계유산]",
+   "stop": "공산성",
+   "credit": "한국관광공사"
+  },
+  "cn-buyeo": {
+   "img": "img/course/cn-buyeo.webp",
+   "place": "서동공원과 궁남지",
+   "stop": "궁남지",
+   "credit": "한국관광공사"
+  },
+  "cn-taean": {
+   "img": "img/course/cn-taean.webp",
+   "place": "안면암(태안)",
+   "stop": "안면암",
+   "credit": "한국관광공사"
+  },
+  "cn-asan": {
+   "img": "img/course/cn-asan.webp",
+   "place": "외암민속마을",
+   "stop": "외암민속마을",
+   "credit": "한국관광공사"
+  },
+  "jb-jeonju": {
+   "img": "img/course/jb-jeonju.webp",
+   "place": "전주 경기전",
+   "stop": "경기전",
+   "credit": "한국관광공사"
+  },
+  "jb-gunsan": {
+   "img": "img/course/jb-gunsan.webp",
+   "place": "이성당",
+   "stop": "이성당",
+   "credit": "한국관광공사"
+  },
+  "jb-namwon": {
+   "img": "img/course/jb-namwon.webp",
+   "place": "광한루원",
+   "stop": "광한루원",
+   "credit": "한국관광공사"
+  },
+  "jb-buan": {
+   "img": "img/course/jb-buan.webp",
+   "place": "내소사 전나무 숲길",
+   "stop": "내소사",
+   "credit": "한국관광공사"
+  },
+  "jn-yeosu": {
+   "img": "img/course/jn-yeosu.webp",
+   "place": "여수 해상케이블카",
+   "stop": "여수 해상케이블카",
+   "credit": "한국관광공사"
+  },
+  "jn-suncheon": {
+   "img": "img/course/jn-suncheon.webp",
+   "place": "순천만습지",
+   "stop": "순천만습지",
+   "credit": "한국관광공사"
+  },
+  "jn-damyang": {
+   "img": "img/course/jn-damyang.webp",
+   "place": "죽녹원",
+   "stop": "죽녹원",
+   "credit": "한국관광공사"
+  },
+  "jn-mokpo": {
+   "img": "img/course/jn-mokpo.webp",
+   "place": "목포근대역사관 1관",
+   "stop": "목포근대역사관",
+   "credit": "한국관광공사"
+  },
+  "gb-gyeongju-night": {
+   "img": "img/course/gb-gyeongju-night.webp",
+   "place": "경주 대릉원 일원",
+   "stop": "대릉원",
+   "credit": "한국관광공사"
+  },
+  "gb-gyeongju-bomun": {
+   "img": "img/course/gb-gyeongju-bomun.webp",
+   "place": "경주 불국사 [유네스코 세계유산]",
+   "stop": "불국사",
+   "credit": "한국관광공사"
+  },
+  "gb-andong": {
+   "img": "img/course/gb-andong.webp",
+   "place": "안동 하회마을 [유네스코 세계유산]",
+   "stop": "안동 하회마을",
+   "credit": "한국관광공사"
+  },
+  "gb-pohang": {
+   "img": "img/course/gb-pohang.webp",
+   "place": "카페 스페이스워크",
+   "stop": "스페이스워크",
+   "credit": "한국관광공사"
+  },
+  "gn-namhae": {
+   "img": "img/course/gn-namhae.webp",
+   "place": "독일마을공식기념품판매점",
+   "stop": "독일마을",
+   "credit": "한국관광공사"
+  },
+  "gn-jinju": {
+   "img": "img/course/gn-jinju.webp",
+   "place": "진주성",
+   "stop": "진주성",
+   "credit": "한국관광공사"
+  },
+  "gn-geoje": {
+   "img": "img/course/gn-geoje.webp",
+   "place": "바람의 언덕",
+   "stop": "바람의 언덕",
+   "credit": "한국관광공사"
+  },
+  "jeju-east": {
+   "img": "img/course/jeju-east.webp",
+   "place": "성산일출봉 [유네스코 세계자연유산]",
+   "stop": "성산일출봉",
+   "credit": "한국관광공사"
+  },
+  "jeju-west": {
+   "img": "img/course/jeju-west.webp",
+   "place": "한림공원",
+   "stop": "한림공원",
+   "credit": "한국관광공사"
+  },
+  "jeju-south": {
+   "img": "img/course/jeju-south.webp",
+   "place": "쇠소깍",
+   "stop": "쇠소깍",
+   "credit": "한국관광공사"
+  },
+  "seoul-lotteworld": {
+   "img": "img/course/seoul-lotteworld.webp",
+   "place": "석촌호수",
+   "stop": "석촌호수",
+   "credit": "한국관광공사"
+  },
+  "gg-seoulland": {
+   "img": "img/course/gg-seoulland.webp",
+   "place": "국립과천과학관",
+   "stop": "국립과천과학관",
+   "credit": "한국관광공사"
+  },
+  "gb-gyeongjuworld": {
+   "img": "img/course/gb-gyeongjuworld.webp",
+   "place": "경주월드 어뮤즈먼트",
+   "stop": "경주월드",
+   "credit": "한국관광공사"
+  },
+  "dj-oworld": {
+   "img": "img/course/dj-oworld.webp",
+   "place": "엑스포다리",
+   "stop": "엑스포다리",
+   "credit": "한국관광공사"
+  },
+  "jeju-shinhwa": {
+   "img": "img/course/jeju-shinhwa.webp",
+   "place": "신화테마파크",
+   "stop": "신화테마파크",
+   "credit": "한국관광공사"
+  },
+  "seoul-seochon": {
+   "img": "img/course/seoul-seochon.webp",
+   "place": "통인시장",
+   "stop": "통인시장",
+   "credit": "한국관광공사"
+  },
+  "seoul-euljiro": {
+   "img": "img/course/seoul-euljiro.webp",
+   "place": "세운상가",
+   "stop": "세운상가",
+   "credit": "한국관광공사"
+  },
+  "seoul-naksan": {
+   "img": "img/course/seoul-naksan.webp",
+   "place": "낙산공원",
+   "stop": "낙산공원",
+   "credit": "한국관광공사"
+  },
+  "seoul-olympicpark": {
+   "img": "img/course/seoul-olympicpark.webp",
+   "place": "올림픽공원",
+   "stop": "올림픽공원",
+   "credit": "한국관광공사"
+  },
+  "seoul-seonyudo": {
+   "img": "img/course/seoul-seonyudo.webp",
+   "place": "선유도공원",
+   "stop": "선유도공원",
+   "credit": "한국관광공사"
+  },
+  "gg-gwanggyo": {
+   "img": "img/course/gg-gwanggyo.webp",
+   "place": "광교호수공원",
+   "stop": "광교호수공원",
+   "credit": "한국관광공사"
+  },
+  "gg-ilsan": {
+   "img": "img/course/gg-ilsan.webp",
+   "place": "일산호수공원",
+   "stop": "일산호수공원",
+   "credit": "한국관광공사"
+  },
+  "gg-pocheon": {
+   "img": "img/course/gg-pocheon.webp",
+   "place": "포천아트밸리 (한탄강 유네스코 세계지질공원)",
+   "stop": "포천아트밸리",
+   "credit": "한국관광공사"
+  },
+  "gg-jebudo": {
+   "img": "img/course/gg-jebudo.webp",
+   "place": "전곡항",
+   "stop": "전곡항",
+   "credit": "한국관광공사"
+  },
+  "gg-icheon": {
+   "img": "img/course/gg-icheon.webp",
+   "place": "이천도자예술마을 (이천 예스파크)",
+   "stop": "이천 예스파크",
+   "credit": "한국관광공사"
+  },
+  "busan-songdo": {
+   "img": "img/course/busan-songdo.webp",
+   "place": "부산 암남공원",
+   "stop": "암남공원",
+   "credit": "한국관광공사"
+  },
+  "busan-jeonpo": {
+   "img": "img/course/busan-jeonpo.webp",
+   "place": "부산시민공원",
+   "stop": "부산시민공원",
+   "credit": "한국관광공사"
+  },
+  "busan-dadaepo": {
+   "img": "img/course/busan-dadaepo.webp",
+   "place": "다대포해수욕장",
+   "stop": "다대포해수욕장",
+   "credit": "한국관광공사"
+  },
+  "daegu-palgongsan": {
+   "img": "img/course/daegu-palgongsan.webp",
+   "place": "팔공산국립공원(동화사지구)",
+   "stop": "동화사",
+   "credit": "한국관광공사"
+  },
+  "daegu-hwawon": {
+   "img": "img/course/daegu-hwawon.webp",
+   "place": "화원동산",
+   "stop": "화원동산",
+   "credit": "한국관광공사"
+  },
+  "incheon-ganghwa": {
+   "img": "img/course/incheon-ganghwa.webp",
+   "place": "조양방직",
+   "stop": "조양방직",
+   "credit": "한국관광공사"
+  },
+  "incheon-muuido": {
+   "img": "img/course/incheon-muuido.webp",
+   "place": "하나개해수욕장",
+   "stop": "하나개해수욕장",
+   "credit": "한국관광공사"
+  },
+  "gwangju-biennale": {
+   "img": "img/course/gwangju-biennale.webp",
+   "place": "광주시립미술관",
+   "stop": "광주시립미술관",
+   "credit": "한국관광공사"
+  },
+  "daejeon-jangtaesan": {
+   "img": "img/course/daejeon-jangtaesan.webp",
+   "place": "장태산자연휴양림",
+   "stop": "장태산자연휴양림",
+   "credit": "한국관광공사"
+  },
+  "ulsan-grandpark": {
+   "img": "img/course/ulsan-grandpark.webp",
+   "place": "울산대공원 동물원",
+   "stop": "울산대공원",
+   "credit": "한국관광공사"
+  },
+  "sejong-bridge": {
+   "img": "img/course/sejong-bridge.webp",
+   "place": "세종중앙공원",
+   "stop": "세종중앙공원",
+   "credit": "한국관광공사"
+  },
+  "gw-jeongdongjin": {
+   "img": "img/course/gw-jeongdongjin.webp",
+   "place": "정동심곡 바다부채길",
+   "stop": "정동심곡 바다부채길",
+   "credit": "한국관광공사"
+  },
+  "gw-samcheok": {
+   "img": "img/course/gw-samcheok.webp",
+   "place": "장호해변·장호항",
+   "stop": "장호항",
+   "credit": "한국관광공사"
+  },
+  "cb-chungju": {
+   "img": "img/course/cb-chungju.webp",
+   "place": "충주 탄금대",
+   "stop": "탄금대",
+   "credit": "한국관광공사"
+  },
+  "cb-okcheon": {
+   "img": "img/course/cb-okcheon.webp",
+   "place": "부소담악(추소정)",
+   "stop": "부소담악",
+   "credit": "한국관광공사"
+  },
+  "cb-cheongnamdae": {
+   "img": "img/course/cb-cheongnamdae.webp",
+   "place": "청남대",
+   "stop": "청남대",
+   "credit": "한국관광공사"
+  },
+  "cn-boryeong": {
+   "img": "img/course/cn-boryeong.webp",
+   "place": "대천해수욕장",
+   "stop": "대천해수욕장",
+   "credit": "한국관광공사"
+  },
+  "cn-seosan": {
+   "img": "img/course/cn-seosan.webp",
+   "place": "서산 해미읍성 회화나무",
+   "stop": "해미읍성",
+   "credit": "한국관광공사"
+  },
+  "cn-yesan": {
+   "img": "img/course/cn-yesan.webp",
+   "place": "수덕사(예산)",
+   "stop": "수덕사",
+   "credit": "한국관광공사"
+  },
+  "cn-cheonan": {
+   "img": "img/course/cn-cheonan.webp",
+   "place": "독립기념관",
+   "stop": "독립기념관",
+   "credit": "한국관광공사"
+  },
+  "jb-gochang": {
+   "img": "img/course/jb-gochang.webp",
+   "place": "고창 고인돌 유적 [유네스코 세계유산]",
+   "stop": "고창 고인돌 유적",
+   "credit": "한국관광공사"
+  },
+  "jb-iksan": {
+   "img": "img/course/jb-iksan.webp",
+   "place": "익산 미륵사지 [유네스코 세계유산]",
+   "stop": "익산 미륵사지",
+   "credit": "한국관광공사"
+  },
+  "jb-imsil": {
+   "img": "img/course/jb-imsil.webp",
+   "place": "임실치즈테마파크",
+   "stop": "임실치즈테마파크",
+   "credit": "한국관광공사"
+  },
+  "jb-jinan": {
+   "img": "img/course/jb-jinan.webp",
+   "place": "마이산 탑사",
+   "stop": "마이산 탑사",
+   "credit": "한국관광공사"
+  },
+  "jn-boseong": {
+   "img": "img/course/jn-boseong.webp",
+   "place": "대한다원",
+   "stop": "대한다원",
+   "credit": "한국관광공사"
+  },
+  "jn-gangjin": {
+   "img": "img/course/jn-gangjin.webp",
+   "place": "다산초당",
+   "stop": "다산초당",
+   "credit": "한국관광공사"
+  },
+  "jn-wando": {
+   "img": "img/course/jn-wando.webp",
+   "place": "신지명사십리해수욕장",
+   "stop": "신지명사십리해수욕장",
+   "credit": "한국관광공사"
+  },
+  "jn-gurye": {
+   "img": "img/course/jn-gurye.webp",
+   "place": "화엄사",
+   "stop": "화엄사",
+   "credit": "한국관광공사"
+  },
+  "jn-hyangiram": {
+   "img": "img/course/jn-hyangiram.webp",
+   "place": "향일암(여수)",
+   "stop": "향일암",
+   "credit": "한국관광공사"
+  },
+  "gb-yeongju": {
+   "img": "img/course/gb-yeongju.webp",
+   "place": "무섬마을",
+   "stop": "무섬마을",
+   "credit": "한국관광공사"
+  },
+  "gb-mungyeong": {
+   "img": "img/course/gb-mungyeong.webp",
+   "place": "문경새재 오픈세트장",
+   "stop": "문경새재",
+   "credit": "한국관광공사"
+  },
+  "gb-yecheon": {
+   "img": "img/course/gb-yecheon.webp",
+   "place": "회룡포",
+   "stop": "회룡포",
+   "credit": "한국관광공사"
+  },
+  "gb-yeongdeok": {
+   "img": "img/course/gb-yeongdeok.webp",
+   "place": "강구항 대게거리",
+   "stop": "강구항",
+   "credit": "한국관광공사"
+  },
+  "gn-jinhae": {
+   "img": "img/course/gn-jinhae.webp",
+   "place": "경화역공원",
+   "stop": "경화역공원",
+   "credit": "한국관광공사"
+  },
+  "gn-hadong": {
+   "img": "img/course/gn-hadong.webp",
+   "place": "하동 화개장터",
+   "stop": "화개장터",
+   "credit": "한국관광공사"
+  },
+  "gn-haeinsa": {
+   "img": "img/course/gn-haeinsa.webp",
+   "place": "해인사(합천)",
+   "stop": "해인사",
+   "credit": "한국관광공사"
+  },
+  "gn-miryang": {
+   "img": "img/course/gn-miryang.webp",
+   "place": "밀양 영남루",
+   "stop": "영남루",
+   "credit": "한국관광공사"
+  },
+  "jeju-aewol": {
+   "img": "img/course/jeju-aewol.webp",
+   "place": "한담해안산책로",
+   "stop": "한담해안산책로",
+   "credit": "한국관광공사"
+  },
+  "jeju-sanbang": {
+   "img": "img/course/jeju-sanbang.webp",
+   "place": "카멜리아힐",
+   "stop": "카멜리아힐",
+   "credit": "한국관광공사"
+  },
+  "gn-gimhae": {
+   "img": "img/course/gn-gimhae.webp",
+   "place": "김해가야테마파크",
+   "stop": "가야테마파크",
+   "credit": "한국관광공사"
+  }
+ }
+}
