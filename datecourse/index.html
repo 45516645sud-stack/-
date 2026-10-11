@@ -276,6 +276,11 @@ main.wrap { padding-bottom: calc(var(--tab-h) + 28px + env(safe-area-inset-botto
 }
 .thumb svg.i { width: 30px; height: 30px; stroke-width: 1.7; }
 .thumb .il { width: 60px; height: 60px; }
+.thumb.photo { background: var(--fill); }
+.thumb.photo img { width: 100%; height: 100%; object-fit: cover; }
+.course-hero { margin: 0 0 12px; border-radius: 14px; overflow: hidden; position: relative; background: var(--fill); }
+.course-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.course-hero figcaption { position: absolute; right: 8px; bottom: 8px; font-size: 11px; color: #fff; background: rgba(0, 0, 0, .45); padding: 2px 8px; border-radius: 999px; }
 .thumb.sea { background: var(--t-sea); color: var(--t-sea-i); }
 .thumb.night { background: var(--t-night); color: var(--t-night-i); }
 .thumb.green { background: var(--t-green); color: var(--t-green-i); }
@@ -785,9 +790,24 @@ async function fetchJson(url) {
   } catch { return null; }
 }
 
+/* 코스 썸네일 실제 사진: 직접 고른 코스는 data/course_photos.json (관광공사, 공공누리 1유형), 관광공사 코스는 대표 사진 */
+let COURSE_PHOTO = {};
+function photoOf(c) {
+  const p = COURSE_PHOTO[c.id];
+  if (p && /^img\/course\/[\w-]+\.webp$/.test(p.img)) return { src: p.img, place: p.place || "", credit: p.credit || "한국관광공사" };
+  if (c.source === "tourapi" && /^https?:\/\/tong\.visitkorea\.or\.kr\//.test(c.image || "")) return { src: c.image.replace(/^http:/, "https:"), place: "", credit: "한국관광공사" };
+  return null;
+}
+function thumbHtml(c, tone, pic) {
+  const ph = photoOf(c);
+  return ph ? `<span class="thumb photo"><img src="${esc(ph.src)}" alt="" loading="lazy" decoding="async" onerror="this.parentElement.className='thumb ${tone}';this.outerHTML=''"></span>`
+    : `<span class="thumb ${tone}">${illu(pic)}</span>`;
+}
+
 async function loadCourses() {
   // courses.json: 직접 고른 기본 코스 / tour_courses.json: 한국관광공사 추천코스 수집 결과(있을 때만)
-  const [base, tour] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json")]);
+  const [base, tour, photos] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"), fetchJson("data/course_photos.json")]);
+  COURSE_PHOTO = (photos && photos.photos) || {};
   const seen = new Set();
   const list = [];
   for (const data of [base, tour]) {
@@ -1443,7 +1463,7 @@ function card(c) {
   b.type = "button";
   b.className = "item";
   b.innerHTML = `
-    <span class="thumb ${tone}">${illu(pic)}</span>
+    ${thumbHtml(c, tone, pic)}
     <span class="item-body">
       <span class="item-top">
         <span>${esc(c.region)}${c.area ? " " + esc(c.area) : ""}</span>
@@ -1505,7 +1525,7 @@ function miniCard(c, sub) {
   b.type = "button";
   b.className = "mini";
   const [tone, pic] = c.source === "local" ? ["fun", (c.stops[0] || {}).act || "pin"] : themeOf(c);
-  b.innerHTML = `<span class="thumb ${tone}">${illu(pic)}</span><b></b><small></small>`;
+  b.innerHTML = `${thumbHtml(c, tone, pic)}<b></b><small></small>`;
   b.querySelector("b").textContent = c.title;
   b.querySelector("small").innerHTML = sub;
   b.addEventListener("click", () => openCourse(c.id));
@@ -1782,6 +1802,7 @@ function openCourse(id, { push = true } = {}) {
       </div>
       <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
     </div>
+    ${photoOf(c) ? `<figure class="course-hero"><img src="${esc(photoOf(c).src)}" alt="" onerror="this.parentElement.remove()"><figcaption>사진${photoOf(c).place ? ": " + esc(photoOf(c).place) : ""} · ${esc(photoOf(c).credit)}</figcaption></figure>` : ""}
     ${c.source === "user" ? `<div class="maker-box" id="makerBox"></div>` : ""}
     ${c.summary ? `<p class="summary">${esc(c.summary)}</p>` : ""}
     <div class="facts">

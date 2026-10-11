@@ -1,0 +1,45 @@
+# 놀코 여행 코스 썸네일을 실제 장소 사진으로: 한국관광공사 TourAPI 대표 사진(공공누리 제1유형)을 받아
+# datecourse/img/course/ 와 data/course_photos.json 에 넣는다. 저장소 시크릿 DATA_GO_KR_KEY 가 필요하다.
+name: 놀코 코스 사진 받기
+
+on:
+  push:
+    paths:
+      - "datecourse/data/courses.json"
+      - "datecourse/scripts/fetch_course_photos.py"
+      - ".github/workflows/nolco-course-photos.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nolco-data
+  cancel-in-progress: false
+
+jobs:
+  photos:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet Pillow
+      - name: 사진 받기
+        run: python datecourse/scripts/fetch_course_photos.py
+      - name: 바뀐 사진 커밋
+        run: |
+          if [ -z "$(git status --porcelain -- datecourse/img/course datecourse/data/course_photos.json)" ]; then
+            echo "바뀐 사진 없음"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datecourse/img/course datecourse/data/course_photos.json
+          git commit -m "놀코: 코스 사진 받기 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push
