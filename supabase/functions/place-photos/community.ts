@@ -69,3 +69,47 @@ export function withoutHidden(col: Col, id: string, body: unknown, hidden: Set<s
   const kept = Object.fromEntries(Object.entries(items).filter(([item]) => !hidden.has(`${col}/${id}/${item}`)));
   return { nick: cleanNick(b.nick), [key]: kept };
 }
+
+/* ---------- 방문 통계 ---------- */
+export const STAT_EVENTS = new Set(["visit", "course", "act", "event", "share"]);
+
+/** 통계 한 건: 종류(ev)와 대상(item, 코스 id 등)만. 이상하면 null */
+export function cleanHit(raw: unknown): { ev: string; item: string } | null {
+  if (!isObj(raw)) return null;
+  const ev = typeof raw.ev === "string" && STAT_EVENTS.has(raw.ev) ? raw.ev : null;
+  const item = typeof raw.item === "string" ? raw.item.slice(0, 80) : "";
+  if (!ev || !/^[\w.-]*$/.test(item)) return null;
+  return { ev, item };
+}
+
+/* ---------- 관리자 ---------- */
+// 관리자 비밀번호의 PBKDF2 해시 ("pbkdf2$반복수$소금$해시"). 비어 있으면 관리자 기능은 꺼져 있다.
+// admin.html 의 '비밀번호 만들기'로 만든 값을 넣는다. 해시만 저장하므로 저장소에 올려도 비밀번호는 알 수 없다.
+export const ADMIN_HASH = "";
+
+const hex = (b: ArrayBuffer) => [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+const unhex = (h: string) => new Uint8Array((h.match(/../g) ?? []).map((x) => parseInt(x, 16)));
+
+export async function pbkdf2(pass: string, salt: Uint8Array, iterations: number): Promise<string> {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, key, 256));
+}
+
+/** 비밀번호가 맞는지 (해시가 비어 있거나 모양이 이상하면 언제나 false) */
+export async function checkAdmin(pass: unknown, stored: string = ADMIN_HASH): Promise<boolean> {
+  const m = /^pbkdf2\$(\d{5,7})\$([0-9a-f]{32})\$([0-9a-f]{64})$/.exec(stored);
+  if (!m || typeof pass !== "string" || pass.length < 12 || pass.length > 200) return false;
+  const got = await pbkdf2(pass, unhex(m[2]), Number(m[1]));
+  let diff = 0;
+  for (let i = 0; i < 64; i++) diff |= got.charCodeAt(i) ^ m[3].charCodeAt(i);
+  return diff === 0;
+}
+
+/** 문서에서 항목 하나 빼기 (관리자 지우기) */
+export function withoutItem(col: Col, body: unknown, item: string): Record<string, unknown> {
+  const b = isObj(body) ? { ...body } : {};
+  const key = col === "rv" ? "reviews" : "courses";
+  const items = isObj(b[key]) ? { ...(b[key] as Record<string, unknown>) } : {};
+  delete items[item];
+  return { ...b, [key]: items };
+}

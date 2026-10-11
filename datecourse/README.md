@@ -179,3 +179,18 @@ GitHub Actions의 Pages 배포는 **기본 브랜치**에 합쳐진 뒤에만 �
 
 - 날씨 API(기상청)로 비 오는 날엔 실내 코스 먼저 보여 주기
 - 로그인(Supabase Auth)으로 찜·내 글을 기기 사이에 동기화
+
+## 테스트
+
+- 데이터·스크립트: `python3 -m unittest discover -s datecourse/scripts`
+- 서버 함수: `deno test --allow-read supabase/functions/place-photos/`
+- 화면: `cd datecourse && python3 -m http.server 8765 &` 다음 `node tests/ui.mjs` (Playwright 필요)
+- GitHub Actions '놀코 테스트'가 PR 마다 위 세 가지를 다 돌려요.
+
+## 관리
+
+- `admin.html` (링크 없음, 검색 안 됨): 방문 통계, 리뷰·만든 코스 보기·지우기 (신고 많은 순)
+- 처음 한 번: admin.html 의 '관리자 비밀번호 만들기'에서 나온 해시를 `supabase/functions/place-photos/community.ts` 의 `ADMIN_HASH` 에 넣어요. 해시만 저장해서 비밀번호는 저장소에 남지 않아요.
+- 개인정보처리방침 `privacy.html`, 이용약관 `terms.html`
+- 서버 깨우기: '놀코 서버 깨우기' 작업이 매일 서버를 한 번 써서 Supabase 무료 프로젝트가 멈추지 않게 하고, 응답이 없으면 실패 메일로 알려요.
+- 공유 페이지: 사이트를 올릴 때 `scripts/build_share_pages.py` 가 코스마다 `c/<id>.html`(카톡 미리보기·검색용)과 `sitemap.xml` 을 만들어요.

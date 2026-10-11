@@ -56,7 +56,7 @@ jobs:
           rm -f _site/data/manual.csv
           # 놀코: https://<계정>.github.io/<저장소>/nolco/
           mkdir -p _site/nolco
-          cp datecourse/index.html datecourse/manifest.webmanifest datecourse/sw.js datecourse/icon.svg _site/nolco/
+          cp datecourse/index.html datecourse/privacy.html datecourse/terms.html datecourse/admin.html datecourse/manifest.webmanifest datecourse/sw.js datecourse/icon.svg _site/nolco/
           cp -r datecourse/data _site/nolco/
           cp -r datecourse/img _site/nolco/
           touch _site/.nojekyll
@@ -89,6 +89,12 @@ jobs:
         env:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
         run: python datecourse/scripts/build_events.py --fairs _site/data/fairs.json --out _site/nolco/data/events.json || echo "::warning::놀코 이번 주말 데이터를 만들지 못했어요"
+
+      # 놀코 코스별 공유·검색 페이지 (카톡 미리보기, sitemap)
+      - name: 놀코 공유 페이지
+        run: |
+          python datecourse/scripts/build_share_pages.py --site _site/nolco --base "https://45516645sud-stack.github.io/-/nolco/" || echo "::warning::놀코 공유 페이지를 만들지 못했어요"
+          grep -q "nolco/sitemap.xml" _site/robots.txt || printf '\nSitemap: https://45516645sud-stack.github.io/-/nolco/sitemap.xml\n' >> _site/robots.txt
 
       - name: 받은 포스터 남겨 두기
         uses: actions/cache/save@v4

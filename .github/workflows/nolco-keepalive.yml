@@ -1,0 +1,35 @@
+# 놀코 서버 깨우기 + 상태 점검: Supabase 무료 프로젝트는 일주일 동안 쓰이지 않으면 멈춘다.
+# 매일 한 번 서버 함수로 저장소(리뷰 표)를 읽어서 '쓰이는 중'으로 만들고, 응답이 이상하면 실패로 남겨 GitHub 메일로 알린다.
+name: 놀코 서버 깨우기
+
+on:
+  schedule:
+    - cron: "23 0 * * *"   # 매일 아침 9시 23분 (한국 시간)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      ENDPOINT: https://hzomhheyccapnzuwtzxh.supabase.co/functions/v1/bright-action
+      ORIGIN: https://45516645sud-stack.github.io
+    steps:
+      - name: 리뷰 저장소 읽기 (데이터베이스까지 깨움)
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -sS -o out.json -w '%{http_code}' -H "Origin: $ORIGIN" "$ENDPOINT?mode=docs&col=rv" || echo 000)
+            echo "시도 $i: HTTP $code"; head -c 200 out.json; echo
+            if [ "$code" = 200 ] && grep -q '"docs"' out.json; then exit 0; fi
+            sleep 20
+          done
+          echo "::error::놀코 서버가 응답하지 않아요. Supabase 대시보드에서 프로젝트가 멈췄는지(Paused) 확인해 주세요."
+          exit 1
+      - name: 가게 검색 확인 (카카오 키)
+        run: |
+          code=$(curl -sS -o out.json -w '%{http_code}' -H "Origin: $ORIGIN" "$ENDPOINT?mode=places&q=%EB%85%B8%EB%9E%98%EB%B0%A9&lat=35.1577&lng=129.0590&radius=1000&size=1")
+          echo "HTTP $code"; head -c 200 out.json; echo
+          if [ "$code" != 200 ]; then echo "::error::가게 검색이 안 돼요. 카카오 REST 키(Supabase 시크릿 KAKAO_REST_API_KEY)를 확인해 주세요."; exit 1; fi

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>놀코 관리</title>
+<style>
+:root { --ink: #1f1c15; --sub: #6b6455; --line: #ece6d6; --accent: #ffd23f; --bg: #fff; --fill: #f7f4ec; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.6 system-ui, sans-serif; }
+header { background: var(--accent); padding: 14px 16px; font-weight: 800; font-size: 18px; }
+main { max-width: 900px; margin: 0 auto; padding: 16px; }
+section { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 0 0 16px; }
+h2 { font-size: 16px; margin: 0 0 8px; }
+input { height: 38px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; font: inherit; min-width: 0; }
+button { height: 36px; border: 0; border-radius: 8px; padding: 0 12px; background: var(--fill); font: inherit; font-weight: 600; cursor: pointer; }
+button.primary { background: var(--accent); }
+button.danger { background: #fdecec; color: #a12a2a; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.note { color: var(--sub); font-size: 12px; }
+textarea { width: 100%; font: 12px monospace; height: 64px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px; text-align: left; vertical-align: top; }
+.tabs button[aria-pressed="true"] { background: var(--accent); }
+.flag { color: #a12a2a; font-weight: 700; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>놀코 관리</header>
+<main>
+  <section id="login">
+    <h2>관리자 로그인</h2>
+    <div class="row"><input id="pass" type="password" placeholder="관리자 비밀번호" autocomplete="current-password"><button class="primary" id="go">들어가기</button></div>
+    <p class="note" id="msg"></p>
+    <details>
+      <summary>처음이라면: 관리자 비밀번호 만들기</summary>
+      <p class="note">12자 이상으로 정하고 잊지 않게 따로 적어 두세요. 아래 '해시'만 Claude에게 보내면 서버에 등록돼요.
+        해시로는 비밀번호를 알아낼 수 없어서 채팅에 보내도 괜찮아요. <b>비밀번호 자체는 보내지 마세요.</b></p>
+      <div class="row"><input id="new1" type="password" placeholder="새 비밀번호 (12자 이상)" autocomplete="new-password">
+        <input id="new2" type="password" placeholder="한 번 더" autocomplete="new-password"><button id="make">해시 만들기</button></div>
+      <textarea id="hashOut" readonly hidden></textarea>
+    </details>
+  </section>
+
+  <div id="panel" hidden>
+    <div class="row tabs" style="margin-bottom:12px">
+      <button data-tab="stats" aria-pressed="true">방문 통계</button>
+      <button data-tab="rv" aria-pressed="false">리뷰</button>
+      <button data-tab="uc" aria-pressed="false">만든 코스</button>
+      <button id="out">나가기</button>
+    </div>
+    <section id="view"></section>
+  </div>
+</main>
+<script>
+const ENDPOINT = "https://hzomhheyccapnzuwtzxh.supabase.co/functions/v1/bright-action";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let pass = sessionStorage.getItem("nolco.admin") || "";
+let tab = "stats";
+
+async function call(body) {
+  const res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ mode: "admin", pass, ...body }) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "HTTP " + res.status);
+  return data;
+}
+
+async function pbkdf2(p, salt, it) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(p), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: it }, key, 256);
+  return [...new Uint8Array(bits)].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+$("make").onclick = async () => {
+  const a = $("new1").value, b = $("new2").value;
+  if (a.length < 12) return alert("12자 이상으로 정해 주세요");
+  if (a !== b) return alert("두 번 쓴 비밀번호가 달라요");
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const saltHex = [...salt].map((x) => x.toString(16).padStart(2, "0")).join("");
+  $("hashOut").hidden = false;
+  $("hashOut").value = `pbkdf2$150000$${saltHex}$${await pbkdf2(a, salt, 150000)}`;
+  $("hashOut").select();
+};
+
+async function login() {
+  pass = $("pass").value || pass;
+  $("msg").textContent = "확인 중…";
+  try {
+    await call({ action: "stats" });
+    sessionStorage.setItem("nolco.admin", pass);
+    $("login").hidden = true; $("panel").hidden = false;
+    render();
+  } catch (e) { $("msg").textContent = e.message; }
+}
+$("go").onclick = login;
+$("pass").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+$("out").onclick = () => { sessionStorage.removeItem("nolco.admin"); location.reload(); };
+document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => {
+  tab = b.dataset.tab;
+  document.querySelectorAll("[data-tab]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+});
+
+const EV = { visit: "방문", course: "코스 열기", act: "놀거리 열기", event: "공연·축제 열기", share: "공유" };
+async function render() {
+  const v = $("view");
+  v.innerHTML = "<p class='note'>불러오는 중…</p>";
+  try {
+    if (tab === "stats") {
+      const { days, top } = await call({ action: "stats" });
+      const byDay = {};
+      for (const r of days) (byDay[r.day] ??= {})[r.ev] = r.n;
+      v.innerHTML = `<h2>최근 30일</h2>
+        <table><tr><th>날짜</th>${Object.values(EV).map((x) => `<th>${x}</th>`).join("")}</tr>
+        ${Object.entries(byDay).reverse().map(([d, r]) => `<tr><td>${esc(d)}</td>${Object.keys(EV).map((k) => `<td>${r[k] || 0}</td>`).join("")}</tr>`).join("")}</table>
+        <h2 style="margin-top:16px">많이 연 것 (30일)</h2>
+        <table><tr><th>종류</th><th>대상</th><th>횟수</th></tr>${top.map((r) => `<tr><td>${esc(EV[r.ev] || r.ev)}</td><td>${esc(r.item)}</td><td>${r.n}</td></tr>`).join("")}</table>`;
+      return;
+    }
+    const { docs, reports } = await call({ action: "list" });
+    const rep = {};
+    for (const r of reports) { const k = `${r.col}/${r.doc_id}/${r.item_id}`; rep[k] = (rep[k] || 0) + 1; }
+    const key = tab === "rv" ? "reviews" : "courses";
+    const rows = [];
+    for (const d of docs.filter((x) => x.col === tab)) {
+      for (const [item, it] of Object.entries((d.body && d.body[key]) || {})) rows.push({ doc: d.id, nick: d.body.nick, item, it, n: rep[`${tab}/${d.id}/${item}`] || 0 });
+    }
+    rows.sort((a, b) => b.n - a.n);
+    v.innerHTML = `<h2>${tab === "rv" ? "리뷰" : "만든 코스"} ${rows.length}개</h2><p class="note">신고가 많은 것부터 보여요. 3번 신고되면 앱에서는 이미 숨겨져 있어요.</p>
+      <table><tr><th>신고</th><th>닉네임</th><th>${tab === "rv" ? "코스 · 별점 · 내용" : "코스 이름 · 장소"}</th><th></th></tr>
+      ${rows.map((r, i) => `<tr><td class="${r.n ? "flag" : ""}">${r.n}</td><td>${esc(r.nick || "누군가")}</td>
+        <td>${tab === "rv" ? `${esc(r.item)} · ${esc(r.it.rating)}점<br>${esc(r.it.text)}` : `${esc(r.it.title)}<br><span class="note">${esc((r.it.stops || []).map((s) => s.name).join(" → "))}</span>`}</td>
+        <td><button class="danger" data-i="${i}">지우기</button></td></tr>`).join("")}</table>`;
+    v.querySelectorAll("button[data-i]").forEach((b) => b.onclick = async () => {
+      const r = rows[+b.dataset.i];
+      if (!confirm("정말 지울까요? 되돌릴 수 없어요.")) return;
+      b.disabled = true;
+      try { await call({ action: "delete", col: tab, doc: r.doc, item: r.item }); render(); } catch (e) { alert(e.message); b.disabled = false; }
+    });
+  } catch (e) { v.innerHTML = `<p class="flag">${esc(e.message)}</p>`; }
+}
+if (pass) login();
+</script>
+</body>
+</html>

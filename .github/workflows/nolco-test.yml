@@ -1,0 +1,49 @@
+# 놀코 테스트: PR 이나 푸시 때 데이터·스크립트 테스트와 화면 자동 테스트(Playwright)를 돌린다.
+name: 놀코 테스트
+
+on:
+  pull_request:
+    paths:
+      - "datecourse/**"
+      - "supabase/functions/place-photos/**"
+      - ".github/workflows/nolco-test.yml"
+  push:
+    paths:
+      - "datecourse/index.html"
+      - "datecourse/tests/**"
+      - ".github/workflows/nolco-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 데이터·스크립트 테스트
+        run: python -m unittest discover -s datecourse/scripts
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: 서버 함수 테스트
+        run: deno test --allow-read supabase/functions/place-photos/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Playwright 준비
+        working-directory: datecourse
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: 화면 테스트
+        working-directory: datecourse
+        run: |
+          python -m http.server 8765 >/dev/null 2>&1 &
+          sleep 1
+          node tests/ui.mjs

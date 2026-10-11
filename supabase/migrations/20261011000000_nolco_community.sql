@@ -26,3 +26,13 @@ create table if not exists public.nolco_hits (
 );
 create index if not exists nolco_hits_ip_at on public.nolco_hits (ip, at);
 alter table public.nolco_hits enable row level security;
+
+-- 방문 통계: 날짜·종류·대상별 횟수만 (누가 봤는지는 남기지 않음)
+create table if not exists public.nolco_stats (
+  day date not null default current_date,
+  ev text not null,
+  item text not null default '',
+  n integer not null default 0,
+  primary key (day, ev, item)
+);
+alter table public.nolco_stats enable row level security;
