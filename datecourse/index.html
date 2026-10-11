@@ -449,9 +449,13 @@ ol.stops li:not(:last-child)::after { content: ""; position: absolute; left: 11p
 .reviews h3 .avg svg.i { color: var(--star); width: 16px; height: 16px; }
 .review-form { display: flex; flex-direction: column; gap: 10px; background: var(--fill); border-radius: 14px; padding: 14px; }
 .star-pick { display: flex; align-items: center; gap: 2px; }
-.star { border: 0; background: transparent; padding: 2px; color: var(--line); line-height: 0; }
-.star svg.i { width: 30px; height: 30px; }
-.star[aria-pressed="true"] { color: var(--star); }
+.star-pick:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
+.star { padding: 2px; line-height: 0; cursor: pointer; }
+.star svg.i, .star .st svg.i { width: 30px; height: 30px; }
+.st { position: relative; display: inline-block; line-height: 0; color: var(--line); }
+.st.full { color: var(--star); }
+.st.half .st-fill { position: absolute; inset: 0; width: 50%; overflow: hidden; color: var(--star); }
+.rate-n { font-size: 12px; font-weight: 700; color: var(--sub); }
 .star-label { font-size: 13px; color: var(--sub); margin-left: 6px; }
 textarea, .builder input, .builder select {
   width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 11px 12px; min-width: 0; font-size: 15px;
@@ -463,7 +467,6 @@ textarea { resize: vertical; }
 .review-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; }
 .review-top .stars { display: inline-flex; color: var(--star); }
 .review-top .stars svg.i { width: 14px; height: 14px; }
-.review-top .stars .off { color: var(--line); }
 .review-top .when { color: var(--faint); font-size: 12px; }
 .review-top .btn { margin-left: auto; }
 .review-text { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; }
@@ -663,6 +666,14 @@ const ICON = {
   bowl: "M3.5 11h17a8.5 8.5 0 0 1-17 0zM8 7.5c0-1 1-1.5 1-2.5M12 7.5c0-1 1-1.5 1-2.5M16 7.5c0-1 1-1.5 1-2.5",
 };
 const FILLED = new Set(["star"]);
+// 별 하나: f 가 1이면 꽉 찬 별, 0.5면 왼쪽 반만 칠한 별, 0이면 빈 별
+function oneStar(f) {
+  return f >= 1 ? `<span class="st full">${icon("star")}</span>`
+    : f >= 0.5 ? `<span class="st half">${icon("star")}<span class="st-fill">${icon("star")}</span></span>`
+    : `<span class="st off">${icon("star")}</span>`;
+}
+// 별 다섯 개 (반 개 단위)
+const starRow = (rating) => [1, 2, 3, 4, 5].map((n) => oneStar(rating - (n - 1))).join("");
 function icon(name, extra = "") {
   const fill = FILLED.has(name) || extra.includes("fillc");
   return `<svg class="i ${fill ? "fillc" : ""} ${extra}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[name]}"/></svg>`;
@@ -1992,8 +2003,9 @@ const int = (v, lo, hi) => { const n = Math.round(Number(v)); return Number.isFi
 // 남이 쓴 데이터는 믿지 않는다: 모양과 길이를 다시 맞춘다
 function cleanReview(r) {
   if (!r || typeof r !== "object") return null;
-  const rating = int(r.rating, 0, 5);
-  if (!rating) return null;
+  // 1~5점, 0.5점 단위
+  const rating = Math.min(5, Math.max(0, Math.round(Number(r.rating) * 2) / 2));
+  if (!(rating >= 1)) return null;
   return { rating, text: str(r.text, 500), at: str(r.at, 40) };
 }
 function cleanCourse(id, c, author) {
@@ -2203,8 +2215,8 @@ function renderReviewForm(courseId) {
   let rating = mine ? mine.rating : 0;
   box.innerHTML = `
     <form class="review-form" id="reviewFormEl">
-      <div class="star-pick" role="group" aria-label="별점">
-        ${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="star" data-n="${n}" aria-label="별 ${n}개" aria-pressed="false">${icon("star")}</button>`).join("")}
+      <div class="star-pick" id="starPick" role="slider" tabindex="0" aria-label="별점 (반 개 단위)" aria-valuemin="1" aria-valuemax="5" aria-valuenow="0">
+        ${[1, 2, 3, 4, 5].map((n) => `<span class="star" data-n="${n}"></span>`).join("")}
         <span class="star-label" id="starLabel"></span>
       </div>
       ${shared.db.server ? `<label class="nick-row"><span>닉네임</span><input id="reviewNick" maxlength="12" placeholder="안 적으면 '누군가'"></label>` : ""}
@@ -2220,11 +2232,27 @@ function renderReviewForm(courseId) {
     $("reviewNick").value = getNick();
     $("reviewNick").addEventListener("change", () => save(NICK_KEY, $("reviewNick").value.trim().slice(0, 12)));
   }
+  // 별의 왼쪽 반을 누르면 반 개, 오른쪽 반을 누르면 한 개 (1점~5점, 0.5점 단위). 키보드는 ←→ 로 0.5점씩
+  const pick = $("starPick");
   const paint = () => {
-    box.querySelectorAll(".star").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.n <= rating)));
-    $("starLabel").textContent = rating ? `${rating}점` : "별을 눌러 점수를 골라 주세요";
+    box.querySelectorAll(".star").forEach((b) => { b.innerHTML = oneStar(rating - (+b.dataset.n - 1)); });
+    pick.setAttribute("aria-valuenow", String(rating));
+    pick.setAttribute("aria-valuetext", rating ? `${rating}점` : "고르지 않음");
+    $("starLabel").textContent = rating ? `${rating}점` : "별을 눌러 점수를 골라 주세요 (반 개도 돼요)";
   };
-  box.querySelectorAll(".star").forEach((b) => b.addEventListener("click", () => { rating = +b.dataset.n; paint(); }));
+  box.querySelectorAll(".star").forEach((b) => b.addEventListener("click", (e) => {
+    const r = b.getBoundingClientRect();
+    const half = e.clientX - r.left < r.width / 2;
+    rating = Math.max(1, +b.dataset.n - (half ? 0.5 : 0));
+    paint();
+  }));
+  pick.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") rating = Math.min(5, (rating || 0.5) + 0.5);
+    else if (e.key === "ArrowLeft" || e.key === "ArrowDown") rating = Math.max(1, (rating || 1.5) - 0.5);
+    else return;
+    e.preventDefault();
+    paint();
+  });
   paint();
   $("reviewFormEl").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -2271,7 +2299,7 @@ async function renderReviewList(courseId) {
     const isMe = x.author === shared.me;
     li.innerHTML = `
       <div class="review-top">
-        <b class="who"></b><span class="stars" aria-label="별 ${x.rating}개">${[1, 2, 3, 4, 5].map((n) => icon("star", n > x.rating ? "off" : "")).join("")}</span><span class="when">${esc(day(x.at))}</span>
+        <b class="who"></b><span class="stars" aria-label="별점 ${x.rating}점">${starRow(x.rating)}</span><span class="rate-n">${x.rating}</span><span class="when">${esc(day(x.at))}</span>
         ${shared.owner && !isMe ? `<button class="btn small" type="button" data-act="del">관리: 지우기</button>` : ""}
         ${shared.db && shared.db.report && !isMe ? `<button class="btn small ghost" type="button" data-act="report">신고</button>` : ""}
       </div>
