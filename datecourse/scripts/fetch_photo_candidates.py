@@ -38,7 +38,8 @@ def strip(html):
     return re.sub(r"<[^>]+>", "", html or "").strip()
 
 
-def main(out="photo_candidates", per=8):
+def main(out="photo_candidates", per="8"):
+    per = int(per)
     root = Path(out)
     for name, q in QUERIES.items():
         params = {"action": "query", "format": "json", "generator": "search", "gsrnamespace": 6, "gsrsearch": f"{q} filetype:bitmap",
