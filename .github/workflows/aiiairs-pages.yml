@@ -55,6 +55,7 @@ jobs:
           mkdir -p _site/nolco
           cp datecourse/index.html datecourse/manifest.webmanifest datecourse/sw.js datecourse/icon.svg _site/nolco/
           cp -r datecourse/data _site/nolco/
+          cp -r datecourse/img _site/nolco/
           touch _site/.nojekyll
 
       # 공식 포스터: 저장소에 쌓지 않고 사이트를 올릴 때 받는다. 받아 둔 것은 Actions 캐시에 두고 새것만 받는다.

@@ -120,14 +120,15 @@ svg.i.fillc { fill: currentColor; stroke: none; }
   font-size: 12px; color: var(--ink); text-align: center; line-height: 1.3; min-width: 0;
 }
 .act:hover { background: var(--fill); }
-.act .ic { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--fill); color: var(--ink); }
+.act .ic { width: 60px; height: 60px; border-radius: 20px; display: grid; place-items: center; background: var(--fill); color: var(--ink); }
 .act .ic svg.i { width: 26px; height: 26px; stroke-width: 1.7; }
-.act .ic svg.il { width: 40px; height: 40px; }
-.act:hover .ic svg.il, .act:focus-visible .ic svg.il { transform: translateY(-2px) rotate(-4deg); }
-.act .ic svg.il { transition: transform .15s ease; }
+img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)); }
+.act .ic .il { width: 46px; height: 46px; }
+.act:hover .ic .il, .act:focus-visible .ic .il { transform: translateY(-2px) rotate(-4deg); }
+.act .ic .il { transition: transform .15s ease; }
 .act span:last-child { word-break: keep-all; }
 .act .ic { position: relative; }
-.act.shut .ic svg.il { opacity: .45; filter: grayscale(.5); }
+.act.shut .ic .il { opacity: .45; filter: grayscale(.5); }
 .act .badge { position: absolute; left: 50%; top: -7px; transform: translateX(-50%); white-space: nowrap; font-style: normal;
   font-size: 10px; font-weight: 700; line-height: 1; padding: 3px 6px; border-radius: 999px; background: var(--ink); color: var(--bg); }
 .act .badge.alt { background: var(--accent); color: var(--accent-ink); }
@@ -274,7 +275,7 @@ main.wrap { padding-bottom: calc(var(--tab-h) + 28px + env(safe-area-inset-botto
   display: grid; place-items: center; background: var(--t-base); color: var(--t-base-i);
 }
 .thumb svg.i { width: 30px; height: 30px; stroke-width: 1.7; }
-.thumb svg.il { width: 56px; height: 56px; }
+.thumb .il { width: 60px; height: 60px; }
 .thumb.sea { background: var(--t-sea); color: var(--t-sea-i); }
 .thumb.night { background: var(--t-night); color: var(--t-night-i); }
 .thumb.green { background: var(--t-green); color: var(--t-green-i); }
@@ -312,7 +313,7 @@ body.weekend .seg, body.weekend .hscroll:has(#hoodRow), body.weekend .hscroll:ha
 .ev { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: start; width: 100%; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; color: var(--ink); }
 .ev-pic { width: 72px; height: 96px; border-radius: 10px; overflow: hidden; background: var(--fill); display: grid; place-items: center; }
 .ev-pic img { width: 100%; height: 100%; object-fit: cover; }
-.ev-pic svg.il { width: 44px; height: 44px; }
+.ev-pic .il { width: 44px; height: 44px; }
 .ev-body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .ev-top { display: flex; gap: 6px; align-items: center; }
 .ev-cat { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: var(--fill); color: var(--sub); }
@@ -325,13 +326,13 @@ body.weekend .seg, body.weekend .hscroll:has(#hoodRow), body.weekend .hscroll:ha
 .wk-more { margin: 14px auto; }
 .ev-hero { margin: 4px 0 12px; border-radius: 14px; overflow: hidden; background: var(--fill); display: grid; place-items: center; max-height: 360px; }
 .ev-hero img { width: 100%; max-height: 360px; object-fit: contain; }
-.ev-hero svg.il { width: 120px; height: 120px; margin: 24px; }
+.ev-hero .il { width: 120px; height: 120px; margin: 24px; }
 .ev-at { display: flex; gap: 6px; align-items: center; }
 .ev-at svg.i { width: 16px; height: 16px; flex: none; }
 .weekend-entry { margin: 14px 0 0; }
 .wk-entry { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); text-align: left; }
 .wk-entry .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; flex: none; }
-.wk-entry .ic svg.il { width: 32px; height: 32px; }
+.wk-entry .ic .il { width: 32px; height: 32px; }
 .wk-entry > span:nth-child(2) { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .wk-entry small { color: var(--sub); font-size: 12px; }
 .wk-entry .go { display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; color: var(--accent-text); }
@@ -733,7 +734,12 @@ ILLU.show = `<g transform="rotate(-10 24 24)"><path d="M6 15h36v6a3 3 0 0 0 0 6v
     <path d="M17 19.5l1.6 3.2 3.5.5-2.5 2.5.6 3.5-3.2-1.7-3.2 1.7.6-3.5-2.5-2.5 3.5-.5z" fill="${C.y}"/></g>`;
 ILLU.festival = `<path d="M24 6v9M24 33v9M6 24h9M33 24h9M11.3 11.3l6.4 6.4M30.3 30.3l6.4 6.4M36.7 11.3l-6.4 6.4M17.7 30.3l-6.4 6.4" stroke="${C.y}" stroke-width="3" stroke-linecap="round"/>
     <circle cx="24" cy="24" r="5" fill="${C.r}"/><circle cx="9" cy="8" r="2.4" fill="${C.p}"/><circle cx="40" cy="9" r="2" fill="${C.m}"/><circle cx="40" cy="40" r="2.4" fill="${C.s}"/><circle cx="8" cy="39" r="2" fill="${C.v}"/>`;
+/* 입체 그림: Microsoft Fluent Emoji 3D (MIT, img/3d/LICENSE.txt). 없으면 위 색 그림(SVG) */
+const IMG3D = new Set(["coinsing", "karaoke", "boardgame", "escape", "bowling", "billiards", "arcade", "manga", "photo", "class",
+  "climbing", "screenbase", "pc", "vr", "jjim", "cinema", "meal", "snack", "cafe", "cup", "spark", "wave", "moon", "roof", "leaf",
+  "pin", "show", "festival"]);
 function illu(name) {
+  if (IMG3D.has(name)) return `<img class="il" src="img/3d/${name}.webp" alt="" aria-hidden="true" width="160" height="160" decoding="async">`;
   return ILLU[name] ? `<svg class="il" viewBox="0 0 48 48" aria-hidden="true">${ILLU[name]}</svg>` : icon(name);
 }
 const DETAIL_ICON = { photo: "camera", time: "clock", move: "bus", tip: "bulb", snack: "cone" };
