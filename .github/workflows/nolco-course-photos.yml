@@ -8,6 +8,8 @@ on:
       - "datecourse/data/courses.json"
       - "datecourse/scripts/fetch_course_photos.py"
       - ".github/workflows/nolco-course-photos.yml"
+  schedule:
+    - cron: "07 19 * * 1"   # 매주 화요일 새벽 4시 7분 (한국 시간): 새 코스 사진
   workflow_dispatch:
 
 permissions:
