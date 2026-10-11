@@ -250,7 +250,7 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .chip.removable { background: var(--accent-soft); border-color: transparent; color: var(--accent-text); font-weight: 600; }
 
 /* ── 목록 ── */
-main.wrap { padding-bottom: calc(var(--tab-h) + 28px + env(safe-area-inset-bottom, 0px)); }
+main.wrap { padding-bottom: 8px; }
 .pick {
   display: flex; align-items: center; gap: 12px; width: 100%; margin: 6px 0 4px; padding: 14px 16px;
   background: var(--accent-soft); border: 0; border-radius: 16px; text-align: left; color: var(--ink);
@@ -344,6 +344,10 @@ body.weekend .seg, body.weekend .hscroll:has(#hoodRow), body.weekend .hscroll:ha
 .wk-entry small { color: var(--sub); font-size: 12px; }
 .wk-entry .go { display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; color: var(--accent-text); }
 .wk-entry .go svg.i { width: 15px; height: 15px; }
+
+.site-foot { padding: 24px 16px calc(var(--tab-h) + 28px + env(safe-area-inset-bottom, 0px)); font-size: 12px; color: var(--faint); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.site-foot a { color: var(--sub); }
+.site-foot p { width: 100%; margin: 2px 0 0; }
 
 /* ── 아래 탭 바 ── */
 .tabbar {
@@ -557,6 +561,11 @@ textarea { resize: vertical; }
   </div>
   <div class="grid" id="grid"></div>
 </main>
+
+<footer class="site-foot wrap">
+  <a href="privacy.html">개인정보처리방침</a><span>·</span><a href="terms.html">이용약관</a>
+  <p>코스 사진·축제: 한국관광공사 · 공연: KOPIS · 가게: 카카오 · 그림: Microsoft Fluent Emoji</p>
+</footer>
 
 <nav class="tabbar" aria-label="메뉴">
   <div class="wrap">
@@ -1117,6 +1126,7 @@ function openActivity(actId) {
   const a = LOCAL.acts[actId];
   const h = hoodById(state.hood);
   if (!a || !h) return;
+  hit("act", actId);
   openId = "";
   const keyword = `${h.q} ${a.kw}`;
   const q = encodeURIComponent(keyword);
@@ -1736,6 +1746,7 @@ function openWeekend() {
 }
 function openEvent(e) {
   openId = "";
+  hit("event", e.kind);
   const when = e.start === e.end ? md(e.start) : `${md(e.start)} ~ ${md(e.end)}`;
   const q = encodeURIComponent(e.place || e.title);
   const safe = (u) => (/^https:\/\//.test(u || "") ? u : "");
@@ -1806,6 +1817,7 @@ let map = null;
 function openCourse(id, { push = true } = {}) {
   const c = findCourse(id);
   if (!c) return;
+  hit("course", c.source === "local" ? (c.id.split("-")[1] || "local") : c.id);
   openId = id;
   const stayMin = c.stops.reduce((n, s) => n + (s.stay || 0), 0);
   const total = totalPrice(c);
@@ -1944,7 +1956,12 @@ function drawMap(c) {
 }
 
 async function share(c) {
-  const url = location.href.split("#")[0] + "#c=" + encodeURIComponent(c.id);
+  hit("share", c.id);
+  // 직접 고른 코스·관광공사 코스는 미리보기(사진·제목)가 붙는 공유 페이지로, 나머지는 앱 주소로
+  const appUrl = location.href.split("#")[0].split("?")[0];
+  const url = /^(l|u)-/.test(c.id) || !/\/nolco\/(index\.html)?$/.test(new URL(appUrl).pathname)
+    ? appUrl + "#c=" + encodeURIComponent(c.id)
+    : new URL("c/" + encodeURIComponent(c.id) + ".html", appUrl).href;
   const text = `${c.title}\n${c.stops.map((s, i) => `${i + 1}. ${s.name}`).join("\n")}`;
   try {
     if (navigator.share) { await navigator.share({ title: c.title, text, url }); return; }
@@ -2032,6 +2049,19 @@ function cleanCourse(id, c, author) {
 function mergeCourses() {
   const seen = new Set(state.base.map((c) => c.id));
   state.courses = [...state.base, ...shared.userCourses.filter((c) => !seen.has(c.id))];
+}
+
+/* 방문 통계: 어떤 화면·코스를 열었는지 날짜별 횟수만 보낸다 (누가 봤는지는 보내지 않음, '추적 안 함' 설정이면 안 보냄) */
+const hitSent = new Set();
+function hit(ev, item = "") {
+  const endpoint = photoEndpoint();
+  if (!endpoint || window.claude || navigator.doNotTrack === "1") return;
+  const key = ev + "|" + item;
+  if (hitSent.has(key)) return;   // 한 번 열 때마다 한 번만
+  hitSent.add(key);
+  try {
+    fetch(endpoint, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ mode: "hit", ev, item: String(item).slice(0, 80) }), keepalive: true }).catch(() => {});
+  } catch { /* 통계는 없어도 된다 */ }
 }
 
 /* 놀코 서버(Supabase 함수)에 저장: claude.ai 저장소와 같은 모양(collection().onSnapshot, doc().set)으로 감싼다.
@@ -2226,6 +2256,7 @@ function renderReviewForm(courseId) {
         <button class="btn primary" type="submit" id="reviewSave">${mine ? "리뷰 고치기" : "리뷰 남기기"}</button>
         ${mine ? `<button class="btn" type="button" id="reviewDelete">내 리뷰 지우기</button>` : ""}
       </div>
+      ${shared.db.server ? `<p class="note">리뷰는 모두에게 보여요. 올리면 <a href="terms.html" target="_blank">이용약관</a>과 <a href="privacy.html" target="_blank">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>` : ""}
     </form>`;
   $("reviewText").value = mine ? mine.text : "";
   if ($("reviewNick")) {
@@ -2663,6 +2694,7 @@ window.addEventListener("popstate", () => {
   else if (id) pendingId = id;
   initShared().catch(() => {});
   loadEvents();
+  hit("visit", state.mode);
 })();
 
 if ("serviceWorker" in navigator && location.protocol === "https:") {

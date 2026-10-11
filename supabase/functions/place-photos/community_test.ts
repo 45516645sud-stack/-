@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert@1";
 import { SCHEMA } from "./schema.ts";
-import { authorId, cleanBody, cleanCol, cleanNick, validToken, withoutHidden } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem } from "./community.ts";
 
 Deno.test("col·token 확인", () => {
   assertEquals(cleanCol("rv"), "rv");
@@ -35,4 +35,25 @@ Deno.test("신고 쌓인 항목 숨기기", () => {
 Deno.test("함수 안 표 정의가 migrations SQL 과 같음", async () => {
   const file = await Deno.readTextFile(new URL("../../migrations/20261011000000_nolco_community.sql", import.meta.url));
   assertEquals(SCHEMA, file);
+});
+
+Deno.test("통계 한 건 정리", () => {
+  assertEquals(cleanHit({ ev: "course", item: "seoul-seongsu" }), { ev: "course", item: "seoul-seongsu" });
+  assertEquals(cleanHit({ ev: "visit" }), { ev: "visit", item: "" });
+  assertEquals(cleanHit({ ev: "hack", item: "x" }), null);
+  assertEquals(cleanHit({ ev: "course", item: "<script>" }), null);
+});
+
+Deno.test("관리자 비밀번호 확인", async () => {
+  const salt = new Uint8Array(16).fill(7);
+  const saltHex = [...salt].map((x) => x.toString(16).padStart(2, "0")).join("");
+  const stored = `pbkdf2$100000$${saltHex}$${await pbkdf2("correct horse battery", salt, 100000)}`;
+  assertEquals(await checkAdmin("correct horse battery", stored), true);
+  assertEquals(await checkAdmin("wrong password 123", stored), false);
+  assertEquals(await checkAdmin("correct horse battery", ""), false); // 정하지 않으면 꺼짐
+  assertEquals(await checkAdmin("short", stored), false);
+});
+
+Deno.test("관리자 지우기는 그 항목만", () => {
+  assertEquals(withoutItem("rv", { nick: "a", reviews: { c1: { rating: 5 }, c2: { rating: 1 } } }, "c2"), { nick: "a", reviews: { c1: { rating: 5 } } });
 });

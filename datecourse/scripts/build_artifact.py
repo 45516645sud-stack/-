@@ -31,7 +31,8 @@ def build(s: str) -> str:
     s = re.sub(r'(<meta name="kakao-js-key" content=")[^"]*', r'\1', s)
     s = must(s, '.appbar { position: sticky; top: 0;', '.appbar { position: sticky; top: env(safe-area-inset-top, 0px);')
     # 아티팩트 링크는 #코스id 하나만 넘긴다
-    s = must(s, '''  const url = location.href.split("#")[0] + "#c=" + encodeURIComponent(c.id);\n''', '')
+    s, n = re.subn(r'  // 직접 고른 코스·관광공사 코스는 미리보기.*?\.href;\n', '', s, count=1, flags=re.S)
+    assert n, "share url"
     s = s.replace('"#c=" + encodeURIComponent', '"#" + encodeURIComponent')
     s = must(s, 'const m = location.hash.match(/^#c=(.+)$/);', 'const m = location.hash.match(/^#([\\w.~-]+)$/);')
     # Web Share·prompt 는 막혀 있고 주소도 아티팩트 링크가 아니라서, 코스 순서만 복사한다

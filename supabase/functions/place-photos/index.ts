@@ -2,7 +2,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import postgres from "npm:postgres@3.4.5";
 import { SCHEMA } from "./schema.ts";
 import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos } from "./photos.ts";
-import { authorId, cleanBody, cleanCol, cleanItem, HIDE_AT, validToken, withoutHidden } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, HIDE_AT, validToken, withoutHidden, withoutItem } from "./community.ts";
 
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
 // 카카오 REST API 키는 비밀이라 앱 화면에 둘 수 없어서, 이 함수가 대신 카카오에 물어본다.
@@ -13,6 +13,8 @@ import { authorId, cleanBody, cleanCol, cleanItem, HIDE_AT, validToken, withoutH
 //   리뷰·코스: GET ?mode=docs&col=rv|uc               → { docs: [{ id, data }] }
 //              POST { mode: "set", col, token, body }   → { ok, id }   (자기 문서만)
 //              POST { mode: "report", col, doc, item, token } → { ok }
+//   통계:       POST { mode: "hit", ev, item }               → { ok }   (날짜별 횟수만)
+//   관리자:     POST { mode: "admin", pass, action: "stats" | "list" | "delete", col?, doc?, item? }
 // 사진은 썸네일과 출처(블로그 등) 링크뿐이다. 원본 사진은 내려주지 않는다.
 
 const KAKAO_IMAGE_SEARCH = "https://dapi.kakao.com/v2/search/image";
@@ -170,8 +172,8 @@ function ensureTables(): Promise<void> {
     if (!dbUrl) return;
     const sql = postgres(dbUrl, { max: 1, prepare: false });
     try {
-      const [{ n }] = await sql`select count(*)::int as n from information_schema.tables where table_schema = 'public' and table_name in ('nolco_docs', 'nolco_reports', 'nolco_hits')`;
-      if (n < 3) {
+      const [{ n }] = await sql`select count(*)::int as n from information_schema.tables where table_schema = 'public' and table_name in ('nolco_docs', 'nolco_reports', 'nolco_hits', 'nolco_stats')`;
+      if (n < 4) {
         await sql.unsafe(SCHEMA);
         await sql.unsafe("notify pgrst, 'reload schema'");
         await new Promise((r) => setTimeout(r, 1500));
@@ -204,6 +206,16 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
     if (text.length > 220_000) return json({ error: "내용이 너무 길어요." }, 413);
     let msg: Record<string, unknown>;
     try { msg = JSON.parse(text); } catch { return json({ error: "JSON 으로 보내 주세요." }, 400); }
+    if (msg.mode === "hit") {
+      const hit = cleanHit(msg);
+      if (!hit) return json({ error: "잘못된 통계예요." }, 400);
+      const sql = stats();
+      if (sql) await sql`insert into public.nolco_stats (day, ev, item, n) values ((now() at time zone 'Asia/Seoul')::date, ${hit.ev}, ${hit.item}, 1)
+        on conflict (day, ev, item) do update set n = public.nolco_stats.n + 1`;
+      return json({ ok: true }, 200);
+    }
+    if (msg.mode === "admin") return admin(sb, req, msg, json);
+
     const col = cleanCol(msg.col);
     if (!col || !validToken(msg.token)) return json({ error: "잘못된 요청이에요." }, 400);
     const me = await authorId(msg.token);
@@ -229,4 +241,48 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
     console.error("community error:", error);
     return json({ error: "저장소에 문제가 생겼어요." }, 502);
   }
+}
+
+// 통계용 데이터베이스 연결 (함수가 켜져 있는 동안 하나를 같이 쓴다)
+// deno-lint-ignore no-explicit-any
+let statsSql: any = null;
+function stats() {
+  const dbUrl = Deno.env.get("SUPABASE_DB_URL");
+  if (!dbUrl) return null;
+  statsSql ??= postgres(dbUrl, { max: 2, prepare: false, idle_timeout: 20 });
+  return statsSql;
+}
+
+async function admin(sb: Sb, req: Request, msg: Record<string, unknown>, json: Json): Promise<Response> {
+  if (await tooMany(sb, req)) return json({ error: "잠시 뒤에 다시 해 주세요." }, 429);
+  if (!(await checkAdmin(msg.pass))) return json({ error: "관리자 비밀번호가 맞지 않거나 아직 정하지 않았어요." }, 403);
+  if (msg.action === "stats") {
+    const sql = stats();
+    if (!sql) return json({ error: "통계 저장소가 없어요." }, 503);
+    const days = await sql`select day::text as day, ev, sum(n)::int as n from public.nolco_stats
+      where day >= (now() at time zone 'Asia/Seoul')::date - 29 group by day, ev order by day`;
+    const top = await sql`select ev, item, sum(n)::int as n from public.nolco_stats
+      where day >= (now() at time zone 'Asia/Seoul')::date - 29 and item <> '' group by ev, item order by n desc limit 60`;
+    return json({ days, top }, 200, { "Cache-Control": "no-store" });
+  }
+  if (msg.action === "list") {
+    const [{ data: docs }, { data: reports }] = await Promise.all([
+      sb.from("nolco_docs").select("col,id,body,updated_at").order("updated_at", { ascending: false }).limit(1000),
+      sb.from("nolco_reports").select("col,doc_id,item_id").limit(5000),
+    ]);
+    return json({ docs: docs ?? [], reports: reports ?? [] }, 200, { "Cache-Control": "no-store" });
+  }
+  if (msg.action === "delete") {
+    const col = cleanCol(msg.col);
+    const doc = typeof msg.doc === "string" && /^[a-f0-9]{24}$/.test(msg.doc) ? msg.doc : null;
+    const item = cleanItem(msg.item);
+    if (!col || !doc || !item) return json({ error: "지울 대상이 이상해요." }, 400);
+    const { data } = await sb.from("nolco_docs").select("body").eq("col", col).eq("id", doc).maybeSingle();
+    if (!data) return json({ error: "글을 찾지 못했어요." }, 404);
+    const { error } = await sb.from("nolco_docs").update({ body: withoutItem(col, data.body, item), updated_at: new Date().toISOString() }).eq("col", col).eq("id", doc);
+    if (error) throw error;
+    await sb.from("nolco_reports").delete().eq("col", col).eq("doc_id", doc).eq("item_id", item);
+    return json({ ok: true }, 200);
+  }
+  return json({ error: "action 은 stats, list, delete 예요." }, 400);
 }

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 · 놀코</title>
+<meta name="theme-color" content="#ffd23f">
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root { --ink: #1f1c15; --sub: #6b6455; --line: #ece6d6; --accent: #ffd23f; --bg: #fff; --fill: #f7f4ec; }
+@media (prefers-color-scheme: dark) { :root { --ink: #f3efe4; --sub: #b9b2a2; --line: #3a362c; --bg: #17150f; --fill: #221f17; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.7 "Pretendard Variable", Pretendard, system-ui, sans-serif; }
+header { background: var(--accent); color: #1f1c15; padding: 18px 16px; }
+header a { color: inherit; text-decoration: none; font-weight: 800; font-size: 20px; }
+main { max-width: 760px; margin: 0 auto; padding: 8px 16px 64px; }
+h1 { font-size: 24px; margin: 24px 0 4px; }
+h2 { font-size: 17px; margin: 28px 0 6px; }
+p, li { color: var(--ink); }
+small, .muted { color: var(--sub); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0; }
+th, td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+th { background: var(--fill); }
+a { color: #8a6200; }
+@media (prefers-color-scheme: dark) { a { color: #ffd23f; } }
+</style>
+</head>
+<body>
+<header><a href="./">← 놀코</a></header>
+<main>
+<h1>개인정보처리방침</h1>
+<p class="muted">시행일: 2026년 10월 11일</p>
+<p>놀코(이하 "서비스")는 회원가입 없이 쓰는 놀거리·데이트 코스 추천 서비스예요. 이름·전화번호·이메일 같은 정보는 받지 않고,
+리뷰와 코스를 남기는 데 꼭 필요한 정보만 아래처럼 다뤄요.</p>
+
+<h2>1. 어떤 정보를, 왜, 얼마나 보관하나요</h2>
+<table>
+<tr><th>정보</th><th>쓰는 곳</th><th>보관 기간</th></tr>
+<tr><td>닉네임(선택), 별점, 리뷰 내용, 작성 시각</td><td>리뷰 보여 주기</td><td>작성자가 지우거나 운영자가 지울 때까지</td></tr>
+<tr><td>직접 만든 코스 내용(장소 이름, 설명 등)</td><td>코스 보여 주기</td><td>작성자가 지우거나 운영자가 지울 때까지</td></tr>
+<tr><td>작성자 구분값 (브라우저가 만든 임의의 값을 되돌릴 수 없게 바꾼 값)</td><td>내 글만 고치고 지울 수 있게, 신고 중복 막기</td><td>글이 남아 있는 동안</td></tr>
+<tr><td>접속 IP 주소를 되돌릴 수 없게 바꾼 값 (원래 IP는 저장하지 않음)</td><td>글 도배·악용 막기</td><td>하루 뒤 자동 삭제</td></tr>
+<tr><td>날짜별 화면·코스 열람 횟수 (누가 봤는지는 저장하지 않음)</td><td>많이 보는 코스 파악, 서비스 개선</td><td>최대 2년</td></tr>
+</table>
+<p>위치 정보: '내 주변'을 누르면 브라우저가 위치 사용을 물어요. 허락하면 그 위치로 근처 가게를 찾는 데만 쓰고, 서버에 저장하지 않아요.</p>
+<p>기기에 저장하는 것: 찜한 코스, 화면 설정, 고른 동네, 닉네임, 작성자 비밀 값은 쓰는 사람의 브라우저(localStorage)에만 저장돼요.
+브라우저 기록을 지우면 함께 지워지고, 그 뒤에는 예전에 쓴 글을 고칠 수 없어요.</p>
+
+<h2>2. 다른 곳에 맡기거나 보내는 정보</h2>
+<table>
+<tr><th>받는 곳</th><th>하는 일</th><th>보내는 정보</th></tr>
+<tr><td>Supabase</td><td>리뷰·코스·통계 저장, 서버 함수 실행</td><td>위 1번의 정보</td></tr>
+<tr><td>카카오</td><td>가게 검색, 가게 사진(블로그·카페 글) 검색</td><td>검색어, 검색할 위치(저장하지 않음)</td></tr>
+<tr><td>GitHub Pages</td><td>사이트 파일 보내기</td><td>일반적인 웹 접속 기록</td></tr>
+<tr><td>OpenStreetMap, jsDelivr·cdnjs</td><td>지도 그림, 글꼴·지도 프로그램 내려받기</td><td>일반적인 웹 접속 기록</td></tr>
+</table>
+<p>이 밖에는 정보를 팔거나 다른 곳에 넘기지 않아요.</p>
+
+<h2>3. 내 정보 지우기</h2>
+<ul>
+<li>내가 쓴 리뷰는 코스 화면의 <b>내 리뷰 지우기</b>, 직접 만든 코스는 <b>지우기</b>로 바로 지울 수 있어요.</li>
+<li>다른 기기에서 쓴 글이라 지울 수 없거나, 남이 쓴 글에 내 정보가 들어 있다면 아래 문의처로 알려 주세요. 확인 뒤 지워 드려요.</li>
+</ul>
+
+<h2>4. 만 14세 미만</h2>
+<p>만 14세 미만이라면 보호자와 함께 이용하고, 리뷰나 코스에 이름·학교·연락처 같은 개인정보를 쓰지 마세요.</p>
+
+<h2>5. 안전하게 지키기</h2>
+<p>저장소는 서버 함수만 읽고 쓸 수 있게 막아 두었고, 주고받는 내용은 모두 암호화(HTTPS)돼요. 리뷰는 누구나 볼 수 있으니 개인정보를 적지 마세요.</p>
+
+<h2>6. 문의</h2>
+<p>개인정보 관련 요청이나 문의: <a href="https://github.com/45516645sud-stack/-/issues" target="_blank" rel="noopener">GitHub 문의 게시판</a></p>
+<p class="muted">이 방침이 바뀌면 이 페이지에 바뀐 날짜와 함께 알려요.</p>
+</main>
+</body>
+</html>
