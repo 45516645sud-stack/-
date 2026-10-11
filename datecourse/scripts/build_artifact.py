@@ -55,4 +55,5 @@ if __name__ == "__main__":
     (out / "index.html").write_text(build((ROOT / "index.html").read_text(encoding="utf-8")), encoding="utf-8")
     shutil.copy(ROOT / "data" / "courses.json", out / "data" / "courses.json")
     shutil.copy(ROOT / "data" / "local.json", out / "data" / "local.json")
+    shutil.copytree(ROOT / "img", out / "img", dirs_exist_ok=True)
     print("ok", out)
