@@ -41,7 +41,7 @@ export function cleanBody(col: Col, raw: unknown): { body: Record<string, unknow
     const src = isObj(raw.reviews) ? raw.reviews : {};
     for (const [cid, r] of Object.entries(src).slice(0, MAX_REVIEWS)) {
       if (!/^[\w-]{1,60}$/.test(cid) || !isObj(r)) continue;
-      const rating = Math.round(Number(r.rating));
+      const rating = Math.round(Number(r.rating) * 2) / 2; // 1~5점, 0.5점 단위
       if (!(rating >= 1 && rating <= 5)) continue;
       reviews[cid] = { rating, text: str(r.text, 500), at: str(r.at, 40) };
     }

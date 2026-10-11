@@ -16,8 +16,8 @@ Deno.test("작성자 id 는 비밀 값마다 같고 24자리", async () => {
 });
 
 Deno.test("리뷰 문서 정리", () => {
-  const r = cleanBody("rv", { nick: "<b>민지</b>", reviews: { "busan-x": { rating: 9, text: "좋아요" }, "ok-1": { rating: 4, text: " 굿 ", at: "2026" }, "bad id!": { rating: 3 } } });
-  assertEquals(r, { body: { nick: "b민지/b", reviews: { "ok-1": { rating: 4, text: "굿", at: "2026" } } } });
+  const r = cleanBody("rv", { nick: "<b>민지</b>", reviews: { "busan-x": { rating: 9, text: "좋아요" }, "ok-1": { rating: 4, text: " 굿 ", at: "2026" }, "half-1": { rating: 3.5 }, "odd-1": { rating: 2.3 }, "low-1": { rating: 0.5 }, "bad id!": { rating: 3 } } });
+  assertEquals(r, { body: { nick: "b민지/b", reviews: { "ok-1": { rating: 4, text: "굿", at: "2026" }, "half-1": { rating: 3.5, text: "", at: "" }, "odd-1": { rating: 2.5, text: "", at: "" } } } });
 });
 
 Deno.test("코스 문서는 u- 로 시작하는 id만", () => {
