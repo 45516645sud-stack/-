@@ -14,32 +14,37 @@
 <meta name="theme-color" content="#efe8da">
 <!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
 <meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
-<link rel="canonical" href="https://expomoa.com/">
+<link rel="canonical" href="https://45516645sud-stack.github.io/-/">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://expomoa.com/">
+<meta property="og:url" content="https://45516645sud-stack.github.io/-/">
 <meta property="og:title" content="AIIairs 소극장 일정">
 <meta property="og:description" content="전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
-<meta property="og:site_name" content="엑스포 모아">
+<meta property="og:site_name" content="AIIairs">
 <meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://45516645sud-stack.github.io/-/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AIIairs — 전국의 작은 무대를 한 장의 일정표로">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://expomoa.com/">
+<meta name="twitter:url" content="https://45516645sud-stack.github.io/-/">
 <meta name="twitter:title" content="AIIairs 소극장 일정">
+<meta name="twitter:image" content="https://45516645sud-stack.github.io/-/og.png">
 <meta name="twitter:description" content="전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "엑스포 모아",
-  "url": "https://expomoa.com/",
+  "name": "AIIairs",
+  "url": "https://45516645sud-stack.github.io/-/",
   "description": "전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://expomoa.com/search?q={search_term_string}",
+    "target": "https://45516645sud-stack.github.io/-/?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -452,11 +457,17 @@ legend + *{clear:both}
 .empty p{margin:0 0 18px;color:var(--muted);font-size:var(--s-1)}
 
 /* ---------- Footer ---------- */
+.maps{font-size:var(--s-1)}
+.maps a{color:var(--ink);text-underline-offset:3px;text-decoration-thickness:1px}
+.maps a:hover{color:var(--accent)}
+.addr{font-size:var(--s-1);color:var(--muted)}
 .foot{border-top:1px solid var(--ink)}
 .foot .wrap{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);padding-top:22px;padding-bottom:40px;font-size:var(--s-1);color:var(--muted)}
 .foot .f-brand{grid-column:1 / span 4;color:var(--ink);font-family:var(--f-display);font-size:var(--s1);font-weight:600}
 .foot .f-note{grid-column:5 / span 5;margin:0}
 .foot .f-end{grid-column:10 / span 3;margin:0;text-align:right}
+.foot a{color:var(--muted);text-underline-offset:3px;text-decoration-thickness:1px}
+.foot a:hover{color:var(--accent)}
 
 noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);background:var(--surface)}
 
@@ -714,7 +725,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
     <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
-    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span></p>
+    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span><br><a href="privacy.html">개인정보 처리방침</a></p>
   </div>
 </footer>
 
@@ -749,66 +760,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     <p class="fb-thanks">Thank you.</p>
     <p class="fb-title">고맙습니다.</p>
     <p class="fb-sub">보내주신 의견은 다음에 사이트를 고칠 때 한 줄씩 꼭 읽어볼게요.</p>
-  </div>
-</aside>
-
-    <div class="schedule" id="schedule" tabindex="-1">
-      <div id="notice"></div>
-      <section class="interp" id="interp" hidden aria-live="polite"></section>
-      <div class="sheet-head">
-        <h2 id="sheetTitle">전체 일정</h2>
-        <div class="sheet-tools">
-          <p id="sheetCount" aria-live="polite"></p>
-          <div class="view" role="group" aria-label="보기 방식">
-            <button type="button" data-view="list" aria-pressed="false">목록</button>
-            <button type="button" data-view="card" aria-pressed="true">카드</button>
-          </div>
-        </div>
-      </div>
-      <div class="sheet" id="sheet"><div class="empty"><p>일정을 불러오는 중이에요.</p></div></div>
-    </div>
-  </section>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <span class="f-brand">AIIairs</span>
-    <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
-    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span></p>
-  </div>
-</footer>
-
-<dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
-
-<aside class="fb" id="feedback" aria-labelledby="fbTitle" aria-live="polite" hidden>
-  <div class="fb-step" data-step="ask">
-    <div class="fb-head">
-      <p class="fb-title" id="fbTitle">사용은 어떠신가요?</p>
-      <button type="button" class="linkish" data-fb="close">닫기</button>
-    </div>
-    <div class="fb-pick" role="group" aria-label="사용 평가">
-      <button type="button" data-fb="1"><span class="fb-no">1</span>별로예요</button>
-      <button type="button" data-fb="2"><span class="fb-no">2</span>좋아요</button>
-    </div>
-  </div>
-  <form class="fb-step" data-step="why" hidden>
-    <div class="fb-head">
-      <p class="fb-title" id="fbWhy"></p>
-      <button type="button" class="linkish" data-fb="back">다시 고르기</button>
-    </div>
-    <p class="fb-sub" id="fbAsk"></p>
-    <textarea id="fbText" maxlength="500" rows="4" aria-labelledby="fbWhy fbAsk"></textarea>
-    <div class="fb-foot">
-      <span class="fb-hint">이름·연락처는 적지 말아 주세요</span>
-      <span><button type="button" class="linkish" data-fb="skip">건너뛰기</button>&nbsp;&nbsp;<button type="submit" class="btn btn-sm">보내기</button></span>
-    </div>
-  </form>
-  <div class="fb-step" data-step="done" hidden>
-    <div class="fb-head">
-      <p class="fb-title">고맙습니다.</p>
-      <button type="button" class="linkish" data-fb="close">닫기</button>
-    </div>
-    <p class="fb-sub">보내주신 의견은 다음에 고칠 때 꼭 읽어볼게요.</p>
   </div>
 </aside>
 
@@ -853,7 +804,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
   const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const DAY = 86400000;
-  const ORIGIN = 'https://expomoa.com/';
+  const ORIGIN = 'https://45516645sud-stack.github.io/-/';
 
   const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -903,6 +854,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         url: isWebUrl(f.url) ? f.url : null,
         info: isWebUrl(f.info) ? f.info : null,
         art: f.art || DEFAULT_ART[cat],
+        // 공연 시간·길이·관람 나이·공연장 주소 (KOPIS 에 있을 때만)
+        time: typeof f.time === 'string' ? f.time.slice(0, 160) : '',
+        runtime: typeof f.runtime === 'string' ? f.runtime.slice(0, 30) : '',
+        age: typeof f.age === 'string' ? f.age.slice(0, 30) : '',
+        addr: typeof f.addr === 'string' ? f.addr.slice(0, 120) : '',
         start: parseDate(f.s),
         end: parseDate(f.e),
         // 끝나는 날 없이 계속하는 공연. KOPIS 는 종료일을 몇 년 뒤로 적어 보낸다.
@@ -1437,12 +1393,23 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<div class="detail" id="detail-${f.id}"${open ? '' : ' hidden'}>` +
         `<p>${esc(f.d)}</p>` +
         `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
-        `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
-        (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
+        placeRows(f) +
         `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
         `<dt>장르</dt><dd>${CAT[f.cat].ko}</dd></dl>` +
         actionsHTML(f) +
       `</div></li>`;
+  }
+
+  // 장소·좌석·주소(+지도)·공연 시간·길이·관람 나이. 목록 펼침과 상세 창이 같이 쓴다.
+  function placeRows(f) {
+    const q = encodeURIComponent(f.addr || `${f.venue.replace(/\s*\(.*$/, '')} ${f.region === '기타' ? '' : f.region}`.trim());
+    const map = `<span class="maps"><a href="https://map.naver.com/p/search/${q}" target="_blank" rel="noopener">네이버 지도</a>` +
+      ` · <a href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener">카카오맵</a></span>`;
+    return `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}${f.addr ? `<br><span class="addr">${esc(f.addr)}</span>` : ''}<br>${map}</dd>` +
+      (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
+      (f.time ? `<dt>공연 시간</dt><dd>${esc(f.time)}</dd>` : '') +
+      (f.runtime ? `<dt>공연 길이</dt><dd>${esc(f.runtime)}</dd>` : '') +
+      (f.age ? `<dt>관람 나이</dt><dd>${esc(f.age)}</dd>` : '');
   }
 
   function actionsHTML(f) {
@@ -1489,7 +1456,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const lines = wrapTitle(f.t, 8).slice(0, 3);
     const fs = lines.length > 2 ? 36 : 42;
     const date = `${pad(f.start.getMonth() + 1)}.${pad(f.start.getDate())}`;
-    const end = f.s === f.e ? '' : ` — ${pad(f.end.getMonth() + 1)}.${pad(f.end.getDate())}`;
+    const end = f.openrun ? ' — 오픈런' : f.s === f.e ? '' : ` — ${pad(f.end.getMonth() + 1)}.${pad(f.end.getDate())}`;
     // 오브젝트 자리: 오른쪽 아래. 제목 줄 수에 따라 조금 내려간다.
     const size = 250;
     const ox = 118 + Math.round(r() * 20);
@@ -1539,8 +1506,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<h2 id="dlgTitle">${esc(f.t)}</h2><p class="dlg-status">${st.text} · ${esc(f.region)}</p>` +
       `<p class="desc">${esc(f.d)}</p>` +
       `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
-      `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
-      (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
+      placeRows(f) +
       `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd></dl>` +
       actionsHTML(f) + `</div></div>`;
     if (!dlg.open) dlg.showModal();
@@ -1994,7 +1960,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const lines = [
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AIIairs//Fair Index//KO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
       'BEGIN:VEVENT',
-      `UID:${f.id}@expomoa.com`,
+      `UID:${f.id}@45516645sud-stack.github.io`,
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ymd(f.start)}`,
       `DTEND;VALUE=DATE:${ymd(addDays(f.openrun ? f.start : f.end, 1))}`,
@@ -2292,7 +2258,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   /* ---------------- 시작 ---------------- */
   renderMast();
-  if (LOG_ENDPOINT) $('logNote').textContent = ' 찾는 행사가 없을 때는 일정을 보강하려고 검색 조건만 익명으로 기록해요.';
+  if (LOG_ENDPOINT) $('logNote').textContent = ' 찾는 공연이 없을 때의 검색 조건과 남겨 주신 의견만 익명으로 기록해요.';
   const params = new URLSearchParams(location.search);
   const qp = params.get('q');
   const cp = params.get('cat');

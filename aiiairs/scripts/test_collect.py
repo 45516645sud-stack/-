@@ -124,6 +124,11 @@ class FixtureRunTest(unittest.TestCase):
             self.assertNotIn("kcisa-900001", items)
             # 좌석 수를 알면 표시하고, 큰 공연장(대공연장)은 뺀다
             self.assertEqual(items["kopis-pf000001"]["seats"], 120)
+            # 공연 시간·길이·관람 나이·공연장 주소
+            self.assertEqual(items["kopis-pf000001"]["time"], "화요일 ~ 금요일(20:00), 토요일 ~ 일요일(15:00,19:00)")
+            self.assertEqual(items["kopis-pf000001"]["runtime"], "1시간 30분")
+            self.assertEqual(items["kopis-pf000001"]["age"], "만 13세 이상")
+            self.assertEqual(items["kopis-pf000001"]["addr"], "서울특별시 종로구 대학로 12길 34 (동숭동)")
             # 모든 KOPIS 공연에 공식 공연 페이지 링크가 붙는다 (예매처가 없어도)
             self.assertTrue(items["kopis-pf000002"]["info"].endswith("mt20Id=PF000002"))
             self.assertNotIn("url", items["kopis-pf000002"])

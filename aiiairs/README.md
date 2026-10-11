@@ -50,7 +50,7 @@ aiiairs/
 - **처음 한 번만**: 저장소 Settings → Pages → Build and deployment → Source를 **GitHub Actions**로 바꾸기
 - 그다음부터는 자동이에요. 사이트 파일을 고쳐 기본 브랜치에 올리거나, 매일 새벽 일정 수집이 끝나면 다시 올라가요.
   (수집 로봇이 만든 커밋은 다른 자동 작업을 깨우지 않아서, 수집 워크플로가 끝나는 것을 신호로 받아요.)
-- 올라가는 것: `index.html`, `robots.txt`, `sitemap.xml`, `img/`, `data/fairs.json`, 그리고 올릴 때 받은 `posters/`. 수집 스크립트와 `manual.csv`는 올리지 않아요.
+- 올라가는 것: `index.html`, `privacy.html`(개인정보 처리방침), `og.png`(링크 공유 미리보기 그림), `robots.txt`, `sitemap.xml`, `img/`, `data/fairs.json`, 그리고 올릴 때 받은 `posters/`. 수집 스크립트와 `manual.csv`는 올리지 않아요.
 
 ## 전국 공연을 전부 모으기
 
@@ -61,6 +61,11 @@ KOPIS에서 오늘부터 180일 동안의 공연을 **한도 없이 전부** 가
   기억은 저장소가 아니라 GitHub Actions 캐시(`aiiairs/.cache/`)에 둬요.
 - 한 번에 새로 물어보는 상세는 6,000건까지예요(`--kopis-detail`). 넘치는 공연은 큰 공연장인지 아직 모르니 싣지 않고, 다음 날 마저 물어봐서 실어요.
 - KOPIS에 없는 공연(카페 공연, 버스킹, DM으로만 표를 파는 공연)은 `data/manual.csv`로 넣어요.
+
+## 사이트 주소 바꾸기
+
+검색·공유용 주소는 `https://45516645sud-stack.github.io/-/` 로 적혀 있어요.
+나중에 내 도메인을 사면 `index.html`(canonical, og:url, twitter:url, JSON-LD, `ORIGIN`), `privacy.html`(canonical), `robots.txt`, `sitemap.xml` 의 주소를 함께 바꿔요.
 
 ## 공식 포스터
 
