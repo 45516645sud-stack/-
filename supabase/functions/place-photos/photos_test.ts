@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos, toPosts } from "./photos.ts";
 
 Deno.test("검색어 정리", () => {
   assertEquals(cleanQuery("  서면   OO노래방  부산진구 "), "서면 OO노래방 부산진구");
@@ -98,4 +98,18 @@ Deno.test("가게 이름이 나오는 글의 사진만", () => {
     { title: "구미펍코로나", url: "https://blog.naver.com/c", thumbnail: "https://search1.kakaocdn.net/c" },
   ];
   assertEquals(toPostPhotos(mixed, "구미펍코로나", 4, now).map((p) => p.link), ["https://blog.naver.com/b", "https://blog.naver.com/a"]);
+});
+
+Deno.test("최근 글: 태그 벗기기, 오래된 글·뉴스·같은 주소 빼기, 최신순", () => {
+  const now = new Date("2026-10-12T00:00:00Z");
+  const posts = toPosts([
+    { title: "<b>성수</b> 팝업 &amp; 후기", contents: "기간 10.3~10.19", url: "https://blog.naver.com/a/1", blogname: "놀러가자", datetime: "2026-10-05T10:00:00.000+09:00" },
+    { title: "오래된 글", contents: "", url: "https://blog.naver.com/a/2", blogname: "x", datetime: "2026-06-01T10:00:00.000+09:00" },
+    { title: "뉴스", contents: "", url: "https://news.example.com/1", blogname: "연합뉴스", datetime: "2026-10-06T10:00:00.000+09:00" },
+    { title: "새 글", contents: "", url: "https://cafe.daum.net/b/3", cafename: "팝업카페", datetime: "2026-10-10T10:00:00.000+09:00" },
+    { title: "중복", contents: "", url: "https://blog.naver.com/a/1", blogname: "놀러가자", datetime: "2026-10-05T10:00:00.000+09:00" },
+  ], 60, now);
+  assertEquals(posts.map((p) => p.title), ["새 글", "성수 팝업 & 후기"]);
+  assertEquals(posts[1].text, "기간 10.3~10.19");
+  assertEquals(posts[1].date, "2026-10-05");
 });
