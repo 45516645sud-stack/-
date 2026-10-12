@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-from check_popups import name_of, period, place_of
+from check_popups import merge, name_of, period, place_of
 
 
 class PopupParse(unittest.TestCase):
@@ -14,11 +14,31 @@ class PopupParse(unittest.TestCase):
         self.assertIsNone(period("오픈 시간 10:30 ~ 20:00", p))
         self.assertIsNone(period("1.1~12.31 상시", p))   # 너무 긴 기간은 팝업 아님
 
-    def test_name_place(self):
+    def test_end_only(self):
+        p = date(2026, 10, 5)
+        self.assertEqual(period("블랙업 성수 팝업은 10/18 까지만 진행", p), (None, date(2026, 10, 18)))
+        self.assertEqual(period("10월 31일까지 올리브영N 성수에서", p), (None, date(2026, 10, 31)))
+        self.assertIsNone(period("9월 1일까지 했던 팝업", p))   # 이미 끝남
+
+    def test_name(self):
         self.assertEqual(name_of("[성수] 망그러진 곰 팝업스토어 후기"), "망그러진 곰")
         self.assertEqual(name_of("더현대 서울 산리오 팝업 오픈런"), "산리오")
-        self.assertEqual(place_of("📍 서울 성동구 연무장길 45 · 기간"), "서울 성동구 연무장길 45")
-        self.assertEqual(place_of("롯데월드몰 1층에서 열려요"), "롯데월드몰")
+        self.assertEqual(name_of("🎀 2026 산리오 팝업 | 10.10~10.26"), "산리오")
+        self.assertEqual(name_of("이번 주 가볼 만한 성수 팝업 정리"), "")
+        self.assertEqual(name_of("10월 2주차 예약없이 가는 팝업"), "")
+        self.assertEqual(name_of("마르디 메크르디 '정한의 프라이빗 아틀리에' 팝업"), "정한의 프라이빗 아틀리에")
+
+    def test_place(self):
+        self.assertEqual(place_of("📍 더현대 서울 B2 아이코닉존")[0], "더현대 서울")
+        self.assertEqual(place_of("무신사 메가스토어 성수 1F 📅 9.30")[0], "무신사 메가스토어 성수")
+        self.assertEqual(place_of("서울특별시 성동구 연무장길 99 1층")[0], "성수 연무장길")
+        self.assertEqual(place_of("주소: 서울 용산구 이태원로 255 기간")[0], "서울 용산구 이태원로 255")
+        self.assertEqual(place_of("성수에서 열려요")[0], "서울 성동구 성수동")
+
+    def test_merge(self):
+        f = lambda n: {"name": n}  # noqa: E731
+        groups = merge([f("육구방앗간"), f("속초 육구방앗간"), f("롯데 육구방앗간"), f("룩백")])
+        self.assertEqual(sorted(len(g) for g in groups), [1, 3])
 
 
 if __name__ == "__main__":
