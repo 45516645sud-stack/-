@@ -110,6 +110,7 @@ console.log("뭐 먹지? · 지금 근처");
   await p.locator("#eatMenus .chip", { hasText: "고기" }).click();
   await p.click("#eatGo"); await p.waitForTimeout(400);
   ok((await p.locator(".eat-result .roll").textContent()) === "서면 삼겹살", "고기를 고르면 고깃집만 골라 준다 (카페·술집 빼고)");
+  ok((await p.locator("#eatRoute").getAttribute("href")).startsWith("https://map.naver.com/p/search/"), "길찾기는 네이버지도로 간다");
   ok(await p.locator("#eatAfter .act").count() > 5, "밥 먹고 나서 갈 놀거리가 이어서 나온다");
   await p.locator('#eatAfter [data-near-a="boardgame"]').click(); await p.waitForTimeout(400);
   const names = await p.locator(".place b").allTextContents();

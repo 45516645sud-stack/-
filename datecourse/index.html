@@ -1653,7 +1653,10 @@ function loadEvents() {
   return WK.loading;
 }
 /* 팝업스토어: 블로그 글에서 매일 자동으로 찾고, 운영자가 맞다고 확인한 것만 서버가 준다 (scripts/check_popups.py, admin.html) */
-const POP = { list: null, loading: null };
+const POP = { list: null, loading: null, kind: "" };
+const POP_KIND = { anime: "애니·만화", idol: "아이돌", character: "캐릭터", game: "게임", beauty: "뷰티", fashion: "패션", food: "먹거리",
+  tech: "테크", movie: "영화·드라마", living: "리빙·문구", art: "전시·체험", sports: "스포츠", pet: "반려동물", etc: "기타" };
+const popKind = (p) => (POP_KIND[p.kind] ? p.kind : "etc");
 function loadPopups() {
   const endpoint = photoEndpoint();
   POP.loading ??= (endpoint ? fetchJson(`${endpoint}?mode=popups`) : Promise.resolve(null)).then((d) => {
@@ -1683,7 +1686,7 @@ function popupCard(p) {
   const when = p.start ? `${md(p.start)} ~ ${md(p.end)}` : `${md(p.end)}까지`;
   b.innerHTML = `<span class="ev-pic pop">${illu("spark")}</span>
     <span class="ev-body">
-      <span class="ev-top"><span class="ev-cat popup">팝업</span>${notYet ? `<span class="ev-flag new">곧 시작</span>` : soonEnd ? `<span class="ev-flag end">곧 끝나요</span>` : ""}</span>
+      <span class="ev-top"><span class="ev-cat popup">팝업 · ${esc(POP_KIND[popKind(p)])}</span>${notYet ? `<span class="ev-flag new">곧 시작</span>` : soonEnd ? `<span class="ev-flag end">곧 끝나요</span>` : ""}</span>
       <b class="ev-title"></b>
       <span class="ev-place"></span>
       <span class="ev-when">${esc(when)}</span>
@@ -1704,7 +1707,7 @@ function openPopup(p) {
   $("sheetBody").innerHTML = `
     <div class="grabber"></div>
     <div class="sheet-head">
-      <div><div class="where">${esc(p.region || "")} · 팝업스토어</div><h2 id="sheetTitle"></h2></div>
+      <div><div class="where">${esc(p.region || "")} · ${esc(POP_KIND[popKind(p)])} 팝업</div><h2 id="sheetTitle"></h2></div>
       <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
     </div>
     <div class="facts">
@@ -1822,12 +1825,28 @@ function renderWeekend() {
     </div>
     <div class="chips wk-chips" id="wkPeriod" role="group" aria-label="기간"></div>
     <div class="chips wk-chips" id="wkCat" role="group" aria-label="종류"></div>
+    <div class="chips wk-chips" id="wkPopKind" role="group" aria-label="팝업 종류" hidden></div>
     <div class="ev-list" id="wkList"></div>
     <p class="note">공연은 KOPIS(공연예술통합전산망), 축제는 한국관광공사 정보예요. 팝업은 블로그 글에서 찾고 놀코가 확인했어요. 일정·가격은 바뀔 수 있으니 꼭 확인하세요.</p>`;
   $("wkPeriod").replaceChildren(...Object.entries(WK_PERIOD).map(([k, v]) => chip(v, WK.period === k, () => { WK.period = k; WK.shown = 30; renderWeekend(); })));
   $("wkCat").replaceChildren(chip("전체", !WK.cat, () => { WK.cat = ""; WK.shown = 30; renderWeekend(); }),
     ...cats.map(([c, n]) => chip(`${c} ${n}`, WK.cat === c, () => { WK.cat = WK.cat === c ? "" : c; WK.shown = 30; renderWeekend(); })));
   const wl = $("wkList");
+  // '팝업'을 고르면 종류별로 (애니는 애니끼리, 캐릭터는 캐릭터끼리)
+  if (WK.cat === "팝업" && popShown.length) {
+    const kinds = Object.keys(POP_KIND).map((k) => [k, popShown.filter((p) => popKind(p) === k).length]).filter(([, n]) => n);
+    if (POP.kind && !kinds.some(([k]) => k === POP.kind)) POP.kind = "";
+    $("wkPopKind").hidden = kinds.length < 2;
+    $("wkPopKind").replaceChildren(chip("모든 팝업", !POP.kind, () => { POP.kind = ""; renderWeekend(); }),
+      ...kinds.map(([k, n]) => chip(`${POP_KIND[k]} ${n}`, POP.kind === k, () => { POP.kind = POP.kind === k ? "" : k; renderWeekend(); })));
+    for (const [k] of kinds) {
+      if (POP.kind && POP.kind !== k) continue;
+      const h = document.createElement("h3");
+      h.className = "sec-title"; h.textContent = `${POP_KIND[k]} ${popShown.filter((p) => popKind(p) === k).length}`;
+      wl.append(h, ...popShown.filter((p) => popKind(p) === k).map(popupCard));
+    }
+    return;
+  }
   if (popShown.length) {
     if (list.length) {
       const h = document.createElement("h3");
@@ -2269,7 +2288,7 @@ async function rollEat(spot, seen) {
       <span class="cat"></span><span class="addr"></span>
       <div class="links">
         ${kakaoUrl ? `<a class="link-pill" href="${esc(kakaoUrl)}" target="_blank" rel="noopener">가게 정보·후기</a>` : ""}
-        <a class="link-pill" href="https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}" target="_blank" rel="noopener">길찾기</a>
+        <a class="link-pill" id="eatRoute" href="${esc(naverSearchUrl(p.place_name, p.road_address_name || p.address_name))}" target="_blank" rel="noopener">네이버지도 길찾기</a>
         <button type="button" class="link-pill" id="eatShare">친구한테 보내기</button>
       </div>
     </div>
@@ -2278,6 +2297,7 @@ async function rollEat(spot, seen) {
   out.querySelector(".cat").textContent = [cat, dist].filter(Boolean).join(" · ");
   out.querySelector(".addr").textContent = p.road_address_name || p.address_name || "";
   go.textContent = "다시 돌리기";
+  $("eatRoute").addEventListener("click", (e) => naverRoute(e, p.place_name, Number(p.y), Number(p.x)));
   $("eatShare").addEventListener("click", async () => {
     const text = `오늘 밥은 여기! 🍚 ${p.place_name}${dist ? ` (${dist})` : ""}`;
     const url = kakaoUrl || `https://map.kakao.com/link/search/${encodeURIComponent(p.place_name)}`;
@@ -2291,6 +2311,24 @@ async function rollEat(spot, seen) {
     $("eatAfter").innerHTML = `<h3 class="sec-title">밥 먹고 나서 근처에서</h3>${nearActsHtml("meal", true)}`;
     bindNearActs(spot);
   }
+}
+
+/* 네이버지도: 휴대폰에 네이버지도 앱이 있으면 앱에서 바로 걷기 길찾기, 없거나 컴퓨터면 네이버지도 웹에서 가게 검색 */
+function naverSearchUrl(name, address = "") {
+  const area = String(address || "").split(" ").slice(0, 3).join(" ");   // 같은 이름 가게가 많아서 동네까지
+  return `https://map.naver.com/p/search/${encodeURIComponent(`${name} ${area}`.trim())}`;
+}
+function naverRoute(e, name, lat, lng) {
+  if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || !Number.isFinite(lat) || !Number.isFinite(lng)) return;   // 그냥 웹 링크로
+  e.preventDefault();
+  const web = e.currentTarget.href;
+  const app = `nmap://route/walk?dlat=${lat}&dlng=${lng}&dname=${encodeURIComponent(name)}&appname=${encodeURIComponent(location.hostname || "nolco")}`;
+  let left = false;
+  const onHide = () => { left = true; };
+  document.addEventListener("visibilitychange", onHide, { once: true });
+  location.href = app;
+  // 앱이 안 열리면(설치 안 됨) 잠시 뒤 웹으로
+  setTimeout(() => { document.removeEventListener("visibilitychange", onHide); if (!left && document.visibilityState === "visible") window.open(web, "_blank", "noopener"); }, 1200);
 }
 
 function pickRandom(exceptId) {

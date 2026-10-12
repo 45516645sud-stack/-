@@ -77,9 +77,64 @@ NOISE = re.compile(r"20\d\d년?|\[[^\]]*\]|【[^】]*】|<[^>]*>|\([^)]*\)|[#|]|
                    r"|서울|성수동?|더\s?현대|홍대|잠실|여의도|강남|부산|대구|코엑스|한남|롯데월드몰|롯데백화점|신세계백화점|현대백화점|백화점|점\b")
 # 팝업 이름이 아닌 말이 들어 있으면 버린다
 NOT_NAME = re.compile(r"주차|이번\s?주|가볼|까지|추천|정리|총정리|일정|무료|예약|오픈|요즘|핫플|모음|리스트|BEST|TOP|\d+곳|\d+월|이달|다음\s?주|근처|코스|투어|나들이"
-                      r"|^점|국내\s?첫|끝난|대박|[?!？！]|\.\.\.|…")
+                      r"|^점|국내\s?첫|첫$|부터|끝난|대박|[?!？！]|\.\.\.|…")
 # 이것만 남으면 팝업 이름이 아니라 장소·회사 이름
-NOT_ALONE = {"롯데", "신세계", "현대", "ak", "ak플라자", "서면", "센텀", "팝업", "굿즈", "콜라보", "스토어", "이벤트", "한정"}
+NOT_ALONE = {"롯데", "신세계", "현대", "ak", "ak플라자", "서면", "센텀", "팝업", "굿즈", "콜라보", "스토어", "이벤트", "한정",
+             "역삼", "강남", "신촌", "건대", "이태원", "용산", "영등포", "송파", "해운대", "광안리", "판교", "수원", "일산", "부산역", "서울역"}
+
+
+# 팝업 종류: 앞에 있는 것부터 맞춰 본다 (예: '주술회전 캐릭터 굿즈'는 애니). 이름에 나오면 글 내용보다 먼저
+KINDS = [
+    ("anime", "애니·만화", ["애니메", "만화", "웹툰", "주술회전", "귀멸", "원피스", "나루토", "하이큐", "블루록", "체인소", "스파이패밀리", "스파이 패밀리",
+                         "진격의", "슬램덩크", "지브리", "짱구", "코난", "아따맘마", "룩백", "드래곤볼", "에반게리온", "건담", "최애의", "프리렌",
+                         "봇치", "헌터", "도라에몽", "케로로", "디지몬", "세일러문", "카드캡터", "굿스마일", "피규어", "애니메이트"]),
+    ("idol", "아이돌·K-POP", ["아이돌", "케이팝", "K-POP", "KPOP", "kpop", "앨범", "컴백", "엔시티", "NCT", "BTS", "방탄", "세븐틴", "데이식스",
+                            "DAY6", "아이브", "IVE", "에스파", "aespa", "뉴진스", "르세라핌", "투바투", "TXT", "스트레이 키즈", "스키즈", "엔하이픈",
+                            "라이즈", "RIIZE", "보이넥스트도어", "제베원", "있지", "ITZY", "블랙핑크", "트와이스", "베이비몬스터", "생일카페", "팬미팅", "킥플립", "원필", "엔시티위시", "NCT WISH"]),
+    ("sports", "스포츠", ["야구", "라이온즈", "타이거즈", "트윈스", "베어스", "자이언츠", "축구", "구단", "KBO", "K리그", "농구", "배구", "러닝", "마라톤", "골프"]),
+    ("character", "캐릭터", ["캐릭터", "산리오", "헬로키티", "쿠로미", "시나모롤", "마이멜로디", "포켓몬", "피카츄", "카카오프렌즈", "라이언", "춘식",
+                          "망그러진", "잔망루피", "루피", "미피", "스누피", "디즈니", "몰랑", "모남희", "조앤프렌즈", "오구", "빤쮸",
+                          "최고심", "벨리곰", "에스더버니", "산리오", "리락쿠마", "치이카와", "농담곰", "토이", "애니모", "피스마이너스원"]),
+    ("game", "게임", ["게임", "스트리트 파이터", "스트리트파이터", "닌텐도", "리그 오브 레전드", "롤드컵", "메이플", "배그", "블루 아카이브", "블루아카",
+                     "원신", "붕괴", "플레이스테이션", "플스", "e스포츠", "T1", "넥슨", "엔씨", "쿠키런"]),
+    ("beauty", "뷰티", ["화장품", "뷰티", "메이크업", "스킨케어", "향수", "퍼퓸", "올리브영", "클리오", "메디힐", "루나", "아누아", "토리든", "네일",
+                       "립스틱", "립밤", "쿠션", "세럼", "색조", "코스메틱", "헤어", "빗", "롬앤", "에뛰드", "이니스프리", "설화수", "닥터지", "바닐라코"]),
+    ("fashion", "패션", ["패션", "의류", "스니커즈", "신발", "가방", "주얼리", "액세서리", "판도라", "쇼룸", "아이웨어", "선글라스", "무신사", "지그재그",
+                        "29CM", "아디다스", "나이키", "뉴발란스", "아식스", "컬렉션", "F/W", "S/S", "패딩", "니트", "자켓", "재킷", "워크웨어", "웨더웨어", "아웃도어"]),
+    ("food", "먹거리", ["디저트", "카페", "베이커리", "빵", "떡", "버거", "라면", "커피", "스타벅스", "음료", "맥주", "와인", "위스키", "하이볼", "술",
+                       "쿠키", "초콜릿", "과자", "아이스크림", "도넛", "케이크", "치킨", "피자", "만두", "푸드", "맛집", "방앗간", "찹쌀", "다방", "간식", "타르트", "약과"]),
+    ("tech", "테크·가전", ["AI", "글래스", "스마트", "갤럭시", "아이폰", "애플", "가전", "카메라", "이어폰", "헤드폰", "로봇", "전기차", "테슬라"]),
+    ("movie", "영화·드라마", ["영화", "드라마", "넷플릭스", "티빙", "디즈니+", "쿠팡플레이", "개봉", "해리포터", "마블", "시리즈"]),
+    ("living", "리빙·문구", ["리빙", "인테리어", "문구", "다이어리", "캔들", "디퓨저", "소품", "가구", "그릇", "텍스트", "책", "서점", "생활", "식물"]),
+    ("art", "전시·체험", ["전시", "아트", "작가", "갤러리", "사진전", "체험", "포토부스", "미디어아트"]),
+    ("pet", "반려동물", ["반려", "강아지", "고양이", "펫샵", "댕댕이", "반려견", "반려묘"]),
+]
+KIND_NAME = {k: n for k, n, _ in KINDS}
+# 20~30대가 찾아갈 팝업이 아닌 것 (아이·육아, 어르신, 사업·박람회 등)
+NOT_YOUNG = re.compile(r"유아|아기|베이비(?!몬스터)|육아|키즈|어린이|유모차|카시트|출산|임산부|맘카페|엄마표|아이와 함께|시니어|실버|효도|어르신"
+                       r"|잉글레시나|맥시코시|스토케|부가부|싸이벡스|카시트|창업|기업|박람회|채용|부동산|분양|모델하우스|보험|건강기능|홍삼|설명회|직거래|농산물|특산물|김장|상조")
+
+
+def _hits(word: str, low: str) -> int:
+    w = word.lower()
+    if re.fullmatch(r"[a-z0-9+/ -]+", w):   # 영어는 단어 단위로 (ive 가 exclusive 에 걸리지 않게)
+        return len(re.findall(rf"(?<![a-z]){re.escape(w)}(?![a-z])", low))
+    return low.count(w)
+
+
+def kind_of(name: str, text: str) -> str:
+    """이름에 나온 말은 3점, 글에 나온 말은 1점. 점수가 가장 높은 종류 (같으면 KINDS 앞쪽)"""
+    nl, tl = name.lower(), text.lower()
+    best, top = "etc", 0
+    for k, _, words in KINDS:
+        score = sum(3 * _hits(w, nl) + _hits(w, tl) for w in words)
+        if score > top:
+            best, top = k, score
+    return best
+
+
+def young_ok(name: str, text: str) -> bool:
+    return not NOT_YOUNG.search(f"{name} {text}")
 
 
 def _date(y, m, d, posted: date) -> date | None:
@@ -156,7 +211,9 @@ def name_of(title: str) -> str:
         for alias in sorted((a for v in VENUES for a in v[0]), key=len, reverse=True):   # 이름 속 장소는 빼기
             n = n.replace(alias, " ")
         n = NOISE.sub(" ", n)
-        n = re.sub(r"\s+", " ", n).strip(" .-x×&:")
+        n = re.sub(r"\s+", " ", n).strip(" .-x×&:,")
+        if NOT_NAME.search(n):
+            continue
         if (len(n.replace(" ", "")) >= 2 and not re.fullmatch(r"[A-Za-z]{1,3}|\d+", n)
                 and key_of(n) not in NOT_ALONE and key_of(n) not in {w for w, _ in AREAS}):
             return n
@@ -278,8 +335,10 @@ def collect() -> dict:
         place, pq, pp = ranked[0][0] if ranked else ("", "", "")
         recent = sorted(pool, key=lambda f: f["date"], reverse=True)[:3]
         urls, titles = [f["url"] for f in recent], [f["title"] for f in recent]
+        text = " ".join(f"{f['title']} {f['text']}" for f in pool)
         out.append({"id": popup_id(g["name"]), "name": g["name"], "start": start, "end": end, "place": place, "pq": pq, "pp": pp,
-                    "agree": agree, "posts": len(pool), "url": urls[0], "urls": urls, "titles": titles})
+                    "agree": agree, "posts": len(pool), "url": urls[0], "urls": urls, "titles": titles,
+                    "kind": kind_of(g["name"], text), "young": young_ok(g["name"], " ".join(titles))})
 
     # 오늘이 마지막 날인 것은 확인하는 사이에 끝나니 후보에서 뺀다
     now = [p for p in out if (p["start"] or today) <= today < p["end"]]
@@ -306,7 +365,8 @@ def candidates(r: dict) -> dict:
     def item(p, state):
         return {"id": p["id"], "name": p["name"], "start": str(p["start"] or ""), "end": str(p["end"]), "place": p["place"],
                 "address": p["address"], "lat": p["lat"], "lng": p["lng"], "region": p["region"], "url": p["url"], "urls": p["urls"], "titles": p["titles"],
-                "agree": p["agree"], "posts": p["posts"], "sure": p["agree"] >= 2, "state": state}
+                "agree": p["agree"], "posts": p["posts"], "sure": p["agree"] >= 2, "state": state,
+                "kind": p["kind"], "young": p["young"]}
     items = ([item(p, "now") for p in sorted(r["sure"], key=lambda p: -p["agree"])]
              + [item(p, "soon") for p in sorted(r["soon"], key=lambda p: p["start"])]
              + [item(p, "now") for p in sorted(r["unsure"], key=lambda p: p["end"])])

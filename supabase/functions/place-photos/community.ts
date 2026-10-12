@@ -117,8 +117,10 @@ export function withoutItem(col: Col, body: unknown, item: string): Record<strin
 /* ---------- 팝업스토어 (관리자가 승인한 것만 앱에 나온다) ---------- */
 export type PopupItem = {
   name: string; place: string; address: string; region: string; start: string; end: string;
-  url: string; lat: number | null; lng: number | null;
+  url: string; lat: number | null; lng: number | null; kind: string;
 };
+// 팝업 종류 (scripts/check_popups.py KINDS 와 같은 이름)
+export const POPUP_KINDS = new Set(["anime", "idol", "sports", "character", "game", "beauty", "fashion", "food", "tech", "movie", "living", "art", "pet", "etc"]);
 const REGIONS = new Set(["서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"]);
 
 export function cleanPopupId(raw: unknown): string | null {
@@ -140,6 +142,7 @@ export function cleanPopupItem(raw: unknown): PopupItem | null {
   return {
     name, place: str(raw.place, 60).replace(/[<>]/g, ""), address: str(raw.address, 80).replace(/[<>]/g, ""), region,
     start: start && start <= end ? start : "", end, url, lat: coord(raw.lat, 33, 39), lng: coord(raw.lng, 124, 132),
+    kind: typeof raw.kind === "string" && POPUP_KINDS.has(raw.kind) ? raw.kind : "etc",
   };
 }
 

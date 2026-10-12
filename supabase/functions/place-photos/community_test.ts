@@ -64,7 +64,9 @@ Deno.test("팝업: id·항목 정리", () => {
   const item = cleanPopupItem({ name: " 육구방앗간 <b>", place: "롯데백화점 잠실점", region: "서울", start: "2026-10-09", end: "2026-10-15",
     url: "https://blog.naver.com/a/1", lat: 37.51, lng: 127.1, extra: "x" });
   assertEquals(item, { name: "육구방앗간 b", place: "롯데백화점 잠실점", address: "", region: "서울", start: "2026-10-09", end: "2026-10-15",
-    url: "https://blog.naver.com/a/1", lat: 37.51, lng: 127.1 });
+    url: "https://blog.naver.com/a/1", lat: 37.51, lng: 127.1, kind: "etc" });
+  assertEquals(cleanPopupItem({ name: "주술회전", end: "2026-11-30", kind: "anime" })?.kind, "anime");
+  assertEquals(cleanPopupItem({ name: "주술회전", end: "2026-11-30", kind: "hack" })?.kind, "etc");
   assertEquals(cleanPopupItem({ name: "x", end: "2026-10-15" }), null);              // 이름 너무 짧음
   assertEquals(cleanPopupItem({ name: "팝업", end: "10월 15일" }), null);             // 날짜 모양
   assertEquals(cleanPopupItem({ name: "팝업", end: "2026-10-15", url: "javascript:alert(1)", region: "화성" })?.url, "");
