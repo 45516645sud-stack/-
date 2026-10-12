@@ -1,0 +1,6 @@
+{
+ "version": 1,
+ "updated": "",
+ "note": "블로그·카페 글에서 자동으로 찾은 팝업 후보. 관리자가 승인한 것만 앱에 나온다 (scripts/check_popups.py)",
+ "items": []
+}

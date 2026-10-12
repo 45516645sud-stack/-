@@ -352,6 +352,9 @@ body.weekend .seg, body.weekend .hscroll:has(#hoodRow), body.weekend .hscroll:ha
 .ev-title { font-size: 15px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .ev-place, .ev-when { font-size: 12px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wk-more { margin: 14px auto; }
+.ev-cat.popup { background: var(--t-fun); color: var(--t-fun-i); }
+.ev-pic.pop { height: 72px; background: var(--t-fun); }
+.pop-report { margin-top: 10px; }
 .ev-hero { margin: 4px 0 12px; border-radius: 14px; overflow: hidden; background: var(--fill); display: grid; place-items: center; max-height: 360px; }
 .ev-hero img { width: 100%; max-height: 360px; object-fit: contain; }
 .ev-hero .il { width: 120px; height: 120px; margin: 24px; }
@@ -1642,12 +1645,101 @@ const WK_PERIOD = { weekend: "이번 주말", week: "이번 주", month: "한 �
 function loadEvents() {
   WK.loading ??= fetchJson("data/events.json").then((d) => {
     WK.list = (d && Array.isArray(d.events) ? d.events : []).filter((e) => e && e.title && e.start && e.end && Array.isArray(e.regions));
-    $("weekendBtn").hidden = !WK.list.length;   // 데이터가 없는 곳(파일로 연 앱 등)에서는 탭을 숨긴다
-    if (!WK.list.length && state.view === "weekend") state.view = "courses";
+    $("weekendBtn").hidden = !WK.list.length && !(POP.list && POP.list.length);   // 데이터가 없는 곳(파일로 연 앱 등)에서는 탭을 숨긴다
+    if ($("weekendBtn").hidden && state.view === "weekend") state.view = "courses";
     renderWeekend();
     renderWeekendEntry();
   });
   return WK.loading;
+}
+/* 팝업스토어: 블로그 글에서 매일 자동으로 찾고, 운영자가 맞다고 확인한 것만 서버가 준다 (scripts/check_popups.py, admin.html) */
+const POP = { list: null, loading: null };
+function loadPopups() {
+  const endpoint = photoEndpoint();
+  POP.loading ??= (endpoint ? fetchJson(`${endpoint}?mode=popups`) : Promise.resolve(null)).then((d) => {
+    POP.list = (d && Array.isArray(d.popups) ? d.popups : []).filter((p) => p && /^p-[a-f0-9]{10}$/.test(p.id) && p.name && p.end);
+    if (POP.list.length) $("weekendBtn").hidden = false;
+    renderWeekend();
+    renderWeekendEntry();
+  });
+  return POP.loading;
+}
+function popupsFor(region = state.region, period = WK.period, q = state.q) {
+  if (!POP.list) return [];
+  const to = isoDay(wkRange(period)[1]), from = isoDay(new Date());   // 팝업은 짧아서 주말 전에 끝나는 것도 오늘부터 보여 준다
+  const words = (q || "").toLowerCase().split(/\s+/).filter(Boolean);
+  return POP.list.filter((p) => (p.start || "") <= to && p.end >= from
+    && (!region || p.region === region)
+    && words.every((w) => `${p.name} ${p.place} ${p.address} ${p.region} 팝업`.toLowerCase().includes(w)));
+}
+function popupCard(p) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "ev";
+  const today = isoDay(new Date());
+  const soonEnd = p.end <= isoDay(addDays(new Date(), 3));
+  const notYet = p.start && p.start > today;
+  const when = p.start ? `${md(p.start)} ~ ${md(p.end)}` : `${md(p.end)}까지`;
+  b.innerHTML = `<span class="ev-pic pop">${illu("spark")}</span>
+    <span class="ev-body">
+      <span class="ev-top"><span class="ev-cat popup">팝업</span>${notYet ? `<span class="ev-flag new">곧 시작</span>` : soonEnd ? `<span class="ev-flag end">곧 끝나요</span>` : ""}</span>
+      <b class="ev-title"></b>
+      <span class="ev-place"></span>
+      <span class="ev-when">${esc(when)}</span>
+    </span>`;
+  b.querySelector(".ev-title").textContent = p.name;
+  b.querySelector(".ev-place").textContent = [p.region, p.place || p.address].filter(Boolean).join(" · ");
+  b.addEventListener("click", () => openPopup(p));
+  return b;
+}
+function openPopup(p) {
+  openId = "";
+  hit("event", "popup");
+  const when = p.start ? `${md(p.start)} ~ ${md(p.end)}` : `${md(p.end)}까지`;
+  const where = p.address || p.place || p.name;
+  const mapUrl = Number.isFinite(p.lat) && Number.isFinite(p.lng)
+    ? `https://map.kakao.com/link/map/${encodeURIComponent(p.place || p.name)},${p.lat},${p.lng}`
+    : `https://map.kakao.com/link/search/${encodeURIComponent(where)}`;
+  $("sheetBody").innerHTML = `
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <div><div class="where">${esc(p.region || "")} · 팝업스토어</div><h2 id="sheetTitle"></h2></div>
+      <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
+    </div>
+    <div class="facts">
+      <div class="fact"><small>기간</small><b style="font-size:13px">${esc(when)}</b></div>
+      <div class="fact"><small>입장</small><b style="font-size:13px">글에서 확인</b></div>
+    </div>
+    <p class="summary ev-at">${icon("pin")}<span></span></p>
+    <div class="row-actions">
+      ${/^https?:\/\//.test(p.url || "") ? `<a class="btn primary grow" href="${esc(p.url)}" target="_blank" rel="noopener">후기 글 보기</a>` : ""}
+      <a class="btn" href="${esc(mapUrl)}" target="_blank" rel="noopener">지도</a>
+    </div>
+    <p class="note">블로그·카페 글에서 찾고 놀코가 한 번 더 확인한 정보예요. 팝업은 일찍 끝나거나 예약이 필요할 수 있으니 가기 전에 공식 SNS를 꼭 확인하세요.</p>
+    <button class="btn small pop-report" type="button" id="popReport">정보가 틀렸어요</button>`;
+  $("sheetTitle").textContent = p.name;
+  $("sheetBody").querySelector(".ev-at span").textContent = [p.place, p.address && p.address !== p.place ? p.address : ""].filter(Boolean).join(" · ") || "장소는 글에서 확인";
+  $("closeBtn").addEventListener("click", closeCourse);
+  $("popReport").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    if (!confirm("이 팝업 정보가 틀렸다고 알릴까요? 여러 명이 알리면 목록에서 빠져요.")) return;
+    btn.disabled = true;
+    let token = load("nolco.token", "");
+    if (!/^[a-f0-9]{32,64}$/.test(token)) {
+      token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+      save("nolco.token", token);
+    }
+    try {
+      const res = await fetch(photoEndpoint(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "popup_report", id: p.id, token }) });
+      toast(res.ok ? "알려 주셔서 고마워요" : "지금은 보내지 못했어요");
+      btn.textContent = res.ok ? "알렸어요" : "정보가 틀렸어요";
+      btn.disabled = res.ok;
+    } catch { toast("지금은 보내지 못했어요"); btn.disabled = false; }
+  });
+  const sheet = $("sheet");
+  if (!sheet.open) sheet.showModal();
+  sheet.scrollTop = 0;
+  if (map) { map.remove(); map = null; }
 }
 const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
@@ -1714,24 +1806,46 @@ function renderWeekend() {
     return;
   }
   const all = eventsFor(state.region, WK.period, "");
-  const cats = ["공연", "축제", "뮤지컬", "연극", "콘서트", "클래식", "무용", "아이와"]
-    .map((c) => [c, all.filter((e) => (c === "공연" ? e.kind === "show" : e.cat === c)).length]).filter(([, n]) => n);
+  const pops = popupsFor();
+  const cats = [["팝업", pops.length], ...["공연", "축제", "뮤지컬", "연극", "콘서트", "클래식", "무용", "아이와"]
+    .map((c) => [c, all.filter((e) => (c === "공연" ? e.kind === "show" : e.cat === c)).length])].filter(([, n]) => n);
   if (WK.cat && !cats.some(([c]) => c === WK.cat)) WK.cat = "";
-  const list = eventsFor();
+  const list = WK.cat === "팝업" ? [] : eventsFor();
+  const popShown = !WK.cat || WK.cat === "팝업" ? pops : [];
   const now = list.filter((e) => !e.long), always = list.filter((e) => e.long);
   box.innerHTML = `
     <div class="wk-head">
       <h2>${esc(where)} ${esc(WK_PERIOD[WK.period])} 뭐 하지</h2>
-      <small>${esc(span)} · 공연·축제 ${list.length}개</small>
+      <small>${esc(span)} · 공연·축제 ${list.length}개${popShown.length ? ` · 팝업 ${popShown.length}개` : ""}</small>
     </div>
     <div class="chips wk-chips" id="wkPeriod" role="group" aria-label="기간"></div>
     <div class="chips wk-chips" id="wkCat" role="group" aria-label="종류"></div>
     <div class="ev-list" id="wkList"></div>
-    <p class="note">공연은 KOPIS(공연예술통합전산망), 축제는 한국관광공사 정보예요. 일정·가격은 바뀔 수 있으니 예매처에서 꼭 확인하세요.</p>`;
+    <p class="note">공연은 KOPIS(공연예술통합전산망), 축제는 한국관광공사 정보예요. 팝업은 블로그 글에서 찾고 놀코가 확인했어요. 일정·가격은 바뀔 수 있으니 꼭 확인하세요.</p>`;
   $("wkPeriod").replaceChildren(...Object.entries(WK_PERIOD).map(([k, v]) => chip(v, WK.period === k, () => { WK.period = k; WK.shown = 30; renderWeekend(); })));
   $("wkCat").replaceChildren(chip("전체", !WK.cat, () => { WK.cat = ""; WK.shown = 30; renderWeekend(); }),
     ...cats.map(([c, n]) => chip(`${c} ${n}`, WK.cat === c, () => { WK.cat = WK.cat === c ? "" : c; WK.shown = 30; renderWeekend(); })));
   const wl = $("wkList");
+  if (popShown.length) {
+    if (list.length) {
+      const h = document.createElement("h3");
+      h.className = "sec-title"; h.textContent = `지금 하는 팝업 ${popShown.length}`;
+      wl.append(h);
+    }
+    wl.append(...popShown.slice(0, WK.cat === "팝업" ? 100 : 6).map(popupCard));
+    if (!WK.cat && popShown.length > 6) {
+      const more = document.createElement("button");
+      more.type = "button"; more.className = "btn wk-more"; more.textContent = `팝업 더 보기 (${popShown.length - 6}개 더)`;
+      more.addEventListener("click", () => { WK.cat = "팝업"; renderWeekend(); });
+      wl.append(more);
+    }
+    if (list.length) {
+      const h = document.createElement("h3");
+      h.className = "sec-title"; h.textContent = `공연·축제 ${list.length}`;
+      wl.append(h);
+    }
+  }
+  if (!list.length && popShown.length) return;
   if (!list.length) {
     wl.innerHTML = `<div class="empty"><b>${esc(where)}에 ${esc(WK_PERIOD[WK.period])} 일정이 없어요</b>기간을 '한 달'로 늘리거나 다른 지역을 골라 보세요.</div>`;
     return;
@@ -1752,15 +1866,16 @@ function renderWeekend() {
 // 코스 홈 맨 위 입구: '이번 주말 부산 공연 12 · 축제 3'
 function renderWeekendEntry() {
   const box = $("weekendEntry");
-  const show = state.view !== "weekend" && browsing() && !state.q && WK.list && WK.list.length;
+  const show = state.view !== "weekend" && browsing() && !state.q && ((WK.list && WK.list.length) || (POP.list && POP.list.length));
   box.hidden = !show;
   if (!show) return;
   const list = eventsFor(state.region, "weekend", "", "");
-  if (!list.length) { box.hidden = true; return; }
+  const pops = popupsFor(state.region, "weekend", "").length;
+  if (!list.length && !pops) { box.hidden = true; return; }
   const shows = list.filter((e) => e.kind === "show").length, fests = list.length - shows;
   box.innerHTML = `<button type="button" class="wk-entry">
     <span class="ic">${illu(fests ? "festival" : "show")}</span>
-    <span><b>이번 주말 ${esc(state.region || "전국")}에서</b><small>공연 ${shows}${fests ? ` · 축제 ${fests}` : ""}개가 열려요</small></span>
+    <span><b>이번 주말 ${esc(state.region || "전국")}에서</b><small>${[shows ? `공연 ${shows}` : "", fests ? `축제 ${fests}` : "", pops ? `팝업 ${pops}` : ""].filter(Boolean).join(" · ")}개가 열려요</small></span>
     <span class="go">보기 ${icon("chev")}</span></button>`;
   box.querySelector("button").addEventListener("click", () => { WK.period = "weekend"; openWeekend(); });
 }
@@ -2892,6 +3007,7 @@ window.addEventListener("popstate", () => {
   else if (id) pendingId = id;
   initShared().catch(() => {});
   loadEvents();
+  loadPopups();
   hit("visit", state.mode);
 })();
 

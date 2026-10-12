@@ -15,6 +15,8 @@ const PLACES = {
   "디저트카페": [P("설빙 서면점", "음식점 > 카페 > 테마카페 > 디저트카페 > 설빙", 200)],
   "고기집": [P("서면 삼겹살", "음식점 > 한식 > 육류,고기 > 삼겹살", 150), P("고기 카페", "음식점 > 카페", 80), P("고기 호프", "음식점 > 술집 > 호프,요리주점", 90)],
 };
+const POPUPS = [{ id: "p-0123456789", name: "테스트 팝업", place: "더현대 서울", address: "서울 영등포구 여의대로 108", region: "서울",
+  start: "2000-01-01", end: "2100-01-01", url: "https://blog.naver.com/a/1", lat: 37.52, lng: 126.92 }];
 const EVENTS = { events: [{ id: "s-1", kind: "show", cat: "연극", title: "테스트 연극", regions: ["부산"], place: "어느 극장",
   start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" }] };
 
@@ -37,6 +39,7 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     const mode = u.searchParams.get("mode");
     if (mode === "docs") return send({ docs: Object.entries(store[u.searchParams.get("col")] || {}).map(([id, data]) => ({ id, data })) });
     if (mode === "places") return send({ places: PLACES[u.searchParams.get("q")] || [] });
+    if (mode === "popups") return send({ popups: POPUPS });
     return send({ photos: [] });
   });
   return { p, errors, store };
@@ -89,7 +92,7 @@ console.log("이번 주말");
   await p.goto(BASE, { waitUntil: "networkidle" });
   await p.click("#weekendBtn"); await p.waitForTimeout(300);
   ok(await p.locator(".ev").count() >= 1, "공연이 나온다");
-  await p.locator(".ev").first().click(); await p.waitForTimeout(200);
+  await p.locator(".ev", { hasText: "테스트 연극" }).click(); await p.waitForTimeout(200);
   ok((await p.locator("#sheetTitle").textContent()) === "테스트 연극", "공연 상세가 열린다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
@@ -111,6 +114,22 @@ console.log("뭐 먹지? · 지금 근처");
   await p.locator("#closeBtn").click(); await p.waitForTimeout(200);
   await p.click("#nearBtn"); await p.waitForTimeout(400);
   ok((await p.locator("#nowWhere").textContent()) === "내 위치 근처" && await p.locator("#nearBody .act").count() > 5, "'지금 근처'에서 놀거리를 고를 수 있다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
+console.log("이번 주말 · 팝업");
+{
+  const { p, errors } = await page();
+  const reports = [];
+  p.on("request", (r) => { if (r.method() === "POST" && (r.postData() || "").includes("popup_report")) reports.push(JSON.parse(r.postData())); });
+  p.on("dialog", (d) => d.accept());
+  await p.goto(BASE, { waitUntil: "networkidle" });
+  await p.click("#weekendBtn"); await p.waitForTimeout(300);
+  ok(await p.locator(".ev-cat.popup").count() === 1, "승인된 팝업이 이번 주말에 나온다");
+  await p.locator(".ev", { hasText: "테스트 팝업" }).click(); await p.waitForTimeout(200);
+  ok((await p.locator("#sheetTitle").textContent()) === "테스트 팝업", "팝업 상세가 열린다");
+  await p.click("#popReport"); await p.waitForTimeout(300);
+  ok(reports.length === 1 && reports[0].id === "p-0123456789" && /^[a-f0-9]{32}$/.test(reports[0].token), "'정보가 틀렸어요'로 신고가 간다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 

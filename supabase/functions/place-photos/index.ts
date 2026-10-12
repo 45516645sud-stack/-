@@ -2,7 +2,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import postgres from "npm:postgres@3.4.5";
 import { SCHEMA } from "./schema.ts";
 import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos, toPosts } from "./photos.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, HIDE_AT, validToken, withoutHidden, withoutItem } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPopupId, cleanPopupItem, HIDE_AT, validToken, visiblePopups, withoutHidden, withoutItem } from "./community.ts";
 
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
 // 카카오 REST API 키는 비밀이라 앱 화면에 둘 수 없어서, 이 함수가 대신 카카오에 물어본다.
@@ -15,7 +15,9 @@ import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, HIDE_AT
 //              POST { mode: "set", col, token, body }   → { ok, id }   (자기 문서만)
 //              POST { mode: "report", col, doc, item, token } → { ok }
 //   통계:       POST { mode: "hit", ev, item }               → { ok }   (날짜별 횟수만)
-//   관리자:     POST { mode: "admin", pass, action: "stats" | "list" | "delete", col?, doc?, item? }
+//   팝업:       GET ?mode=popups → { popups: [{ id, name, place, address, region, start, end, url, lat, lng }] } (승인된 것, 안 끝난 것만)
+//               POST { mode: "popup_report", id, token } → { ok }   (3명이 신고하면 숨김)
+//   관리자:     POST { mode: "admin", pass, action: "stats" | "list" | "delete" | "popups" | "popup_set", col?, doc?, item?, id?, ok?, popup? }
 // 사진은 썸네일과 출처(블로그 등) 링크뿐이다. 원본 사진은 내려주지 않는다.
 
 const KAKAO_IMAGE_SEARCH = "https://dapi.kakao.com/v2/search/image";
@@ -41,7 +43,7 @@ Deno.serve(async (req) => {
   if (!origin) return json({ error: "허용되지 않은 사이트입니다." }, 403);
 
   const url = new URL(req.url);
-  if (req.method === "POST" || url.searchParams.get("mode") === "docs") return community(req, url, json);
+  if (req.method === "POST" || url.searchParams.get("mode") === "docs" || url.searchParams.get("mode") === "popups") return community(req, url, json);
   const q = cleanQuery(url.searchParams.get("q"));
   if (!q) return json({ error: "검색어는 2~60자로 보내 주세요." }, 400);
   const size = url.searchParams.get("mode") === "places"
@@ -196,8 +198,8 @@ function ensureTables(): Promise<void> {
     if (!dbUrl) return;
     const sql = postgres(dbUrl, { max: 1, prepare: false });
     try {
-      const [{ n }] = await sql`select count(*)::int as n from information_schema.tables where table_schema = 'public' and table_name in ('nolco_docs', 'nolco_reports', 'nolco_hits', 'nolco_stats')`;
-      if (n < 4) {
+      const [{ n }] = await sql`select count(*)::int as n from information_schema.tables where table_schema = 'public' and table_name in ('nolco_docs', 'nolco_reports', 'nolco_hits', 'nolco_stats', 'nolco_popups')`;
+      if (n < 5) {
         await sql.unsafe(SCHEMA);
         await sql.unsafe("notify pgrst, 'reload schema'");
         await new Promise((r) => setTimeout(r, 1500));
@@ -214,6 +216,16 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
   if (!sb) return json({ error: "저장소가 아직 설정되지 않았어요." }, 503);
   await ensureTables();
   try {
+    if (req.method === "GET" && url.searchParams.get("mode") === "popups") {
+      const [{ data, error }, hide] = await Promise.all([
+        sb.from("nolco_popups").select("id,ok,item").eq("ok", true).limit(500),
+        hidden(sb, "pp"),
+      ]);
+      if (error) throw error;
+      const today = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);   // 한국 날짜
+      const popups = visiblePopups(data ?? [], new Set([...hide].map((k) => k.split("/")[2])), today);
+      return json({ popups }, 200, { "Cache-Control": "public, max-age=120" });
+    }
     if (req.method === "GET") {
       const col = cleanCol(url.searchParams.get("col"));
       if (!col) return json({ error: "col 은 rv 또는 uc 예요." }, 400);
@@ -239,6 +251,15 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
       return json({ ok: true }, 200);
     }
     if (msg.mode === "admin") return admin(sb, req, msg, json);
+
+    if (msg.mode === "popup_report") {
+      const id = cleanPopupId(msg.id);
+      if (!id || !validToken(msg.token)) return json({ error: "잘못된 신고예요." }, 400);
+      if (await tooMany(sb, req)) return json({ error: "잠시 뒤에 다시 해 주세요." }, 429);
+      const { error } = await sb.from("nolco_reports").upsert({ col: "pp", doc_id: "popup", item_id: id, reporter: await authorId(msg.token) }, { ignoreDuplicates: true });
+      if (error) throw error;
+      return json({ ok: true }, 200);
+    }
 
     const col = cleanCol(msg.col);
     if (!col || !validToken(msg.token)) return json({ error: "잘못된 요청이에요." }, 400);
@@ -308,5 +329,28 @@ async function admin(sb: Sb, req: Request, msg: Record<string, unknown>, json: J
     await sb.from("nolco_reports").delete().eq("col", col).eq("doc_id", doc).eq("item_id", item);
     return json({ ok: true }, 200);
   }
-  return json({ error: "action 은 stats, list, delete 예요." }, 400);
+  if (msg.action === "popups") {
+    const [{ data: rows }, { data: reports }] = await Promise.all([
+      sb.from("nolco_popups").select("id,ok,item,updated_at").limit(2000),
+      sb.from("nolco_reports").select("item_id").eq("col", "pp").limit(5000),
+    ]);
+    const counts: Record<string, number> = {};
+    for (const r of (reports ?? []) as { item_id: string }[]) counts[r.item_id] = (counts[r.item_id] ?? 0) + 1;
+    return json({ rows: rows ?? [], reports: counts }, 200, { "Cache-Control": "no-store" });
+  }
+  if (msg.action === "popup_set") {
+    const id = cleanPopupId(msg.id);
+    if (!id) return json({ error: "팝업 id 가 이상해요." }, 400);
+    if (msg.ok === null) {   // 다시 '확인 전'으로
+      await sb.from("nolco_popups").delete().eq("id", id);
+      return json({ ok: true }, 200);
+    }
+    const item = cleanPopupItem(msg.popup);
+    if (typeof msg.ok !== "boolean" || (msg.ok && !item)) return json({ error: "이름과 끝나는 날을 확인해 주세요." }, 400);
+    const { error } = await sb.from("nolco_popups").upsert({ id, ok: msg.ok, item: item ?? {}, updated_at: new Date().toISOString() });
+    if (error) throw error;
+    if (msg.ok) await sb.from("nolco_reports").delete().eq("col", "pp").eq("item_id", id);   // 고쳐서 다시 승인하면 신고는 비운다
+    return json({ ok: true }, 200);
+  }
+  return json({ error: "action 은 stats, list, delete, popups, popup_set 예요." }, 400);
 }

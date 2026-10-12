@@ -1,0 +1,43 @@
+# 놀코 팝업스토어 후보 수집: 최근 블로그·카페 글에서 '지금 하는·곧 하는 팝업'을 찾아 data/popups.json 으로 저장한다.
+# 이 파일은 후보일 뿐이고, 관리자 화면(admin.html → 팝업)에서 승인한 것만 앱 '이번 주말'에 나온다.
+# 놀코 서버 함수(mode=posts, mode=places)로 묻기 때문에 키가 필요 없다.
+name: 놀코 팝업 수집
+
+on:
+  schedule:
+    - cron: "37 20 * * *"   # 매일 새벽 5시 37분 (한국 시간)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nolco-data
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 수집
+        run: TZ=Asia/Seoul python datecourse/scripts/check_popups.py --out datecourse/data/popups.json
+
+      - name: 바뀐 후보 커밋
+        run: |
+          if [ -z "$(git status --porcelain -- datecourse/data/popups.json)" ]; then
+            echo "바뀐 후보 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datecourse/data/popups.json
+          git commit -m "놀코: 팝업 후보 수집 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push
