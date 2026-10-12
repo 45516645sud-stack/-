@@ -13,12 +13,13 @@ const P = (name, path, d) => ({ name, category: path.split(">").pop().trim(), pa
 const PLACES = {
   "보드게임카페": [P("레드버튼 서면점", "가정,생활 > 여가시설 > 보드카페 > 레드버튼", 120), P("어느 호프", "음식점 > 술집 > 호프,요리주점", 50)],
   "디저트카페": [P("설빙 서면점", "음식점 > 카페 > 테마카페 > 디저트카페 > 설빙", 200)],
+  "고기집": [P("서면 삼겹살", "음식점 > 한식 > 육류,고기 > 삼겹살", 150), P("고기 카페", "음식점 > 카페", 80), P("고기 호프", "음식점 > 술집 > 호프,요리주점", 90)],
 };
 const EVENTS = { events: [{ id: "s-1", kind: "show", cat: "연극", title: "테스트 연극", regions: ["부산"], place: "어느 극장",
   start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" }] };
 
-async function page(store = { rv: {}, uc: {} }) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+async function page(store = { rv: {}, uc: {} }, opts = {}) {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, ...opts });
   const p = await ctx.newPage();
   const errors = [];
   p.on("pageerror", (e) => errors.push(e.message));
@@ -90,6 +91,26 @@ console.log("이번 주말");
   ok(await p.locator(".ev").count() >= 1, "공연이 나온다");
   await p.locator(".ev").first().click(); await p.waitForTimeout(200);
   ok((await p.locator("#sheetTitle").textContent()) === "테스트 연극", "공연 상세가 열린다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
+console.log("뭐 먹지? · 지금 근처");
+{
+  const { p, errors } = await page(undefined, { geolocation: { latitude: 35.157, longitude: 129.059 }, permissions: ["geolocation"], reducedMotion: "reduce", timezoneId: "Asia/Seoul" });
+  await p.clock.setFixedTime(new Date("2026-10-10T15:00:00+09:00"));   // 토요일 오후 3시 (가게 대부분 영업 중)
+  await p.goto(BASE, { waitUntil: "networkidle" });
+  ok(await p.locator("#eatBtn").isVisible(), "홈에 '뭐 먹지?' 버튼이 있다");
+  await p.click("#eatBtn"); await p.waitForTimeout(300);
+  await p.locator("#eatMenus .chip", { hasText: "고기" }).click();
+  await p.click("#eatGo"); await p.waitForTimeout(400);
+  ok((await p.locator(".eat-result .roll").textContent()) === "서면 삼겹살", "고기를 고르면 고깃집만 골라 준다 (카페·술집 빼고)");
+  ok(await p.locator("#eatAfter .act").count() > 5, "밥 먹고 나서 갈 놀거리가 이어서 나온다");
+  await p.locator('#eatAfter [data-near-a="boardgame"]').click(); await p.waitForTimeout(400);
+  const names = await p.locator(".place b").allTextContents();
+  ok((await p.locator("#sheetTitle").textContent()) === "근처 보드게임카페" && names.includes("레드버튼 서면점"), "내 근처 보드게임카페가 나온다");
+  await p.locator("#closeBtn").click(); await p.waitForTimeout(200);
+  await p.click("#nearBtn"); await p.waitForTimeout(400);
+  ok((await p.locator("#nowWhere").textContent()) === "내 위치 근처" && await p.locator("#nearBody .act").count() > 5, "'지금 근처'에서 놀거리를 고를 수 있다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 

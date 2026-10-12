@@ -71,7 +71,7 @@ export function withoutHidden(col: Col, id: string, body: unknown, hidden: Set<s
 }
 
 /* ---------- 방문 통계 ---------- */
-export const STAT_EVENTS = new Set(["visit", "course", "act", "event", "share"]);
+export const STAT_EVENTS = new Set(["visit", "course", "act", "event", "share", "eat", "near"]);
 
 /** 통계 한 건: 종류(ev)와 대상(item, 코스 id 등)만. 이상하면 null */
 export function cleanHit(raw: unknown): { ev: string; item: string } | null {
