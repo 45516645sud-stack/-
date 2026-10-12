@@ -200,11 +200,15 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .places-empty .row-actions .btn { flex: 1; }
 .places-more { margin-top: 10px; }
 /* 지금 근처: 뭐 먹지? · 근처 놀거리 */
-.now-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 4px; }
-.now-btn { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); text-align: left; min-width: 0; }
-.now-btn .il { width: 38px; height: 38px; flex: none; }
-.now-btn b { display: block; font-size: 15px; letter-spacing: -0.02em; }
-.now-btn small { display: block; color: var(--sub); font-size: 12px; word-break: keep-all; }
+.now-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 6px; }
+.now-btn { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px 14px 14px; min-height: 112px; border: 0; border-radius: 20px; color: var(--ink); text-align: left; min-width: 0; overflow: hidden; }
+#eatBtn { background: var(--t-food); }
+#nearBtn { background: var(--t-fun); }
+.now-btn .il { position: absolute; right: 8px; bottom: 8px; width: 54px; height: 54px; }
+.now-btn b { display: block; font-size: 17px; letter-spacing: -0.03em; }
+.now-btn small { display: block; margin-top: 2px; padding-right: 50px; color: var(--sub); font-size: 12px; word-break: keep-all; }
+.now-btn .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 700; }
+.now-btn:active .il { transform: scale(.94); }
 .eat-menu { margin: 12px 0 0; }
 .eat-go { width: 100%; margin-top: 14px; height: 50px; font-size: 16px; }
 .eat-result { margin-top: 14px; padding: 18px 16px; border-radius: 18px; background: var(--accent-soft); text-align: center; }
@@ -564,12 +568,12 @@ textarea { resize: vertical; }
 
 <main class="wrap" id="weekendView" hidden></main>
 <main class="wrap" id="courseView">
-  <section class="weekend-entry" id="weekendEntry" hidden></section>
-  <section class="local-box" id="localBox" hidden></section>
   <section class="now-bar" id="nowBar" aria-label="지금 근처에서" hidden>
     <button type="button" class="now-btn" id="eatBtn"></button>
     <button type="button" class="now-btn" id="nearBtn"></button>
   </section>
+  <section class="weekend-entry" id="weekendEntry" hidden></section>
+  <section class="local-box" id="localBox" hidden></section>
   <section class="feature" id="featureBox" hidden></section>
   <button class="pick" id="randomBtn" type="button">
     <span><b>어디 갈지 모르겠다면</b><small>조건에 맞는 코스 하나 골라 드려요</small></span>
@@ -2836,8 +2840,8 @@ $("modeLocal").addEventListener("click", () => setMode("local"));
 $("favBtn").addEventListener("click", () => goTab(true, false));
 $("userOnlyBtn").addEventListener("click", () => goTab(false, true));
 $("weekendBtn").addEventListener("click", () => openWeekend());
-$("eatBtn").innerHTML = `${illu("meal")}<span><b>뭐 먹지?</b><small>근처 밥집 딱 골라 줘요</small></span>`;
-$("nearBtn").innerHTML = `${illu("pin")}<span><b>지금 근처</b><small>걸어갈 만한 놀거리</small></span>`;
+$("eatBtn").innerHTML = `<span class="tag">NEW</span><span><b>뭐 먹지?</b><small>근처 밥집 한 곳 딱 골라 줘요</small></span>${illu("meal")}`;
+$("nearBtn").innerHTML = `<span class="tag">NEW</span><span><b>지금 근처</b><small>걸어갈 만한 놀거리 보기</small></span>${illu("pin")}`;
 $("eatBtn").addEventListener("click", openEat);
 $("nearBtn").addEventListener("click", openNear);
 $("filterClose").innerHTML = icon("close");
