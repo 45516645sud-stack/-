@@ -199,6 +199,22 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .places-empty small { color: var(--sub); font-size: 12px; }
 .places-empty .row-actions .btn { flex: 1; }
 .places-more { margin-top: 10px; }
+/* 지금 근처: 뭐 먹지? · 근처 놀거리 */
+.now-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 4px; }
+.now-btn { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); text-align: left; min-width: 0; }
+.now-btn .il { width: 38px; height: 38px; flex: none; }
+.now-btn b { display: block; font-size: 15px; letter-spacing: -0.02em; }
+.now-btn small { display: block; color: var(--sub); font-size: 12px; word-break: keep-all; }
+.eat-menu { margin: 12px 0 0; }
+.eat-go { width: 100%; margin-top: 14px; height: 50px; font-size: 16px; }
+.eat-result { margin-top: 14px; padding: 18px 16px; border-radius: 18px; background: var(--accent-soft); text-align: center; }
+.eat-result .roll { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; min-height: 30px; word-break: keep-all; }
+.eat-result .cat { display: block; margin-top: 4px; color: var(--sub); font-size: 13px; }
+.eat-result .addr { display: block; margin-top: 2px; color: var(--sub); font-size: 13px; }
+.eat-result .links { margin-top: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.eat-result.rolling .roll { opacity: .6; }
+.eat-note { margin-top: 10px; }
+.near-acts { margin-top: 10px; row-gap: 18px; }
 .photos { grid-column: 1 / -1; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 8px; }
 .photos::-webkit-scrollbar { display: none; }
 .photos a { flex: none; width: 96px; height: 96px; border-radius: 10px; overflow: hidden; background: var(--fill); }
@@ -550,6 +566,10 @@ textarea { resize: vertical; }
 <main class="wrap" id="courseView">
   <section class="weekend-entry" id="weekendEntry" hidden></section>
   <section class="local-box" id="localBox" hidden></section>
+  <section class="now-bar" id="nowBar" aria-label="지금 근처에서" hidden>
+    <button type="button" class="now-btn" id="eatBtn"></button>
+    <button type="button" class="now-btn" id="nearBtn"></button>
+  </section>
   <section class="feature" id="featureBox" hidden></section>
   <button class="pick" id="randomBtn" type="button">
     <span><b>어디 갈지 모르겠다면</b><small>조건에 맞는 코스 하나 골라 드려요</small></span>
@@ -1122,19 +1142,20 @@ function openNow(a, now = new Date()) {
 const OPEN_MSG = { open: "지금은 대부분 영업 중이에요", maybe: "지금은 24시간 하는 곳만 열었을 수 있어요", closed: "지금은 대부분 문을 닫았을 시간이에요" };
 
 // 놀거리 하나: 그 동네의 실제 가게 목록을 먼저, 코스는 '코스 보기'를 누를 때
-function openActivity(actId) {
+// at: '지금 내 근처'에서 열 때 { here: true, name, lat, lng } (없으면 고른 동네)
+function openActivity(actId, at) {
   const a = LOCAL.acts[actId];
-  const h = hoodById(state.hood);
+  const h = at || hoodById(state.hood);
   if (!a || !h) return;
   hit("act", actId);
   openId = "";
-  const keyword = `${h.q} ${a.kw}`;
+  const keyword = at ? a.kw : `${h.q} ${a.kw}`;
   const q = encodeURIComponent(keyword);
-  const courseN = state.local.filter((c) => c.hoodId === h.id && c.stops.some((s) => s.group === actGroup(actId))).length;
+  const courseN = at ? 0 : state.local.filter((c) => c.hoodId === h.id && c.stops.some((s) => s.group === actGroup(actId))).length;
   $("sheetBody").innerHTML = `
     <div class="grabber"></div>
     <div class="sheet-head">
-      <div><div class="where">${esc(h.name)}</div><h2 id="sheetTitle">${esc(h.name)} ${esc(a.name)}</h2></div>
+      <div><div class="where">${esc(h.name)}</div><h2 id="sheetTitle">${at ? "근처 " + esc(a.name) : esc(h.name) + " " + esc(a.name)}</h2></div>
       <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
     </div>
     <p class="summary">${esc(a.tip)}</p>
@@ -1149,7 +1170,7 @@ function openActivity(actId) {
       <span class="go">코스 보기 ${icon("chev")}</span>
     </button>` : ""}
     <div class="sec-row">
-      <h3 class="sec-title">${esc(h.name)} 근처 ${esc(a.name)}</h3>
+      <h3 class="sec-title">${at ? "가까운 순" : esc(h.name) + " 근처 " + esc(a.name)}</h3>
       <a class="map-link" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 보기</a>
     </div>
     <div class="places" id="placeList" aria-live="polite"><p class="note">가게를 찾는 중이에요…</p></div>
@@ -1246,7 +1267,7 @@ async function showPlaces(keyword, h, q, a) {
       </div>
       <small>'${esc(keyword)}'로 검색돼요.</small></div>`;
   };
-  const center = state.here || { lat: h.lat, lng: h.lng };
+  const center = h.here ? { lat: h.lat, lng: h.lng } : state.here || { lat: h.lat, lng: h.lng };
   const pick = (list) => {
     const seen = new Set();
     return list.filter((p) => {
@@ -1518,6 +1539,7 @@ function renderList() {
   const grid = $("grid");
   const localPick = state.mode === "local" && browsing() && !state.region && !state.q;
   $("randomBtn").hidden = localPick;
+  $("nowBar").hidden = !browsing() || !LOCAL.actList.length;
   $("listTitle").parentElement.hidden = localPick;
   if (localPick) { grid.replaceChildren(); return; }
   if (!state.courses.length) {
@@ -1971,6 +1993,173 @@ async function share(c) {
     toast("코스 링크를 복사했어요");
   } catch {
     prompt("이 주소를 복사하세요", url);
+  }
+}
+
+/* ---------- 지금 근처: 뭐 먹지? 정해 주기 · 지금 문 연 놀거리 ----------
+   걸어 다니다가 "밥 어디서 먹지?", "이제 뭐 하지?" 할 때. 찾기는 카카오맵이 잘하니 놀코는 '정해 주기'에 집중한다.
+   가게 찾기는 놀거리와 같은 serverPlaces (메뉴마다 검색어 kws·종류 규칙 match/not) */
+const EAT_NOT = ["> 카페", "간식", "술집", "제과", "베이커리", "디저트"];
+const EAT_MENUS = [
+  { id: "any", name: "아무거나", kws: ["맛집", "식당", "밥집"], match: ["음식점"] },
+  { id: "meat", name: "고기", kws: ["고기집", "삼겹살", "갈비"], match: ["음식점+육류", "음식점+고기", "음식점+갈비", "음식점+삼겹살"] },
+  { id: "soup", name: "국밥·찌개", kws: ["국밥", "해장국", "찌개"], match: ["국밥", "해장국", "곰탕", "설렁탕", "감자탕", "찌개", "순대"] },
+  { id: "kor", name: "한식", kws: ["한식", "백반", "한정식"], match: ["음식점 > 한식"] },
+  { id: "chn", name: "중식", kws: ["중국집", "중식"], match: ["음식점 > 중식"] },
+  { id: "jpn", name: "일식·돈까스", kws: ["일식", "돈까스", "초밥"], match: ["음식점 > 일식", "돈까스"] },
+  { id: "west", name: "양식", kws: ["파스타", "양식", "피자"], match: ["음식점 > 양식", "피자"] },
+  { id: "snack", name: "분식", kws: ["분식", "떡볶이"], match: ["음식점 > 분식"] },
+  { id: "chicken", name: "치킨", kws: ["치킨"], match: ["음식점 > 치킨"] },
+  { id: "burger", name: "햄버거", kws: ["햄버거"], match: ["패스트푸드", "햄버거"] },
+].map((m) => ({ ...m, id: "eat-" + m.id, kw: m.kws[0], not: EAT_NOT }));
+
+/* 내 위치: 5분 동안은 다시 묻지 않는다. 못 가져오면 고른 동네 가운데, 그것도 없으면 null */
+let nearSpot = null;
+function getSpot() {
+  if (nearSpot && Date.now() - nearSpot.at < 300000) return Promise.resolve(nearSpot);
+  const hoodSpot = () => {
+    const h = hoodById(state.hood);
+    return h ? { here: true, name: h.name + " 가운데", lat: h.lat, lng: h.lng, at: 0 } : null;
+  };
+  if (!navigator.geolocation) return Promise.resolve(hoodSpot());
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { nearSpot = { here: true, name: "내 위치 근처", lat: pos.coords.latitude, lng: pos.coords.longitude, at: Date.now() }; resolve(nearSpot); },
+      () => resolve(hoodSpot()),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
+    );
+  });
+}
+
+function openNowSheet(title, where, bodyHtml) {
+  openId = "";
+  $("sheetBody").innerHTML = `
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <div><div class="where" id="nowWhere">${esc(where)}</div><h2 id="sheetTitle">${esc(title)}</h2></div>
+      <button class="icon-btn" id="closeBtn" aria-label="닫기">${icon("close")}</button>
+    </div>${bodyHtml}`;
+  $("closeBtn").addEventListener("click", closeCourse);
+  const sheet = $("sheet");
+  if (!sheet.open) sheet.showModal();
+  sheet.scrollTop = 0;
+  if (map) { map.remove(); map = null; }
+}
+const NO_SPOT = `<div class="places-empty"><p>위치를 가져오지 못했어요.</p><small>휴대폰 설정에서 이 사이트의 위치 권한을 허용하고 다시 눌러 주세요. '우리 동네'에서 동네를 골라 두면 그 동네 기준으로 찾아 드려요.</small></div>`;
+
+/* 근처 놀거리 버튼들 (지금 열었을 것 먼저, 닫았을 시간인 것은 뒤로) */
+// openOnly: 지금 열었을 만한 것만 (하나도 없으면 전부)
+function nearActsHtml(skip = "", openOnly = false) {
+  const rank = { open: 0, maybe: 1, "": 1, closed: 2 };
+  let acts = LOCAL.actList.filter((a) => a.id !== skip);
+  if (openOnly && acts.some((a) => openNow(a) !== "closed")) acts = acts.filter((a) => openNow(a) !== "closed");
+  return `<div class="acts near-acts">${acts.sort((x, y) => rank[openNow(x)] - rank[openNow(y)]).map((a) => {
+    const st = openNow(a);
+    return `<button type="button" class="act ${st === "closed" ? "shut" : ""}" data-near-a="${a.id}"><span class="ic">${illu(a.id)}${st === "closed" ? `<em class="badge">닫았을 수도</em>` : ""}</span><span>${esc(a.name)}</span></button>`;
+  }).join("")}</div>`;
+}
+function bindNearActs(spot) {
+  $("sheetBody").querySelectorAll("[data-near-a]").forEach((b) => b.addEventListener("click", () => openActivity(b.dataset.nearA, spot)));
+}
+
+async function openNear() {
+  hit("near");
+  openNowSheet("지금 근처에서 뭐 하지?", "위치를 찾는 중이에요…", `<div id="nearBody"><p class="note">위치를 찾는 중이에요…</p></div>`);
+  const spot = await getSpot();
+  if (!$("nearBody")) return;
+  if (!spot) { $("nowWhere").textContent = "위치 없음"; $("nearBody").innerHTML = NO_SPOT; return; }
+  $("nowWhere").textContent = spot.name;
+  $("nearBody").innerHTML = `<p class="summary">누르면 걸어갈 만한 거리(2km 안)의 가게를 가까운 순으로 보여 드려요. 지금 열었을 만한 것부터 놓았어요.</p>${nearActsHtml()}
+    <p class="note">'닫았을 수도'는 보통 영업시간으로 짐작한 거예요. 가게마다 다르니 '가게 정보'에서 확인해 주세요.</p>`;
+  bindNearActs(spot);
+}
+
+let eatMenu = "eat-any";
+async function openEat() {
+  openNowSheet("뭐 먹지? 정해 줘", "위치를 찾는 중이에요…", `
+    <p class="summary">메뉴를 고르고 버튼을 누르면 근처 밥집 한 곳을 딱 골라 드려요.</p>
+    <div class="chips eat-menu" id="eatMenus" role="group" aria-label="메뉴"></div>
+    <button type="button" class="btn primary eat-go" id="eatGo" disabled>정해 줘!</button>
+    <div id="eatOut" aria-live="polite"></div>
+    <div id="eatAfter"></div>`);
+  const drawMenus = () => $("eatMenus").replaceChildren(...EAT_MENUS.map((m) =>
+    chip(m.name, eatMenu === m.id, () => { eatMenu = m.id; drawMenus(); })));
+  drawMenus();
+  const spot = await getSpot();
+  if (!$("eatGo")) return;
+  if (!spot) { $("nowWhere").textContent = "위치 없음"; $("eatOut").innerHTML = NO_SPOT; return; }
+  $("nowWhere").textContent = spot.name;
+  const seen = new Set();   // 다시 돌리면 방금 나온 곳은 빼고
+  $("eatGo").disabled = false;
+  $("eatGo").addEventListener("click", () => rollEat(spot, seen));
+}
+
+async function rollEat(spot, seen) {
+  const m = EAT_MENUS.find((x) => x.id === eatMenu) || EAT_MENUS[0];
+  const out = $("eatOut"), go = $("eatGo");
+  hit("eat", m.id);
+  go.disabled = true;
+  out.innerHTML = `<div class="eat-result rolling"><div class="roll">찾는 중…</div></div>`;
+  const list = await serverPlaces(m, m.kw, spot);
+  if (!$("eatOut") || out !== $("eatOut")) return;
+  go.disabled = false;
+  const q = encodeURIComponent(m.id === "eat-any" ? "맛집" : m.kw);
+  if (!list || !list.length) {
+    out.innerHTML = `<div class="places-empty"><p>${list ? `근처에서 '${esc(m.name)}' 밥집을 못 찾았어요. 다른 메뉴를 골라 보세요.` : "가게 목록을 불러오지 못했어요."}</p>
+      <div class="row-actions"><a class="btn" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">카카오맵에서 찾기</a></div></div>`;
+    return;
+  }
+  // 가까운 곳 위주로 (1km 안이 6곳 넘으면 그 안에서만)
+  const close = list.filter((p) => Number(p.distance) <= 1000);
+  let pool = (close.length >= 6 ? close : list).slice(0, 20);
+  if (pool.every((p) => seen.has(p.place_name))) seen.clear();
+  pool = pool.filter((p) => !seen.has(p.place_name));
+  const p = pool[Math.floor(Math.random() * pool.length)];
+  seen.add(p.place_name);
+
+  // 룰렛: 이름이 몇 번 바뀌다가 멈춘다 (움직임 줄이기 설정이면 바로)
+  const slow = !matchMedia("(prefers-reduced-motion: reduce)").matches && pool.length > 1;
+  out.innerHTML = `<div class="eat-result rolling"><div class="roll"></div></div>`;
+  const roll = out.querySelector(".roll");
+  if (slow) {
+    go.disabled = true;
+    for (let i = 0; i < 12; i++) {
+      roll.textContent = pool[Math.floor(Math.random() * pool.length)].place_name;
+      await new Promise((r) => setTimeout(r, 60 + i * 12));
+      if (!$("eatOut") || out !== $("eatOut")) return;
+    }
+    go.disabled = false;
+  }
+  const d = Number(p.distance);
+  const dist = Number.isFinite(d) && p.distance !== "" ? (d < 1000 ? d + "m" : (d / 1000).toFixed(1) + "km") : "";
+  const cat = String(p.category_name || "").split(">").pop().trim();
+  const kakaoUrl = /^https:\/\/place\.map\.kakao\.com\//.test(p.place_url) ? p.place_url : "";
+  out.innerHTML = `<div class="eat-result">
+      <div class="roll"></div>
+      <span class="cat"></span><span class="addr"></span>
+      <div class="links">
+        ${kakaoUrl ? `<a class="link-pill" href="${esc(kakaoUrl)}" target="_blank" rel="noopener">가게 정보·후기</a>` : ""}
+        <a class="link-pill" href="https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}" target="_blank" rel="noopener">길찾기</a>
+        <button type="button" class="link-pill" id="eatShare">친구한테 보내기</button>
+      </div>
+    </div>
+    <p class="note eat-note">맘에 안 들면 '다시 돌리기'를 눌러요. 영업시간·휴무는 '가게 정보'에서 꼭 확인해 주세요.</p>`;
+  out.querySelector(".roll").textContent = p.place_name;
+  out.querySelector(".cat").textContent = [cat, dist].filter(Boolean).join(" · ");
+  out.querySelector(".addr").textContent = p.road_address_name || p.address_name || "";
+  go.textContent = "다시 돌리기";
+  $("eatShare").addEventListener("click", async () => {
+    const text = `오늘 밥은 여기! 🍚 ${p.place_name}${dist ? ` (${dist})` : ""}`;
+    const url = kakaoUrl || `https://map.kakao.com/link/search/${encodeURIComponent(p.place_name)}`;
+    try { if (navigator.share) { await navigator.share({ title: p.place_name, text, url }); return; } }
+    catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(text + "\n" + url); toast("링크를 복사했어요. 카톡에 붙여 넣으세요"); }
+    catch { prompt("이 주소를 복사하세요", url); }
+  });
+  // 밥 먹고 나서 이어서
+  if (!$("eatAfter").childElementCount) {
+    $("eatAfter").innerHTML = `<h3 class="sec-title">밥 먹고 나서 근처에서</h3>${nearActsHtml("meal", true)}`;
+    bindNearActs(spot);
   }
 }
 
@@ -2647,6 +2836,10 @@ $("modeLocal").addEventListener("click", () => setMode("local"));
 $("favBtn").addEventListener("click", () => goTab(true, false));
 $("userOnlyBtn").addEventListener("click", () => goTab(false, true));
 $("weekendBtn").addEventListener("click", () => openWeekend());
+$("eatBtn").innerHTML = `${illu("meal")}<span><b>뭐 먹지?</b><small>근처 밥집 딱 골라 줘요</small></span>`;
+$("nearBtn").innerHTML = `${illu("pin")}<span><b>지금 근처</b><small>걸어갈 만한 놀거리</small></span>`;
+$("eatBtn").addEventListener("click", openEat);
+$("nearBtn").addEventListener("click", openNear);
 $("filterClose").innerHTML = icon("close");
 ["regionRow", "hoodRow", "quickRow"].forEach((id) => enableHScroll($(id)));
 $("hoodClose").innerHTML = icon("close");
