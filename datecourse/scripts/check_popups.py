@@ -276,11 +276,13 @@ def collect() -> dict:
         places = Counter((f["place"], f["pq"], f["pp"]) for f in pool if f["place"])
         ranked = sorted(places.items(), key=lambda kv: (not kv[0][2], -kv[1]))
         place, pq, pp = ranked[0][0] if ranked else ("", "", "")
-        urls = [f["url"] for f in sorted(pool, key=lambda f: f["date"], reverse=True)][:3]
+        recent = sorted(pool, key=lambda f: f["date"], reverse=True)[:3]
+        urls, titles = [f["url"] for f in recent], [f["title"] for f in recent]
         out.append({"id": popup_id(g["name"]), "name": g["name"], "start": start, "end": end, "place": place, "pq": pq, "pp": pp,
-                    "agree": agree, "posts": len(pool), "url": urls[0], "urls": urls})
+                    "agree": agree, "posts": len(pool), "url": urls[0], "urls": urls, "titles": titles})
 
-    now = [p for p in out if (p["start"] or today) <= today <= p["end"]]
+    # 오늘이 마지막 날인 것은 확인하는 사이에 끝나니 후보에서 뺀다
+    now = [p for p in out if (p["start"] or today) <= today < p["end"]]
     soon = [p for p in out if p["start"] and today < p["start"] <= today + timedelta(days=14)]
     sure = [p for p in now if p["agree"] >= 2]
     unsure = [p for p in now if p["agree"] < 2]
@@ -303,7 +305,7 @@ def candidates(r: dict) -> dict:
     """관리자 확인용 후보 파일 (data/popups.json). 확실한 것 먼저"""
     def item(p, state):
         return {"id": p["id"], "name": p["name"], "start": str(p["start"] or ""), "end": str(p["end"]), "place": p["place"],
-                "address": p["address"], "lat": p["lat"], "lng": p["lng"], "region": p["region"], "url": p["url"], "urls": p["urls"],
+                "address": p["address"], "lat": p["lat"], "lng": p["lng"], "region": p["region"], "url": p["url"], "urls": p["urls"], "titles": p["titles"],
                 "agree": p["agree"], "posts": p["posts"], "sure": p["agree"] >= 2, "state": state}
     items = ([item(p, "now") for p in sorted(r["sure"], key=lambda p: -p["agree"])]
              + [item(p, "soon") for p in sorted(r["soon"], key=lambda p: p["start"])]

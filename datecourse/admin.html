@@ -36,6 +36,9 @@ th, td { border-bottom: 1px solid var(--line); padding: 6px; text-align: left; v
 .badge.one { background: #fff4c4; color: #8a6200; }
 button.ok { background: #2e7a45; color: #fff; }
 @media (max-width: 520px) { .pp .grid { grid-template-columns: 1fr; } }
+.guide { background: #fff6d2; border-radius: 10px; padding: 10px 12px; }
+.guide ol { margin: 6px 0; padding-left: 20px; }
+.pp a.note { display: block; color: #2c76b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -155,6 +158,9 @@ async function render() {
   } catch (e) { v.innerHTML = `<p class="flag">${esc(e.message)}</p>`; }
 }
 /* ---------- 팝업 확인: 자동으로 찾은 후보를 보고 승인(앱에 나옴) / 거절 ---------- */
+let ppTab = "wait";
+const WEEK = "일월화수목금토";
+const md = (iso) => { if (!iso) return ""; const d = new Date(iso + "T00:00:00"); return `${d.getMonth() + 1}.${d.getDate()}(${WEEK[d.getDay()]})`; };
 async function renderPopups(v) {
   const [cand, { rows, reports }] = await Promise.all([
     fetch("data/popups.json?t=" + Date.now()).then((r) => r.ok ? r.json() : { items: [] }).catch(() => ({ items: [] })),
@@ -162,45 +168,60 @@ async function renderPopups(v) {
   ]);
   const dec = Object.fromEntries(rows.map((r) => [r.id, r]));
   const today = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
-  // 후보 + 이미 승인했지만 오늘 후보에는 없는 것(글이 더 안 올라온 것)
-  const list = [...(cand.items || [])];
+  // 후보 중 오늘 끝나거나 이미 끝난 것은 뺀다. 승인한 것은 오늘 후보에 없어도(글이 더 안 올라와도) 끝날 때까지 보인다
+  const list = (cand.items || []).filter((c) => c.end > today);
   for (const r of rows) if (!list.some((c) => c.id === r.id) && r.ok && (r.item.end || "") >= today) list.push({ id: r.id, ...r.item, gone: true });
   const stateOf = (c) => dec[c.id] ? (dec[c.id].ok ? "ok" : "no") : "wait";
   const groups = { wait: [], ok: [], no: [] };
   for (const c of list) groups[stateOf(c)].push(c);
+  groups.ok.sort((a, b) => (a.end || "").localeCompare(b.end || ""));
+  const TABS = { wait: "확인할 것", ok: "앱에 나오는 중", no: "틀림으로 뺀 것" };
   const card = (c) => {
     const d = dec[c.id] && dec[c.id].ok ? { ...c, ...dec[c.id].item } : c;   // 승인할 때 고친 값이 있으면 그걸로
     const st = stateOf(c), n = reports[c.id] || 0;
-    const links = (c.urls || [c.url]).filter(Boolean).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">글 ${i + 1}</a>`).join(" · ");
+    const urls = (c.urls || [c.url]).filter(Boolean), titles = c.titles || [];
+    const when = d.start ? `${md(d.start)} ~ ${md(d.end)}` : `${md(d.end)}까지`;
     return `<div class="pp ${st}" data-id="${esc(c.id)}">
       <div class="row">
-        ${c.sure ? `<span class="badge sure">같은 기간 글 ${c.agree}개</span>` : c.agree ? `<span class="badge one">글 하나뿐 · 꼭 확인</span>` : ""}
-        ${c.state === "soon" ? `<span class="badge">곧 시작</span>` : ""}
-        ${c.gone ? `<span class="badge">오늘 후보엔 없음</span>` : ""}
-        ${n ? `<span class="badge flag">신고 ${n}</span>` : ""}
-        <span class="note">${links}</span>
+        ${c.sure ? `<span class="badge sure">글 ${c.agree}개가 같은 기간</span>` : c.agree ? `<span class="badge one">글 하나뿐 · 틀릴 수 있음</span>` : ""}
+        ${(d.start || "") > today ? `<span class="badge">곧 시작</span>` : ""}
+        ${c.gone ? `<span class="badge">새 글 없음</span>` : ""}
+        ${n ? `<span class="badge flag">'틀렸어요' 신고 ${n}</span>` : ""}
       </div>
-      <div class="grid">
-        <label>이름<input data-f="name" value="${esc(d.name)}"></label>
-        <label>장소<input data-f="place" value="${esc(d.place)}"></label>
-        <label>시작 (모르면 비움)<input data-f="start" type="date" value="${esc(d.start)}"></label>
-        <label>끝<input data-f="end" type="date" value="${esc(d.end)}"></label>
-        <label>주소<input data-f="address" value="${esc(d.address)}"></label>
-        <label>지역<input data-f="region" value="${esc(d.region)}" placeholder="서울, 부산…"></label>
-      </div>
+      <b style="font-size:17px">${esc(d.name)}</b>
+      <div>📅 <b>${esc(when)}</b> &nbsp; 📍 ${esc(d.place || "장소 모름")}</div>
+      ${urls.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener" class="note">📝 ${esc(titles[i] || "글 " + (i + 1))}</a>`).join("")}
+      <details><summary class="note">✏️ 이름·날짜·장소 고치기</summary>
+        <div class="grid" style="margin-top:6px">
+          <label>이름<input data-f="name" value="${esc(d.name)}"></label>
+          <label>장소<input data-f="place" value="${esc(d.place)}"></label>
+          <label>시작 (모르면 비움)<input data-f="start" type="date" value="${esc(d.start)}"></label>
+          <label>끝나는 날<input data-f="end" type="date" value="${esc(d.end)}"></label>
+          <label>주소<input data-f="address" value="${esc(d.address)}"></label>
+          <label>지역<input data-f="region" value="${esc(d.region)}" placeholder="서울, 부산…"></label>
+        </div>
+      </details>
       <div class="row">
-        ${st !== "ok" ? `<button class="ok" data-act="ok">✅ 맞아요 (앱에 올리기)</button>` : `<button class="ok" data-act="ok">고친 내용 저장</button>`}
+        ${st !== "ok" ? `<button class="ok" data-act="ok">✅ 셋 다 맞아요 → 앱에 올리기</button>` : `<button class="ok" data-act="ok">고친 내용 저장</button>`}
         ${st !== "no" ? `<button class="danger" data-act="no">❌ 틀려요</button>` : ""}
         ${st !== "wait" ? `<button data-act="reset">확인 전으로</button>` : ""}
       </div>
     </div>`;
   };
-  const sec = (title, arr, hint) => `<h2 style="margin-top:14px">${title} ${arr.length}개</h2>${hint ? `<p class="note">${hint}</p>` : ""}${arr.map(card).join("") || "<p class='note'>없어요</p>"}`;
-  v.innerHTML = `<p class="note">블로그·카페 글에서 매일 새벽 자동으로 찾은 후보예요${cand.updated ? ` (마지막: ${esc(cand.updated)})` : ""}.
-      '글'을 눌러 확인하고 <b>맞아요</b>를 누른 것만 앱 '이번 주말'에 나와요. 이름·장소·날짜가 조금 틀리면 고친 뒤 눌러 주세요.</p>
-    ${sec("확인 전", groups.wait, "같은 기간 글이 여러 개인 것이 위에 있어요. 아래쪽 '글 하나뿐'은 틀릴 가능성이 더 커요.")}
-    ${sec("앱에 나오는 중", groups.ok, "끝나는 날이 지나면 앱에서 저절로 사라져요. 신고가 3개 쌓이면 숨겨져요.")}
-    ${sec("틀림으로 표시함", groups.no)}`;
+  v.innerHTML = `
+    <div class="guide">
+      <b>확인하는 법</b> (하나에 30초면 돼요)
+      <ol>
+        <li>📝 <b>글 제목</b>을 눌러 블로그 글을 열어요.</li>
+        <li>글에서 세 가지가 카드와 같은지 봐요: <b>① 팝업 이름</b> <b>② 끝나는 날</b> <b>③ 장소</b></li>
+        <li>셋 다 맞으면 <b>✅</b>, 팝업이 아니거나 많이 틀리면 <b>❌</b>. 조금만 틀리면 <b>✏️ 고치기</b>로 고친 뒤 ✅</li>
+      </ol>
+      <p class="note">초록 <b>'글 N개가 같은 기간'</b>은 거의 맞아요. 노란 <b>'글 하나뿐'</b>은 꼭 글을 열어 보세요. 후보는 매일 새벽 새로 찾아요${cand.updated ? ` (마지막: ${esc(cand.updated)})` : ""}.</p>
+    </div>
+    <div class="row tabs" style="margin:10px 0">${Object.entries(TABS).map(([k, t]) => `<button data-pp="${k}" aria-pressed="${ppTab === k}">${t} ${groups[k].length}</button>`).join("")}</div>
+    ${ppTab === "ok" ? `<p class="note">앱 '이번 주말 → 팝업'에 나오고 있어요. 끝나는 날이 지나면 저절로 빠지고, '틀렸어요' 신고가 3개 쌓이면 숨겨져요.</p>` : ""}
+    ${groups[ppTab].map(card).join("") || `<p class="note">${ppTab === "wait" ? "확인할 후보가 없어요. 내일 새벽에 새로 찾아요." : "없어요"}</p>`}`;
+  v.querySelectorAll("[data-pp]").forEach((b) => b.onclick = () => { ppTab = b.dataset.pp; renderPopups(v); });
   v.querySelectorAll(".pp button[data-act]").forEach((b) => b.onclick = async () => {
     const box = b.closest(".pp"), id = box.dataset.id, c = list.find((x) => x.id === id);
     const f = Object.fromEntries([...box.querySelectorAll("input[data-f]")].map((i) => [i.dataset.f, i.value.trim()]));

@@ -16,7 +16,10 @@ const PLACES = {
   "고기집": [P("서면 삼겹살", "음식점 > 한식 > 육류,고기 > 삼겹살", 150), P("고기 카페", "음식점 > 카페", 80), P("고기 호프", "음식점 > 술집 > 호프,요리주점", 90)],
 };
 const POPUPS = [{ id: "p-0123456789", name: "테스트 팝업", place: "더현대 서울", address: "서울 영등포구 여의대로 108", region: "서울",
-  start: "2000-01-01", end: "2100-01-01", url: "https://blog.naver.com/a/1", lat: 37.52, lng: 126.92 }];
+  start: "2000-01-01", end: "2100-01-01", url: "https://blog.naver.com/a/1", lat: 37.52, lng: 126.92 },
+  // 열흘 뒤 시작: '이번 주말' 기간 밖이어도 '곧 시작'으로 보여야 한다
+  { id: "p-0123456780", name: "곧 여는 팝업", place: "성수", address: "", region: "서울",
+    start: new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10), end: "2100-01-01", url: "", lat: null, lng: null }];
 const EVENTS = { events: [{ id: "s-1", kind: "show", cat: "연극", title: "테스트 연극", regions: ["부산"], place: "어느 극장",
   start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" }] };
 
@@ -125,7 +128,7 @@ console.log("이번 주말 · 팝업");
   p.on("dialog", (d) => d.accept());
   await p.goto(BASE, { waitUntil: "networkidle" });
   await p.click("#weekendBtn"); await p.waitForTimeout(300);
-  ok(await p.locator(".ev-cat.popup").count() === 1, "승인된 팝업이 이번 주말에 나온다");
+  ok(await p.locator(".ev-cat.popup").count() === 2, "승인된 팝업이 이번 주말에 나온다 (2주 안에 시작하는 것도)");
   await p.locator(".ev", { hasText: "테스트 팝업" }).click(); await p.waitForTimeout(200);
   ok((await p.locator("#sheetTitle").textContent()) === "테스트 팝업", "팝업 상세가 열린다");
   await p.click("#popReport"); await p.waitForTimeout(300);
