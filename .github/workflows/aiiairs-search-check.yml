@@ -1,0 +1,41 @@
+# AIIairs 취향 검색 점검: 검색을 고칠 때마다 222개 문장을 진짜 브라우저로 다시 검색해 보고,
+# 지난번에 맞다고 확인한 결과(aiiairs/scripts/search/snapshot.json)와 다르면 실패로 알려준다.
+# 일부러 바꾼 거라면 `node aiiairs/scripts/search/check.mjs --update` 로 정답을 새로 저장해서 같이 올린다.
+name: AIIairs 검색 점검
+
+on:
+  pull_request:
+    paths:
+      - "aiiairs/index.html"
+      - "aiiairs/scripts/search/**"
+      - ".github/workflows/aiiairs-search-check.yml"
+  push:
+    branches-ignore:
+      - "claude/laughing-bardeen-qmw8mm"
+    paths:
+      - "aiiairs/index.html"
+      - "aiiairs/scripts/search/**"
+      - ".github/workflows/aiiairs-search-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 브라우저 설치
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: 222개 문장 점검
+        run: node aiiairs/scripts/search/check.mjs

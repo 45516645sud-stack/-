@@ -99,6 +99,17 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(collect.genre_info("복합")[0], "theater")
         self.assertEqual(collect.genre_info("처음 보는 장르")[0], "theater")
 
+    def test_auto_tags_and_age(self):
+        self.assertEqual(collect.auto_tags("노맨틱 코미디", "", "연극"), ["웃음"])
+        self.assertIn("공포", collect.auto_tags("밤빛괴담", "오싹한 추리극", "연극"))
+        self.assertEqual(collect.auto_tags("2인극 페스티벌", None, "연극"), ["2인극", "축제"])
+        self.assertEqual(collect.auto_tags("빨래", "서울살이의 고단함", "뮤지컬"), [])
+        self.assertEqual(collect.min_age("전체 관람가"), 0)
+        self.assertEqual(collect.min_age("48개월 이상"), 4)
+        self.assertEqual(collect.min_age("만 13세 이상"), 13)
+        self.assertEqual(collect.min_age("미취학아동입장불가"), None)
+        self.assertIsNone(collect.min_age(""))
+
     def test_https(self):
         self.assertEqual(collect.https("http://a.kr/x.gif"), "https://a.kr/x.gif")
         self.assertIsNone(collect.https("javascript:alert(1)"))
@@ -129,6 +140,11 @@ class FixtureRunTest(unittest.TestCase):
             self.assertEqual(items["kopis-pf000001"]["runtime"], "1시간 30분")
             self.assertEqual(items["kopis-pf000001"]["age"], "만 13세 이상")
             self.assertEqual(items["kopis-pf000001"]["addr"], "서울특별시 종로구 대학로 12길 34 (동숭동)")
+            # 출연진, KOPIS 의 대학로 표시, 볼 수 있는 가장 어린 나이
+            self.assertEqual(items["kopis-pf000001"]["cast"], "홍길동, 김예시")
+            self.assertIn("대학로", items["kopis-pf000001"]["tags"])
+            self.assertNotIn("내한", items["kopis-pf000001"]["tags"])
+            self.assertEqual(items["kopis-pf000001"]["agemin"], 13)
             # 모든 KOPIS 공연에 공식 공연 페이지 링크가 붙는다 (예매처가 없어도)
             self.assertTrue(items["kopis-pf000002"]["info"].endswith("mt20Id=PF000002"))
             self.assertNotIn("url", items["kopis-pf000002"])

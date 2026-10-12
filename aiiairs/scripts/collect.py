@@ -107,6 +107,49 @@ GENRE_WORDS = [
 ]
 
 
+# KOPIS 상세의 예/아니요(Y/N) 표시 → 꼬리표. 추측이 아니라 KOPIS 가 적어 준 것이라 검색에서 확실하게 쓴다.
+FLAG_TAGS = {"daehakro": "대학로", "visit": "내한", "festival": "축제", "musicalcreate": "창작", "musicallicense": "라이선스"}
+
+# 공연 이름·소개·장르에 이 말이 있으면 꼬리표를 붙인다 (취향 검색이 분위기·형식으로 고를 수 있게)
+AUTO_TAGS = [
+    ("웃음", ("코미디", "코믹", "개그", "희극", "폭소", "유쾌", "만담", "스탠드업", "슬랩스틱")),
+    ("공포", ("공포", "호러", "스릴러", "추리", "미스터리", "미스테리", "괴담", "귀신", "좀비", "서스펜스")),
+    ("로맨스", ("로맨스", "로맨틱", "연애", "첫사랑", "러브스토리")),
+    ("감동", ("감동", "눈물", "위로", "실화")),
+    ("2인극", ("2인극", "이인극")),
+    ("1인극", ("1인극", "모노드라마")),
+    ("낭독", ("낭독",)),
+    ("인형극", ("인형극",)),
+    ("마술", ("마술", "매직쇼")),
+    ("재즈", ("재즈", "jazz")),
+    ("어쿠스틱", ("어쿠스틱", "acoustic", "통기타")),
+    ("국악", ("국악", "판소리", "가야금", "해금", "대금", "사물놀이", "민요", "창극")),
+    ("피아노", ("피아노", "piano")),
+    ("축제", ("축제", "페스티벌", "연극제", "festival")),
+]
+
+
+def auto_tags(*texts: str) -> list[str]:
+    t = " ".join(x for x in texts if x).lower().replace(" ", "")
+    return [tag for tag, words in AUTO_TAGS if any(w in t for w in words)]
+
+
+def min_age(text: str | None) -> int | None:
+    """관람 나이 글 → 볼 수 있는 가장 어린 나이(만). '전체 관람가' → 0, '48개월 이상' → 4, '만 13세 이상' → 13. 모르면 None"""
+    t = (text or "").replace(" ", "")
+    if not t:
+        return None
+    if "전체" in t or "누구나" in t:
+        return 0
+    m = re.search(r"(\d+)개월", t)
+    if m:
+        return int(m.group(1)) // 12
+    m = re.search(r"(\d+)세", t)
+    if m:
+        return int(m.group(1))
+    return None
+
+
 def genre_info(genre: str) -> tuple[str, str, list[str]]:
     """KOPIS 장르 이름 → (페이지 분류, 대체 그림, 취향 태그)"""
     g = (genre or "").strip()
@@ -306,7 +349,7 @@ def windows(start: dt.date, end: dt.date, span: int = 31):
 def slim_detail(d: dict) -> dict:
     """상세 응답에서 쓰는 것만 남긴다 (기억해 두기 쉽게 글자만)."""
     out = {k: first(d, k) for k in ("mt20id", "mt10id", "genrenm", "child", "pcseguidance", "fcltynm", "area", "poster", "openrun",
-                                    "dtguidance", "prfruntime", "prfage")}
+                                    "dtguidance", "prfruntime", "prfage", "prfcast", *FLAG_TAGS)}
     out["sty"] = clip(first(d, "sty"), 400)
     relates = d.get("relates")
     if isinstance(relates, ET.Element):
@@ -318,7 +361,7 @@ def slim_detail(d: dict) -> dict:
     return {k: v for k, v in out.items() if v}
 
 
-CACHE_VERSION = 2  # 기억하는 항목이 바뀌면 올린다 (예전 기억은 버리고 다시 묻는다). 2: 공연 시간·나이·주소 추가
+CACHE_VERSION = 3  # 기억하는 항목이 바뀌면 올린다 (예전 기억은 버리고 다시 묻는다). 2: 공연 시간·나이·주소, 3: 출연진·대학로/내한/축제/창작 표시
 
 
 def load_cache(path: Path | None) -> dict:
@@ -505,6 +548,11 @@ def kopis_item(r: dict, d: dict) -> dict | None:
             url = https(rel.findtext("relateurl"))
             if url:
                 break
+    tags += [tag for key, tag in FLAG_TAGS.items() if first(d, key) == "Y"]
+    agemin = min_age(first(d, "prfage"))
+    if agemin is not None and agemin <= 7:
+        tags.append("아이")
+    tags += auto_tags(first(r, "prfnm"), first(d, "sty"), genre)
     fee_text = first(d, "pcseguidance")
     venue = clean_venue(first(d, "fcltynm") or first(r, "fcltynm"))
     summary = clip(first(d, "sty"))
@@ -528,6 +576,8 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "time": clip(first(d, "dtguidance"), 160),                 # 공연 시간 (예: 화~금 20:00, 토 15:00·19:00)
         "runtime": clip(first(d, "prfruntime"), 30),               # 공연 길이 (예: 1시간 30분)
         "age": clip(first(d, "prfage"), 30),                       # 관람 나이 (예: 만 13세 이상)
+        "agemin": agemin,                                          # 볼 수 있는 가장 어린 나이 (취향 검색의 '5살 아이' 등)
+        "cast": clip(re.sub(r"\s*등$", "", first(d, "prfcast")), 80),  # 출연진 (이름으로 찾기)
         "src": "kopis",
     }
 
