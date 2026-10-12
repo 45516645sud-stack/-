@@ -10,9 +10,10 @@
 <!-- 가게 사진: Supabase place-photos 함수 주소 (카카오 이미지 검색, REST 키는 함수에만 둔다). 비우면 사진 없이 -->
 <meta name="nolco-photo-endpoint" content="https://hzomhheyccapnzuwtzxh.supabase.co/functions/v1/bright-action">
 <meta name="description" content="전국 17개 시·도의 놀거리·데이트 코스를 누구와, 어떤 분위기로, 얼마나 쓸지에 맞춰 추천해 드려요.">
-<meta name="theme-color" content="#ffd23f">
+<meta name="theme-color" content="#ff5a3c">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffcc1a'/%3E%3Cpath d='M32 50s-14-9.5-14-21a8 8 0 0 1 14-5.3A8 8 0 0 1 46 29c0 11.5-14 21-14 21z' fill='%232a2513'/%3E%3C/svg%3E">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="img/icon-180.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
@@ -28,10 +29,10 @@
   --sub: #6d685b;
   --faint: #a6a091;
   --line: #ece8dd;
-  --accent: #ffd23f;        /* 앱 노랑 */
-  --accent-ink: #1f1c15;
-  --accent-text: #8a6200;   /* 흰 바탕 위 노랑 글자 대신 */
-  --accent-soft: #fff6d2;
+  --accent: #ff5a3c;        /* 앱 코랄 */
+  --accent-ink: #ffffff;
+  --accent-text: #d63c1f;   /* 흰 바탕 위 글자용 (더 진한 코랄) */
+  --accent-soft: #ffede8;
   --star: #f5a700;
   /* 썸네일 색 (분위기별) */
   --t-sea: #e4f1fb;   --t-sea-i: #2c76b8;
@@ -40,7 +41,7 @@
   --t-trad: #f8eae2;  --t-trad-i: #a04e28;
   --t-food: #fdf0da;  --t-food-i: #9b600c;
   --t-fun: #fbe7ef;   --t-fun-i: #b0386b;
-  --t-base: #fff4c4;  --t-base-i: #8a6200;
+  --t-base: #ffe6df;  --t-base-i: #d63c1f;
   --shadow-up: 0 -1px 0 var(--line);
   --sheet-shadow: 0 -8px 30px rgba(31, 28, 21, .12);
   --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
@@ -49,10 +50,10 @@
 }
 :root[data-mode="dark"] {
   --bg: #15140f; --fill: #24221a; --ink: #f4efe0; --sub: #b0a98f; --faint: #7d775f; --line: #2f2c22;
-  --accent: #ffd23f; --accent-ink: #1f1c15; --accent-text: #ffd23f; --accent-soft: #332c12; --star: #ffc93a;
+  --accent: #ff5a3c; --accent-ink: #ffffff; --accent-text: #ff8a70; --accent-soft: #3a1d16; --star: #ffc93a;
   --t-sea: #172736; --t-sea-i: #7fb9ea; --t-night: #201f36; --t-night-i: #a9a5f0; --t-green: #16291b; --t-green-i: #7fcf96;
   --t-trad: #2e1f17; --t-trad-i: #eaa27d; --t-food: #2e2513; --t-food-i: #f0c06e; --t-fun: #2e1822; --t-fun-i: #f19bbf;
-  --t-base: #332c12; --t-base-i: #ffd23f;
+  --t-base: #3a1d16; --t-base-i: #ff8a70;
   --sheet-shadow: 0 -8px 30px rgba(0, 0, 0, .5);
   color-scheme: dark;
 }
@@ -97,7 +98,7 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 /* 여행 코스 / 우리 동네 */
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(31, 28, 21, .10); }
 .seg button {
-  border: 0; height: 36px; border-radius: 9px; background: transparent; font-size: 14px; font-weight: 600; color: #4a4434;
+  border: 0; height: 36px; border-radius: 9px; background: transparent; font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, .9);
 }
 .seg button[aria-selected="true"] { background: #fff; color: #1f1c15; font-weight: 800; box-shadow: 0 1px 3px rgba(31, 28, 21, .15); }
 
@@ -1972,7 +1973,7 @@ function drawMap(c) {
     }).addTo(map).bindPopup(esc(s.name));
   });
   if (latlngs.length > 1) {
-    L.polyline(latlngs, { color: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#ffcc1a", weight: 3, dashArray: "6 6" }).addTo(map);
+    L.polyline(latlngs, { color: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#ff5a3c", weight: 3, dashArray: "6 6" }).addTo(map);
     map.fitBounds(latlngs, { padding: [30, 30], maxZoom: 15 });
   } else {
     map.setView(latlngs[0], 14);

@@ -47,18 +47,16 @@ def og_image(site: Path, cid: str, src: Path | None) -> str | None:
 
 
 def default_og(site: Path) -> str:
-    """사진이 없는 코스용 기본 그림 (노란 바탕에 3D 지도 핀)"""
+    """사진이 없는 코스용 기본 그림 (놀코 앱 아이콘: 코랄 바탕에 웃는 핀)"""
     out = site / "og" / "default.jpg"
     try:
         from PIL import Image
-        pin = Image.open(ROOT / "img" / "3d" / "pin.webp").convert("RGBA").resize((300, 300))
-        bg = Image.new("RGBA", (600, 600), (255, 210, 63, 255))
-        bg.alpha_composite(pin, (150, 150))
+        icon = Image.open(ROOT / "img" / "icon-maskable-512.png").convert("RGB").resize((600, 600))
         out.parent.mkdir(parents=True, exist_ok=True)
-        bg.convert("RGB").save(out, "JPEG", quality=85)
+        icon.save(out, "JPEG", quality=85)
         return "og/default.jpg"
     except Exception:  # noqa: BLE001
-        return "icon.svg"
+        return "img/icon-512.png"
 
 
 def page(c: dict, base: str, image: str) -> str:
@@ -88,14 +86,14 @@ def page(c: dict, base: str, image: str) -> str:
 <meta property="og:image" content="{e(image if image.startswith("https://") else base + image)}">
 <meta property="og:url" content="{e(url)}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#ffd23f">
+<meta name="theme-color" content="#ff5a3c">
 <link rel="icon" href="../icon.svg">
 <style>
 body {{ margin: 0; font: 15px/1.7 system-ui, sans-serif; color: #1f1c15; background: #fff; }}
-header {{ background: #ffd23f; padding: 16px; font-weight: 800; }}
+header {{ background: #ff5a3c; color: #fff; padding: 16px; font-weight: 800; }}
 main {{ max-width: 720px; margin: 0 auto; padding: 16px; }}
 img.hero {{ width: 100%; max-height: 360px; object-fit: cover; border-radius: 14px; }}
-a.go {{ display: block; text-align: center; background: #ffd23f; color: #1f1c15; font-weight: 800; padding: 14px; border-radius: 12px; text-decoration: none; margin: 16px 0; }}
+a.go {{ display: block; text-align: center; background: #ff5a3c; color: #fff; font-weight: 800; padding: 14px; border-radius: 12px; text-decoration: none; margin: 16px 0; }}
 small {{ color: #6b6455; }}
 </style>
 </head>
