@@ -1,7 +1,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import postgres from "npm:postgres@3.4.5";
 import { SCHEMA } from "./schema.ts";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos, toPosts } from "./photos.ts";
 import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, HIDE_AT, validToken, withoutHidden, withoutItem } from "./community.ts";
 
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
@@ -10,6 +10,7 @@ import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, HIDE_AT
 //         name 이 있으면 블로그·카페 글 중 가게 이름이 나오는 글의 사진만 (없으면 예전처럼 이미지 검색)
 //   가게: GET ?mode=places&q=<동네 + 놀거리>&lat=&lng=&radius=2000&size=10[&page=2]
 //                                                    → { places: [{ name, category, path, address, phone, url, distance, x, y }] }
+//   최근 글:   GET ?mode=posts&q=<검색어>[&page=1~3] → { posts: [{ title, text, date, url, site, thumb }] } (블로그·카페, 최근 60일, 최신순)
 //   리뷰·코스: GET ?mode=docs&col=rv|uc               → { docs: [{ id, data }] }
 //              POST { mode: "set", col, token, body }   → { ok, id }   (자기 문서만)
 //              POST { mode: "report", col, doc, item, token } → { ok }
@@ -80,6 +81,29 @@ Deno.serve(async (req) => {
     } catch (error) {
       console.error("place search error:", error);
       return json({ error: "가게 목록을 가져오지 못했어요." }, 502);
+    }
+  }
+
+  // 최근 블로그·카페 글 (팝업 소식 모으기 등): 제목·요약·날짜·링크만
+  if (url.searchParams.get("mode") === "posts") {
+    try {
+      const page = Math.min(3, Math.max(1, Math.round(Number(url.searchParams.get("page") ?? 1)) || 1));
+      const ask = async (base: string, n: number) => {
+        const api = new URL(base);
+        api.searchParams.set("query", q);
+        api.searchParams.set("sort", "recency");
+        api.searchParams.set("size", String(n));
+        api.searchParams.set("page", String(page));
+        const res = await fetch(api, { headers: { Authorization: `KakaoAK ${key}` } });
+        if (!res.ok) { console.warn("kakao post search failed:", base, res.status); return []; }
+        const data = await res.json();
+        return Array.isArray(data?.documents) ? data.documents : [];
+      };
+      const [blog, cafe] = await Promise.all([ask(KAKAO_BLOG_SEARCH, 50), ask(KAKAO_CAFE_SEARCH, 25)]);
+      return json({ posts: toPosts([...blog, ...cafe], 60) }, 200, { "Cache-Control": "public, max-age=3600" });
+    } catch (error) {
+      console.error("posts error:", error);
+      return json({ error: "글을 가져오지 못했어요." }, 502);
     }
   }
 

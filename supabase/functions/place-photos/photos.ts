@@ -97,6 +97,29 @@ export function toPostPhotos(docs: KakaoPostDoc[], name: string, size: number, n
   return out;
 }
 
+/* ---------- 최근 글 (팝업 소식 등) ---------- */
+export type Post = { title: string; text: string; date: string; url: string; site: string; thumb: string };
+
+const unescape = (s: string) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, "&");
+const clean = (s: unknown, max: number) => unescape(String(s ?? "").replace(/<[^>]*>/g, "")).replace(/\s+/g, " ").trim().slice(0, max);
+
+/** 블로그·카페 검색 결과를 글 목록으로: 태그를 벗기고, 뉴스·관공서는 빼고, 같은 주소는 한 번만, 최신 글부터 */
+export function toPosts(docs: KakaoPostDoc[], maxAgeDays: number, now: Date = new Date()): Post[] {
+  const oldest = now.getTime() - maxAgeDays * 86400000;
+  const seen = new Set<string>();
+  const out: (Post & { t: number })[] = [];
+  for (const d of docs) {
+    const t = Date.parse(String(d.datetime ?? ""));
+    if (!Number.isFinite(t) || t < oldest || !isHttp(d.url) || seen.has(d.url!)) continue;
+    const site = String(d.blogname ?? d.cafename ?? "");
+    if (!goodSource({ doc_url: d.url, display_sitename: site })) continue;
+    seen.add(d.url!);
+    out.push({ title: clean(d.title, 120), text: clean(d.contents, 400), date: new Date(t).toISOString().slice(0, 10), url: d.url!,
+      site: site.slice(0, 40), thumb: isHttps(d.thumbnail) ? d.thumbnail! : "", t });
+  }
+  return out.sort((a, b) => b.t - a.t).map(({ t: _t, ...p }) => p);
+}
+
 /** 허용한 사이트에서 온 요청인지. ALLOWED_ORIGINS 는 쉼표로 구분 */
 export function allowedOrigin(origin: string | null, allowList: string): string | null {
   if (!origin) return null;
