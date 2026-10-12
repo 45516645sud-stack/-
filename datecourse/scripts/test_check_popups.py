@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-from check_popups import merge, name_of, period, place_of, popup_id
+from check_popups import kind_of, merge, name_of, period, place_of, popup_id, young_ok
 
 
 class PopupParse(unittest.TestCase):
@@ -35,6 +35,22 @@ class PopupParse(unittest.TestCase):
         self.assertEqual(name_of("점서 국내 첫 팝업"), "")
         self.assertEqual(name_of("피카츄 얼굴을 어떻게 먹어? 팝업"), "")
         self.assertEqual(popup_id("육구 방앗간"), popup_id("육구방앗간"))
+
+    def test_kind(self):
+        self.assertEqual(kind_of("주술회전", "AK플라자 홍대 굿즈"), "anime")
+        self.assertEqual(kind_of("노브랜드 버거 × 애니모", "홍대점 팝업"), "character")   # '애니모'는 애니가 아님
+        self.assertEqual(kind_of("NCT 위시 아이 스파이", ""), "idol")
+        self.assertEqual(kind_of("킥둥쓰", "킥플립 킥둥쓰 성수 팝업 솔직히"), "idol")
+        self.assertEqual(kind_of("호아킨 바스코", "진정한 인생 치즈타르트 커피"), "food")
+        self.assertEqual(kind_of("메디힐", "토너패드 화장품"), "beauty")
+        self.assertEqual(kind_of("에얼스", "사전예약"), "etc")
+        self.assertEqual(kind_of("로키드 AI 글래스", "exclusive 체험"), "tech")   # 'ive'가 아이브로 잡히지 않음
+
+    def test_young(self):
+        self.assertTrue(young_ok("주술회전", "굿즈 오픈런"))
+        self.assertFalse(young_ok("잉글레시나", "유모차 팝업"))
+        self.assertFalse(young_ok("창업 박람회", ""))
+        self.assertTrue(young_ok("베이비몬스터 팝업", ""))
 
     def test_place(self):
         self.assertEqual(place_of("📍 더현대 서울 B2 아이코닉존")[0], "더현대 서울")
