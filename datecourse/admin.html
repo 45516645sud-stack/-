@@ -36,6 +36,9 @@ th, td { border-bottom: 1px solid var(--line); padding: 6px; text-align: left; v
 .badge.one { background: #fff4c4; color: #8a6200; }
 button.ok { background: #2e7a45; color: #fff; }
 @media (max-width: 520px) { .pp .grid { grid-template-columns: 1fr; } }
+.kinds button { height: 30px; font-size: 12px; border-radius: 999px; }
+.kinds button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.kind-head { margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--ink); }
 .guide { background: #fff6d2; border-radius: 10px; padding: 10px 12px; }
 .guide ol { margin: 6px 0; padding-left: 20px; }
 .pp a.note { display: block; color: #2c76b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -158,7 +161,7 @@ async function render() {
   } catch (e) { v.innerHTML = `<p class="flag">${esc(e.message)}</p>`; }
 }
 /* ---------- 팝업 확인: 자동으로 찾은 후보를 보고 승인(앱에 나옴) / 거절 ---------- */
-let ppTab = "wait";
+let ppTab = "wait", ppKind = "";
 const KINDS = { anime: "애니·만화", idol: "아이돌·K-POP", character: "캐릭터", game: "게임", beauty: "뷰티", fashion: "패션", food: "먹거리",
   tech: "테크·가전", movie: "영화·드라마", living: "리빙·문구", art: "전시·체험", sports: "스포츠", pet: "반려동물", etc: "기타" };
 const WEEK = "일월화수목금토";
@@ -213,6 +216,18 @@ async function renderPopups(v) {
       </div>
     </div>`;
   };
+  // 지금 탭의 카드를 종류별로 묶는다 (애니는 애니끼리, 캐릭터는 캐릭터끼리)
+  const kindOf = (c) => { const d = dec[c.id] && dec[c.id].ok ? { ...c, ...dec[c.id].item } : c; return KINDS[d.kind] ? d.kind : "etc"; };
+  const inTab = groups[ppTab];
+  const kinds = Object.keys(KINDS).map((k) => [k, inTab.filter((c) => kindOf(c) === k)]).filter(([, a]) => a.length);
+  if (ppKind && !kinds.some(([k]) => k === ppKind)) ppKind = "";
+  const kindBlocks = () => {
+    if (!inTab.length) return `<p class="note">${ppTab === "wait" ? "확인할 후보가 없어요. 내일 새벽에 새로 찾아요." : "없어요"}</p>`;
+    const chips = `<div class="row kinds" style="margin:0 0 6px">${[["", inTab.length], ...kinds.map(([k, a]) => [k, a.length])]
+      .map(([k, n]) => `<button data-kind="${k}" aria-pressed="${ppKind === k}">${k ? KINDS[k] : "전체"} ${n}</button>`).join("")}</div>`;
+    return chips + kinds.filter(([k]) => !ppKind || ppKind === k)
+      .map(([k, a]) => `<h2 class="kind-head">${esc(KINDS[k])} <span class="note">${a.length}개</span></h2>${a.map(card).join("")}`).join("");
+  };
   v.innerHTML = `
     <div class="guide">
       <b>확인하는 법</b> (하나에 30초면 돼요)
@@ -227,8 +242,9 @@ async function renderPopups(v) {
     <div class="row tabs" style="margin:10px 0">${Object.entries(TABS).map(([k, t]) => `<button data-pp="${k}" aria-pressed="${ppTab === k}">${t} ${groups[k].length}</button>`).join("")}</div>
     ${ppTab === "skip" ? `<p class="note">아이·육아, 어르신, 박람회·창업처럼 20~30대가 찾아갈 팝업이 아니라서 자동으로 뺀 것이에요. 잘못 빠진 게 있으면 ✅로 올리면 돼요.</p>` : ""}
     ${ppTab === "ok" ? `<p class="note">앱 '이번 주말 → 팝업'에 나오고 있어요. 끝나는 날이 지나면 저절로 빠지고, '틀렸어요' 신고가 3개 쌓이면 숨겨져요.</p>` : ""}
-    ${groups[ppTab].map(card).join("") || `<p class="note">${ppTab === "wait" ? "확인할 후보가 없어요. 내일 새벽에 새로 찾아요." : "없어요"}</p>`}`;
-  v.querySelectorAll("[data-pp]").forEach((b) => b.onclick = () => { ppTab = b.dataset.pp; renderPopups(v); });
+    ${kindBlocks()}`;
+  v.querySelectorAll("[data-pp]").forEach((b) => b.onclick = () => { ppTab = b.dataset.pp; ppKind = ""; renderPopups(v); });
+  v.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { ppKind = b.dataset.kind; renderPopups(v); });
   v.querySelectorAll(".pp button[data-act]").forEach((b) => b.onclick = async () => {
     const box = b.closest(".pp"), id = box.dataset.id, c = list.find((x) => x.id === id);
     const f = Object.fromEntries([...box.querySelectorAll("[data-f]")].map((i) => [i.dataset.f, i.value.trim()]));
