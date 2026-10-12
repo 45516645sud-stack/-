@@ -1498,6 +1498,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const f = BY_ID.get(id);
     const dlg = $('fairDialog');
     if (!f) return;
+    stat('open', f.t);
     state.openId = id;
     const st = statusOf(f);
     dlg.innerHTML = `<div class="dlg-inner"><div class="dlg-poster">${posterHTML(f)}</div>` +
@@ -1898,6 +1899,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function runQuery(text) {
     const q = text.trim().slice(0, 200);
     if (!q) { clearQuery(); return; }
+    stat('search');
     const it = interpret(q);
     state.query = q;
     state.interp = it;
@@ -1944,6 +1946,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   function toggleFair(id) {
     state.openId = state.openId === id ? null : id;
+    if (state.openId) stat('open', BY_ID.get(id)?.t);
     document.querySelectorAll('.fair').forEach(li => {
       const on = li.id === `fair-${state.openId}`;
       li.classList.toggle('is-open', on);
@@ -2047,6 +2050,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('resetBtn').addEventListener('click', () => resetFilters(true));
 
   document.addEventListener('click', e => {
+    // 바깥으로 나가는 링크: 예매·공식 정보, KOPIS, 지도 (통계용으로 숫자만 센다)
+    const out = e.target.closest('a[href^="http"]');
+    if (out) {
+      if (out.closest('.maps')) stat('map');
+      else if (out.closest('.actions')) stat(/kopis\.or\.kr/.test(out.href) ? 'info' : 'book');
+    }
     const row = e.target.closest('.row[data-id]');
     if (row) { toggleFair(row.dataset.id); return; }
     const fb = e.target.closest('[data-fold]');
@@ -2070,8 +2079,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (!act) return;
     const f = act.dataset.id && BY_ID.get(act.dataset.id);
     switch (act.dataset.act) {
-      case 'ics': if (f) downloadICS(f); break;
-      case 'copy': if (f) copyLink(f); break;
+      case 'ics': if (f) { stat('cal'); downloadICS(f); } break;
+      case 'copy': if (f) { stat('share'); copyLink(f); } break;
       case 'cat': closeDialog(); setCat(act.dataset.cat, true); break;
       case 'close': closeDialog(); break;
       case 'clear': clearQuery(); break;
@@ -2254,6 +2263,31 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       visit.set(USE_KEY, String(used));
       if (used >= FB_AFTER) { clearInterval(timer); fbShow(); }
     }, TICK);
+  }
+
+  /* ---- 방문 통계: 숫자만 모아 운영자 시트의 '방문'·'많이 본 공연' 탭으로 보낸다
+     누가 했는지(이름·IP 등)는 보내지 않는다. 운영자 모드(?owner=1)와 예시 데이터일 때는 세지 않는다.
+     방문은 탭마다 한 번, 나머지는 모아 두었다가 화면을 떠날 때(다른 탭·닫기) 한 번에 보낸다. */
+  const COUNTED_KEY = 'aiiairs.counted';
+  const tally = { open: 0, search: 0, book: 0, info: 0, map: 0, share: 0, cal: 0 };
+  let opened = {};
+  const statOn = () => /^https:\/\//.test(LOG_ENDPOINT) && !owner && !DATA.sample;
+  function stat(name, title) {
+    if (!statOn() || !(name in tally)) return;
+    tally[name]++;
+    if (name === 'open' && title) opened[title] = (opened[title] || 0) + 1;
+  }
+  function flushStats() {
+    if (!statOn() || !Object.values(tally).some(Boolean)) return;
+    report({ type: 'stat', ...tally, shows: Object.entries(opened).slice(0, 30) });
+    Object.keys(tally).forEach(k => { tally[k] = 0; });
+    opened = {};
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) flushStats(); });
+  window.addEventListener('pagehide', flushStats);
+  if (statOn() && !visit.get(COUNTED_KEY)) {
+    visit.set(COUNTED_KEY, '1');
+    report({ type: 'stat', visit: 1, device: window.matchMedia('(hover:none)').matches ? '모바일' : 'PC' });
   }
 
   /* ---------------- 시작 ---------------- */

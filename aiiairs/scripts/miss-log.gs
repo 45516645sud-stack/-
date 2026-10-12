@@ -3,6 +3,7 @@
  *
  * 사이트에서 결과가 없던 검색(type: "miss"), 알림 신청(type: "alert"),
  * 5분 사용 뒤 묻는 사용 의견(type: "feedback")을 구글 시트에 한 줄씩 쌓는다.
+ * 방문 통계(type: "stat")는 '방문' 탭에 하루 한 줄로 숫자를 더하고, 열어 본 공연은 '많이 본 공연' 탭에 센다.
  * 개인정보는 받지 않는다 (검색 조건, 별로예요/좋아요, 적어 준 의견만).
  *
  * 설치
@@ -17,6 +18,8 @@
 var HEADER = ['시각', '종류', '어디서', '검색어', '조건', '조건을 풀면', '예시 데이터'];
 var TYPES = { miss: '결과 없음', alert: '알림 신청', feedback: '의견' };
 var FEEDBACK_HEADER = ['시각', '평가', '고른 이유', '의견', '사용 시간(분)', '화면'];
+var STAT_HEADER = ['날짜', '방문', '모바일', 'PC', '공연 열기', '검색', '예매 클릭', 'KOPIS 정보', '지도', '링크 복사', '캘린더'];
+var STAT_KEYS = ['visit', 'mobile', 'pc', 'open', 'search', 'book', 'info', 'map', 'share', 'cal'];
 
 function doPost(e) {
   var data;
@@ -24,6 +27,10 @@ function doPost(e) {
     data = JSON.parse(e.postData.contents);
   } catch (err) {
     return ContentService.createTextOutput('bad request');
+  }
+  if (data.type === 'stat') {
+    addStat_(data);
+    return ContentService.createTextOutput('ok');
   }
   if (!TYPES[data.type]) return ContentService.createTextOutput('ignored');
 
@@ -68,4 +75,77 @@ function cut_(v, n) {
   // 수식으로 해석되지 않도록 막는다
   if (/^[=+\-@]/.test(s)) s = "'" + s;
   return s.length > n ? s.slice(0, n) : s;
+}
+
+// 방문 통계: 오늘(한국 시간) 줄을 찾아 숫자를 더한다. 여러 사람이 동시에 보내도 꼬이지 않게 잠그고 쓴다.
+function addStat_(data) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var book = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = book.getSheetByName('방문') || book.insertSheet('방문');
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(STAT_HEADER);
+      sheet.setFrozenRows(1);
+    }
+    var today = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
+    var row = findRow_(sheet, today, 60);
+    if (row < 0) {
+      sheet.appendRow([''].concat(STAT_KEYS.map(function () { return 0; })));
+      row = sheet.getLastRow();
+      sheet.getRange(row, 1).setNumberFormat('@').setValue(today);
+    }
+    var visit = num_(data.visit) > 0 ? 1 : 0;
+    var add = {
+      visit: visit,
+      mobile: visit && data.device === '모바일' ? 1 : 0,
+      pc: visit && data.device !== '모바일' ? 1 : 0,
+      open: num_(data.open), search: num_(data.search), book: num_(data.book), info: num_(data.info),
+      map: num_(data.map), share: num_(data.share), cal: num_(data.cal)
+    };
+    var range = sheet.getRange(row, 2, 1, STAT_KEYS.length);
+    var vals = range.getValues()[0];
+    for (var i = 0; i < STAT_KEYS.length; i++) vals[i] = (Number(vals[i]) || 0) + add[STAT_KEYS[i]];
+    range.setValues([vals]);
+
+    var shows = Array.isArray(data.shows) ? data.shows.slice(0, 30) : [];
+    if (shows.length) {
+      var top = book.getSheetByName('많이 본 공연') || book.insertSheet('많이 본 공연');
+      if (top.getLastRow() === 0) {
+        top.appendRow(['공연', '열어 본 횟수', '마지막으로 본 날']);
+        top.setFrozenRows(1);
+      }
+      shows.forEach(function (pair) {
+        var title = cut_(pair && pair[0], 120);
+        var count = num_(pair && pair[1]);
+        if (!title || !count) return;
+        var at = findRow_(top, title, 0);
+        if (at < 0) {
+          top.appendRow([title, 0, '']);
+          at = top.getLastRow();
+        }
+        var cell = top.getRange(at, 2);
+        cell.setValue((Number(cell.getValue()) || 0) + count);
+        top.getRange(at, 3).setNumberFormat('@').setValue(today);
+      });
+    }
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 첫 칸이 key 인 줄 번호 (없으면 -1). recent 가 0보다 크면 아래쪽 recent 줄만 본다.
+function findRow_(sheet, key, recent) {
+  var last = sheet.getLastRow();
+  if (last < 2) return -1;
+  var from = recent > 0 ? Math.max(2, last - recent + 1) : 2;
+  var keys = sheet.getRange(from, 1, last - from + 1, 1).getDisplayValues();
+  for (var i = keys.length - 1; i >= 0; i--) if (keys[i][0] === key) return from + i;
+  return -1;
+}
+
+// 숫자만, 0~500 사이로 (가짜로 큰 숫자를 보내도 통계가 망가지지 않게)
+function num_(v) {
+  var n = Math.floor(Number(v) || 0);
+  return n < 0 ? 0 : n > 500 ? 500 : n;
 }
