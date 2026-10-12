@@ -14,6 +14,8 @@
 """
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import re
 import sys
@@ -52,6 +54,10 @@ VENUES = [
     (["삼정타워"], "서면 삼정타워", "삼정타워", "부산 부산진"),
     (["스페이스비"], "스페이스비 (연남)", "스페이스비 연남", "서울 마포"),
     (["연무장길"], "성수 연무장길", "연무장길", "서울 성동"),
+    (["아이파크몰 용산", "용산 아이파크몰", "아이파크몰"], "용산 아이파크몰", "용산 아이파크몰", "서울 용산"),
+    (["AK플라자 홍대", "AK 홍대", "AK플라자"], "AK플라자 홍대", "AK플라자 홍대", "서울 마포"),
+    (["현대백화점 신촌", "신촌 현대백화점"], "현대백화점 신촌점", "현대백화점 신촌점", "서울 서대문"),
+    (["타임스퀘어"], "영등포 타임스퀘어", "타임스퀘어 영등포", "서울 영등포"),
 ]
 # 명소가 안 보일 때 동네만이라도
 AREAS = [("성수", "서울 성동구 성수동"), ("서울숲", "서울 성동구 성수동"), ("연남", "서울 마포구 연남동"), ("홍대", "서울 마포구 홍대"),
@@ -70,7 +76,10 @@ QUOTED = re.compile(r"['‘\"“「『]([^'’\"”」』]{2,25})['’\"”」�
 NOISE = re.compile(r"20\d\d년?|\[[^\]]*\]|【[^】]*】|<[^>]*>|\([^)]*\)|[#|]|후기|방문|리뷰|솔직|내돈내산|오픈런|주말|데이트|추천|가볼만한곳"
                    r"|서울|성수동?|더\s?현대|홍대|잠실|여의도|강남|부산|대구|코엑스|한남|롯데월드몰|롯데백화점|신세계백화점|현대백화점|백화점|점\b")
 # 팝업 이름이 아닌 말이 들어 있으면 버린다
-NOT_NAME = re.compile(r"주차|이번\s?주|가볼|까지|추천|정리|총정리|일정|무료|예약|오픈|요즘|핫플|모음|리스트|BEST|TOP|\d+곳|\d+월|이달|다음\s?주|근처|코스|투어|나들이")
+NOT_NAME = re.compile(r"주차|이번\s?주|가볼|까지|추천|정리|총정리|일정|무료|예약|오픈|요즘|핫플|모음|리스트|BEST|TOP|\d+곳|\d+월|이달|다음\s?주|근처|코스|투어|나들이"
+                      r"|^점|국내\s?첫|끝난|대박|[?!？！]|\.\.\.|…")
+# 이것만 남으면 팝업 이름이 아니라 장소·회사 이름
+NOT_ALONE = {"롯데", "신세계", "현대", "ak", "ak플라자", "서면", "센텀", "팝업", "굿즈", "콜라보", "스토어", "이벤트", "한정"}
 
 
 def _date(y, m, d, posted: date) -> date | None:
@@ -141,9 +150,15 @@ def name_of(title: str) -> str:
     if m:
         cands.append(m.group(1))
     for c in cands:
-        n = NOISE.sub(" ", c)
-        n = re.sub(r"\s+", " ", n).strip(" .-x×&")
-        if len(n.replace(" ", "")) >= 2 and not NOT_NAME.search(n) and not re.fullmatch(r"[A-Za-z]{1,3}|\d+", n):
+        if NOT_NAME.search(c):
+            continue
+        n = c
+        for alias in sorted((a for v in VENUES for a in v[0]), key=len, reverse=True):   # 이름 속 장소는 빼기
+            n = n.replace(alias, " ")
+        n = NOISE.sub(" ", n)
+        n = re.sub(r"\s+", " ", n).strip(" .-x×&:")
+        if (len(n.replace(" ", "")) >= 2 and not re.fullmatch(r"[A-Za-z]{1,3}|\d+", n)
+                and key_of(n) not in NOT_ALONE and key_of(n) not in {w for w, _ in AREAS}):
             return n
     return ""
 
@@ -180,17 +195,33 @@ def posts(q: str, pages=(1,)) -> list[dict]:
     return out
 
 
-def geocode(query: str, prefix: str) -> str:
+def geocode(query: str, prefix: str) -> tuple[str, float | None, float | None]:
+    """(주소, 위도, 경도). 명소는 그 지역 주소만 믿는다"""
     if not query:
-        return ""
+        return "", None, None
     try:
         hits = http_fetch({"mode": "places", "q": query, "size": 5}).get("places", [])
     except Exception:  # noqa: BLE001
-        return ""
+        return "", None, None
     for h in hits:
         if not prefix or h["address"].startswith(prefix):
-            return h["address"]
+            return h["address"], h.get("y"), h.get("x")
+    return "", None, None
+
+
+REGION_OF = {"서울": "서울", "부산": "부산", "대구": "대구", "인천": "인천", "광주": "광주", "대전": "대전", "울산": "울산", "세종": "세종",
+             "경기": "경기", "강원": "강원", "충북": "충북", "충남": "충남", "전북": "전북", "전남": "전남", "경북": "경북", "경남": "경남", "제주": "제주"}
+
+
+def region_of(*texts: str) -> str:
+    for t in texts:
+        if t and t[:2] in REGION_OF:
+            return REGION_OF[t[:2]]
     return ""
+
+
+def popup_id(name: str) -> str:
+    return "p-" + hashlib.sha1(key_of(name).encode("utf-8")).hexdigest()[:10]
 
 
 def read(p: dict) -> dict | None:
@@ -201,11 +232,12 @@ def read(p: dict) -> dict | None:
         return None
     if per[0] is None and (date.today() - posted).days > END_ONLY_POST_DAYS:
         return None
-    place, query, prefix = place_of(text)
+    v = venue_of(p["title"])   # 제목에 명소가 있으면 그게 가장 정확
+    place, query, prefix = v if v else place_of(text)
     return {**p, "name": name_of(p["title"]), "start": per[0], "end": per[1], "place": place, "pq": query, "pp": prefix}
 
 
-def main() -> int:
+def collect() -> dict:
     today = date.today()
     all_posts, seen = [], set()
     for q in QUERIES:
@@ -219,52 +251,86 @@ def main() -> int:
     named = [f for f in found if f["name"]]
     print(f"기간을 찾은 글: {len(found)}개 ({len(found) * 100 // max(1, len(all_posts))}%), 그중 팝업 이름까지 찾은 글: {len(named)}개")
 
-    popups = []
+    popups: dict[str, dict] = {}
     for items in merge(named):
         name = Counter(f["name"] for f in items).most_common(1)[0][0]
         # 두 번 확인: 팝업 이름으로 다시 검색해 같은 글 묶음에 더한다
-        extra = [r for r in map(read, posts(f"{name} 팝업")) if r and r["url"] not in {i["url"] for i in items}]
+        known = {i["url"] for i in items}
+        extra = [r for r in map(read, posts(f"{name} 팝업")) if r and r["url"] not in known]
         pool = items + [r for r in extra if key_of(name)[:3] in key_of(r["title"])]
+        k = key_of(name)
+        if k in popups:   # 이름이 같은 묶음이 또 있으면 합친다
+            pool += [f for f in popups[k]["pool"] if f["url"] not in {x["url"] for x in pool}]
+        popups[k] = {"name": name, "pool": pool}
+
+    out = []
+    for k, g in popups.items():
+        pool = g["pool"]
         ends = Counter(f["end"] for f in pool)
         end, agree = ends.most_common(1)[0]
         # 끝나는 날이 하루 차이인 것도 같은 걸로
         agree += sum(n for e, n in ends.items() if e != end and abs((e - end).days) <= 1)
         starts = Counter(f["start"] for f in pool if f["start"] and f["start"] <= end)
         start = starts.most_common(1)[0][0] if starts else None
+        # 장소: 명소로 찾은 것을 먼저, 그다음 많이 나온 것
         places = Counter((f["place"], f["pq"], f["pp"]) for f in pool if f["place"])
-        place, pq, pp = places.most_common(1)[0][0] if places else ("", "", "")
-        popups.append({"name": name, "start": start, "end": end, "place": place, "pq": pq, "pp": pp, "agree": agree,
-                       "posts": len(pool), "url": sorted(pool, key=lambda f: f["date"], reverse=True)[0]["url"]})
+        ranked = sorted(places.items(), key=lambda kv: (not kv[0][2], -kv[1]))
+        place, pq, pp = ranked[0][0] if ranked else ("", "", "")
+        urls = [f["url"] for f in sorted(pool, key=lambda f: f["date"], reverse=True)][:3]
+        out.append({"id": popup_id(g["name"]), "name": g["name"], "start": start, "end": end, "place": place, "pq": pq, "pp": pp,
+                    "agree": agree, "posts": len(pool), "url": urls[0], "urls": urls})
 
-    now = [p for p in popups if (p["start"] or today) <= today <= p["end"]]
+    now = [p for p in out if (p["start"] or today) <= today <= p["end"]]
+    soon = [p for p in out if p["start"] and today < p["start"] <= today + timedelta(days=14)]
     sure = [p for p in now if p["agree"] >= 2]
     unsure = [p for p in now if p["agree"] < 2]
-    soon = [p for p in popups if p["start"] and today < p["start"] <= today + timedelta(days=14) and p["agree"] >= 2]
-    print(f"팝업으로 합친 것: {len(popups)}개 → 지금 하는 것 {len(now)}개 (확실 {len(sure)} · 글 하나뿐 {len(unsure)}), 2주 안에 시작(확실) {len(soon)}개\n")
+    print(f"팝업으로 합친 것: {len(out)}개 → 지금 하는 것 {len(now)}개 (확실 {len(sure)} · 글 하나뿐 {len(unsure)}), 2주 안에 시작 {len(soon)}개\n")
 
-    for p in sure + unsure + soon:
-        p["address"] = geocode(p["pq"], p["pp"]) if p["pq"] else ""
+    for p in now + soon:
+        p["address"], p["lat"], p["lng"] = geocode(p["pq"], p["pp"]) if p["pq"] else ("", None, None)
+        p["region"] = region_of(p["address"], p["place"])
+    return {"today": today, "posts": len(all_posts), "found": len(found), "sure": sure, "unsure": unsure, "soon": soon}
 
-    def show(p, mark):
-        when = f"{p['start']:%m.%d}~{p['end']:%m.%d}" if p["start"] else f"~{p['end']:%m.%d}"
-        print(f"{mark} {p['name']}  {when}  (같은 기간 글 {p['agree']}개 / 전체 {p['posts']}개)")
-        print(f"    장소: {p['place'] or '(못 찾음)'}  →  주소: {p['address'] or '(못 찾음)'}")
-        print(f"    {p['url']}")
 
+def show(p: dict, mark: str) -> None:
+    when = f"{p['start']:%m.%d}~{p['end']:%m.%d}" if p["start"] else f"~{p['end']:%m.%d}"
+    print(f"{mark} {p['name']}  {when}  (같은 기간 글 {p['agree']}개 / 전체 {p['posts']}개)")
+    print(f"    장소: {p['place'] or '(못 찾음)'}  →  주소: {p['address'] or '(못 찾음)'}")
+    print(f"    {p['url']}")
+
+
+def candidates(r: dict) -> dict:
+    """관리자 확인용 후보 파일 (data/popups.json). 확실한 것 먼저"""
+    def item(p, state):
+        return {"id": p["id"], "name": p["name"], "start": str(p["start"] or ""), "end": str(p["end"]), "place": p["place"],
+                "address": p["address"], "lat": p["lat"], "lng": p["lng"], "region": p["region"], "url": p["url"], "urls": p["urls"],
+                "agree": p["agree"], "posts": p["posts"], "sure": p["agree"] >= 2, "state": state}
+    items = ([item(p, "now") for p in sorted(r["sure"], key=lambda p: -p["agree"])]
+             + [item(p, "soon") for p in sorted(r["soon"], key=lambda p: p["start"])]
+             + [item(p, "now") for p in sorted(r["unsure"], key=lambda p: p["end"])])
+    return {"version": 1, "updated": str(r["today"]),
+            "note": "블로그·카페 글에서 자동으로 찾은 팝업 후보. 관리자가 승인한 것만 앱에 나온다 (scripts/check_popups.py)",
+            "items": items}
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", help="관리자 확인용 후보 파일 경로 (예: datecourse/data/popups.json)")
+    args = ap.parse_args(argv)
+    r = collect()
     print("=== 지금 하는 팝업 · 확실 (글 2개 이상이 같은 기간) ===")
-    for p in sorted(sure, key=lambda p: (-p["agree"], p["end"])):
+    for p in sorted(r["sure"], key=lambda p: (-p["agree"], p["end"])):
         show(p, "●")
-    print("\n=== 지금 하는 팝업 · 글 하나뿐 (앱에는 안 넣을 것) ===")
-    for p in sorted(unsure, key=lambda p: p["end"])[:25]:
+    print("\n=== 지금 하는 팝업 · 글 하나뿐 ===")
+    for p in sorted(r["unsure"], key=lambda p: p["end"])[:25]:
         show(p, "○")
-    print("\n=== 2주 안에 시작 (확실) ===")
-    for p in sorted(soon, key=lambda p: p["start"]):
+    print("\n=== 2주 안에 시작 ===")
+    for p in sorted(r["soon"], key=lambda p: p["start"]):
         show(p, "◇")
-
-    Path("popups.json").write_text(json.dumps({"today": str(today), "posts": len(all_posts), "found": len(found),
-                                               "sure": sure, "unsure": unsure, "soon": soon},
-                                              ensure_ascii=False, default=str, indent=1), encoding="utf-8")
-    print("\n저장: popups.json")
+    data = candidates(r)
+    if args.out:
+        Path(args.out).write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"\n저장: {args.out} (후보 {len(data['items'])}개)")
     return 0
 
 

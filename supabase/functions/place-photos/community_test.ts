@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert@1";
 import { SCHEMA } from "./schema.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups } from "./community.ts";
 
 Deno.test("col·token 확인", () => {
   assertEquals(cleanCol("rv"), "rv");
@@ -56,4 +56,29 @@ Deno.test("관리자 비밀번호 확인", async () => {
 
 Deno.test("관리자 지우기는 그 항목만", () => {
   assertEquals(withoutItem("rv", { nick: "a", reviews: { c1: { rating: 5 }, c2: { rating: 1 } } }, "c2"), { nick: "a", reviews: { c1: { rating: 5 } } });
+});
+
+Deno.test("팝업: id·항목 정리", () => {
+  assertEquals(cleanPopupId("p-0123456789"), "p-0123456789");
+  assertEquals(cleanPopupId("p-xyz"), null);
+  const item = cleanPopupItem({ name: " 육구방앗간 <b>", place: "롯데백화점 잠실점", region: "서울", start: "2026-10-09", end: "2026-10-15",
+    url: "https://blog.naver.com/a/1", lat: 37.51, lng: 127.1, extra: "x" });
+  assertEquals(item, { name: "육구방앗간 b", place: "롯데백화점 잠실점", address: "", region: "서울", start: "2026-10-09", end: "2026-10-15",
+    url: "https://blog.naver.com/a/1", lat: 37.51, lng: 127.1 });
+  assertEquals(cleanPopupItem({ name: "x", end: "2026-10-15" }), null);              // 이름 너무 짧음
+  assertEquals(cleanPopupItem({ name: "팝업", end: "10월 15일" }), null);             // 날짜 모양
+  assertEquals(cleanPopupItem({ name: "팝업", end: "2026-10-15", url: "javascript:alert(1)", region: "화성" })?.url, "");
+});
+
+Deno.test("팝업: 승인·안 끝남·신고 안 된 것만, 끝나는 날 순", () => {
+  const it = (name: string, end: string) => ({ name, end });
+  const rows = [
+    { id: "p-0000000001", ok: true, item: it("늦게 끝남", "2026-10-30") },
+    { id: "p-0000000002", ok: true, item: it("곧 끝남", "2026-10-12") },
+    { id: "p-0000000003", ok: true, item: it("끝남", "2026-10-11") },
+    { id: "p-0000000004", ok: false, item: it("거절", "2026-10-20") },
+    { id: "p-0000000005", ok: true, item: it("신고됨", "2026-10-20") },
+  ];
+  const got = visiblePopups(rows, new Set(["p-0000000005"]), "2026-10-12");
+  assertEquals(got.map((p) => p.name), ["곧 끝남", "늦게 끝남"]);
 });

@@ -113,3 +113,42 @@ export function withoutItem(col: Col, body: unknown, item: string): Record<strin
   delete items[item];
   return { ...b, [key]: items };
 }
+
+/* ---------- 팝업스토어 (관리자가 승인한 것만 앱에 나온다) ---------- */
+export type PopupItem = {
+  name: string; place: string; address: string; region: string; start: string; end: string;
+  url: string; lat: number | null; lng: number | null;
+};
+const REGIONS = new Set(["서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"]);
+
+export function cleanPopupId(raw: unknown): string | null {
+  return typeof raw === "string" && /^p-[a-f0-9]{10}$/.test(raw) ? raw : null;
+}
+
+const day = (v: unknown) => (typeof v === "string" && /^20\d\d-\d\d-\d\d$/.test(v) ? v : "");
+const coord = (v: unknown, lo: number, hi: number) => (typeof v === "number" && v >= lo && v <= hi ? Math.round(v * 1e6) / 1e6 : null);
+
+/** 승인할 때 저장하는 팝업 한 개. 이름과 끝나는 날은 꼭 있어야 한다 */
+export function cleanPopupItem(raw: unknown): PopupItem | null {
+  if (!isObj(raw)) return null;
+  const name = str(raw.name, 40).replace(/[<>]/g, "");
+  const end = day(raw.end);
+  if (name.length < 2 || !end) return null;
+  const start = day(raw.start);
+  const url = typeof raw.url === "string" && /^https?:\/\/[^\s"'<>]{4,300}$/.test(raw.url) ? raw.url : "";
+  const region = typeof raw.region === "string" && REGIONS.has(raw.region) ? raw.region : "";
+  return {
+    name, place: str(raw.place, 60).replace(/[<>]/g, ""), address: str(raw.address, 80).replace(/[<>]/g, ""), region,
+    start: start && start <= end ? start : "", end, url, lat: coord(raw.lat, 33, 39), lng: coord(raw.lng, 124, 132),
+  };
+}
+
+/** 앱에 보여 줄 팝업: 승인됐고, 아직 안 끝났고(오늘 포함), 신고로 숨겨지지 않은 것. 끝나는 날이 가까운 순 */
+export function visiblePopups(rows: { id: string; ok: boolean; item: unknown }[], hidden: Set<string>, today: string) {
+  return rows
+    .flatMap((r) => {
+      const item = r.ok && !hidden.has(r.id) ? cleanPopupItem(r.item) : null;
+      return item && item.end >= today ? [{ id: r.id, ...item }] : [];
+    })
+    .sort((a, b) => a.end.localeCompare(b.end));
+}

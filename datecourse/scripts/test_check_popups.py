@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-from check_popups import merge, name_of, period, place_of
+from check_popups import merge, name_of, period, place_of, popup_id
 
 
 class PopupParse(unittest.TestCase):
@@ -27,6 +27,14 @@ class PopupParse(unittest.TestCase):
         self.assertEqual(name_of("이번 주 가볼 만한 성수 팝업 정리"), "")
         self.assertEqual(name_of("10월 2주차 예약없이 가는 팝업"), "")
         self.assertEqual(name_of("마르디 메크르디 '정한의 프라이빗 아틀리에' 팝업"), "정한의 프라이빗 아틀리에")
+
+    def test_name_not_place(self):
+        self.assertEqual(name_of("용산 아이파크몰 해리포터 팝업스토어"), "해리포터")
+        self.assertEqual(name_of("롯데 팝업 다녀왔어요"), "")
+        self.assertEqual(name_of("신세계 팝업"), "")
+        self.assertEqual(name_of("점서 국내 첫 팝업"), "")
+        self.assertEqual(name_of("피카츄 얼굴을 어떻게 먹어? 팝업"), "")
+        self.assertEqual(popup_id("육구 방앗간"), popup_id("육구방앗간"))
 
     def test_place(self):
         self.assertEqual(place_of("📍 더현대 서울 B2 아이코닉존")[0], "더현대 서울")

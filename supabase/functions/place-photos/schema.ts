@@ -38,4 +38,13 @@ create table if not exists public.nolco_stats (
   primary key (day, ev, item)
 );
 alter table public.nolco_stats enable row level security;
+
+-- 팝업스토어 승인: 관리자가 맞다고 한 것(ok=true)만 앱에 나온다. item 은 승인할 때의 이름·장소·기간
+create table if not exists public.nolco_popups (
+  id text primary key,
+  ok boolean not null,
+  item jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table public.nolco_popups enable row level security;
 `;
