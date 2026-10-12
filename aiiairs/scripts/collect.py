@@ -44,7 +44,7 @@ POSTER_DIR = ROOT / "posters"
 CACHE_FILE = ROOT / ".cache" / "kopis.json"           # 이미 물어본 공연·공연장 정보 (저장소에 넣지 않음)
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 KST = dt.timezone(dt.timedelta(hours=9))
-UA = "AIIairs-collector/1.0 (+https://expomoa.com/)"
+UA = "AIIairs-collector/1.0 (+https://45516645sud-stack.github.io/-/)"
 
 KOPIS_BASE = "https://www.kopis.or.kr/openApi/restful"
 # 공연마다 있는 KOPIS 공식 상세 페이지 (예매처 링크가 없을 때도 늘 붙일 수 있다)
@@ -105,6 +105,49 @@ GENRE_WORDS = [
     (("대중음악", "콘서트"), "대중음악"),
     (("연극",), "연극"),
 ]
+
+
+# KOPIS 상세의 예/아니요(Y/N) 표시 → 꼬리표. 추측이 아니라 KOPIS 가 적어 준 것이라 검색에서 확실하게 쓴다.
+FLAG_TAGS = {"daehakro": "대학로", "visit": "내한", "festival": "축제", "musicalcreate": "창작", "musicallicense": "라이선스"}
+
+# 공연 이름·소개·장르에 이 말이 있으면 꼬리표를 붙인다 (취향 검색이 분위기·형식으로 고를 수 있게)
+AUTO_TAGS = [
+    ("웃음", ("코미디", "코믹", "개그", "희극", "폭소", "유쾌", "만담", "스탠드업", "슬랩스틱")),
+    ("공포", ("공포", "호러", "스릴러", "추리", "미스터리", "미스테리", "괴담", "귀신", "좀비", "서스펜스")),
+    ("로맨스", ("로맨스", "로맨틱", "연애", "첫사랑", "러브스토리")),
+    ("감동", ("감동", "눈물", "위로", "실화")),
+    ("2인극", ("2인극", "이인극")),
+    ("1인극", ("1인극", "모노드라마")),
+    ("낭독", ("낭독",)),
+    ("인형극", ("인형극",)),
+    ("마술", ("마술", "매직쇼")),
+    ("재즈", ("재즈", "jazz")),
+    ("어쿠스틱", ("어쿠스틱", "acoustic", "통기타")),
+    ("국악", ("국악", "판소리", "가야금", "해금", "대금", "사물놀이", "민요", "창극")),
+    ("피아노", ("피아노", "piano")),
+    ("축제", ("축제", "페스티벌", "연극제", "festival")),
+]
+
+
+def auto_tags(*texts: str) -> list[str]:
+    t = " ".join(x for x in texts if x).lower().replace(" ", "")
+    return [tag for tag, words in AUTO_TAGS if any(w in t for w in words)]
+
+
+def min_age(text: str | None) -> int | None:
+    """관람 나이 글 → 볼 수 있는 가장 어린 나이(만). '전체 관람가' → 0, '48개월 이상' → 4, '만 13세 이상' → 13. 모르면 None"""
+    t = (text or "").replace(" ", "")
+    if not t:
+        return None
+    if "전체" in t or "누구나" in t:
+        return 0
+    m = re.search(r"(\d+)개월", t)
+    if m:
+        return int(m.group(1)) // 12
+    m = re.search(r"(\d+)세", t)
+    if m:
+        return int(m.group(1))
+    return None
 
 
 def genre_info(genre: str) -> tuple[str, str, list[str]]:
@@ -305,7 +348,8 @@ def windows(start: dt.date, end: dt.date, span: int = 31):
 
 def slim_detail(d: dict) -> dict:
     """상세 응답에서 쓰는 것만 남긴다 (기억해 두기 쉽게 글자만)."""
-    out = {k: first(d, k) for k in ("mt20id", "mt10id", "genrenm", "child", "pcseguidance", "fcltynm", "area", "poster", "openrun")}
+    out = {k: first(d, k) for k in ("mt20id", "mt10id", "genrenm", "child", "pcseguidance", "fcltynm", "area", "poster", "openrun",
+                                    "dtguidance", "prfruntime", "prfage", "prfcast", *FLAG_TAGS)}
     out["sty"] = clip(first(d, "sty"), 400)
     relates = d.get("relates")
     if isinstance(relates, ET.Element):
@@ -317,12 +361,17 @@ def slim_detail(d: dict) -> dict:
     return {k: v for k, v in out.items() if v}
 
 
+CACHE_VERSION = 3  # 기억하는 항목이 바뀌면 올린다 (예전 기억은 버리고 다시 묻는다). 2: 공연 시간·나이·주소, 3: 출연진·대학로/내한/축제/창작 표시
+
+
 def load_cache(path: Path | None) -> dict:
     try:
         data = json.loads(path.read_text(encoding="utf-8")) if path else {}
     except (OSError, ValueError):
         data = {}
-    return {"details": data.get("details", {}), "places": data.get("places", {})}
+    if data.get("v") != CACHE_VERSION:
+        data = {}
+    return {"v": CACHE_VERSION, "details": data.get("details", {}), "places": data.get("places", {})}
 
 
 def save_cache(path: Path | None, cache: dict) -> None:
@@ -416,28 +465,31 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
           + (f" · 다음 실행으로 미룸 {len(postponed)}건" if postponed else ""))
 
     # 공연장(시설) 좌석 수: 같은 시설은 한 번만 조회한다.
-    def place_of(fid: str) -> list[tuple[str, int]]:
+    def place_of(fid: str) -> tuple[list[tuple[str, int]], str]:
+        """공연시설 한 곳: (공연장별 좌석 수, 주소)."""
         try:
             body = (FIXTURES / "kopis_place.xml").read_bytes() if fixtures else \
                 fetch(f"{KOPIS_BASE}/prfplc/{urllib.parse.quote(fid)}?" + urllib.parse.urlencode({"service": key}))
             halls = [(h.get("prfplcnm", ""), int(re.sub(r"\D", "", h.get("seatscale", "")) or 0))
                      for h in records(body, ("prfplcnm", "seatscale"))]
+            whole = records(body, ("fcltynm", "seatscale"))
             if not halls:  # 공연장 목록이 없으면 시설 전체 좌석 수
-                whole = records(body, ("fcltynm", "seatscale"))
                 halls = [("", int(re.sub(r"\D", "", whole[0].get("seatscale", "")) or 0))] if whole else []
-            return [h for h in halls if h[1] > 0]
+            addr = clip(first(whole[0], "adres"), 120) if whole else ""
+            return [h for h in halls if h[1] > 0], addr
         except Exception as e:
             print(f"  · KOPIS 시설 건너뜀 {fid}: {e}", file=sys.stderr)
-            return []
+            return [], ""
 
     fids = sorted({first(d, "mt10id") for d in details.values() if first(d, "mt10id")})
     places = {f: [tuple(h) for h in cache["places"][f]["halls"]] for f in fids if fresh(cache["places"].get(f), today, 60)}
+    addrs = {f: cache["places"][f].get("addr", "") for f in places}
     ask = [f for f in fids if f not in places]
     with cf.ThreadPoolExecutor(max_workers=8) as pool:
-        for f, halls in zip(ask, pool.map(place_of, ask)):
-            places[f] = halls
-            if halls:
-                cache["places"][f] = {"at": today.isoformat(), "halls": [list(h) for h in halls]}
+        for f, (halls, addr) in zip(ask, pool.map(place_of, ask)):
+            places[f], addrs[f] = halls, addr
+            if halls or addr:
+                cache["places"][f] = {"at": today.isoformat(), "halls": [list(h) for h in halls], "addr": addr}
     # 지금 목록에 없는 공연의 기억은 지운다 (공연장은 오래 두어도 작다)
     cache["details"] = {k: v for k, v in cache["details"].items() if k in seen}
     if not fixtures:
@@ -457,6 +509,8 @@ def collect_kopis(key: str, start: dt.date, end: dt.date, limit: int, detail_lim
             continue
         if seats:
             item["seats"] = seats
+        if addrs.get(first(d, "mt10id")):
+            item["addr"] = addrs[first(d, "mt10id")]
         items.append(item)
     print(f"  · {max_seats}석이 넘는 공연장 {dropped}건 제외")
     return items
@@ -494,6 +548,11 @@ def kopis_item(r: dict, d: dict) -> dict | None:
             url = https(rel.findtext("relateurl"))
             if url:
                 break
+    tags += [tag for key, tag in FLAG_TAGS.items() if first(d, key) == "Y"]
+    agemin = min_age(first(d, "prfage"))
+    if agemin is not None and agemin <= 7:
+        tags.append("아이")
+    tags += auto_tags(first(r, "prfnm"), first(d, "sty"), genre)
     fee_text = first(d, "pcseguidance")
     venue = clean_venue(first(d, "fcltynm") or first(r, "fcltynm"))
     summary = clip(first(d, "sty"))
@@ -514,6 +573,11 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "url": url,                                        # 예매처 (없을 수 있음)
         "info": KOPIS_PAGE.format(urllib.parse.quote(first(r, "mt20id"))),  # KOPIS 공식 공연 페이지
         "openrun": True if (first(d, "openrun") or first(r, "openrun")) == "Y" else None,
+        "time": clip(first(d, "dtguidance"), 160),                 # 공연 시간 (예: 화~금 20:00, 토 15:00·19:00)
+        "runtime": clip(first(d, "prfruntime"), 30),               # 공연 길이 (예: 1시간 30분)
+        "age": clip(first(d, "prfage"), 30),                       # 관람 나이 (예: 만 13세 이상)
+        "agemin": agemin,                                          # 볼 수 있는 가장 어린 나이 (취향 검색의 '5살 아이' 등)
+        "cast": clip(re.sub(r"\s*등$", "", first(d, "prfcast")), 80),  # 출연진 (이름으로 찾기)
         "src": "kopis",
     }
 

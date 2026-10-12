@@ -14,32 +14,37 @@
 <meta name="theme-color" content="#efe8da">
 <!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
 <meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
-<link rel="canonical" href="https://expomoa.com/">
+<link rel="canonical" href="https://45516645sud-stack.github.io/-/">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://expomoa.com/">
+<meta property="og:url" content="https://45516645sud-stack.github.io/-/">
 <meta property="og:title" content="AIIairs 소극장 일정">
 <meta property="og:description" content="전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
-<meta property="og:site_name" content="엑스포 모아">
+<meta property="og:site_name" content="AIIairs">
 <meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://45516645sud-stack.github.io/-/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AIIairs — 전국의 작은 무대를 한 장의 일정표로">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://expomoa.com/">
+<meta name="twitter:url" content="https://45516645sud-stack.github.io/-/">
 <meta name="twitter:title" content="AIIairs 소극장 일정">
+<meta name="twitter:image" content="https://45516645sud-stack.github.io/-/og.png">
 <meta name="twitter:description" content="전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "엑스포 모아",
-  "url": "https://expomoa.com/",
+  "name": "AIIairs",
+  "url": "https://45516645sud-stack.github.io/-/",
   "description": "전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://expomoa.com/search?q={search_term_string}",
+    "target": "https://45516645sud-stack.github.io/-/?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -452,11 +457,17 @@ legend + *{clear:both}
 .empty p{margin:0 0 18px;color:var(--muted);font-size:var(--s-1)}
 
 /* ---------- Footer ---------- */
+.maps{font-size:var(--s-1)}
+.maps a{color:var(--ink);text-underline-offset:3px;text-decoration-thickness:1px}
+.maps a:hover{color:var(--accent)}
+.addr{font-size:var(--s-1);color:var(--muted)}
 .foot{border-top:1px solid var(--ink)}
 .foot .wrap{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);padding-top:22px;padding-bottom:40px;font-size:var(--s-1);color:var(--muted)}
 .foot .f-brand{grid-column:1 / span 4;color:var(--ink);font-family:var(--f-display);font-size:var(--s1);font-weight:600}
 .foot .f-note{grid-column:5 / span 5;margin:0}
 .foot .f-end{grid-column:10 / span 3;margin:0;text-align:right}
+.foot a{color:var(--muted);text-underline-offset:3px;text-decoration-thickness:1px}
+.foot a:hover{color:var(--accent)}
 
 noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);background:var(--surface)}
 
@@ -714,7 +725,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
     <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
-    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span></p>
+    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span><br><a href="privacy.html">개인정보 처리방침</a></p>
   </div>
 </footer>
 
@@ -749,66 +760,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     <p class="fb-thanks">Thank you.</p>
     <p class="fb-title">고맙습니다.</p>
     <p class="fb-sub">보내주신 의견은 다음에 사이트를 고칠 때 한 줄씩 꼭 읽어볼게요.</p>
-  </div>
-</aside>
-
-    <div class="schedule" id="schedule" tabindex="-1">
-      <div id="notice"></div>
-      <section class="interp" id="interp" hidden aria-live="polite"></section>
-      <div class="sheet-head">
-        <h2 id="sheetTitle">전체 일정</h2>
-        <div class="sheet-tools">
-          <p id="sheetCount" aria-live="polite"></p>
-          <div class="view" role="group" aria-label="보기 방식">
-            <button type="button" data-view="list" aria-pressed="false">목록</button>
-            <button type="button" data-view="card" aria-pressed="true">카드</button>
-          </div>
-        </div>
-      </div>
-      <div class="sheet" id="sheet"><div class="empty"><p>일정을 불러오는 중이에요.</p></div></div>
-    </div>
-  </section>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <span class="f-brand">AIIairs</span>
-    <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
-    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span></p>
-  </div>
-</footer>
-
-<dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
-
-<aside class="fb" id="feedback" aria-labelledby="fbTitle" aria-live="polite" hidden>
-  <div class="fb-step" data-step="ask">
-    <div class="fb-head">
-      <p class="fb-title" id="fbTitle">사용은 어떠신가요?</p>
-      <button type="button" class="linkish" data-fb="close">닫기</button>
-    </div>
-    <div class="fb-pick" role="group" aria-label="사용 평가">
-      <button type="button" data-fb="1"><span class="fb-no">1</span>별로예요</button>
-      <button type="button" data-fb="2"><span class="fb-no">2</span>좋아요</button>
-    </div>
-  </div>
-  <form class="fb-step" data-step="why" hidden>
-    <div class="fb-head">
-      <p class="fb-title" id="fbWhy"></p>
-      <button type="button" class="linkish" data-fb="back">다시 고르기</button>
-    </div>
-    <p class="fb-sub" id="fbAsk"></p>
-    <textarea id="fbText" maxlength="500" rows="4" aria-labelledby="fbWhy fbAsk"></textarea>
-    <div class="fb-foot">
-      <span class="fb-hint">이름·연락처는 적지 말아 주세요</span>
-      <span><button type="button" class="linkish" data-fb="skip">건너뛰기</button>&nbsp;&nbsp;<button type="submit" class="btn btn-sm">보내기</button></span>
-    </div>
-  </form>
-  <div class="fb-step" data-step="done" hidden>
-    <div class="fb-head">
-      <p class="fb-title">고맙습니다.</p>
-      <button type="button" class="linkish" data-fb="close">닫기</button>
-    </div>
-    <p class="fb-sub">보내주신 의견은 다음에 고칠 때 꼭 읽어볼게요.</p>
   </div>
 </aside>
 
@@ -853,7 +804,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
   const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const DAY = 86400000;
-  const ORIGIN = 'https://expomoa.com/';
+  const ORIGIN = 'https://45516645sud-stack.github.io/-/';
 
   const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -903,6 +854,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         url: isWebUrl(f.url) ? f.url : null,
         info: isWebUrl(f.info) ? f.info : null,
         art: f.art || DEFAULT_ART[cat],
+        // 공연 시간·길이·관람 나이·공연장 주소 (KOPIS 에 있을 때만)
+        time: typeof f.time === 'string' ? f.time.slice(0, 160) : '',
+        runtime: typeof f.runtime === 'string' ? f.runtime.slice(0, 30) : '',
+        age: typeof f.age === 'string' ? f.age.slice(0, 30) : '',
+        addr: typeof f.addr === 'string' ? f.addr.slice(0, 120) : '',
+        cast: typeof f.cast === 'string' ? f.cast.slice(0, 80) : '',
+        agemin: Number.isFinite(f.agemin) ? f.agemin : null,
         start: parseDate(f.s),
         end: parseDate(f.e),
         // 끝나는 날 없이 계속하는 공연. KOPIS 는 종료일을 몇 년 뒤로 적어 보낸다.
@@ -991,7 +949,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { label: '조용한', w: ['조용','차분','한적','고요','여유','느긋','힐링','쉬고','쉬러','휴식'], tags: ['조용한'], cats: { classic: 1 } },
     { label: '감성', w: ['감성','비오는','비내리','잔잔','몽환','새벽','센치','우울','쓸쓸'], tags: ['조용한'], cats: { music: 1, classic: 1 } },
     { label: '감동', w: ['감동','울고','눈물','먹먹','뭉클','위로','울컥','슬픈','여운'], tags: [], cats: { theater: .5, musical: .5 }, soft: true },
-    { label: '영감', w: ['영감','자극','감각','새로운','실험','창작','예술'], tags: ['영감'], cats: { theater: .5, dance: 1 } },
+    { label: '영감', w: ['영감','자극','감각','새로운','실험','예술'], tags: ['영감'], cats: { theater: .5, dance: 1 } },
     { label: '활기찬', w: ['신나','활기','북적','재밌','재미','핫한','힙한','친구','스트레스'], tags: ['활기', '친구'], cats: { music: 1, musical: .5 }, strip: ['여자친구','남자친구','여사친','남사친','외국인친구'] },
     // '개그 콘서트'처럼 '콘서트'가 붙어도 음악 공연이 아니라 웃음 공연이다 (mutes: 이 단어가 있으면 다른 분야의 해당 단서를 무시)
     // 장르 이름이 따로 없어서(대부분 '연극') 공연 이름·소개에 웃음 단어가 실제로 있는 것만 고른다 (textOnly)
@@ -1002,13 +960,19 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       textOnly: ['공포','호러','스릴러','추리','미스터리','미스테리','괴담','귀신','좀비','살인','범죄','서스펜스','오싹'] },
     { label: '반려동물과', w: ['반려견','반려동물','반려묘','강아지','댕댕','펫'], latin: ['pet','dog'], tags: [], cats: {}, textOnly: ['펫프렌들리','반려견동반','반려동물동반','반려견입장','반려동물입장','반려견과함께','반려동물과함께'] },
     { label: '말 없이 즐기는', w: ['외국인','말안통','말없이','말이필요없','넌버벌','논버벌','대사없','언어상관'], latin: ['nonverbal','foreigner'], tags: [], cats: { dance: 2.5, music: 1, classic: 1 } },
-    { label: '연극', narrow: true, w: ['연극','희곡','배우','2인극','1인극','대학로','혜화','낭독','모노드라마','부조리극'], latin: ['theater','theatre','play','drama'], tags: [], cats: { theater: 3 } },
+    { label: '연극', narrow: true, w: ['연극','희곡','배우','2인극','1인극','낭독','모노드라마','부조리극'], latin: ['theater','theatre','play','drama'], tags: [], cats: { theater: 3 } },
     { label: '뮤지컬', narrow: true, w: ['뮤지컬','넘버'], latin: ['musical'], tags: [], cats: { musical: 3 } },
     { label: '라이브 음악', narrow: true, w: ['라이브','밴드','인디','재즈','록','락페','락밴드','락공연','락음악','힙합','어쿠스틱','싱어송','버스킹','클럽','콘서트','노래','음악','트로트','발라드','아이돌','케이팝','k팝','팝송','알앤비','블루스','소울','포크','디제이'], latin: ['jazz','concert','live','band','indie','rock','hiphop','kpop','k-pop','pop','dj','edm'], tags: [], cats: { music: 3 } },
     { label: '클래식·국악', narrow: true, w: ['클래식','현악','피아노','바이올린','첼로','실내악','사중주','오케스트라','오페라','성악','국악','가야금','판소리','하우스콘서트','사물놀이','풍물','대금','해금','장구','창극','민요','정가','타악','독주회','리사이틀','앙상블','합창','기타리스트'], latin: ['classical','classic','piano','violin','opera','recital','orchestra'], tags: [], cats: { classic: 3 },
       mutes: { '라이브 음악': ['콘서트'] } },
     { label: '무용·마임', narrow: true, w: ['무용','발레','현대무용','한국무용','전통춤','댄스','춤','비보잉','브레이킹','탭댄스','스트릿','마임','서커스','마술','저글링','퍼포먼스','몸짓','아크로바틱'], latin: ['dance','ballet','mime','circus','magic'], tags: [], cats: { dance: 3 } },
     // 공연 정보로 바로 판단하는 말 (test)
+    // KOPIS 가 직접 표시해 준 것 (대학로·내한·축제·창작·라이선스). 이름·공연장에 그 말이 있어도 맞는 것으로 본다
+    { label: '대학로', w: ['대학로','혜화'], tags: [], cats: {}, test: f => f.tags.includes('대학로') || /대학로|혜화/.test(f.venue + f.t + f.addr) },
+    { label: '내한 공연', w: ['내한','해외팀','외국팀','해외아티스트'], tags: [], cats: {}, test: f => f.tags.includes('내한') || /내한/.test(f.t) },
+    { label: '축제', w: ['축제','페스티벌','연극제','음악제','festival'], tags: [], cats: {}, test: f => f.tags.includes('축제') || /축제|페스티벌|연극제|음악제|festival/i.test(f.t) },
+    { label: '창작', w: ['창작뮤지컬','창작극','창작공연','창작'], tags: [], cats: {}, test: f => f.tags.includes('창작') || /창작/.test(f.t + f.d) },
+    { label: '라이선스', w: ['라이선스','라이센스','브로드웨이','웨스트엔드'], latin: ['broadway','license'], tags: [], cats: {}, test: f => f.tags.includes('라이선스') },
     { label: '오픈런', w: ['오픈런','상시공연','장기공연','언제든볼수'], tags: [], cats: {}, test: f => f.openrun },
     { label: '곧 끝나는', w: ['끝나는','막공','마감','막바지','종연','놓치기전','곧끝'], tags: [], cats: {}, test: f => f.end >= TODAY && f.end <= addDays(TODAY, 14) },
     { label: '곧 시작', w: ['새로시작','곧시작','개막','오픈예정','새로운공연','새로올라','신작'], tags: [], cats: {}, test: f => f.start > TODAY && f.start <= addDays(TODAY, 14) },
@@ -1020,6 +984,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const LATIN_KO = { jazz: '재즈', rock: '록', band: '밴드', hiphop: '힙합', kpop: '케이팝', 'k-pop': '케이팝', piano: '피아노', violin: '바이올린',
     opera: '오페라', ballet: '발레', mime: '마임', circus: '서커스', magic: '마술', comedy: '코미디', funny: '웃긴', horror: '공포', thriller: '스릴러',
     musical: '뮤지컬', theater: '연극', theatre: '연극', play: '연극', drama: '연극', concert: '콘서트', live: '라이브', dance: '댄스', kids: '어린이', children: '어린이' };
+  const LEX_WORDS = LEXICON.flatMap(e => [...e.w, ...(e.latin || [])]).map(w => w.toLowerCase());
   // 장르 이름 자체(연극·콘서트 등)는 '이 단어가 적힌 공연만' 고르는 데 쓰지 않는다. '재즈', '판소리'처럼 구체적인 말만 쓴다.
   const BROAD = new Set(['연극','배우','대학로','혜화','뮤지컬','넘버','라이브','콘서트','노래','음악','클럽','인디','아이돌','클래식','국악','무용','댄스','퍼포먼스','몸짓','춤',
     'THEATER','THEATRE','PLAY','DRAMA','MUSICAL','CONCERT','LIVE','CLASSIC','CLASSICAL','DANCE']);
@@ -1044,6 +1009,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     '전남': ['전남','여수','순천','목포'],
     '광주·전남': ['광주','전남','여수','순천','목포']
   };
+  // 사전에 없는 말을 이름에서 찾을 때 건너뛰는 흔한 말
+  const FREE_STOP = new Set(['공연','공연들','보고','보고싶어','보고싶은','싶어','싶은','추천','추천해줘','해줘','알려줘','찾아줘','볼','볼만한','만한','거','것','좀','같이',
+    '함께','근처','가까운','있는','하는','곳','어디','뭐','무슨','어떤','좋은','예쁜','분위기','느낌','사람','날','밤','저녁','오후','낮','아침','시간','쪽','데',
+    '갈','가고','가볼','만','이랑','하고','그리고','또는','진짜','정말','너무','완전','요즘','최근','인기','유명한','잘','더','제일','가장',
+    '하기','드는','되는','수','볼수','있는곳','중에','관람','구경','in','on','at','the','a','an','of','and','for','show','shows','with','near','me']);
+  // 이름 찾기에 쓰지 않는 날짜·가격·때를 나타내는 말
+  const FREE_SKIP = /요일$|^(이하|이상|까지|미만|이내|아래|안쪽|지금|바로|당장|연말|연초|새해|크리스마스|성탄절?|할로윈|핼러윈|주말|평일|오늘|내일|모레|이번|다음|싸|싼|저렴|가성비|비싼|비싸|무료|공짜|유료)/;
   const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없'];
   const PAID_WORDS = ['유료'];
 
@@ -1074,7 +1046,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         if (!other.words.length) hits.splice(hits.indexOf(other), 1);
       }
     }
-    let regions = REGIONS.filter(r => (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
+    // '기타'는 지역 이름이 아니라 '그 밖'이라는 뜻이라 문장에서 찾지 않는다 ('클래식 기타' ≠ 기타 지역)
+    let regions = REGIONS.filter(r => r !== '기타' && (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
     let excludedOut = null;
     // '서울 말고', '부산 빼고' → 그 지역을 뺀 나머지. '지방' → 수도권을 뺀 나머지
     const NOT = /^(말고|빼고|제외|아닌|아니고|이외|외에|밖)/;
@@ -1158,17 +1131,58 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     else if (/(^|[^비])(싼|싸게|싸고)|저렴|가성비|알뜰|부담없/.test(t) || /\bcheap\b/.test(lower)) budget = 20000;
     if (cost === 'free') budget = null;
 
+    // 아이·학생 나이: 이 나이가 볼 수 없는 공연(관람 나이가 더 높은 것)은 뺀다
+    let viewerAge = null;
+    const ageNum = t.match(/(\d{1,2})(살|세)/);
+    if (ageNum && Number(ageNum[1]) <= 19) viewerAge = Number(ageNum[1]);
+    else if (/유아|유치원|아기|애기/.test(t)) viewerAge = 5;
+    else if (/초등/.test(t)) viewerAge = 8;
+    else if (/중학생|중딩/.test(t)) viewerAge = 13;
+    else if (/고등학생|고딩/.test(t)) viewerAge = 16;
+
+    // 사전에 없는 말 → 공연 이름·공연장·출연진에서 찾는다 ('빨래', '씨어터조이', 배우 이름 등)
+    // 먼저 문장 전체가 공연 이름 등에 그대로 있는지 ('우리들의 계절', 'To Be Or Not To Be'), 아니면 낱말마다 (모두 맞아야 함)
+    // 사전에 있는 말·날짜·가격 말은 쓰지 않고, 너무 흔한 말(공연의 4% 넘게 들어 있는 말)은 이름으로 보지 않는다
+    const used = hits.flatMap(h => h.words).map(w => String(w).toLowerCase());
+    const aliases = Object.values(REGION_ALIAS).flat();
+    const known = [...used, ...LEX_WORDS].filter(w => w.length >= 2);
+    // 긴 말부터 지운다 ('현대무용'을 '무용'보다 먼저)
+    const strip = [...known, ...[...FREE_STOP].filter(w => w.length >= 2)].sort((a, b) => b.length - a.length);
+    const residual = c => strip.reduce((r, w) => r.split(w).join(''), c);
+    const MAX_NAME = Math.max(5, Math.round(FAIRS.length * 0.04));
+    const countIn = w => FAIRS.reduce((n, f) => n + (nameText(f).includes(w) ? 1 : 0), 0);
+    const skip = w => FREE_STOP.has(w) || /\d/.test(w) || aliases.some(a => w.includes(a)) || FREE_SKIP.test(w);
+    const free = [];
+    const unknown = [];
+    const tc = countIn(t);
+    if (t.length >= 2 && residual(t).length >= 2 && tc > 0 && tc <= MAX_NAME) free.push(t);
+    else for (const raw of lower.split(/[\s,.!?~·/]+/)) {
+      // 끝의 조사를 뗀 말도 함께 본다 ('씨어터조이'처럼 '이'로 끝나는 이름이 잘리지 않게, 그대로인 말을 먼저 본다)
+      const cands = [raw, raw.replace(/(이랑|랑|하고|에서|에게|으로|로|이나|의|을|를|이|가|은|는|도|만|요)$/, '')];
+      const tok = cands.find(c => c.length >= 2 && countIn(c) > 0) || cands[1];
+      if (tok.length < 2 || skip(tok) || skip(raw) || residual(tok).length < 2 || known.some(w => w.includes(tok))) continue;
+      const n = countIn(tok);
+      if (n > 0 && n <= MAX_NAME) free.push(tok);
+      // 못 알아들은 말 (꾸미는 말 '오는', '신나는', '따뜻한' 등은 빼고)
+      else if (n === 0 && !known.some(w => tok.includes(w)) && !/(는|은|한|운|던|고|게|서|요|다|기|지|면|며|랑|께|해|줘|도)$/.test(raw)) unknown.push(raw);
+    }
+    if (free.length) hits.push({ label: '이름·공연장·출연', words: free, tags: [], cats: {}, textOnly: free, nameOnly: true, allOf: true });
+
     const catWeight = {};
     for (const h of hits) for (const [k, v] of Object.entries(h.cats)) catWeight[k] = (catWeight[k] || 0) + v;
     const groupWeight = {};
     for (const [k, v] of Object.entries(catWeight)) groupWeight[GROUP_OF[k]] = (groupWeight[GROUP_OF[k]] || 0) + v;
     const suggested = Object.entries(groupWeight).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
 
-    return { raw, hits, regions, period, cost, budget, suggested, excluded: excludedOut };
+    return { raw, hits, regions, period, cost, budget, suggested, excluded: excludedOut, age: viewerAge, unknown };
   }
 
   const TEXT = new Map();
-  const text = f => { if (!TEXT.has(f.id)) TEXT.set(f.id, (f.t + f.d).toLowerCase().replace(/\s+/g, '')); return TEXT.get(f.id); };
+  // 취향 검색이 단어를 찾는 글: 이름·소개·공연장·출연진·꼬리표
+  const text = f => { if (!TEXT.has(f.id)) TEXT.set(f.id, [f.t, f.d, f.venue, f.cast, f.tags.join(' ')].join(' ').toLowerCase().replace(/\s+/g, '')); return TEXT.get(f.id); };
+  // 사전에 없는 말을 찾을 글: 이름·공연장·출연진만 (소개글의 흔한 말에 걸리지 않게)
+  const NAMES = new Map();
+  const nameText = f => { if (!NAMES.has(f.id)) NAMES.set(f.id, [f.t, f.venue, f.cast].join(' ').toLowerCase().replace(/\s+/g, '')); return NAMES.get(f.id); };
   function scoreFair(f, it) {
     let score = 0;
     const why = [];
@@ -1179,7 +1193,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         continue;
       }
       if (h.textOnly) {
-        const n = h.textOnly.filter(w => text(f).includes(w)).length;
+        const src = h.nameOnly ? nameText(f) : text(f);
+        let n = h.textOnly.filter(w => src.includes(w)).length;
+        if (h.allOf && n < h.textOnly.length) n = 0;
         if (n) { const v = 6 + 3 * Math.min(2, n) + (h.cats[f.cat] || 0) * 3; score += v; core += v; why.push(h.label); }
         continue;
       }
@@ -1217,6 +1233,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const needText = it.hits.filter(h => h.textOnly || h.test);
     // 장르를 정하는 단서(연극·재즈·아이와 함께 등, 가중치 3 이상)가 있으면 그 장르 공연만. 여럿이면 그중 하나
     const genres = new Set(it.hits.filter(h => !h.soft).flatMap(h => Object.entries(h.cats).filter(([, v]) => v >= 3).map(([k]) => k)));
+    if (it.age != null) pool = pool.filter(f => f.agemin == null || f.agemin <= it.age);
     let scored = pool.map(f => ({ f, ...scoreFair(f, it) }))
       .filter(x => (strict ? x.core > 0 : true) && needText.every(h => x.why.includes(h.label)) && (!genres.size || genres.has(x.f.cat)));
     const specific = [...new Set(it.hits.filter(h => h.narrow).flatMap(h => h.words).filter(w => !BROAD.has(w)))];
@@ -1437,12 +1454,23 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<div class="detail" id="detail-${f.id}"${open ? '' : ' hidden'}>` +
         `<p>${esc(f.d)}</p>` +
         `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
-        `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
-        (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
+        placeRows(f) +
         `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
         `<dt>장르</dt><dd>${CAT[f.cat].ko}</dd></dl>` +
         actionsHTML(f) +
       `</div></li>`;
+  }
+
+  // 장소·좌석·주소(+지도)·공연 시간·길이·관람 나이. 목록 펼침과 상세 창이 같이 쓴다.
+  function placeRows(f) {
+    const q = encodeURIComponent(f.addr || `${f.venue.replace(/\s*\(.*$/, '')} ${f.region === '기타' ? '' : f.region}`.trim());
+    const map = `<span class="maps"><a href="https://map.naver.com/p/search/${q}" target="_blank" rel="noopener">네이버 지도</a>` +
+      ` · <a href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener">카카오맵</a></span>`;
+    return `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}${f.addr ? `<br><span class="addr">${esc(f.addr)}</span>` : ''}<br>${map}</dd>` +
+      (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
+      (f.time ? `<dt>공연 시간</dt><dd>${esc(f.time)}</dd>` : '') +
+      (f.runtime ? `<dt>공연 길이</dt><dd>${esc(f.runtime)}</dd>` : '') +
+      (f.age ? `<dt>관람 나이</dt><dd>${esc(f.age)}</dd>` : '');
   }
 
   function actionsHTML(f) {
@@ -1489,7 +1517,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const lines = wrapTitle(f.t, 8).slice(0, 3);
     const fs = lines.length > 2 ? 36 : 42;
     const date = `${pad(f.start.getMonth() + 1)}.${pad(f.start.getDate())}`;
-    const end = f.s === f.e ? '' : ` — ${pad(f.end.getMonth() + 1)}.${pad(f.end.getDate())}`;
+    const end = f.openrun ? ' — 오픈런' : f.s === f.e ? '' : ` — ${pad(f.end.getMonth() + 1)}.${pad(f.end.getDate())}`;
     // 오브젝트 자리: 오른쪽 아래. 제목 줄 수에 따라 조금 내려간다.
     const size = 250;
     const ox = 118 + Math.round(r() * 20);
@@ -1531,6 +1559,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const f = BY_ID.get(id);
     const dlg = $('fairDialog');
     if (!f) return;
+    stat('open', f.t);
     state.openId = id;
     const st = statusOf(f);
     dlg.innerHTML = `<div class="dlg-inner"><div class="dlg-poster">${posterHTML(f)}</div>` +
@@ -1539,8 +1568,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<h2 id="dlgTitle">${esc(f.t)}</h2><p class="dlg-status">${st.text} · ${esc(f.region)}</p>` +
       `<p class="desc">${esc(f.d)}</p>` +
       `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
-      `<dt>장소</dt><dd>${esc(f.venue)}, ${esc(f.region)}</dd>` +
-      (f.seats ? `<dt>좌석</dt><dd>${f.seats}석 규모</dd>` : '') +
+      placeRows(f) +
       `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd></dl>` +
       actionsHTML(f) + `</div></div>`;
     if (!dlg.open) dlg.showModal();
@@ -1605,11 +1633,14 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       ? `<div class="chips">${it.suggested.map(k => `<button type="button" class="chip" data-act="cat" data-cat="${k}">${GROUP[k].ko}</button>`).join('')}</div>`
       : '<span class="none">—</span>';
     let note = '';
-    if (nothing) note = '문장에서 단서를 찾지 못해 전체 일정을 보여드려요. “아이랑 주말에”, “무료로 조용히”, “대학로 2인극”처럼 누구와, 언제, 어떤 공연을 보고 싶은지 적어보세요.';
+    if (nothing && it.unknown && it.unknown.length) note = `‘${it.unknown.map(esc).join(' ')}’은(는) 아직 알아듣지 못하는 말이에요. 공연·공연장·출연진 이름이라면 지금 일정에 없어요. 대신 전체 일정을 보여드려요.`;
+    else if (nothing) note = '문장에서 단서를 찾지 못해 전체 일정을 보여드려요. “아이랑 주말에”, “무료로 조용히”, “대학로 2인극”처럼 누구와, 언제, 어떤 공연을 보고 싶은지 적어보세요.';
     else if (fellBack) note = '';
     else if (it.notFound && it.notFound.length && matchedCount) note = `‘${it.notFound.map(esc).join('’, ‘')}’이(가) 적힌 공연은 지금 없어서, 같은 장르 ${matchedCount}개를 잘 맞는 순서로 보여드려요.`;
     else if (it.narrowed && it.narrowed.length) note = `이름이나 소개에 ‘${it.narrowed.map(esc).join('’, ‘')}’이(가) 들어간 공연 ${matchedCount}개를 골랐어요. 장르를 누르면 그 장르 전체 일정으로 넘어가요.`;
     else if (it.hits.length) note = `잘 맞는 순서로 ${matchedCount}개를 골랐어요. 장르를 누르면 그 장르 전체 일정으로 넘어가요.`;
+    // 찾았지만 일정에 없는 이름은 빼고 찾았다고 알려준다 ('빨래 뮤지컬' → 빨래는 없어서 뮤지컬 전체)
+    if (!nothing && it.unknown && it.unknown.length && note) note = `‘${it.unknown.map(esc).join(' ')}’은(는) 아직 알아듣지 못하는 말이라 빼고 찾았어요. ` + note;
     box.innerHTML =
       `<div class="interp-head"><p>이렇게 읽었어요</p><button type="button" class="linkish" data-act="clear">검색 지우기</button></div>` +
       `<p class="interp-q"><span class="qm">“</span>${esc(it.raw)}<span class="qm">”</span></p>` +
@@ -1618,6 +1649,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<dt>지역</dt><dd>${it.excluded && !state.relaxed && state.regions.size > 4 ? esc(it.excluded.join('·') + ' 말고 다른 지역') : state.regions.size ? esc([...state.regions].join(', ')) : '<span class="none">전국</span>'}</dd>` +
       `<dt>시기</dt><dd>${state.period === 'all' ? '<span class="none">언제든</span>' : esc((it.period && !state.relaxed && periodLabel(it.period) ? periodLabel(it.period) + ' · ' : '') + periodText(state))}</dd>` +
       `<dt>관람료</dt><dd>${esc([state.cost === 'free' ? '무료만' : state.cost === 'paid' ? '유료만' : '', state.budget != null ? budgetText(state.budget) : ''].filter(Boolean).join(' · ')) || '<span class="none">상관없음</span>'}</dd>` +
+      (it.age != null ? `<dt>관람 나이</dt><dd>만 ${it.age}세도 볼 수 있는 공연</dd>` : '') +
       `<dt>추천 장르</dt><dd>${sug}</dd></dl>`) +
       (note ? `<p class="interp-note">${note}</p>` : '');
     box.hidden = false;
@@ -1932,6 +1964,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function runQuery(text) {
     const q = text.trim().slice(0, 200);
     if (!q) { clearQuery(); return; }
+    stat('search');
     const it = interpret(q);
     state.query = q;
     state.interp = it;
@@ -1978,6 +2011,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   function toggleFair(id) {
     state.openId = state.openId === id ? null : id;
+    if (state.openId) stat('open', BY_ID.get(id)?.t);
     document.querySelectorAll('.fair').forEach(li => {
       const on = li.id === `fair-${state.openId}`;
       li.classList.toggle('is-open', on);
@@ -1994,7 +2028,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const lines = [
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AIIairs//Fair Index//KO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
       'BEGIN:VEVENT',
-      `UID:${f.id}@expomoa.com`,
+      `UID:${f.id}@45516645sud-stack.github.io`,
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ymd(f.start)}`,
       `DTEND;VALUE=DATE:${ymd(addDays(f.openrun ? f.start : f.end, 1))}`,
@@ -2081,6 +2115,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('resetBtn').addEventListener('click', () => resetFilters(true));
 
   document.addEventListener('click', e => {
+    // 바깥으로 나가는 링크: 예매·공식 정보, KOPIS, 지도 (통계용으로 숫자만 센다)
+    const out = e.target.closest('a[href^="http"]');
+    if (out) {
+      if (out.closest('.maps')) stat('map');
+      else if (out.closest('.actions')) stat(/kopis\.or\.kr/.test(out.href) ? 'info' : 'book');
+    }
     const row = e.target.closest('.row[data-id]');
     if (row) { toggleFair(row.dataset.id); return; }
     const fb = e.target.closest('[data-fold]');
@@ -2104,8 +2144,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (!act) return;
     const f = act.dataset.id && BY_ID.get(act.dataset.id);
     switch (act.dataset.act) {
-      case 'ics': if (f) downloadICS(f); break;
-      case 'copy': if (f) copyLink(f); break;
+      case 'ics': if (f) { stat('cal'); downloadICS(f); } break;
+      case 'copy': if (f) { stat('share'); copyLink(f); } break;
       case 'cat': closeDialog(); setCat(act.dataset.cat, true); break;
       case 'close': closeDialog(); break;
       case 'clear': clearQuery(); break;
@@ -2290,9 +2330,34 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }, TICK);
   }
 
+  /* ---- 방문 통계: 숫자만 모아 운영자 시트의 '방문'·'많이 본 공연' 탭으로 보낸다
+     누가 했는지(이름·IP 등)는 보내지 않는다. 운영자 모드(?owner=1)와 예시 데이터일 때는 세지 않는다.
+     방문은 탭마다 한 번, 나머지는 모아 두었다가 화면을 떠날 때(다른 탭·닫기) 한 번에 보낸다. */
+  const COUNTED_KEY = 'aiiairs.counted';
+  const tally = { open: 0, search: 0, book: 0, info: 0, map: 0, share: 0, cal: 0 };
+  let opened = {};
+  const statOn = () => /^https:\/\//.test(LOG_ENDPOINT) && !owner && !DATA.sample;
+  function stat(name, title) {
+    if (!statOn() || !(name in tally)) return;
+    tally[name]++;
+    if (name === 'open' && title) opened[title] = (opened[title] || 0) + 1;
+  }
+  function flushStats() {
+    if (!statOn() || !Object.values(tally).some(Boolean)) return;
+    report({ type: 'stat', ...tally, shows: Object.entries(opened).slice(0, 30) });
+    Object.keys(tally).forEach(k => { tally[k] = 0; });
+    opened = {};
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) flushStats(); });
+  window.addEventListener('pagehide', flushStats);
+  if (statOn() && !visit.get(COUNTED_KEY)) {
+    visit.set(COUNTED_KEY, '1');
+    report({ type: 'stat', visit: 1, device: window.matchMedia('(hover:none)').matches ? '모바일' : 'PC' });
+  }
+
   /* ---------------- 시작 ---------------- */
   renderMast();
-  if (LOG_ENDPOINT) $('logNote').textContent = ' 찾는 행사가 없을 때는 일정을 보강하려고 검색 조건만 익명으로 기록해요.';
+  if (LOG_ENDPOINT) $('logNote').textContent = ' 찾는 공연이 없을 때의 검색 조건과 남겨 주신 의견만 익명으로 기록해요.';
   const params = new URLSearchParams(location.search);
   const qp = params.get('q');
   const cp = params.get('cat');
