@@ -137,6 +137,21 @@ console.log("이번 주말 · 팝업");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 
+console.log("아이폰처럼: 시트 열면 뒤 화면 고정, 아래로 쓸어내려 닫기");
+{
+  const { p, errors } = await page(undefined, { hasTouch: true, isMobile: true });
+  await p.goto(BASE, { waitUntil: "networkidle" });
+  await p.evaluate(() => scrollTo(0, 400));
+  await p.locator("#grid .item").nth(2).tap(); await p.waitForTimeout(400);
+  ok(await p.evaluate(() => document.body.classList.contains("sheet-lock")), "시트가 열리면 뒤 화면이 고정된다");
+  const cdp = await p.context().newCDPSession(p);
+  const touch = (type, y) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x: 200, y }] });
+  await touch("touchStart", 300); for (let y = 300; y <= 650; y += 25) await touch("touchMove", y); await touch("touchEnd"); await p.waitForTimeout(500);
+  ok(!(await p.evaluate(() => document.getElementById("sheet").open)), "아래로 쓸어내리면 닫힌다");
+  ok(await p.evaluate(() => Math.abs(scrollY - 400) < 2 && !document.body.classList.contains("sheet-lock")), "닫으면 보던 자리로 돌아온다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
 console.log("약관 페이지");
 {
   const { p } = await page();

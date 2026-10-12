@@ -409,11 +409,17 @@ body.weekend .seg, body.weekend .hscroll:has(#hoodRow), body.weekend .hscroll:ha
 
 /* ── 아래에서 올라오는 시트 ── */
 dialog.sheet {
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 640px; max-height: 92vh; max-height: 92dvh;
   border-radius: 20px 20px 0 0; background: var(--bg); color: var(--ink); box-shadow: var(--sheet-shadow);
 }
 @media (min-width: 760px) { dialog.sheet { margin: auto; border-radius: 20px; max-height: 86vh; } }
 dialog.sheet::backdrop { background: rgba(20, 18, 12, .45); }
+dialog.sheet.dragging { transition: none; }
+dialog.sheet.settling { transition: transform .22s ease; }
+@media (prefers-reduced-motion: reduce) { dialog.sheet.settling { transition: none; } }
+/* 시트가 열려 있는 동안 뒤 화면이 같이 움직이지 않게 (아이폰은 body overflow 만으로는 안 막혀서 고정) */
+body.sheet-lock { position: fixed; left: 0; right: 0; overflow: hidden; }
 .sheet-in { padding: 0 20px 24px; }
 .grabber { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 10px auto 4px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-top: 6px; }
@@ -3003,6 +3009,68 @@ function courseFromHash() {
   const m = location.hash.match(/^#c=(.+)$/);
   return m ? decodeURIComponent(m[1]) : "";
 }
+
+/* ---------- 아래에서 올라오는 시트: 뒤 화면 고정 + 아래로 쓸어내려 닫기 (아이폰 사용자 습관) ---------- */
+let lockY = 0;
+function syncSheetLock() {
+  const open = [...document.querySelectorAll("dialog.sheet")].some((d) => d.open);
+  const locked = document.body.classList.contains("sheet-lock");
+  if (open && !locked) {
+    lockY = window.scrollY;
+    document.body.style.top = `-${lockY}px`;
+    document.body.classList.add("sheet-lock");
+  } else if (!open && locked) {
+    document.body.classList.remove("sheet-lock");
+    document.body.style.top = "";
+    window.scrollTo(0, lockY);
+  }
+}
+function closeSheet(d) { if (d.id === "sheet") closeCourse(); else d.close(); }
+function enableSwipeClose(d) {
+  new MutationObserver(syncSheetLock).observe(d, { attributes: true, attributeFilter: ["open"] });
+  d.addEventListener("close", () => { d.style.transform = ""; d.classList.remove("dragging", "settling"); syncSheetLock(); });
+  let y0 = 0, x0 = 0, dy = 0, t0 = 0, mode = "";   // mode: "" 아직 모름, "drag" 내리는 중, "no" 안에서 스크롤·가로 밀기
+  d.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    const inner = e.target.closest(".leaflet-container, input, textarea, select, .photos, .mini-row, .star-pick");
+    // 시트나 그 안의 스크롤 칸(동네 목록 등)이 맨 위(몇 px 여유)일 때만 끌어내리기
+    let scrolled = false;
+    for (let el = e.target; el && el !== d.parentNode; el = el.parentElement) if (el.scrollTop > 5 && el.scrollHeight > el.clientHeight) { scrolled = true; break; }
+    mode = e.touches.length > 1 || inner || scrolled ? "no" : "";
+    y0 = t.clientY; x0 = t.clientX; dy = 0; t0 = Date.now();
+  }, { passive: true });
+  d.addEventListener("touchmove", (e) => {
+    if (mode === "no") return;
+    const t = e.touches[0];
+    const my = t.clientY - y0, mx = t.clientX - x0;
+    if (!mode) {
+      if (Math.abs(my) < 8 && Math.abs(mx) < 8) return;
+      mode = my > 0 && Math.abs(my) > Math.abs(mx) ? "drag" : "no";
+      if (mode === "drag") d.classList.add("dragging");
+    }
+    if (mode !== "drag") return;
+    e.preventDefault();   // 안쪽 스크롤 대신 시트를 끌어내린다
+    dy = Math.max(0, my);
+    d.style.transform = `translateY(${dy}px)`;
+  }, { passive: false });
+  const end = () => {
+    if (mode !== "drag") { mode = ""; return; }
+    mode = "";
+    d.classList.remove("dragging");
+    const fast = dy > 40 && dy / Math.max(1, Date.now() - t0) > 0.5;
+    d.classList.add("settling");
+    if (dy > Math.min(140, d.offsetHeight * 0.25) || fast) {
+      d.style.transform = `translateY(${d.offsetHeight}px)`;
+      setTimeout(() => { closeSheet(d); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 200);
+    } else {
+      d.style.transform = "";
+      setTimeout(() => d.classList.remove("settling"), 240);
+    }
+  };
+  d.addEventListener("touchend", end);
+  d.addEventListener("touchcancel", end);
+}
+document.querySelectorAll("dialog.sheet").forEach(enableSwipeClose);
 
 /* ---------- 시작 ---------- */
 applyTheme(load(STORE.theme, ""));
