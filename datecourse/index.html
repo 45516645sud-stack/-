@@ -1664,9 +1664,10 @@ function loadPopups() {
   });
   return POP.loading;
 }
-function popupsFor(region = state.region, period = WK.period, q = state.q) {
+// 팝업은 짧아서 기간(주말·한 달) 고르기와 상관없이: 지금 하는 것 + 2주 안에 시작하는 것
+function popupsFor(region = state.region, q = state.q) {
   if (!POP.list) return [];
-  const to = isoDay(wkRange(period)[1]), from = isoDay(new Date());   // 팝업은 짧아서 주말 전에 끝나는 것도 오늘부터 보여 준다
+  const from = isoDay(new Date()), to = isoDay(addDays(new Date(), 14));
   const words = (q || "").toLowerCase().split(/\s+/).filter(Boolean);
   return POP.list.filter((p) => (p.start || "") <= to && p.end >= from
     && (!region || p.region === region)
@@ -1811,7 +1812,8 @@ function renderWeekend() {
     .map((c) => [c, all.filter((e) => (c === "공연" ? e.kind === "show" : e.cat === c)).length])].filter(([, n]) => n);
   if (WK.cat && !cats.some(([c]) => c === WK.cat)) WK.cat = "";
   const list = WK.cat === "팝업" ? [] : eventsFor();
-  const popShown = !WK.cat || WK.cat === "팝업" ? pops : [];
+  const today = isoDay(new Date());
+  const popShown = !WK.cat || WK.cat === "팝업" ? [...pops].sort((a, b) => ((a.start || "") > today) - ((b.start || "") > today) || a.end.localeCompare(b.end)) : [];
   const now = list.filter((e) => !e.long), always = list.filter((e) => e.long);
   box.innerHTML = `
     <div class="wk-head">
@@ -1829,7 +1831,7 @@ function renderWeekend() {
   if (popShown.length) {
     if (list.length) {
       const h = document.createElement("h3");
-      h.className = "sec-title"; h.textContent = `지금 하는 팝업 ${popShown.length}`;
+      h.className = "sec-title"; h.textContent = `팝업스토어 ${popShown.length}`;
       wl.append(h);
     }
     wl.append(...popShown.slice(0, WK.cat === "팝업" ? 100 : 6).map(popupCard));
@@ -1844,6 +1846,14 @@ function renderWeekend() {
       h.className = "sec-title"; h.textContent = `공연·축제 ${list.length}`;
       wl.append(h);
     }
+  }
+  // 고른 지역에는 확인된 팝업이 없지만 다른 곳엔 있을 때 (팝업은 서울에 몰려 있다)
+  const popElse = state.region && !pops.length ? popupsFor("").length : 0;
+  if (popElse && WK.cat !== "팝업") {
+    const go = document.createElement("button");
+    go.type = "button"; go.className = "btn small wk-more"; go.textContent = `${state.region}엔 아직 확인된 팝업이 없어요 · 전국 팝업 ${popElse}개 보기`;
+    go.addEventListener("click", () => { setRegion(""); WK.cat = "팝업"; update(); window.scrollTo({ top: 0 }); });
+    wl.append(go);
   }
   if (!list.length && popShown.length) return;
   if (!list.length) {
@@ -1870,7 +1880,7 @@ function renderWeekendEntry() {
   box.hidden = !show;
   if (!show) return;
   const list = eventsFor(state.region, "weekend", "", "");
-  const pops = popupsFor(state.region, "weekend", "").length;
+  const pops = popupsFor(state.region, "").length;
   if (!list.length && !pops) { box.hidden = true; return; }
   const shows = list.filter((e) => e.kind === "show").length, fests = list.length - shows;
   box.innerHTML = `<button type="button" class="wk-entry">
