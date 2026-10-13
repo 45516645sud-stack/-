@@ -26,6 +26,8 @@ ROOT = Path(__file__).resolve().parent.parent
 NEAR_KM = 1.0
 SIZE = 320
 RETRY_DAYS = 30
+# 장소 이름에 없는데 결과 이름에 이런 말이 있으면 근처 숙소·가게 사진이다 (예: 월미도 → 'OO 월미도 호텔')
+NOT_PLACE = ("호텔", "모텔", "펜션", "게스트하우스", "리조트", "스테이", "민박", "점")
 
 
 def base_name(name: str) -> str:
@@ -42,6 +44,9 @@ def pick(items: list[dict], stop: dict) -> dict | None:
             continue
         title = norm(str(it.get("title", "")))
         if want[:4] not in title and title[:4] not in want:
+            continue
+        raw = str(it.get("title", ""))
+        if any(w in raw and w not in stop["name"] for w in NOT_PLACE if w != "점") or (raw.endswith("점") and not stop["name"].endswith("점")):
             continue
         x, y = ct.to_float(it.get("mapx")), ct.to_float(it.get("mapy"))
         if "lat" in stop and (not x or not y or km(stop, {"lat": y, "lng": x}) > NEAR_KM):
