@@ -61,4 +61,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add aiiairs/data/fairs.json
           git commit -m "AIIairs: 일정 자동 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
-          git push
+          # 수집하는 20분 사이에 다른 작업(놀코 등)이 먼저 올리면 push 가 거절된다.
+          # 우리는 fairs.json 한 파일만 바꾸므로, 최신을 받아 그 위에 다시 얹고 몇 번 더 시도한다.
+          for i in 1 2 3 4 5; do
+            git push && exit 0
+            sleep $((i * 5))
+            git pull --rebase origin "$GITHUB_REF_NAME"
+          done
+          exit 1
