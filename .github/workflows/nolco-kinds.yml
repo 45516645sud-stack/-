@@ -7,6 +7,11 @@ on:
       - "datecourse/scripts/check_kinds.py"
       - ".github/workflows/nolco-kinds.yml"
   workflow_dispatch:
+    inputs:
+      acts:
+        description: "이 놀거리만 점검 (쉼표로, 비우면 전부). 예: tarot,pingpong"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -21,7 +26,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: 종류 점검
-        run: python datecourse/scripts/check_kinds.py | tee kinds.txt
+        env:
+          ACTS: ${{ github.event.inputs.acts }}
+        run: python datecourse/scripts/check_kinds.py $(echo "$ACTS" | tr ',' '\n' | sed '/^$/d; s/^/--act /') | tee kinds.txt
       - uses: actions/upload-artifact@v4
         with:
           name: kinds

@@ -696,6 +696,291 @@
     10,
     22
    ]
+  },
+  {
+   "id": "tarot",
+   "name": "타로·사주카페",
+   "icon": "spark",
+   "kind": "activity",
+   "stay": 40,
+   "price": "1인 1~2만 원",
+   "kw": "타로카페",
+   "indoor": true,
+   "tip": "연애운·올해운 같이 보면 이야깃거리가 생겨요. 재미로만 들으세요.",
+   "group": "tarot",
+   "match": [
+    "사주카페",
+    "타로",
+    "사주+카페"
+   ],
+   "not": [
+    "학원",
+    "교육",
+    "아카데미",
+    "협회",
+    "강의",
+    "자격"
+   ],
+   "kws": [
+    "타로카페",
+    "사주카페",
+    "타로"
+   ],
+   "open": [
+    12,
+    23
+   ]
+  },
+  {
+   "id": "pingpong",
+   "name": "탁구장",
+   "icon": "target",
+   "kind": "activity",
+   "stay": 60,
+   "price": "테이블 시간당 1만 원 안팎",
+   "kw": "탁구장",
+   "indoor": true,
+   "tip": "라켓·공은 빌려줘요. 진 사람이 음료 사기 내기 추천.",
+   "group": "pingpong",
+   "match": [
+    "탁구"
+   ],
+   "not": [
+    "용품",
+    "판매",
+    "협회",
+    "연맹",
+    "쇼핑"
+   ],
+   "kws": [
+    "탁구장",
+    "탁구클럽"
+   ],
+   "open": [
+    10,
+    23
+   ]
+  },
+  {
+   "id": "fishing",
+   "name": "실내낚시",
+   "icon": "target",
+   "kind": "activity",
+   "stay": 60,
+   "price": "1시간 1~2만 원",
+   "kw": "실내낚시",
+   "indoor": true,
+   "tip": "잡은 고기 수만큼 경품을 주는 곳이 많아요. 초보도 금방 잡혀요.",
+   "group": "fishing",
+   "match": [
+    "실내낚시",
+    "낚시카페",
+    "실내+낚시"
+   ],
+   "not": [
+    "용품",
+    "낚시점",
+    "마트",
+    "선상",
+    "좌대",
+    "도매"
+   ],
+   "kws": [
+    "실내낚시",
+    "실내낚시카페",
+    "낚시카페"
+   ],
+   "open": [
+    12,
+    26
+   ],
+   "open24": true
+  },
+  {
+   "id": "roller",
+   "name": "롤러장",
+   "icon": "spark",
+   "kind": "activity",
+   "stay": 90,
+   "price": "입장 1~1.5만 원",
+   "kw": "롤러장",
+   "indoor": true,
+   "tip": "넘어져도 괜찮게 보호대를 꼭 하세요. 레트로 음악이 나와서 사진도 잘 나와요.",
+   "group": "roller",
+   "match": [
+    "롤러장",
+    "롤러스케이트",
+    "롤러+스케이트"
+   ],
+   "not": [
+    "용품",
+    "판매",
+    "학원",
+    "협회"
+   ],
+   "kws": [
+    "롤러장",
+    "롤러스케이트장"
+   ],
+   "open": [
+    12,
+    22
+   ]
+  },
+  {
+   "id": "archery",
+   "name": "양궁·사격",
+   "icon": "target",
+   "kind": "activity",
+   "stay": 40,
+   "price": "한 판 1만 원 안팎",
+   "kw": "양궁카페",
+   "indoor": true,
+   "tip": "처음이어도 자세를 알려 줘요. 점수 내기 하면 승부욕 폭발.",
+   "group": "archery",
+   "match": [
+    "양궁",
+    "사격",
+    "활쏘기"
+   ],
+   "not": [
+    "협회",
+    "연맹",
+    "용품",
+    "판매",
+    "총포",
+    "경찰",
+    "부대",
+    "학교",
+    "체육관",
+    "국궁장"
+   ],
+   "kws": [
+    "양궁카페",
+    "실내양궁",
+    "실내사격장"
+   ],
+   "open": [
+    12,
+    23
+   ]
+  },
+  {
+   "id": "pub",
+   "name": "이자카야·바",
+   "icon": "cup",
+   "kind": "food",
+   "stay": 90,
+   "price": "1인 2~4만 원",
+   "kw": "이자카야",
+   "indoor": true,
+   "tip": "하이볼·사케 한 잔으로 마무리하기 좋아요. 성인만 들어갈 수 있어요.",
+   "group": "bar",
+   "match": [
+    "일본식주점",
+    "이자카야",
+    "칵테일바",
+    "와인바",
+    "하이볼",
+    "위스키바",
+    "요리주점"
+   ],
+   "not": [
+    "유흥",
+    "단란",
+    "룸",
+    "나이트",
+    "노래",
+    "클럽",
+    "성인"
+   ],
+   "kws": [
+    "이자카야",
+    "칵테일바",
+    "와인바",
+    "하이볼바"
+   ],
+   "open": [
+    17,
+    26
+   ]
+  },
+  {
+   "id": "exhibit",
+   "name": "전시·갤러리",
+   "icon": "camera",
+   "kind": "culture",
+   "stay": 60,
+   "price": "무료~2만 원",
+   "kw": "전시",
+   "indoor": true,
+   "tip": "작은 갤러리는 무료인 곳이 많아요. 월요일엔 쉬는 곳이 많으니 확인하세요.",
+   "group": "exhibit",
+   "match": [
+    "미술관",
+    "갤러리",
+    "전시관",
+    "전시장",
+    "박물관",
+    "아트센터"
+   ],
+   "not": [
+    "판매",
+    "액자",
+    "화방",
+    "표구",
+    "인테리어",
+    "분양",
+    "모델하우스",
+    "학원"
+   ],
+   "kws": [
+    "미술관",
+    "갤러리",
+    "전시"
+   ],
+   "open": [
+    10,
+    19
+   ]
+  },
+  {
+   "id": "park",
+   "name": "공원 산책",
+   "icon": "mountain",
+   "kind": "walk",
+   "stay": 40,
+   "price": "무료",
+   "kw": "공원",
+   "indoor": false,
+   "tip": "밥 먹고 소화시키며 걷기 딱. 해 질 녘이 제일 예뻐요.",
+   "group": "park",
+   "match": [
+    "공원",
+    "수목원",
+    "산책로",
+    "둘레길",
+    "호수"
+   ],
+   "not": [
+    "주차장",
+    "관리사무소",
+    "어린이공원",
+    "묘지",
+    "공원묘원",
+    "납골",
+    "놀이터",
+    "주차"
+   ],
+   "kws": [
+    "공원",
+    "산책로",
+    "호수공원"
+   ],
+   "open": [
+    0,
+    24
+   ]
   }
  ],
  "hoods": {
@@ -4180,6 +4465,447 @@
     {
      "kind": "snack",
      "text": "PC방 라면·볶음밥이 은근 맛집."
+    }
+   ]
+  },
+  {
+   "id": "fortune",
+   "title": "{hood} 운세 보는 데이트",
+   "summary": "디저트 먹고 타로로 우리 궁합 보기. 사진으로 마무리.",
+   "stops": [
+    "cafe",
+    "tarot",
+    "photo"
+   ],
+   "with": [
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "카페"
+   ],
+   "budget": 2,
+   "hours": 3,
+   "best": "오후",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "타로 결과는 재미로! 결과 얘기하며 사진관 가면 표정이 자연스러워요."
+    }
+   ]
+  },
+  {
+   "id": "pingpong",
+   "title": "{hood} 탁구 내기 한판",
+   "summary": "몸 풀기엔 탁구가 딱. 진 팀이 저녁 사고, 코노로 마무리.",
+   "stops": [
+    "pingpong",
+    "meal",
+    "coinsing"
+   ],
+   "with": [
+    "friends",
+    "date",
+    "student"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "저녁",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "11점 3판 2선승이 시간 맞추기 좋아요."
+    }
+   ]
+  },
+  {
+   "id": "fishing",
+   "title": "{hood} 실내낚시 손맛 코스",
+   "summary": "비 와도 OK. 실내낚시로 손맛 보고 든든하게 밥.",
+   "stops": [
+    "fishing",
+    "meal",
+    "cafe"
+   ],
+   "with": [
+    "friends",
+    "date",
+    "family"
+   ],
+   "tags": [
+    "실내",
+    "비오는날",
+    "액티비티"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "언제나",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "누가 많이 잡나 내기하면 1시간이 금방 가요."
+    }
+   ]
+  },
+  {
+   "id": "retro",
+   "title": "{hood} 레트로 롤러장 데이트",
+   "summary": "롤러장에서 손잡고 달리고, 간식 먹고, 인생네컷.",
+   "stops": [
+    "roller",
+    "snack",
+    "photo"
+   ],
+   "with": [
+    "date",
+    "friends",
+    "student"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "오후",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "롤러장 조명 아래 영상 찍으면 레트로 감성 제대로 나와요."
+    }
+   ]
+  },
+  {
+   "id": "archery",
+   "title": "{hood} 양궁·사격 승부",
+   "summary": "양궁 카페에서 점수 내기, 진 사람이 밥 사고 오락실 2차.",
+   "stops": [
+    "archery",
+    "meal",
+    "arcade"
+   ],
+   "with": [
+    "friends",
+    "date"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "저녁",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "과녁 점수판 사진 찍어 두면 다음에 설욕전 하기 좋아요."
+    }
+   ]
+  },
+  {
+   "id": "adultnight",
+   "title": "{hood} 퇴근 후 한잔 코스",
+   "summary": "밥 먹고 분위기 좋은 바에서 한 잔, 노래방으로 마무리. 성인만.",
+   "stops": [
+    "meal",
+    "pub",
+    "karaoke"
+   ],
+   "with": [
+    "friends",
+    "date"
+   ],
+   "tags": [
+    "실내",
+    "야경"
+   ],
+   "budget": 3,
+   "hours": 4,
+   "best": "밤",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "평일 저녁엔 하이볼 할인하는 곳이 많아요."
+    },
+    {
+     "kind": "move",
+     "text": "술을 마시면 대리·택시를 미리 생각해 두세요."
+    }
+   ]
+  },
+  {
+   "id": "artdate",
+   "title": "{hood} 전시 보고 카페 데이트",
+   "summary": "조용한 전시 한 바퀴 돌고, 카페에서 감상 나누기.",
+   "stops": [
+    "exhibit",
+    "cafe",
+    "meal"
+   ],
+   "with": [
+    "date",
+    "solo",
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "낮",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "전시장 흰 벽 앞이 사진 맛집이에요. 플래시는 끄고 찍어요."
+    }
+   ]
+  },
+  {
+   "id": "walkdate",
+   "title": "{hood} 산책하고 디저트",
+   "summary": "밥 먹고 공원 한 바퀴, 카페 디저트로 마무리. 돈 거의 안 드는 데이트.",
+   "stops": [
+    "meal",
+    "park",
+    "cafe"
+   ],
+   "with": [
+    "date",
+    "family",
+    "solo"
+   ],
+   "tags": [
+    "산책",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "해 질 녘",
+   "details": [
+    {
+     "kind": "time",
+     "text": "해 지기 30분 전에 공원에 도착하면 노을까지 볼 수 있어요."
+    }
+   ]
+  },
+  {
+   "id": "firstdate",
+   "title": "{hood} 첫 데이트 무난 코스",
+   "summary": "대화가 끊겨도 괜찮은 순서: 전시 → 밥 → 카페.",
+   "stops": [
+    "exhibit",
+    "meal",
+    "cafe"
+   ],
+   "with": [
+    "date"
+   ],
+   "tags": [
+    "실내",
+    "카페"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "오후",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "전시를 먼저 보면 밥 먹으며 할 이야기가 생겨요."
+    }
+   ]
+  },
+  {
+   "id": "examover",
+   "title": "{hood} 시험 끝난 날",
+   "summary": "PC방에서 한판, 맛있는 거 먹고, 노래방에서 소리 지르기.",
+   "stops": [
+    "pc",
+    "meal",
+    "karaoke"
+   ],
+   "with": [
+    "student",
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "방과 후",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "노래방은 학생 할인 시간대(평일 낮)를 노리면 싸요."
+    }
+   ]
+  },
+  {
+   "id": "birthday",
+   "title": "{hood} 생일 파티 코스",
+   "summary": "맛있는 밥, 방탈출로 협동, 사진관에서 생일 인증샷.",
+   "stops": [
+    "meal",
+    "escape",
+    "photo"
+   ],
+   "with": [
+    "friends",
+    "date"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "저녁",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "사진관에 고깔모자·머리띠 소품이 있는 곳이 많아요."
+    }
+   ]
+  },
+  {
+   "id": "rainy2",
+   "title": "{hood} 비 오는 날 영화·만화 코스",
+   "summary": "영화 한 편, 만화카페에서 뒹굴, 따뜻한 밥.",
+   "stops": [
+    "cinema",
+    "manga",
+    "meal"
+   ],
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "실내",
+    "비오는날"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "언제나",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "만화카페는 2시간 패키지가 싸요. 영화 보고 남은 이야기 마저 하기 좋아요."
+    }
+   ]
+  },
+  {
+   "id": "allnight",
+   "title": "{hood} 밤새 노는 코스",
+   "summary": "이자카야에서 한잔, 노래방 열창, 찜질방에서 마무리. 성인만.",
+   "stops": [
+    "pub",
+    "karaoke",
+    "jjim"
+   ],
+   "with": [
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "야경"
+   ],
+   "budget": 2,
+   "hours": 7,
+   "best": "밤",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "찜질방은 자정 넘으면 야간 요금이 붙는 곳이 있어요."
+    }
+   ]
+  },
+  {
+   "id": "vrgame",
+   "title": "{hood} 게임 덕후 코스",
+   "summary": "VR로 게임 속에 들어가고, 오락실에서 손맛, 간식으로 충전.",
+   "stops": [
+    "vr",
+    "arcade",
+    "snack"
+   ],
+   "with": [
+    "friends",
+    "student",
+    "date"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 2,
+   "hours": 3,
+   "best": "오후",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "VR은 멀미가 나면 바로 쉬세요. 2인 대전 게임이 제일 재밌어요."
+    }
+   ]
+  },
+  {
+   "id": "pool",
+   "title": "{hood} 당구 한 큐 + 한잔",
+   "summary": "당구 내기 하고, 밥 먹고, 바에서 한 잔. 성인만.",
+   "stops": [
+    "billiards",
+    "meal",
+    "pub"
+   ],
+   "with": [
+    "friends"
+   ],
+   "tags": [
+    "실내"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "저녁",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "4구가 어려우면 포켓볼이 초보에게 쉬워요."
+    }
+   ]
+  },
+  {
+   "id": "bowldate",
+   "title": "{hood} 볼링 데이트",
+   "summary": "볼링 한 게임으로 신나게, 카페에서 쉬고, 사진으로 남기기.",
+   "stops": [
+    "bowling",
+    "cafe",
+    "photo"
+   ],
+   "with": [
+    "date",
+    "friends",
+    "student"
+   ],
+   "tags": [
+    "실내",
+    "액티비티"
+   ],
+   "budget": 2,
+   "hours": 3,
+   "best": "오후",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "스트라이크 나오면 사진관 가기 내기! 볼링화는 양말 필수."
     }
    ]
   }
