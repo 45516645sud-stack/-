@@ -32,6 +32,13 @@ class PickTest(unittest.TestCase):
         self.assertIsNone(sp.pick([item("트라이보울", 126.6390, 37.3930)], self.stop))
         self.assertIsNone(sp.pick([item("아무", 1, 1)], {"name": "A", "lat": 1, "lng": 1}))
 
+    def test_skips_hotels_and_branches_nearby(self):
+        stop = {"name": "월미도", "lat": 37.4750, "lng": 126.5970}
+        items = [item("베니키아 월미도 더블리스 호텔", 126.5972, 37.4752), item("월미도 문화의거리", 126.5975, 37.4751, img="http://x/ok.jpg")]
+        self.assertEqual(sp.pick(items, stop)["firstimage"], "http://x/ok.jpg")
+        stop = {"name": "앨리웨이 광교", "lat": 37.29, "lng": 127.05}
+        self.assertIsNone(sp.pick([item("티크닉 앨리웨이 광교점", 127.05, 37.29)], stop))
+
     def test_name_with_parentheses(self):
         stop = {"name": "경의선숲길 (연트럴파크)", "lat": 37.5600, "lng": 126.9250}
         self.assertIsNotNone(sp.pick([item("경의선숲길", 126.9252, 37.5602)], stop))

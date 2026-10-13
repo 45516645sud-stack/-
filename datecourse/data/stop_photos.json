@@ -721,10 +721,6 @@
    "0": {
     "img": "img/stop/gg-gwanggyo-0.webp",
     "place": "광교호수공원"
-   },
-   "1": {
-    "img": "img/stop/gg-gwanggyo-1.webp",
-    "place": "티크닉 앨리웨이 광교점"
    }
   },
   "gg-gwangmyeong": {
@@ -916,10 +912,6 @@
    }
   },
   "gn-namhae": {
-   "0": {
-    "img": "img/stop/gn-namhae-0.webp",
-    "place": "독일마을공식기념품판매점"
-   },
    "1": {
     "img": "img/stop/gn-namhae-1.webp",
     "place": "상주은모래비치"
@@ -1057,10 +1049,6 @@
    "2": {
     "img": "img/stop/incheon-chinatown-2.webp",
     "place": "개항장 거리"
-   },
-   "3": {
-    "img": "img/stop/incheon-chinatown-3.webp",
-    "place": "베니키아 월미도 더블리스 호텔"
    }
   },
   "incheon-eurwangni": {
