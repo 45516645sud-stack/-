@@ -24,6 +24,14 @@ const POPUPS = [{ id: "p-0123456789", name: "테스트 팝업", place: "더현�
 const EVENTS = { events: [{ id: "s-1", kind: "show", cat: "연극", title: "테스트 연극", regions: ["부산"], place: "어느 극장",
   start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" }] };
 
+// 친구 투표 (가짜 서버): 투표 id → { 작성자 id: 고른 번호 }
+const VOTES = {};
+const voteRes = (id, token) => {
+  const v = VOTES[id] || {}, counts = [0, 0, 0, 0, 0];
+  Object.values(v).forEach((i) => counts[i]++);
+  return { counts, voters: Object.keys(v).length, mine: token in v ? v[token] : null };
+};
+
 // 앱을 열고 목록(또는 동네 놀거리)이 그려질 때까지 기다린다. networkidle 은 바깥 요청 때문에 가끔 30초를 넘겨서 쓰지 않는다
 async function open(p, url = BASE) {
   await p.goto(url, { waitUntil: "load" });
@@ -46,6 +54,7 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     const send = (o) => r.fulfill({ contentType: "application/json", headers: { "Access-Control-Allow-Origin": "*" }, body: JSON.stringify(o) });
     if (req.method() === "POST") {
       const m = JSON.parse(req.postData() || "{}");
+      if (m.mode === "vote") { const me = createHash("sha256").update("nolco:" + m.token).digest("hex").slice(0, 24); (VOTES[m.id] ??= {})[me] = m.pick; return send(voteRes(m.id, me)); }
       if (m.mode === "set") { const id = createHash("sha256").update("nolco:" + m.token).digest("hex").slice(0, 24); store[m.col][id] = m.body; return send({ ok: true, id }); }
       return send({ ok: true });
     }
@@ -53,6 +62,7 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     if (mode === "docs") return send({ docs: Object.entries(store[u.searchParams.get("col")] || {}).map(([id, data]) => ({ id, data })) });
     if (mode === "places") return send({ places: PLACES[u.searchParams.get("q")] || [] });
     if (mode === "popups") return send({ popups: POPUPS });
+    if (mode === "vote") return send(voteRes(u.searchParams.get("id"), u.searchParams.get("me")));
     if (mode === "closed") return send({ ids: ["400"] });   // '닫은 보드게임'은 두 사람이 알린 곳
     if (u.searchParams.get("name")) return send({ photos: [], ...(u.searchParams.get("name").startsWith("오래된") ? { latest: "2022-01-01", recent: 0 } : { latest: "2026-09-01", recent: 3 }) });
     return send({ photos: [] });
@@ -102,6 +112,7 @@ console.log("우리 동네");
   await p.waitForTimeout(300);
   const after = await p.locator(".place b").allTextContents();
   ok(after[after.length - 1] === "오래된 보드게임 서면점" && await p.locator(".place.stale .stale-note").count() === 1, "1년 넘게 후기 없는 가게는 '문 닫았을 수도'로 뒤로 간다");
+  ok(await p.locator(".place .vote-add").count() === await p.locator(".place").count(), "가게마다 '투표 후보' 버튼이 있다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 
@@ -166,6 +177,45 @@ console.log("아이폰처럼: 시트 열면 뒤 화면 고정, 아래로 쓸어�
   ok(!(await p.evaluate(() => document.getElementById("sheet").open)), "아래로 쓸어내리면 닫힌다");
   ok(await p.evaluate(() => Math.abs(scrollY - 400) < 2 && !document.body.classList.contains("sheet-lock")), "닫으면 보던 자리로 돌아온다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
+console.log("친구 투표: 후보 담기 → 보내기 → 고르기, 링크로 들어온 친구");
+{
+  const { p, errors } = await page();
+  p.on("dialog", (d) => d.dismiss());
+  await p.addInitScript(() => { Object.defineProperty(navigator, "clipboard", { value: { writeText: async (t) => { window.__copied = t; } } }); });
+  await open(p);
+  ok(await p.locator("#voteTray").isHidden(), "후보가 없으면 아래 투표 버튼은 안 보인다");
+  for (const n of [0, 1]) {
+    await p.locator("#grid .item").nth(n).click(); await p.waitForTimeout(300);
+    await p.locator("#sheet .sheet-bar .vote-add").click();
+    ok((await p.locator("#sheet .sheet-bar .vote-add").textContent()).includes("담음"), `코스 ${n + 1}을 후보에 담았다`);
+    await p.locator("#closeBtn").click(); await p.waitForTimeout(250);
+  }
+  ok((await p.locator("#voteTray").textContent()).includes("2개"), "아래에 '투표 후보 2개'가 보인다");
+  await p.locator("#voteTray").click(); await p.waitForTimeout(250);
+  ok(await p.locator("#voteCart li").count() === 2, "보내기 화면에 후보 2개");
+  await p.fill("#voteQ", "토요일 어디 갈래?");
+  await p.locator("#voteSend").click(); await p.waitForTimeout(500);
+  const copied = await p.evaluate(() => window.__copied || "");
+  ok(/#v=v-[a-f0-9]{10}\./.test(copied) && copied.includes("토요일 어디 갈래?"), "투표 링크가 복사된다");
+  ok((await p.locator("#voteSheet h2").textContent()) === "토요일 어디 갈래?", "보내고 나면 투표 화면이 열린다");
+  await p.locator(".vote-opt .vote-pick").nth(1).click(); await p.waitForTimeout(300);
+  ok((await p.locator(".vote-opt").nth(1).getAttribute("class")).includes("mine") && (await p.locator(".vote-opt .cnt").nth(1).textContent()) === "1표", "누르면 내 표가 들어간다");
+  ok(await p.locator("#voteTray").isVisible() && (await p.locator("#voteTray").textContent()).includes("결과"), "보낸 뒤에는 '투표 결과 보기'로 바뀐다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+
+  const url = copied.split("\n").pop();
+  const f = await page();
+  await open(f.p, url.replace(/^https?:\/\/[^/]+\/(nolco\/)?/, BASE));
+  await f.p.waitForTimeout(400);
+  ok(await f.p.locator("#voteSheet").evaluate((d) => d.open) && await f.p.locator(".vote-opt").count() === 2, "링크로 들어온 친구에게 투표 화면이 바로 열린다");
+  ok((await f.p.locator(".vote-opt .cnt").nth(1).textContent()) === "1표", "친구도 지금까지 표 수를 본다");
+  await f.p.locator(".vote-opt .vote-pick").nth(1).click(); await f.p.waitForTimeout(300);
+  ok((await f.p.locator(".vote-opt .cnt").nth(1).textContent()) === "2표" && (await f.p.locator("#voteNote").textContent()).includes("2명"), "친구 표가 더해진다");
+  await f.p.locator(".vote-opt .vote-see").first().click(); await f.p.waitForTimeout(300);
+  ok(await f.p.locator("#sheet").evaluate((d) => d.open), "'자세히'를 누르면 코스가 열린다");
+  ok(f.errors.length === 0, "오류 없음 " + f.errors.join(" / "));
 }
 
 console.log("약관 페이지");

@@ -2,7 +2,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import postgres from "npm:postgres@3.4.5";
 import { SCHEMA } from "./schema.ts";
 import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, postFreshness, toPostPhotos, toPosts } from "./photos.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPlaceId, cleanPopupId, cleanPopupItem, closedIds, HIDE_AT, validToken, visiblePopups, withoutHidden, withoutItem } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPlaceId, cleanPopupId, cleanPopupItem, cleanPick, cleanVoteId, closedIds, HIDE_AT, voteCounts, validToken, visiblePopups, withoutHidden, withoutItem } from "./community.ts";
 
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
 // 카카오 REST API 키는 비밀이라 앱 화면에 둘 수 없어서, 이 함수가 대신 카카오에 물어본다.
@@ -20,6 +20,8 @@ import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPl
 //   통계:       POST { mode: "hit", ev, item }               → { ok }   (날짜별 횟수만)
 //   팝업:       GET ?mode=popups → { popups: [{ id, name, place, address, region, start, end, url, lat, lng }] } (승인된 것, 안 끝난 것만)
 //               POST { mode: "popup_report", id, token } → { ok }   (3명이 신고하면 숨김)
+//   친구 투표:  GET ?mode=vote&id=v-<10자리>&me=<작성자 id> → { counts: [후보별 표 수], voters, mine }
+//               POST { mode: "vote", id, pick, token } → 같은 모양 (한 사람 한 표, 다시 고르면 바뀜)
 //   관리자:     POST { mode: "admin", pass, action: "stats" | "list" | "delete" | "popups" | "popup_set" | "closed" | "closed_set", col?, doc?, item?, id?, ok?, popup? }
 // 사진은 썸네일과 출처(블로그 등) 링크뿐이다. 원본 사진은 내려주지 않는다.
 
@@ -46,7 +48,7 @@ Deno.serve(async (req) => {
   if (!origin) return json({ error: "허용되지 않은 사이트입니다." }, 403);
 
   const url = new URL(req.url);
-  if (req.method === "POST" || url.searchParams.get("mode") === "docs" || url.searchParams.get("mode") === "popups" || url.searchParams.get("mode") === "closed") return community(req, url, json);
+  if (req.method === "POST" || url.searchParams.get("mode") === "docs" || url.searchParams.get("mode") === "popups" || url.searchParams.get("mode") === "closed" || url.searchParams.get("mode") === "vote") return community(req, url, json);
   const q = cleanQuery(url.searchParams.get("q"));
   if (!q) return json({ error: "검색어는 2~60자로 보내 주세요." }, 400);
   const size = url.searchParams.get("mode") === "places"
@@ -226,6 +228,12 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
       if (error) throw error;
       return json({ ids: closedIds(data ?? []) }, 200, { "Cache-Control": "public, max-age=300" });
     }
+    if (req.method === "GET" && url.searchParams.get("mode") === "vote") {
+      const id = cleanVoteId(url.searchParams.get("id"));
+      if (!id) return json({ error: "투표 id 가 이상해요." }, 400);
+      const me = url.searchParams.get("me") ?? "";   // 내 표 표시용: 비밀 값이 아니라 그 해시(작성자 id)만 받는다
+      return json(await voteResult(sb, id, /^[a-f0-9]{24}$/.test(me) ? me : ""), 200, { "Cache-Control": "no-store" });
+    }
     if (req.method === "GET" && url.searchParams.get("mode") === "popups") {
       const [{ data, error }, hide] = await Promise.all([
         sb.from("nolco_popups").select("id,ok,item").eq("ok", true).limit(500),
@@ -270,6 +278,17 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
       if (error) throw error;
       return json({ ok: true }, 200);
     }
+    if (msg.mode === "vote") {
+      const id = cleanVoteId(msg.id);
+      const pick = cleanPick(msg.pick);
+      if (!id || pick === null || !validToken(msg.token)) return json({ error: "잘못된 투표예요." }, 400);
+      if (await tooMany(sb, req)) return json({ error: "잠시 뒤에 다시 해 주세요." }, 429);
+      const me = await authorId(msg.token);
+      await sb.from("nolco_reports").delete().eq("col", "vt").eq("doc_id", id).eq("reporter", me);
+      const { error } = await sb.from("nolco_reports").insert({ col: "vt", doc_id: id, item_id: String(pick), reporter: me });
+      if (error) throw error;
+      return json(await voteResult(sb, id, me), 200);
+    }
     if (msg.mode === "popup_report") {
       const id = cleanPopupId(msg.id);
       if (!id || !validToken(msg.token)) return json({ error: "잘못된 신고예요." }, 400);
@@ -306,6 +325,14 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
   }
 }
 
+async function voteResult(sb: Sb, id: string, me: string) {
+  const { data, error } = await sb.from("nolco_reports").select("item_id,reporter").eq("col", "vt").eq("doc_id", id).limit(500);
+  if (error) throw error;
+  const rows = (data ?? []) as { item_id: string; reporter: string }[];
+  const mine = rows.find((r) => me && r.reporter === me);
+  return { ...voteCounts(rows), mine: mine ? Number(mine.item_id) : null };
+}
+
 // 통계용 데이터베이스 연결 (함수가 켜져 있는 동안 하나를 같이 쓴다)
 // deno-lint-ignore no-explicit-any
 let statsSql: any = null;
@@ -331,7 +358,7 @@ async function admin(sb: Sb, req: Request, msg: Record<string, unknown>, json: J
   if (msg.action === "list") {
     const [{ data: docs }, { data: reports }] = await Promise.all([
       sb.from("nolco_docs").select("col,id,body,updated_at").order("updated_at", { ascending: false }).limit(1000),
-      sb.from("nolco_reports").select("col,doc_id,item_id").limit(5000),
+      sb.from("nolco_reports").select("col,doc_id,item_id").in("col", ["rv", "uc"]).limit(5000),
     ]);
     return json({ docs: docs ?? [], reports: reports ?? [] }, 200, { "Cache-Control": "no-store" });
   }
