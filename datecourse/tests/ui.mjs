@@ -24,12 +24,21 @@ const POPUPS = [{ id: "p-0123456789", name: "테스트 팝업", place: "더현�
 const EVENTS = { events: [{ id: "s-1", kind: "show", cat: "연극", title: "테스트 연극", regions: ["부산"], place: "어느 극장",
   start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" }] };
 
+// 앱을 열고 목록(또는 동네 놀거리)이 그려질 때까지 기다린다. networkidle 은 바깥 요청 때문에 가끔 30초를 넘겨서 쓰지 않는다
+async function open(p, url = BASE) {
+  await p.goto(url, { waitUntil: "load" });
+  await p.waitForFunction(() => document.querySelector("#grid .item") || document.querySelector("#localBox:not([hidden]) .act"), null, { timeout: 20000 });
+  await p.waitForTimeout(400);
+}
+
 async function page(store = { rv: {}, uc: {} }, opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, ...opts });
   const p = await ctx.newPage();
   const errors = [];
   p.on("pageerror", (e) => errors.push(e.message));
   await p.route("https://dapi.kakao.com/**", (r) => r.abort());
+  // 바깥 글꼴(CDN)은 테스트 기계에서 느릴 때가 있어 받지 않는다 (화면 흐름과 상관없음)
+  await p.route("https://cdn.jsdelivr.net/**", (r) => r.abort());
   await p.route("https://tile.openstreetmap.org/**", (r) => r.abort());
   await p.route("**/data/events.json", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify(EVENTS) }));
   await p.route("https://hzomhheyccapnzuwtzxh.supabase.co/**", async (r) => {
@@ -54,7 +63,7 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
 console.log("여행 코스");
 {
   const { p, errors } = await page();
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   ok(await p.locator("#grid .item").count() > 50, "코스 목록이 나온다");
   await p.locator("#grid .item").first().click();
   await p.waitForTimeout(300);
@@ -69,7 +78,7 @@ console.log("여행 코스");
 console.log("리뷰 쓰기 (서버 저장)");
 {
   const { p, errors, store } = await page();
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   await p.locator("#grid .item").first().click(); await p.waitForTimeout(300);
   await p.fill("#reviewNick", "테스터");
   const star = p.locator('.star[data-n="5"]'); await star.scrollIntoViewIfNeeded(); await star.click();
@@ -85,7 +94,7 @@ console.log("우리 동네");
 {
   const { p, errors } = await page();
   await p.addInitScript(() => { localStorage.setItem("datecourse.mode", '"local"'); localStorage.setItem("datecourse.hood", '"seomyeon"'); });
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   await p.click('.act[data-a="boardgame"]'); await p.waitForTimeout(400);
   const names = await p.locator(".place b").allTextContents();
   ok(names.includes("레드버튼 서면점") && !names.includes("어느 호프"), "보드게임카페에 술집이 안 섞인다");
@@ -99,7 +108,7 @@ console.log("우리 동네");
 console.log("이번 주말");
 {
   const { p, errors } = await page();
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   await p.click("#weekendBtn"); await p.waitForTimeout(300);
   ok(await p.locator(".ev").count() >= 1, "공연이 나온다");
   await p.locator(".ev", { hasText: "테스트 연극" }).click(); await p.waitForTimeout(200);
@@ -111,7 +120,7 @@ console.log("뭐 먹지? · 지금 근처");
 {
   const { p, errors } = await page(undefined, { geolocation: { latitude: 35.157, longitude: 129.059 }, permissions: ["geolocation"], reducedMotion: "reduce", timezoneId: "Asia/Seoul" });
   await p.clock.setFixedTime(new Date("2026-10-10T15:00:00+09:00"));   // 토요일 오후 3시 (가게 대부분 영업 중)
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   ok(await p.locator("#eatBtn").isVisible(), "홈에 '뭐 먹지?' 버튼이 있다");
   await p.click("#eatBtn"); await p.waitForTimeout(300);
   await p.locator("#eatMenus .chip", { hasText: "고기" }).click();
@@ -134,7 +143,7 @@ console.log("이번 주말 · 팝업");
   const reports = [];
   p.on("request", (r) => { if (r.method() === "POST" && (r.postData() || "").includes("popup_report")) reports.push(JSON.parse(r.postData())); });
   p.on("dialog", (d) => d.accept());
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   await p.click("#weekendBtn"); await p.waitForTimeout(300);
   ok(await p.locator(".ev-cat.popup").count() === 2, "승인된 팝업이 이번 주말에 나온다 (2주 안에 시작하는 것도)");
   await p.locator(".ev", { hasText: "테스트 팝업" }).click(); await p.waitForTimeout(200);
@@ -147,7 +156,7 @@ console.log("이번 주말 · 팝업");
 console.log("아이폰처럼: 시트 열면 뒤 화면 고정, 아래로 쓸어내려 닫기");
 {
   const { p, errors } = await page(undefined, { hasTouch: true, isMobile: true });
-  await p.goto(BASE, { waitUntil: "networkidle" });
+  await open(p);
   await p.evaluate(() => scrollTo(0, 400));
   await p.locator("#grid .item").nth(2).tap(); await p.waitForTimeout(400);
   ok(await p.evaluate(() => document.body.classList.contains("sheet-lock")), "시트가 열리면 뒤 화면이 고정된다");
