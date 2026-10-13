@@ -99,6 +99,18 @@ class MainTest(unittest.TestCase):
                 self.assertEqual(meta["misses"], {})
 
 
+class QuotaTest(unittest.TestCase):
+    def test_429_stops_like_call_budget(self):
+        import urllib.error
+
+        def busy(url):
+            raise urllib.error.HTTPError(url, 429, "Too Many Requests", {}, None)
+
+        c = ct.Client("k", 10, fetch=busy, pause=0)
+        with self.assertRaises(ct.CallBudget):
+            c.get("searchKeyword2", keyword="서울숲")
+
+
 class TimeTest(unittest.TestCase):
     def test_stops_after_time_budget_and_saves(self):
         courses = {"courses": [{"id": "c1", "stops": [{"name": "가나다", "lat": 37.0, "lng": 127.0}]}]}
