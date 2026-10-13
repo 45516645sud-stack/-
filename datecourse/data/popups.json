@@ -1,8 +1,36 @@
 {
  "version": 1,
- "updated": "2026-10-13",
+ "updated": "2026-10-14",
  "note": "블로그·카페 글에서 자동으로 찾은 팝업 후보. 관리자가 승인한 것만 앱에 나온다 (scripts/check_popups.py)",
  "items": [
+  {
+   "id": "p-ece13776d8",
+   "name": "호아킨 바스코",
+   "start": "2026-09-16",
+   "end": "2026-10-18",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://blog.naver.com/gogo_aa/224438140920",
+   "urls": [
+    "https://blog.naver.com/gogo_aa/224438140920",
+    "https://blog.naver.com/bungi2135/224437259987",
+    "https://blog.naver.com/shin1133/224432987400"
+   ],
+   "titles": [
+    "[서울]여의도 더현대 호아킨 바스코 팝업 방문 후기",
+    "여의도 더 현대 서울 / 호아킨 바스코 팝업 멜팅 치즈 타르트 /카멜 커피",
+    "호아킨바스코 더현대서울 팝업 후기, 신뢰도 50점 추정한 이유"
+   ],
+   "agree": 10,
+   "posts": 10,
+   "sure": true,
+   "state": "now",
+   "kind": "food",
+   "young": true
+  },
   {
    "id": "p-f4e5bc7178",
    "name": "육구방앗간",
@@ -17,71 +45,15 @@
    "urls": [
     "https://blog.naver.com/dundunni0516/224439614061",
     "https://blog.naver.com/bom-tour/224439106141",
-    "https://blog.naver.com/symhc/224438416104"
+    "https://blog.naver.com/colicer/224438840433"
    ],
    "titles": [
     "(잠실) 팝업 | 10/15까지! [육구방앗간] 롯데백화점 잠실점 찹쌀모찌 구매후기, 팝업 위치 및 웨이팅...",
     "속초] 강원도 속초 찹쌀떡, 찹쌀모찌 맛집으로 소문난 “육구방앗간” 방문 후기(웨이팅, 주차, 휴무 등)",
-    "육구방앗간 잠실 롯데백화점 팝업 총정리 - 기간, 웨이팅, 가격, 보관법 (10월 9일~15일)"
+    "속초 육구방앗간 찹쌀떡 가격·번호표 시간·서울 잠실 팝업 10월 15일까지"
    ],
-   "agree": 15,
-   "posts": 15,
-   "sure": true,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-890530ee6c",
-   "name": "한컴타자",
-   "start": "2026-10-08",
-   "end": "2026-10-14",
-   "place": "더현대 서울",
-   "address": "서울 영등포구 여의대로 108",
-   "lat": 37.525872071029134,
-   "lng": 126.92844612411159,
-   "region": "서울",
-   "url": "https://blog.naver.com/qmrudl/224439119230",
-   "urls": [
-    "https://blog.naver.com/qmrudl/224439119230",
-    "https://blog.naver.com/craftedbyalice/224438006980",
-    "https://blog.naver.com/my_happiness_727/224437860559"
-   ],
-   "titles": [
-    "더 현대 한컴타자 팝업스토어 방문 후기[한글날/한컴타자 굿즈]",
-    "더현대 서울 팝업 한컴타자역 오픈! 추억의 한컴타자 굿즈부터 키링 체험까지",
-    "더현대서울 한컴타자 팝업 구경, Ctrl+Z 누르고 학창 시절로 돌아간 후기"
-   ],
-   "agree": 13,
-   "posts": 13,
-   "sure": true,
-   "state": "now",
-   "kind": "art",
-   "young": true
-  },
-  {
-   "id": "p-ece13776d8",
-   "name": "호아킨 바스코",
-   "start": "2026-09-16",
-   "end": "2026-10-18",
-   "place": "더현대 서울",
-   "address": "서울 영등포구 여의대로 108",
-   "lat": 37.525872071029134,
-   "lng": 126.92844612411159,
-   "region": "서울",
-   "url": "https://blog.naver.com/rhthekal/224438291774",
-   "urls": [
-    "https://blog.naver.com/rhthekal/224438291774",
-    "https://blog.naver.com/gogo_aa/224438140920",
-    "https://blog.naver.com/bungi2135/224437259987"
-   ],
-   "titles": [
-    "더현대서울 호아킨 바스코 팝업 후기｜클라시카 까하 28,000원, 진짜 인생 치즈타르트 발견!",
-    "[서울]여의도 더현대 호아킨 바스코 팝업 방문 후기",
-    "여의도 더 현대 서울 / 호아킨 바스코 팝업 멜팅 치즈 타르트 /카멜 커피"
-   ],
-   "agree": 11,
-   "posts": 11,
+   "agree": 9,
+   "posts": 9,
    "sure": true,
    "state": "now",
    "kind": "food",
@@ -90,7 +62,7 @@
   {
    "id": "p-d5d69188cf",
    "name": "위칙",
-   "start": "2026-10-09",
+   "start": "2026-09-01",
    "end": "2026-10-15",
    "place": "더현대 대구",
    "address": "대구 중구 달구벌대로 2077",
@@ -101,51 +73,23 @@
    "urls": [
     "https://blog.naver.com/z__sun/224438318980",
     "https://blog.naver.com/hjhj1418/224437812502",
-    "https://blog.naver.com/dmsgp3290/224438344964"
+    "https://blog.naver.com/bichon_som_e/224437486422"
    ],
    "titles": [
     "더현대대구 위칙(wechik) 팝업스토어｜생활소독 브랜드 위칙 직접 둘러본 후기",
     "위칙팝업스토어 현대백화점미아점 방문 후기 최대 36%할인에 구매이벤트까지!",
-    "위칙 팝업스토어 현대백화점 미아점 방문 후기 소독섬유유연제 추천"
+    "위칙 더현대대구 팝업스토어 방문 후기｜증정이벤트, 최대 36%할인"
    ],
-   "agree": 9,
-   "posts": 16,
+   "agree": 8,
+   "posts": 14,
    "sure": true,
    "state": "now",
    "kind": "living",
    "young": true
   },
   {
-   "id": "p-48a3f9cb76",
-   "name": "김영상회",
-   "start": "2026-10-02",
-   "end": "2026-10-15",
-   "place": "서면 삼정타워",
-   "address": "부산 부산진구 중앙대로 672",
-   "lat": 35.1530135123952,
-   "lng": 129.059606833427,
-   "region": "부산",
-   "url": "https://blog.naver.com/0nebite-/224438115692",
-   "urls": [
-    "https://blog.naver.com/0nebite-/224438115692",
-    "https://blog.naver.com/wonking77/224438011757",
-    "https://blog.naver.com/virtuouscircle1/224437535484"
-   ],
-   "titles": [
-    "부산 삼정타워 김영상회 팝업 방문 후기 | 팝업 기간 | 시오콘부 라인업",
-    "부산 서면 삼정 타워 팝업스토어 일본 간식 천국 '김영상회' 방문 후기",
-    "서면 삼정타워 김영상회 팝업, 부산에서 즐기는 잠시 일본 여행 ✈️🇯🇵"
-   ],
-   "agree": 9,
-   "posts": 11,
-   "sure": true,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-26fa55147c",
-   "name": "센녹 배스 하우스",
+   "id": "p-3e0788c92e",
+   "name": "센녹",
    "start": "2026-10-07",
    "end": "2026-10-16",
    "place": "성수 연무장길",
@@ -153,50 +97,22 @@
    "lat": 37.5441733194254,
    "lng": 127.054430448058,
    "region": "서울",
-   "url": "https://blog.naver.com/30364/224438690539",
+   "url": "https://blog.naver.com/happycapys/224440192229",
    "urls": [
-    "https://blog.naver.com/30364/224438690539",
+    "https://blog.naver.com/happycapys/224440192229",
     "https://blog.naver.com/letsgolife/224439280206",
-    "https://blog.naver.com/lovenada6/224436659271"
+    "https://blog.naver.com/heejin0906/224438770553"
    ],
    "titles": [
-    "센녹 배스 하우스 성수 팝업스토어, 노 모어 키스 시향기&익스클루시브 아이템",
+    "센녹 성수 팝업 10월 16일까지, 운영시간과 노 모어 키스 시향 포인트",
     "센녹 배스 하우스 성수 오픈 이벤트 10월 16일까지 플래그십은 상시 운영",
-    "센녹 배스 하우스 성수 플래그십스토어 팝업 오픈! 매장 한정 혜택 총정리"
+    "10월 성수 팝업 추천｜주말 센녹 배스 하우스 성수 후기"
    ],
-   "agree": 8,
+   "agree": 7,
    "posts": 8,
    "sure": true,
    "state": "now",
    "kind": "beauty",
-   "young": true
-  },
-  {
-   "id": "p-4dcef23fd4",
-   "name": "아따맘마",
-   "start": "2026-09-22",
-   "end": "2026-10-18",
-   "place": "서울특별시 마포구 어울마당로 65",
-   "address": "서울 마포구 어울마당로 65",
-   "lat": 37.5510088755674,
-   "lng": 126.921068533254,
-   "region": "서울",
-   "url": "https://blog.naver.com/ye_dddi/224436741859",
-   "urls": [
-    "https://blog.naver.com/ye_dddi/224436741859",
-    "https://blog.naver.com/workworksom/224432315067",
-    "https://blog.naver.com/nannyun79/224432744513"
-   ],
-   "titles": [
-    "홍대 아따맘마 팝업 위치 동동이 아리 키링 추천 굿즈 종류 및 가격 후기",
-    "홍대 상상마당 아따맘마 팝업 기간, 굿즈, 솔직 후기",
-    "홍대팝업10월 아따맘마 팝업스토어 위치 일정 굿즈 소개해요"
-   ],
-   "agree": 7,
-   "posts": 7,
-   "sure": true,
-   "state": "now",
-   "kind": "anime",
    "young": true
   },
   {
@@ -209,16 +125,16 @@
    "lat": 37.55991690343,
    "lng": 126.925010254124,
    "region": "서울",
-   "url": "https://blog.naver.com/hillsea92/224439472464",
+   "url": "https://blog.naver.com/sejinsmreo/224440541396",
    "urls": [
-    "https://blog.naver.com/hillsea92/224439472464",
-    "https://blog.naver.com/bonnie0515/224438942148",
-    "https://blog.naver.com/heeheehohee/224438329314"
+    "https://blog.naver.com/sejinsmreo/224440541396",
+    "https://blog.naver.com/okossick/224440338829",
+    "https://blog.naver.com/hillsea92/224439472464"
    ],
    "titles": [
-    "실사 영화에 이어 스페셜 에디션도 신간으로 나왔다. 후지모토 타츠키의 만화 『룩백』. feat. 팝업 소식",
-    "[룩백 팝업] 연남동 영화 룩백 실사화 팝업스토어 / 메가박스 특전 티켓",
-    "룩백 팝업스토어 연남동 후기 네이버 예약 굿즈 층별 체험"
+    "<룩백> 팝업스토어 다녀온 후기",
+    "룩백 실사영화 개봉기념 팝업 스토어 방문 후기, 낮에 여유있게 가는 것 추천",
+    "실사 영화에 이어 스페셜 에디션도 신간으로 나왔다. 후지모토 타츠키의 만화 『룩백』. feat. 팝업 소식"
    ],
    "agree": 6,
    "posts": 7,
@@ -228,87 +144,31 @@
    "young": true
   },
   {
-   "id": "p-1770abea42",
-   "name": "르시스",
-   "start": "2026-09-29",
+   "id": "p-7d9f09fa76",
+   "name": "떡지순례",
+   "start": "2026-10-09",
    "end": "2026-10-15",
-   "place": "무신사 스토어 성수",
-   "address": "서울 성동구 성수이로 74",
-   "lat": 37.541485585740105,
-   "lng": 127.05646070830274,
+   "place": "롯데백화점 잠실점",
+   "address": "서울 송파구 올림픽로 240",
+   "lat": 37.51201141930842,
+   "lng": 127.0985552869803,
    "region": "서울",
-   "url": "https://blog.naver.com/trendmong/224439318311",
+   "url": "https://blog.naver.com/noxzieun/224440565175",
    "urls": [
-    "https://blog.naver.com/trendmong/224439318311",
-    "https://blog.naver.com/heejin0906/224438975919",
-    "https://blog.naver.com/soo___zi/224398990919"
+    "https://blog.naver.com/noxzieun/224440565175",
+    "https://blog.naver.com/woong_pick/224438726441",
+    "https://blog.naver.com/ozoz1128/224438806336"
    ],
    "titles": [
-    "성수 르시스 팝업스토어｜무신사 대림창고 거울빗 키링 증정 이벤트",
-    "10월 성수 팝업 추천｜르시스(RE+SIS) 첫 팝업 후기",
-    "감성적인 여성복 브랜드 르시스, 26 FW 'Dear Sister' 공개"
+    "잠실 롯데백화점 떡팝업 떡지순례 위치 정보, 영동떡방앗간 카스테라모찌 영도다리떡방 피자설기 웨이팅...",
+    "롯데백화점 잠실점 떡지순례 팝업ㅣ10월 15일까지 8곳 가격",
+    "잠실 롯데백화점 팝업 속초 육구방앗간 찹쌀떡 웨이팅 떡지순례 (10/9~15)"
    ],
    "agree": 6,
    "posts": 6,
    "sure": true,
    "state": "now",
-   "kind": "fashion",
-   "young": true
-  },
-  {
-   "id": "p-76210714a5",
-   "name": "풍년다방",
-   "start": "2026-09-22",
-   "end": "2026-10-27",
-   "place": "서울 성동구 뚝섬로 273",
-   "address": "서울 성동구 뚝섬로 273",
-   "lat": 37.5429945913268,
-   "lng": 127.041690655005,
-   "region": "서울",
-   "url": "https://blog.naver.com/travelgoto/224434873712",
-   "urls": [
-    "https://blog.naver.com/travelgoto/224434873712",
-    "https://blog.naver.com/revieweter/224438173528",
-    "https://blog.naver.com/onesipofworld/224437804186"
-   ],
-   "titles": [
-    "클리오 '풍년다방' 팝업스토어 (서울숲 K-뷰티가든), 10월 27일까지! 운영시간·위치·꿀팁 총정리",
-    "클리오 풍년다방 팝업 10월 27일까지인데, 사전예약으로는 이제 못 들어갑니다",
-    "클리오 풍년다방 팝업 서울숲, 10월 27일까지 시간·예약·체험 정리"
-   ],
-   "agree": 6,
-   "posts": 7,
-   "sure": true,
-   "state": "now",
-   "kind": "beauty",
-   "young": true
-  },
-  {
-   "id": "p-5eb93d2139",
-   "name": "스톤마스터",
-   "start": "2026-10-08",
-   "end": "2026-10-14",
-   "place": "더현대 서울",
-   "address": "서울 영등포구 여의대로 108",
-   "lat": 37.525872071029134,
-   "lng": 126.92844612411159,
-   "region": "서울",
-   "url": "https://blog.naver.com/do_sol_/224437320954",
-   "urls": [
-    "https://blog.naver.com/do_sol_/224437320954",
-    "https://blog.naver.com/juhye__/224437148736",
-    "https://blog.naver.com/capturetoday/224435723765"
-   ],
-   "titles": [
-    "더현대서울 스톤마스터 팝업스토어 총정리 블랙야크 다운 재킷 할인·기간·위치 (10.8~10.14)",
-    "블랙야크 히말라얀오리지널 INVISIBLE WHITE 캠페인, 스톤마스터 경량패딩과 더현대서울 팝업 소식",
-    "더현대서울 팝업｜블랙야크 클라이밍 스톤 마스터, 라임라이크, 한컴타자(2026.10.08~2026.10.14)"
-   ],
-   "agree": 6,
-   "posts": 7,
-   "sure": true,
-   "state": "now",
-   "kind": "fashion",
+   "kind": "food",
    "young": true
   },
   {
@@ -324,47 +184,75 @@
    "url": "https://blog.naver.com/travelgoto/224434873079",
    "urls": [
     "https://blog.naver.com/travelgoto/224434873079",
-    "https://blog.naver.com/gaminem9/224430429762",
-    "https://blog.naver.com/revieweter/224429688886"
+    "https://blog.naver.com/setmefree15/224432603816",
+    "https://blog.naver.com/gaminem9/224430429762"
    ],
    "titles": [
     "노브랜드 버거 × 애니모 팝업스토어 (홍대점) 가기 전에 확인하세요, 10월 20일까지 열려요 (시간...",
-    "노브랜드 버거 애니모 팩｜가격·랜덤 키링·포토카드 구성",
-    "노브랜드 버거 애니모 팩이 오늘 나왔습니다, 9,900원과 11,200원인데 키링은 둘 다 랜덤 1개입니다"
+    "노브랜드 버거 애니모 버거팩 구성·가격, 키링 굿즈 정리",
+    "노브랜드 버거 애니모 팩｜가격·랜덤 키링·포토카드 구성"
    ],
-   "agree": 5,
-   "posts": 5,
+   "agree": 6,
+   "posts": 6,
    "sure": true,
    "state": "now",
    "kind": "character",
    "young": true
   },
   {
-   "id": "p-9962b10499",
-   "name": "킥둥쓰",
-   "start": "2026-10-09",
+   "id": "p-5eaf91acaf",
+   "name": "세븐틴 X 스머프",
+   "start": "2026-10-01",
    "end": "2026-10-18",
-   "place": "서울 성동구 아차산로5길 24-14",
-   "address": "서울 성동구 아차산로5길 24-14",
-   "lat": 37.54735260607909,
-   "lng": 127.05319704041518,
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
    "region": "서울",
-   "url": "https://blog.naver.com/harumoment-/224438878661",
+   "url": "https://blog.naver.com/mercurykm/224440185198",
    "urls": [
-    "https://blog.naver.com/harumoment-/224438878661",
-    "https://blog.naver.com/dudal0080/224438637977",
-    "https://blog.naver.com/my_today_zip/224434544111"
+    "https://blog.naver.com/mercurykm/224440185198",
+    "https://blog.naver.com/do_sol_/224436819340",
+    "https://blog.naver.com/rlaaldo1981/224434850677"
    ],
    "titles": [
-    "💙 킥플립 킥둥쓰 성수 팝업 총정리｜KICKDOONGS BREAK OUT 예약·굿즈·체험 이벤트",
-    "킥둥쓰 팝업, 솔직히 기대 안 했는데 직접 다녀와보니 대박이네요",
-    "킥플립 킥둥쓰 성수 팝업 2026 총정리｜10월 9~18일 FANS 예약·현장 입장·무료 체험 미션·굿즈 가격..."
+    "사라진 스머프를 찾아서! 세븐틴 X 스머프 더현대 서울 팝업 총정리",
+    "더현대서울 세븐틴 스머프 팝업 총정리 사라진 멜로디를 찾아서, 굿즈·체험 이벤트 (10.1~10.18)",
+    "더현대 서울 세븐틴×스머프 팝업｜THE LOST MELODY 기간·예약·굿즈 총정리 🎶🍄✨"
    ],
-   "agree": 4,
-   "posts": 4,
+   "agree": 5,
+   "posts": 5,
    "sure": true,
    "state": "now",
    "kind": "idol",
+   "young": true
+  },
+  {
+   "id": "p-cb7c44d3f8",
+   "name": "29CMx로프트 앙코르",
+   "start": "2026-09-18",
+   "end": "2026-10-30",
+   "place": "성수 연무장길",
+   "address": "서울 성동구 연무장7길 13",
+   "lat": 37.5441733194254,
+   "lng": 127.054430448058,
+   "region": "서울",
+   "url": "https://blog.naver.com/kiwwyz/224439625551",
+   "urls": [
+    "https://blog.naver.com/kiwwyz/224439625551",
+    "https://blog.naver.com/meetkku_cm/224421662943",
+    "https://blog.naver.com/xjvm555/224421653542"
+   ],
+   "titles": [
+    "29CMx로프트 앙코르 팝업 | 이구홈 성수2 문구 덕후라면 꼭 가봐야 할 성수 팝업 (~10/30)",
+    "[9월] 29CM x LOFT 앙코르 팝업 방문 후기&하울",
+    "[팝업] 29cmxLoFT 팝업스토어 다녀오다"
+   ],
+   "agree": 5,
+   "posts": 6,
+   "sure": true,
+   "state": "now",
+   "kind": "fashion",
    "young": true
   },
   {
@@ -389,10 +277,94 @@
     "더현대 대구 이월드 팝업스토어 기간 혜택 (자유이용권 66% 할인 굿즈 럭키박스)"
    ],
    "agree": 4,
-   "posts": 9,
+   "posts": 8,
    "sure": true,
    "state": "now",
    "kind": "art",
+   "young": true
+  },
+  {
+   "id": "p-2dcd867411",
+   "name": "스꾸 하우스",
+   "start": "2026-09-30",
+   "end": "2026-10-28",
+   "place": "서울 성동구 성수동",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "서울",
+   "url": "https://blog.naver.com/travelgoto/224434875044",
+   "urls": [
+    "https://blog.naver.com/travelgoto/224434875044",
+    "https://blog.naver.com/sueiswell/224435728643",
+    "https://blog.naver.com/happy_man0602/224432700189"
+   ],
+   "titles": [
+    "신세계푸드 '스꾸(스무디 꾸미기) 하우스' 팝업스토어 가기 전에 확인하세요, 10월 28일까지 열려요...",
+    "요즘 뜨는 성수팝업 스꾸하우스 2,900원 스무디 꾸미기 체험 총정리",
+    "성수 2,900원 스무디 팝업 어디?｜스꾸하우스 일주일 만에 2천명 몰린 이유"
+   ],
+   "agree": 4,
+   "posts": 4,
+   "sure": true,
+   "state": "now",
+   "kind": "food",
+   "young": true
+  },
+  {
+   "id": "p-a1cf50cf35",
+   "name": "글입다",
+   "start": "2026-10-01",
+   "end": "2026-10-18",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://blog.naver.com/jurineeee/224440044327",
+   "urls": [
+    "https://blog.naver.com/jurineeee/224440044327",
+    "https://blog.naver.com/do_sol_/224436821876",
+    "https://blog.naver.com/opopso002/224428701210"
+   ],
+   "titles": [
+    "글입다 팝업 더현대 - 10월 18일까지 비밀의 화원 만년필 선공개",
+    "더현대서울 글입다 더현대서울 글입다 팝업 총정리 문학 감성 문구·굿즈 구경하기 (10.1~10.18)",
+    "핀리 주얼리/아디다스 러닝화 아디제로 아디오스 프로5(ADIZERO ADIOS PRO5)/글입다 팝업스토어 10월 일정"
+   ],
+   "agree": 3,
+   "posts": 6,
+   "sure": true,
+   "state": "now",
+   "kind": "living",
+   "young": true
+  },
+  {
+   "id": "p-c8742a9e41",
+   "name": "프링글스",
+   "start": "2026-10-03",
+   "end": "2026-10-16",
+   "place": "AK플라자 홍대",
+   "address": "서울 마포구 양화로 188",
+   "lat": 37.55780854901018,
+   "lng": 126.92640783829829,
+   "region": "서울",
+   "url": "https://blog.naver.com/rami_ring/224440157927",
+   "urls": [
+    "https://blog.naver.com/rami_ring/224440157927",
+    "https://blog.naver.com/bonita9988/224434663795",
+    "https://blog.naver.com/ohdori13/224429484404"
+   ],
+   "titles": [
+    "[AK 플라자 홍대] 산리오 문방구, 프링글스 팝업 방문 및 먼작귀 제초자격증 출력 후기",
+    "연희동카페> 푸어링아웃메라키 & 하루한알 (프링글스팝업 홍대AK몰)",
+    "과자로만 보던 프링글스의 변신! 홍대 국내 최초 굿즈 팝업 10월 3일~16일"
+   ],
+   "agree": 3,
+   "posts": 3,
+   "sure": true,
+   "state": "now",
+   "kind": "character",
    "young": true
   },
   {
@@ -424,87 +396,31 @@
    "young": true
   },
   {
-   "id": "p-e526ab6754",
-   "name": "울트라 : 텍스트 쇼핑 클럽",
-   "start": "2026-07-17",
-   "end": "2026-11-01",
-   "place": "부산 영도구 해양로195번길 180",
-   "address": "부산 영도구 해양로195번길 180",
-   "lat": 35.08640681889363,
-   "lng": 129.07675017800668,
-   "region": "부산",
-   "url": "https://blog.naver.com/gayoyi/224437999213",
-   "urls": [
-    "https://blog.naver.com/gayoyi/224437999213",
-    "https://blog.naver.com/grazieditutto/224433153786",
-    "https://blog.naver.com/jj-haru25/224432334975"
-   ],
-   "titles": [
-    "[부산 영도 핫플] 피아크 '울트라 백화점 부산 : 텍스트 쇼핑 클럽' 체험형 전시 & 아울렛 다녀온 후기",
-    "부산 영도 가볼 만한 곳｜울트라백화점 부산전 & 국립해양박물관",
-    "[부산/영도/피아크] 울트라백화점 부산 : 텍스트 쇼핑 클럽 (~2026.11.01)"
-   ],
-   "agree": 3,
-   "posts": 4,
-   "sure": true,
-   "state": "now",
-   "kind": "living",
-   "young": true
-  },
-  {
-   "id": "p-b25f080746",
-   "name": "오뚜기 열라면 × 스트리트 파이터 체험형",
-   "start": "2026-09-22",
-   "end": "2026-10-17",
+   "id": "p-36d16443b1",
+   "name": "던스트 에비뉴엘",
+   "start": "2026-10-01",
+   "end": "2026-11-12",
    "place": "롯데월드몰",
    "address": "서울 송파구 올림픽로 300",
    "lat": 37.51260447840551,
    "lng": 127.10255558658325,
    "region": "서울",
-   "url": "https://blog.naver.com/travelgoto/224434872175",
+   "url": "https://blog.naver.com/travelgoto/224437062875",
    "urls": [
-    "https://blog.naver.com/travelgoto/224434872175",
-    "https://blog.naver.com/iangela74/224421348857",
-    "https://blog.naver.com/kyzzang89/224415913153"
+    "https://blog.naver.com/travelgoto/224437062875",
+    "https://blog.naver.com/harriborri/224438673005",
+    "https://blog.naver.com/luckang002/224430256350"
    ],
    "titles": [
-    "오뚜기 열라면 × 스트리트 파이터 체험형 팝업존 가기 전에 확인하세요, 10월 17일까지 열려요 (시간...",
-    "오뚜기 열라면 30주년 스트리트 파이터 콜라보 팝업 롯데월드몰 7층",
-    "열라면에 류와 켄이 등장했다?! 오뚜기 30주년 역대급 콜라보 소식 🔥"
+    "던스트 롯데월드몰 에비뉴엘 팝업, 약 80평 규모에서 겨울 컬렉션 첫 공개 (11월 12일까지)",
+    "롯데백화점 잠실 던스트 팝업 오픈 전상품 20% 할인까지?",
+    "롯데백화점 잠실점 포마이시스 이브 웨딩드레스/에비뉴엘 잠실점 던스트 자켓 팝업스토어 10월 일정"
    ],
    "agree": 3,
-   "posts": 3,
+   "posts": 4,
    "sure": true,
    "state": "now",
-   "kind": "game",
-   "young": true
-  },
-  {
-   "id": "p-2bf81907c8",
-   "name": "봄날엔",
-   "start": "2026-10-09",
-   "end": "2026-10-15",
-   "place": "롯데백화점 잠실점",
-   "address": "서울 송파구 올림픽로 240",
-   "lat": 37.51201141930842,
-   "lng": 127.0985552869803,
-   "region": "서울",
-   "url": "https://blog.naver.com/2581msy/224438249489",
-   "urls": [
-    "https://blog.naver.com/2581msy/224438249489",
-    "https://blog.naver.com/carys8056/224438025031",
-    "https://blog.naver.com/ninano-/224437190342"
-   ],
-   "titles": [
-    "롯데백화점 잠실점 봄날엔 팝업 방문 후기｜두바이 쫀득떡부터 약과까지 내돈내산",
-    "10월 팝업 : 여수언니 봄날엔 천안 갤러리아 팝업 OPEN",
-    "서면삼정타워 여수 모찌 맛집 봄날엔 팝업 솔직후기 및 주의사항"
-   ],
-   "agree": 2,
-   "posts": 3,
-   "sure": true,
-   "state": "now",
-   "kind": "food",
+   "kind": "fashion",
    "young": true
   },
   {
@@ -534,6 +450,60 @@
    "young": true
   },
   {
+   "id": "p-83adb22249",
+   "name": "구름도원",
+   "start": "2026-10-12",
+   "end": "2026-10-29",
+   "place": "롯데월드몰",
+   "address": "서울 송파구 올림픽로 300",
+   "lat": 37.51260447840551,
+   "lng": 127.10255558658325,
+   "region": "서울",
+   "url": "https://blog.naver.com/qwanjklife/224440174454",
+   "urls": [
+    "https://blog.naver.com/qwanjklife/224440174454",
+    "https://blog.naver.com/carys8056/224438631324",
+    "https://blog.naver.com/salarygone/224417637744"
+   ],
+   "titles": [
+    "롯데월드몰 구름도원 팝업 10월 12일~29일 산도 메뉴와 박스 가격",
+    "10월 팝업 : 구름도원 X 전도사 콜라보 롯데월드몰 잠실 팝업 OPEN",
+    "서면 롯데백화점 본점 팝업 구름도원 방문후기 | 크림브륄레 복숭아요거트 무화과크림치즈 불닭볶음면"
+   ],
+   "agree": 2,
+   "posts": 3,
+   "sure": true,
+   "state": "now",
+   "kind": "food",
+   "young": true
+  },
+  {
+   "id": "p-810946ed9d",
+   "name": "글로벌 파리",
+   "start": "2026-10-06",
+   "end": "2026-10-27",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://blog.naver.com/setmefree15/224439842653",
+   "urls": [
+    "https://blog.naver.com/setmefree15/224439842653",
+    "https://blog.naver.com/letsgolife/224438774735"
+   ],
+   "titles": [
+    "더현대 글로벌 파리 팝업, 10월 27일까지 5브랜드",
+    "더현대 글로벌 파리 팝업 10월 27일 종료 갤러리 라파예트 3층 K패션 다섯 브랜드"
+   ],
+   "agree": 2,
+   "posts": 2,
+   "sure": true,
+   "state": "now",
+   "kind": "art",
+   "young": true
+  },
+  {
    "id": "p-817f01ec68",
    "name": "택배 주문 및",
    "start": "2026-10-09",
@@ -560,60 +530,6 @@
    "young": true
   },
   {
-   "id": "p-db155cce4f",
-   "name": "판도라 브랜드",
-   "start": "2026-10-08",
-   "end": "2026-10-14",
-   "place": "더현대 서울",
-   "address": "서울 영등포구 여의대로 108",
-   "lat": 37.525872071029134,
-   "lng": 126.92844612411159,
-   "region": "서울",
-   "url": "https://blog.naver.com/do_sol_/224437324457",
-   "urls": [
-    "https://blog.naver.com/do_sol_/224437324457",
-    "https://blog.naver.com/goodlucky1215/224436589721",
-    "https://blog.naver.com/cooka147/224393463606"
-   ],
-   "titles": [
-    "더현대서울 판도라 팝업스토어 총정리｜최대 30% 할인·사은품·럭키볼 이벤트 (10.8~10.14)",
-    "10월 더현대 서울 놀거리 추천! 판도라 브랜드 팝업 나만의 팔찌 만든 후기",
-    "[판도라 팝업스토어] 서울 성수 다양한 선물 무료 증정 ! 할인 현장웨이팅 방문 후기"
-   ],
-   "agree": 2,
-   "posts": 3,
-   "sure": true,
-   "state": "now",
-   "kind": "fashion",
-   "young": true
-  },
-  {
-   "id": "p-d2dc729859",
-   "name": "오감으로 만나는 싱가포르항공",
-   "start": "",
-   "end": "2026-10-18",
-   "place": "더현대 서울",
-   "address": "서울 영등포구 여의대로 108",
-   "lat": 37.525872071029134,
-   "lng": 126.92844612411159,
-   "region": "서울",
-   "url": "https://blog.naver.com/travelmap/224439488348",
-   "urls": [
-    "https://blog.naver.com/travelmap/224439488348",
-    "https://blog.naver.com/gksk3232/224438620480"
-   ],
-   "titles": [
-    "싱가포르항공(singaporeair), 오감으로 만나는 싱가포르항공 팝업스토어 운영",
-    "여의도 실내 놀거리 싱가포르항공 팝업스토어, 해외여행 준비를 오감으로 미리 해봤다"
-   ],
-   "agree": 2,
-   "posts": 2,
-   "sure": true,
-   "state": "now",
-   "kind": "art",
-   "young": true
-  },
-  {
    "id": "p-298b1fe39e",
    "name": "잉글레시나",
    "start": "2026-10-14",
@@ -625,66 +541,102 @@
    "region": "서울",
    "url": "https://inglesinakor.tistory.com/106",
    "urls": [
-    "https://inglesinakor.tistory.com/106"
+    "https://inglesinakor.tistory.com/106",
+    "https://blog.naver.com/inglesinakor/224438959851"
    ],
    "titles": [
-    "신세계백화점 강남점 잉글레시나 팝업스토어 행사 안내 (2026.10.14~10.21)"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "etc",
-   "young": false
-  },
-  {
-   "id": "p-fe08daed86",
-   "name": "위시 위시랜드",
-   "start": "2026-10-14",
-   "end": "2026-10-24",
-   "place": "올리브영N 성수",
-   "address": "서울 성동구 연무장7길 13",
-   "lat": 37.5441733194254,
-   "lng": 127.054430448058,
-   "region": "서울",
-   "url": "https://blog.naver.com/setmefree15/224438692789",
-   "urls": [
-    "https://blog.naver.com/setmefree15/224438692789"
-   ],
-   "titles": [
-    "위시 위시랜드 팝업, 10월 14~24일 성수 예약제"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "idol",
-   "young": true
-  },
-  {
-   "id": "p-c258fb017f",
-   "name": "NCT 위시 아이 스파이",
-   "start": "2026-10-14",
-   "end": "2026-10-24",
-   "place": "올리브영N 성수",
-   "address": "서울 성동구 연무장7길 13",
-   "lat": 37.5441733194254,
-   "lng": 127.054430448058,
-   "region": "서울",
-   "url": "https://blog.naver.com/setmefree15/224438682944",
-   "urls": [
-    "https://blog.naver.com/setmefree15/224438682944",
-    "https://blog.naver.com/sion_on/224433222593"
-   ],
-   "titles": [
-    "NCT 위시 아이 스파이 팝업 10월 14~24일, 서울 다음은?",
-    "[NCT WISH] 엔시티위시 'I SPY' WISH LAND POP-UP 아이스파이 위시랜드 팝업(멤버십 예약, 네이버예약)"
+    "신세계백화점 강남점 잉글레시나 팝업스토어 행사 안내 (2026.10.14~10.21)",
+    "[공지] 신세계백화점 강남점 잉글레시나 팝업스토어 행사 안내 (2026.10.14~10.21)"
    ],
    "agree": 2,
    "posts": 2,
    "sure": true,
-   "state": "soon",
-   "kind": "idol",
+   "state": "now",
+   "kind": "etc",
+   "young": false
+  },
+  {
+   "id": "p-6437deb8a7",
+   "name": "싱가포르항공",
+   "start": "2026-10-08",
+   "end": "2026-10-18",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://blog.naver.com/fukuokamarket/224440399990",
+   "urls": [
+    "https://blog.naver.com/fukuokamarket/224440399990",
+    "https://blog.naver.com/travelmap/224439488348",
+    "https://blog.naver.com/gksk3232/224438620480"
+   ],
+   "titles": [
+    "​✈️ 더현대 서울 싱가포르항공 팝업스토어 방문 후기 (할인코드 꿀팁까지)",
+    "싱가포르항공(singaporeair), 오감으로 만나는 싱가포르항공 팝업스토어 운영",
+    "여의도 실내 놀거리 싱가포르항공 팝업스토어, 해외여행 준비를 오감으로 미리 해봤다"
+   ],
+   "agree": 2,
+   "posts": 4,
+   "sure": true,
+   "state": "now",
+   "kind": "art",
+   "young": true
+  },
+  {
+   "id": "p-80df9149f2",
+   "name": "월드몰 남대문시장 아주키친",
+   "start": "2026-08-24",
+   "end": "2026-10-19",
+   "place": "롯데월드몰",
+   "address": "서울 송파구 올림픽로 300",
+   "lat": 37.51260447840551,
+   "lng": 127.10255558658325,
+   "region": "서울",
+   "url": "https://blog.naver.com/eyoung413/224440723326",
+   "urls": [
+    "https://blog.naver.com/eyoung413/224440723326",
+    "https://blog.naver.com/padakbubu/224436601020",
+    "https://blog.naver.com/jong00212/224393824981"
+   ],
+   "titles": [
+    "잠실월드몰 남대문시장 아주키친 팝업스토어 ~10/19까지",
+    "잠실 롯데월드몰 팝업스토어 테이블웨어 아주키친 그릇별 가격대 정리 (10/19까지)",
+    "현대기물&박그릇 팝업 스토어 다녀왔어요. 롯데월드몰"
+   ],
+   "agree": 2,
+   "posts": 4,
+   "sure": true,
+   "state": "now",
+   "kind": "living",
+   "young": true
+  },
+  {
+   "id": "p-b76a9aa1e4",
+   "name": "마르디 메크르디 Mardi Mercredi 도산",
+   "start": "2026-10-08",
+   "end": "2026-10-18",
+   "place": "서울특별시 강남구 언주로164길 13",
+   "address": "서울 강남구 언주로164길 13",
+   "lat": 37.5255273995661,
+   "lng": 127.034521052816,
+   "region": "서울",
+   "url": "https://blog.naver.com/aggieku0201/224440473531",
+   "urls": [
+    "https://blog.naver.com/aggieku0201/224440473531",
+    "https://blog.naver.com/svt_disk/224432390713",
+    "https://blog.naver.com/kkaru_k/224411340617"
+   ],
+   "titles": [
+    "마르디 메크르디 Mardi Mercredi 도산 팝업 스토어 with 세븐틴 정한 JEONGHAN 서울 압구정 가볼만한 곳",
+    "MARDI MERCREDI 마르디 메크르디 세븐틴 정한",
+    "허덕구x마르디 메크르디 하우스 멍파티 후기 ｜ 강아지와 함께 즐기는 반려견 행사🐶🌼"
+   ],
+   "agree": 2,
+   "posts": 3,
+   "sure": true,
+   "state": "now",
+   "kind": "pet",
    "young": true
   },
   {
@@ -697,15 +649,15 @@
    "lat": 37.525872071029134,
    "lng": 126.92844612411159,
    "region": "서울",
-   "url": "https://blog.naver.com/ppo-gom/224439571557",
+   "url": "https://blog.naver.com/songsunlight27/224440151421",
    "urls": [
+    "https://blog.naver.com/songsunlight27/224440151421",
     "https://blog.naver.com/ppo-gom/224439571557",
-    "https://blog.naver.com/jurineeee/224439235796",
     "https://blog.naver.com/ccpu/224431386849"
    ],
    "titles": [
+    "메디힐 팝업 더현대 서울 오픈! 최대 83% 할인 이사배 이벤트 총정리",
     "메디힐 더현대 서울 팝업, 최대 83% 할인과 선착순 9,900원 세트, 이사배 일일 점장 및 구매 특전",
-    "여의도 메디힐 팝업 최대 83% 할인 - 장바구니 담기 전에 확인할 정보",
     "메디힐 서울 에디션 실물, 토너패드 파우치 러기지택 뭐 살까"
    ],
    "agree": 2,
@@ -716,34 +668,56 @@
    "young": true
   },
   {
-   "id": "p-b848b35473",
-   "name": "플라워노즈",
-   "start": "2026-10-16",
-   "end": "2026-10-25",
-   "place": "서울 성동구 연무장7길 16",
-   "address": "서울 성동구 연무장7길 16",
-   "lat": 37.5439486605368,
-   "lng": 127.055099036454,
+   "id": "p-c1e7fa8f8e",
+   "name": "더툴랩 래쉬 가디언즈",
+   "start": "2026-10-15",
+   "end": "2026-10-31",
+   "place": "서울특별시 성동구 뚝섬로17가길 48",
+   "address": "서울 성동구 뚝섬로17가길 48",
+   "lat": 37.54070921921285,
+   "lng": 127.059528779715,
    "region": "서울",
-   "url": "https://blog.naver.com/hi_youm/224438960437",
+   "url": "https://blog.naver.com/jurineeee/224440798879",
    "urls": [
-    "https://blog.naver.com/hi_youm/224438960437",
-    "https://blog.naver.com/gaeebok8282_/224431239751"
+    "https://blog.naver.com/jurineeee/224440798879"
    ],
    "titles": [
-    "플라워노즈 성수 팝업 10주년 DIY 팔레트와 스노우 발레 포토 부스",
-    "[ABLY] 에이블리 플라워노즈 색조템 할인 소식 @20프로 쿠폰"
+    "더툴랩 래쉬 가디언즈 성수 팝업 - 쓰던 뷰러 가져가면 새 제품으로 바꿔줍니다 (10/15~31, 입장 무료)"
    ],
    "agree": 1,
-   "posts": 2,
+   "posts": 1,
    "sure": false,
    "state": "soon",
    "kind": "beauty",
    "young": true
   },
   {
-   "id": "p-9f0c8ef1ab",
-   "name": "쇼핑 동선에 넣기 좋은 실내",
+   "id": "p-52219713df",
+   "name": "실라리안",
+   "start": "2026-10-16",
+   "end": "2026-10-21",
+   "place": "서울 성동구 성수동",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "서울",
+   "url": "https://blog.naver.com/livego_go/224440095628",
+   "urls": [
+    "https://blog.naver.com/livego_go/224440095628"
+   ],
+   "titles": [
+    "경북의 장인들이 성수에 등장! &#34;실라리안 팝업&#34; 정보 안내"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "soon",
+   "kind": "etc",
+   "young": true
+  },
+  {
+   "id": "p-908af1dfb7",
+   "name": "지드래곤",
    "start": "2026-10-16",
    "end": "2026-10-25",
    "place": "롯데월드몰",
@@ -751,18 +725,48 @@
    "lat": 37.51260447840551,
    "lng": 127.10255558658325,
    "region": "서울",
-   "url": "https://blog.naver.com/edeaplatz/224436877725",
+   "url": "https://blog.naver.com/sia_mom2025/224440755286",
    "urls": [
-    "https://blog.naver.com/edeaplatz/224436877725"
+    "https://blog.naver.com/sia_mom2025/224440755286",
+    "https://blog.naver.com/8888cherry/224439294459"
    ],
    "titles": [
-    "쇼핑 동선에 넣기 좋은 실내 팝업 12곳｜신촌·여의도·용산부터 고양·하남까지"
+    "지드래곤 팝업 잠실 롯데월드몰 상륙! 피스마이너스원 X 조앤프렌즈 굿즈 총정리 (10/16~10/25)",
+    "🌼 지드래곤 향수 한정판 등장! 프레데릭 말 X 피스마이너스원 팝업 총정리"
    ],
    "agree": 1,
-   "posts": 1,
+   "posts": 2,
    "sure": false,
    "state": "soon",
    "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-71984e500b",
+   "name": "캐릭캐릭체인지",
+   "start": "2026-10-16",
+   "end": "2026-10-29",
+   "place": "AK플라자 홍대",
+   "address": "서울 마포구 양화로 188",
+   "lat": 37.55780854901018,
+   "lng": 126.92640783829829,
+   "region": "서울",
+   "url": "https://blog.naver.com/kmiso77/224434710996",
+   "urls": [
+    "https://blog.naver.com/kmiso77/224434710996",
+    "https://blog.naver.com/insunga9/224431014743",
+    "https://blog.naver.com/wkdqhr73/224428747889"
+   ],
+   "titles": [
+    "캐릭캐릭체인지 팝업 홍대 AK플라자 — 오리지널 굿즈 가격·구매 특전·10/16 오픈 일정",
+    "캐릭캐릭체인지 홍대 AK 플라자 팝업스토어 MD리스트까지 공개!",
+    "홍대 캐릭캐릭 체인지 팝업스토어 MD 굿즈 및 일자 장소 총 정리!"
+   ],
+   "agree": 4,
+   "posts": 4,
+   "sure": true,
+   "state": "soon",
+   "kind": "etc",
    "young": true
   },
   {
@@ -775,17 +779,19 @@
    "lat": 37.5555448178997,
    "lng": 126.921548131764,
    "region": "서울",
-   "url": "https://blog.naver.com/moo_new/224438264028",
+   "url": "https://blog.naver.com/sia_mom2025/224440755286",
    "urls": [
-    "https://blog.naver.com/moo_new/224438264028",
-    "https://blog.naver.com/cardbinder/224437858877"
+    "https://blog.naver.com/sia_mom2025/224440755286",
+    "https://blog.naver.com/boeunkim1234/224440357370",
+    "https://blog.naver.com/moo_new/224438264028"
    ],
    "titles": [
-    "피스마이너스원 조앤프렌즈 팝업스토어┃일정 장소 굿즈 특전 정보 총정리┃피마원 조아 콜라보",
-    "감성 그대로! 피스마이너스원 × 조앤프렌즈 팝업 MD 전 품목 실물 & 가격표 총정리 - 조아 피규어..."
+    "지드래곤 팝업 잠실 롯데월드몰 상륙! 피스마이너스원 X 조앤프렌즈 굿즈 총정리 (10/16~10/25)",
+    "피스마이너스원 X 조앤프렌즈 팝업 일정 지드래곤 ZOA 인형 키링 굿즈 가격 총정리",
+    "피스마이너스원 조앤프렌즈 팝업스토어┃일정 장소 굿즈 특전 정보 총정리┃피마원 조아 콜라보"
    ],
-   "agree": 2,
-   "posts": 2,
+   "agree": 4,
+   "posts": 4,
    "sure": true,
    "state": "soon",
    "kind": "character",
@@ -801,74 +807,100 @@
    "lat": 37.51201141930842,
    "lng": 127.0985552869803,
    "region": "서울",
-   "url": "https://blog.naver.com/enginitto/224439775391",
+   "url": "https://blog.naver.com/stepbyministep/224440137270",
    "urls": [
-    "https://blog.naver.com/enginitto/224439775391",
-    "https://blog.naver.com/hade_s/224439478616",
-    "https://blog.naver.com/pltr54321/224426937061"
+    "https://blog.naver.com/stepbyministep/224440137270",
+    "https://blog.naver.com/jhsketcher/224440602273",
+    "https://blog.naver.com/enginitto/224439775391"
    ],
    "titles": [
-    "팔란티어 서울 팝업 2026 한남동 10월 22~23일: 사전 등록 13일 오전 10시, 방법·운영 시간 Q&A",
-    "팔란티어 한남동 팝업, 10월 13일 사전등록! FW 2026 굿즈 한국 우선 공개",
-    "팔란티어 PLTR 굿즈 반팔 구입 후기! 팔란티어 샵 팔란티어 스토어 링크!한남동 팝업행사!"
+    "팔란티어 서울 팝업 10월 22~23일｜사전등록 오늘 10시 오픈, 작년 5시간 웨이팅",
+    "팔란티어 한남동 팝업 10/22~23, 주가 신고가에 맞춘 타이밍",
+    "팔란티어 서울 팝업 2026 한남동 10월 22~23일: 사전 등록 13일 오전 10시, 방법·운영 시간 Q&A"
    ],
-   "agree": 3,
-   "posts": 3,
+   "agree": 6,
+   "posts": 6,
    "sure": true,
    "state": "soon",
    "kind": "fashion",
    "young": true
   },
   {
-   "id": "p-10d378cde3",
-   "name": "주술회전",
+   "id": "p-caa66e69f6",
+   "name": "한식의 날",
    "start": "2026-10-23",
-   "end": "2026-11-30",
-   "place": "AK플라자 홍대",
-   "address": "서울 마포구 양화로 188",
-   "lat": 37.55780854901018,
-   "lng": 126.92640783829829,
-   "region": "서울",
-   "url": "https://blog.naver.com/songsunlight27/224438785563",
+   "end": "2026-10-25",
+   "place": "",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "",
+   "url": "https://blog.naver.com/gongmingpolicy/224440851939",
    "urls": [
-    "https://blog.naver.com/songsunlight27/224438785563",
-    "https://blog.naver.com/rmaals4247/224437771709",
-    "https://blog.naver.com/charactidi/224433994151"
+    "https://blog.naver.com/gongmingpolicy/224440851939"
    ],
    "titles": [
-    "주술회전 팝업 홍대 오픈! PLAZA 5주년 일정 위치 총정리",
-    "주술회전 팝업 카운트다운 AK플라자 홍대 굿즈 스포일러",
-    "[팝업 스토어] 주술회전 팬텀 퍼레이드 (9/12~10/11)"
-   ],
-   "agree": 2,
-   "posts": 3,
-   "sure": true,
-   "state": "soon",
-   "kind": "anime",
-   "young": true
-  },
-  {
-   "id": "p-78bc4a4a93",
-   "name": "데이식스 원필 루나 클라우드 레이어",
-   "start": "2026-09-30",
-   "end": "2026-10-14",
-   "place": "무신사 메가스토어 성수",
-   "address": "서울 성동구 성수이로 62",
-   "lat": 37.540362325724,
-   "lng": 127.055857900421,
-   "region": "서울",
-   "url": "https://blog.naver.com/highlight_zip/224438285659",
-   "urls": [
-    "https://blog.naver.com/highlight_zip/224438285659"
-   ],
-   "titles": [
-    "데이식스 원필 루나 클라우드 레이어 팝업 현장 사진"
+    "2026 한식대축제 10월 23~25일 국립중앙박물관서 개최｜제1회 ‘한식의 날’ 기념 K-미식 축제"
    ],
    "agree": 1,
    "posts": 1,
    "sure": false,
-   "state": "now",
+   "state": "soon",
+   "kind": "food",
+   "young": true
+  },
+  {
+   "id": "p-80ecb40032",
+   "name": "UP STORE",
+   "start": "2026-10-23",
+   "end": "2026-11-01",
+   "place": "서울특별시 용산구 이태원로45길 64",
+   "address": "서울 용산구 이태원로45길 64",
+   "lat": 37.5376067502118,
+   "lng": 126.998257545584,
+   "region": "서울",
+   "url": "https://blog.naver.com/myday_light/224440328467",
+   "urls": [
+    "https://blog.naver.com/myday_light/224440328467",
+    "https://blog.naver.com/mariooutlet1/224438981384"
+   ],
+   "titles": [
+    "[공지] 데이식스(DAY6) 5TH FANMEETING <EVERY DAY6, EVERY My Day> POP-UP STORE 팝업스토어 사전 공지",
+    "[POP-UP STORE] 크로플 맛집 #로플로플 가산 상륙! 누텔라·인절미흑당·브라운치즈 外"
+   ],
+   "agree": 1,
+   "posts": 2,
+   "sure": false,
+   "state": "soon",
    "kind": "idol",
+   "young": true
+  },
+  {
+   "id": "p-2bf81907c8",
+   "name": "봄날엔",
+   "start": "2026-10-09",
+   "end": "2026-10-15",
+   "place": "롯데백화점 잠실점",
+   "address": "서울 송파구 올림픽로 240",
+   "lat": 37.51201141930842,
+   "lng": 127.0985552869803,
+   "region": "서울",
+   "url": "https://blog.naver.com/carys8056/224440891955",
+   "urls": [
+    "https://blog.naver.com/carys8056/224440891955",
+    "https://blog.naver.com/2581msy/224438249489",
+    "https://blog.naver.com/ninano-/224437190342"
+   ],
+   "titles": [
+    "10월 팝업 : 여수언니 봄날엔 광양 LF 스퀘어 팝업 OPEN",
+    "롯데백화점 잠실점 봄날엔 팝업 방문 후기｜두바이 쫀득떡부터 약과까지 내돈내산",
+    "서면삼정타워 여수 모찌 맛집 봄날엔 팝업 솔직후기 및 주의사항"
+   ],
+   "agree": 1,
+   "posts": 3,
+   "sure": false,
+   "state": "now",
+   "kind": "food",
    "young": true
   },
   {
@@ -887,30 +919,6 @@
    ],
    "titles": [
     "[부산 서면 맛집] 서면 롯데백화점 고이빚은 | 수제과일찹쌀떡 팝업스토어 내돈내산 추천"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-3abfa34b7f",
-   "name": "롯백 전국 떡지순례",
-   "start": "",
-   "end": "2026-10-15",
-   "place": "롯데백화점 잠실점",
-   "address": "서울 송파구 올림픽로 240",
-   "lat": 37.51201141930842,
-   "lng": 127.0985552869803,
-   "region": "서울",
-   "url": "https://blog.naver.com/bnrgod2/224437789118",
-   "urls": [
-    "https://blog.naver.com/bnrgod2/224437789118"
-   ],
-   "titles": [
-    "육구방앗간부터, 영백년화편방 백년화편까지! 잠실 롯백 전국 떡지순례 팝업 총정리"
    ],
    "agree": 1,
    "posts": 1,
@@ -944,21 +952,21 @@
    "young": true
   },
   {
-   "id": "p-f8a0bbc768",
-   "name": "한글날 연휴 '글'",
+   "id": "p-97941f95ca",
+   "name": "싱가폴 항공",
    "start": "",
    "end": "2026-10-18",
-   "place": "롯데백화점 잠실점",
-   "address": "서울 송파구 올림픽로 240",
-   "lat": 37.51201141930842,
-   "lng": 127.0985552869803,
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
    "region": "서울",
-   "url": "https://blog.naver.com/homeguide365/224437308261",
+   "url": "https://blog.naver.com/cktngus4/224440574548",
    "urls": [
-    "https://blog.naver.com/homeguide365/224437308261"
+    "https://blog.naver.com/cktngus4/224440574548"
    ],
    "titles": [
-    "한글날 연휴 백화점 '글' 팝업 4곳 가봤더니, 마감이 제각각이라 순서부터 달랐어요"
+    "더현대서울 싱가폴 항공 팝업 여행 럭키드로우 경품 추첨 10월 팝업"
    ],
    "agree": 1,
    "posts": 1,
@@ -968,27 +976,75 @@
    "young": true
   },
   {
-   "id": "p-e142135950",
-   "name": "정한의 프라이빗 아틀리에",
-   "start": "2026-10-08",
+   "id": "p-4e0194cb83",
+   "name": "센텀 신세계",
+   "start": "2026-10-04",
    "end": "2026-10-18",
-   "place": "서울특별시 강남구 언주로164길 13",
-   "address": "서울 강남구 언주로164길 13",
-   "lat": 37.5255273995661,
-   "lng": 127.034521052816,
-   "region": "서울",
-   "url": "https://blog.naver.com/travelgoto/224434872791",
+   "place": "신세계 센텀시티",
+   "address": "부산 해운대구 센텀남대로 35",
+   "lat": 35.16864392798528,
+   "lng": 129.12907174004943,
+   "region": "부산",
+   "url": "https://blog.naver.com/thdgml112200/224440666090",
    "urls": [
-    "https://blog.naver.com/travelgoto/224434872791"
+    "https://blog.naver.com/thdgml112200/224440666090"
    ],
    "titles": [
-    "마르디 메크르디 '정한의 프라이빗 아틀리에' 팝업, 10월 18일까지! 운영시간·위치·꿀팁 총정리"
+    "부산 센텀 신세계 팝업스토어 추천 미세키서울(Miseki Seoul) 후기"
    ],
    "agree": 1,
    "posts": 1,
    "sure": false,
    "state": "now",
-   "kind": "beauty",
+   "kind": "etc",
+   "young": true
+  },
+  {
+   "id": "p-b4aea7068f",
+   "name": "ZARA 신상 6가지와",
+   "start": "2026-10-14",
+   "end": "2026-10-18",
+   "place": "롯데월드몰",
+   "address": "서울 송파구 올림픽로 300",
+   "lat": 37.51260447840551,
+   "lng": 127.10255558658325,
+   "region": "서울",
+   "url": "https://blog.naver.com/aprilzzang/224440573799",
+   "urls": [
+    "https://blog.naver.com/aprilzzang/224440573799"
+   ],
+   "titles": [
+    "자라 러닝복이 이렇게 예뻤어? 2026 ZARA 신상 6가지와 잠실 팝업"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "sports",
+   "young": true
+  },
+  {
+   "id": "p-a0f56bc96c",
+   "name": "비옷도 패션이다",
+   "start": "",
+   "end": "2026-10-21",
+   "place": "신세계백화점 강남점",
+   "address": "서울 서초구 신반포로 176",
+   "lat": 37.505305732081965,
+   "lng": 127.00432032924516,
+   "region": "서울",
+   "url": "https://blog.naver.com/happylife_777-/224440417035",
+   "urls": [
+    "https://blog.naver.com/happylife_777-/224440417035"
+   ],
+   "titles": [
+    "🌦️ “비옷도 패션이다”…변덕스러운 날씨에 웨더웨어 뜬다"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "fashion",
    "young": true
   },
   {
@@ -1003,36 +1059,58 @@
    "region": "서울",
    "url": "https://blog.naver.com/starbori0sure/224437520081",
    "urls": [
-    "https://blog.naver.com/starbori0sure/224437520081",
-    "https://blog.naver.com/yourlunacy/224436319441"
+    "https://blog.naver.com/starbori0sure/224437520081"
    ],
    "titles": [
-    "스타벅스 RTD 스테이션 팝업",
-    "[코엑스]스타벅스 RTD 스테이션 팝업 후기"
+    "스타벅스 RTD 스테이션 팝업"
    ],
    "agree": 1,
-   "posts": 2,
+   "posts": 1,
    "sure": false,
    "state": "now",
    "kind": "food",
    "young": true
   },
   {
-   "id": "p-3c27d8a8c4",
-   "name": "네이버 멤버십",
+   "id": "p-6f99875c32",
+   "name": "기장 신세계아울렛 핑크퐁 아기상어 해피피크닉",
    "start": "",
-   "end": "2026-11-01",
-   "place": "서울 성동구 성수동",
+   "end": "2026-10-26",
+   "place": "",
    "address": "",
    "lat": null,
    "lng": null,
-   "region": "서울",
-   "url": "https://blog.naver.com/wintxxer/224438792657",
+   "region": "",
+   "url": "https://blog.naver.com/cjstk968/224439995266",
    "urls": [
-    "https://blog.naver.com/wintxxer/224438792657"
+    "https://blog.naver.com/cjstk968/224439995266"
    ],
    "titles": [
-    "2026 넾페스타 일정 예약 방법 및 라인업, 네이버 멤버십 성수 팝업 혜택"
+    "기장 신세계아울렛 핑크퐁 아기상어 해피피크닉 팝업행사 (~10/26까지)"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "etc",
+   "young": false
+  },
+  {
+   "id": "p-9ce8d8b8b1",
+   "name": "니크프로젝트 안경& 모모하니포포 아동복",
+   "start": "2026-10-12",
+   "end": "2026-10-29",
+   "place": "롯데백화점 잠실점",
+   "address": "서울 송파구 올림픽로 240",
+   "lat": 37.51201141930842,
+   "lng": 127.0985552869803,
+   "region": "서울",
+   "url": "https://blog.naver.com/luckang002/224439999362",
+   "urls": [
+    "https://blog.naver.com/luckang002/224439999362"
+   ],
+   "titles": [
+    "사라다클럽 사라다빵/비니크프로젝트 안경&롯데백화점 잠실점 모모하니포포 아동복 팝업스토어 10월 일정"
    ],
    "agree": 1,
    "posts": 1,
@@ -1063,6 +1141,56 @@
    "sure": false,
    "state": "now",
    "kind": "sports",
+   "young": true
+  },
+  {
+   "id": "p-4a65c085ab",
+   "name": "수서 더샵갤러리 러너스하우스",
+   "start": "2026-10-08",
+   "end": "2026-11-08",
+   "place": "서울 강남구 자곡로 210",
+   "address": "서울 강남구 자곡로 210",
+   "lat": 37.47507458822695,
+   "lng": 127.10591280054945,
+   "region": "서울",
+   "url": "https://blog.naver.com/lifebystride/224440230174",
+   "urls": [
+    "https://blog.naver.com/lifebystride/224440230174"
+   ],
+   "titles": [
+    "수서 더샵갤러리 러너스하우스 팝업 후기｜세라젬 파우제 M8 Fit 직접 체험하고 왔어요!"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "art",
+   "young": true
+  },
+  {
+   "id": "p-10d378cde3",
+   "name": "주술회전",
+   "start": "",
+   "end": "2026-11-30",
+   "place": "AK플라자 홍대",
+   "address": "서울 마포구 양화로 188",
+   "lat": 37.55780854901018,
+   "lng": 126.92640783829829,
+   "region": "서울",
+   "url": "https://blog.naver.com/prettylee620/224439087724",
+   "urls": [
+    "https://blog.naver.com/prettylee620/224439087724",
+    "https://blog.naver.com/rmaals4247/224437771709"
+   ],
+   "titles": [
+    "AK플라자 홍대팝업, 다른 전시 보러 갔다가 우연히 발견한 주술회전 콜라보 카페",
+    "주술회전 팝업 카운트다운 AK플라자 홍대 굿즈 스포일러"
+   ],
+   "agree": 1,
+   "posts": 2,
+   "sure": false,
+   "state": "now",
+   "kind": "food",
    "young": true
   }
  ]
