@@ -13,6 +13,8 @@ const P = (name, path, d) => ({ name, category: path.split(">").pop().trim(), pa
 const PLACES = {
   "보드게임카페": [P("오래된 보드게임 서면점", "가정,생활 > 여가시설 > 보드카페", 90), P("레드버튼 서면점", "가정,생활 > 여가시설 > 보드카페 > 레드버튼", 120),
     P("어느 호프", "음식점 > 술집 > 호프,요리주점", 50), P("닫은 보드게임 서면점", "가정,생활 > 여가시설 > 보드카페", 400)],
+  "PC방": [P("에이 PC방", "가정,생활 > 여가시설 > PC방", 100), P("비 PC방", "가정,생활 > 여가시설 > PC방", 200),
+    P("씨 PC방", "가정,생활 > 여가시설 > PC방", 300), P("디 PC방", "가정,생활 > 여가시설 > PC방", 450)],
   "디저트카페": [P("설빙 서면점", "음식점 > 카페 > 테마카페 > 디저트카페 > 설빙", 200)],
   "고기집": [P("서면 삼겹살", "음식점 > 한식 > 육류,고기 > 삼겹살", 150), P("고기 카페", "음식점 > 카페", 80), P("고기 호프", "음식점 > 술집 > 호프,요리주점", 90)],
 };
@@ -58,6 +60,7 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     const send = (o) => r.fulfill({ contentType: "application/json", headers: { "Access-Control-Allow-Origin": "*" }, body: JSON.stringify(o) });
     if (req.method() === "POST") {
       const m = JSON.parse(req.postData() || "{}");
+      if (m.mode === "price_set") return send({ ok: true, price: { won: m.won, n: 3 } });
       if (m.mode === "vote") { const me = createHash("sha256").update("nolco:" + m.token).digest("hex").slice(0, 24); (VOTES[m.id] ??= {})[me] = m.pick; return send(voteRes(m.id, me)); }
       if (m.mode === "set") { const id = createHash("sha256").update("nolco:" + m.token).digest("hex").slice(0, 24); store[m.col][id] = m.body; return send({ ok: true, id }); }
       return send({ ok: true });
@@ -66,6 +69,9 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     if (mode === "docs") return send({ docs: Object.entries(store[u.searchParams.get("col")] || {}).map(([id, data]) => ({ id, data })) });
     if (mode === "places") return send({ places: PLACES[u.searchParams.get("q")] || [] });
     if (mode === "popups") return send({ popups: POPUPS });
+    if (mode === "prices") return send({ prices: { "300": { won: 1000, n: 2 } } });   // 씨 PC방: 이용자 2명이 1000원
+    if (u.searchParams.get("price") === "hour") return send({ photos: [], latest: "2026-09-01", recent: 3,
+      price: { "비 PC방": { won: 1500, n: 2 }, "디 PC방": { won: 1200, n: 1 } }[u.searchParams.get("name")] || null });
     if (mode === "vote") return send(voteRes(u.searchParams.get("id"), u.searchParams.get("me")));
     if (mode === "closed") return send({ ids: ["400"] });   // '닫은 보드게임'은 두 사람이 알린 곳
     if (u.searchParams.get("name") === "뚝섬한강공원") return send({ photos: [{ thumb: "https://search1.kakaocdn.net/a.jpg", link: "https://blog.naver.com/a/2", site: "어느 블로그" }], latest: "2026-09-01", recent: 3 });
@@ -124,6 +130,24 @@ console.log("우리 동네");
   ok(after[after.length - 1] === "오래된 보드게임 서면점" && await p.locator(".place.stale .stale-note").count() === 1, "1년 넘게 후기 없는 가게는 '문 닫았을 수도'로 뒤로 간다");
   ok(await p.locator(".place", { hasText: "레드버튼" }).locator(".stale-note").count() === 0, "후기가 아예 없는 가게는 '문 닫았을 수도'로 보지 않는다 (노래방 등)");
   ok(await p.locator(".place .vote-add").count() === await p.locator(".place").count(), "가게마다 '투표 후보' 버튼이 있다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
+console.log("PC방: 1시간 가격이 싼 순");
+{
+  const { p, errors } = await page();
+  await p.addInitScript(() => { localStorage.setItem("datecourse.mode", '"local"'); localStorage.setItem("datecourse.hood", '"seomyeon"'); });
+  await open(p);
+  await p.click('.act[data-a="pc"]'); await p.waitForTimeout(900);
+  const names = await p.locator("#placeList .place > b").allTextContents();
+  ok(names.join(",") === "씨 PC방,디 PC방,비 PC방,에이 PC방", "가격을 아는 곳이 싼 순으로 위에, 모르는 곳은 아래 (" + names.join(",") + ")");
+  const first = p.locator("#placeList .place").first();
+  ok((await first.textContent()).includes("추천 · 가장 싸요") && (await first.textContent()).includes("1시간 1,000원") && (await first.textContent()).includes("이용자 2명"), "맨 위: 추천 · 가장 싸요 · 1시간 1,000원 (이용자가 알려준 가격)");
+  ok((await p.locator("#placeList .place").nth(1).textContent()).includes("후기 기준 약"), "후기에서 찾은 가격은 '후기 기준 약'");
+  ok((await p.locator("#placeList .place").nth(3).textContent()).includes("가격 정보가 아직 없어요"), "가격 모르는 곳은 그렇게 알려 준다");
+  p.once("dialog", (d) => d.accept("1,300"));
+  await p.locator("#placeList .place").nth(3).locator(".price-tell").click(); await p.waitForTimeout(300);
+  ok((await p.locator("#placeList .place").nth(3).textContent()).includes("1시간 1,300원"), "'가격 알려주기'로 알려 주면 바로 반영된다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 

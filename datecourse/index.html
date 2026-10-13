@@ -206,6 +206,12 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .place b { font-size: 16px; letter-spacing: -0.02em; }
 .place .cat { font-size: 12px; color: var(--sub); }
 .place .addr { grid-column: 1 / -1; font-size: 13px; color: var(--sub); }
+.place .price-line { grid-column: 1 / -1; font-size: 13px; color: var(--sub); margin-top: 2px; }
+.place .price-line b { color: var(--ink); font-size: 15px; }
+.place .price-line small { color: var(--faint); font-size: 11px; }
+.price-best { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.place.cheapest { background: var(--accent-soft); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 14px; }
+.price-note { margin: 4px 0 0; }
 .place .dist { font-size: 13px; font-weight: 700; color: var(--accent-text); align-self: start; font-variant-numeric: tabular-nums; }
 .place .links { grid-column: 1 / -1; margin-top: 6px; }
 .place .tel { font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; user-select: all; }
@@ -1380,6 +1386,7 @@ async function showPlaces(keyword, h, q, a) {
   const draw = (list) => {
     list = pick(list);
     if (!list.length) { empty(); return; }
+    if (a && PRICE_ACTS.has(a.id)) { drawPriced(box, list.slice(0, 12), q); return; }
     box.replaceChildren(...list.slice(0, 10).map(placeItem));
     box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
   };
@@ -1405,6 +1412,73 @@ async function showPlaces(keyword, h, q, a) {
     location: new window.kakao.maps.LatLng(center.lat, center.lng),
     radius: 2000, sort: window.kakao.maps.services.SortBy.DISTANCE, size: 15,
   });
+}
+
+/* ---------- PC방: 1시간 가격이 싼 순 ----------
+   가격은 ① 놀코 이용자가 알려 준 값(있으면 우선) ② 블로그·카페 후기에서 찾은 값('후기 기준 약').
+   가격을 아는 곳을 싼 순으로 위에, 모르는 곳은 가까운 순으로 아래에. 맨 위에 '추천 · 가장 싸요' */
+const PRICE_ACTS = new Set(["pc"]);
+const wonText = (n) => n.toLocaleString("ko-KR") + "원";
+async function drawPriced(box, list, q) {
+  const els = list.map((p) => {
+    const el = placeItem(p);
+    el.querySelector(".cat").insertAdjacentHTML("afterend", `<span class="price-line">1시간 가격 확인 중…</span>`);
+    if (placeId(p)) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "link-pill price-tell"; b.textContent = "💬 가격 알려주기";
+      b.addEventListener("click", () => tellPrice(p, el, b));
+      el.querySelector(".links").append(b);
+    }
+    return el;
+  });
+  box.replaceChildren(...els);
+  box.insertAdjacentHTML("afterbegin", `<p class="note price-note">1시간 가격이 싼 순이에요. 회원가·시간대·좌석마다 달라서 대략이에요.</p>`);
+  box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
+  const endpoint = photoEndpoint();
+  const ids = list.map(placeId).filter(Boolean);
+  const wait = (pr) => Promise.race([pr, new Promise((ok) => setTimeout(() => ok(null), 4000))]);
+  const [told, infos] = await Promise.all([
+    wait(endpoint && ids.length ? fetchJson(`${endpoint}?mode=prices&ids=${ids.join(",")}`) : Promise.resolve(null)),
+    Promise.all(list.map((p) => wait(placeInfo(p)))),
+  ]);
+  if (!box.isConnected) return;
+  const userP = (told && told.prices) || {};
+  const rows = list.map((p, i) => {
+    const u = userP[placeId(p)], b = infos[i] && infos[i].price;
+    const price = u && u.won ? { won: u.won, how: `놀코 이용자 ${u.n}명이 알려준 가격` } : b && b.won ? { won: b.won, how: "후기 기준 약" } : null;
+    return { p, el: els[i], price, i };
+  });
+  rows.sort((x, y) => (x.price ? 0 : 1) - (y.price ? 0 : 1) || (x.price && y.price ? x.price.won - y.price.won : 0) || x.i - y.i);
+  rows.forEach((r, k) => {
+    const line = r.el.querySelector(".price-line");
+    r.el.classList.remove("cheapest");
+    if (r.price) {
+      line.innerHTML = `${k === 0 ? `<span class="price-best">추천 · 가장 싸요</span>` : ""}<b>1시간 ${wonText(r.price.won)}</b> <small></small>`;
+      line.querySelector("small").textContent = r.price.how;
+      if (k === 0) r.el.classList.add("cheapest");
+    } else line.textContent = "1시간 가격 정보가 아직 없어요";
+  });
+  const more = box.querySelector(".places-more");
+  rows.forEach((r) => box.insertBefore(r.el, more));
+}
+async function tellPrice(p, el, btn) {
+  const raw = prompt(`'${p.place_name}' 1시간에 얼마였나요? (숫자만, 예: 1200)`);
+  if (raw === null) return;
+  const won = Math.round(Number(String(raw).replace(/[^\d]/g, "")) / 100) * 100;
+  if (!(won >= 500 && won <= 5000)) { toast("500~5000원 사이로 알려 주세요"); return; }
+  btn.disabled = true;
+  try {
+    const res = await fetch(photoEndpoint(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "price_set", id: placeId(p), won, token: myToken() }) });
+    if (!res.ok) throw new Error();
+    const d = await res.json();
+    const line = el.querySelector(".price-line");
+    if (d.price && line) {
+      line.innerHTML = `<b>1시간 ${wonText(d.price.won)}</b> <small></small>`;
+      line.querySelector("small").textContent = `놀코 이용자 ${d.price.n}명이 알려준 가격`;
+    }
+    btn.textContent = "알려줬어요";
+    toast("고마워요! 다른 사람들한테 도움이 돼요");
+  } catch { toast("지금은 보내지 못했어요"); btn.disabled = false; }
 }
 
 function placeItem(p) {
@@ -1467,12 +1541,14 @@ function markStale(el) {
   if (list) { const more = list.querySelector(".places-more"); more ? list.insertBefore(el, more) : list.append(el); }
 }
 // 가게 후기 정보 (사진과 같은 요청을 함께 쓴다)
+// 사진·후기 날짜를 한 요청으로 (name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글만). PC방이면 후기에서 찾은 1시간 가격도
+const isPcPlace = (p) => /pc방|피시방|pc카페/i.test(`${p.category_name || ""} ${p.place_name || ""}`.replace(/\s/g, ""));
 function placeInfo(p) {
   const endpoint = photoEndpoint();
   if (!endpoint || !p.place_name) return Promise.resolve({});
   const gu = String(p.address_name || p.road_address_name || "").split(" ")[1] || "";
   const q = `${p.place_name} ${gu}`.trim();
-  if (!photoCache.has(q)) photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
+  if (!photoCache.has(q)) photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4${isPcPlace(p) ? "&price=hour" : ""}`)
     .then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
   return photoCache.get(q);
 }
@@ -1510,16 +1586,8 @@ async function addPhotos(el, p, opts = {}) {
     makeStrip().append(lead);
   }
   if (!endpoint || !p.place_name) return;
-  const gu = String(p.address_name || p.road_address_name || "").split(" ")[1] || "";
-  const q = `${p.place_name} ${gu}`.trim();
   try {
-    if (!photoCache.has(q)) {
-      // name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글의 사진만 받는다
-      photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
-        .then((r) => (r.ok ? r.json() : {}))
-        .catch(() => ({})));
-    }
-    const data = await photoCache.get(q);
+    const data = await placeInfo(p);
     if (opts.stale !== false && isStale(data) && el.isConnected) markStale(el);
     // 뉴스·관공서 사진(사건·단속 사진 등)은 가게 이미지를 해칠 수 있어 빼고 블로그·카페 후기 위주로 (서버도 같은 규칙)
     const photos = (Array.isArray(data.photos) ? data.photos : []).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link)
