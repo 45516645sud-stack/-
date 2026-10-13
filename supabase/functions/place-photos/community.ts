@@ -155,3 +155,18 @@ export function visiblePopups(rows: { id: string; ok: boolean; item: unknown }[]
     })
     .sort((a, b) => a.end.localeCompare(b.end));
 }
+
+/* ---------- 문 닫은 가게 ('문 닫았어요' 신고) ---------- */
+export const CLOSE_AT = 2;   // 서로 다른 두 사람이 알리면(또는 관리자가 확인하면) 숨긴다
+
+/** 카카오 장소 id (place.map.kakao.com/<숫자>) */
+export function cleanPlaceId(raw: unknown): string | null {
+  const s = typeof raw === "number" ? String(raw) : raw;
+  return typeof s === "string" && /^\d{3,15}$/.test(s) ? s : null;
+}
+
+export function closedIds(rows: { item_id: string; reporter: string }[]): string[] {
+  const n = new Map<string, number>();
+  for (const r of rows) n.set(r.item_id, (n.get(r.item_id) ?? 0) + (r.reporter === "admin" ? CLOSE_AT : 1));
+  return [...n].filter(([, c]) => c >= CLOSE_AT).map(([id]) => id).sort();
+}

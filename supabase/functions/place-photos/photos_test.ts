@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos, toPosts } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos, toPosts, postFreshness } from "./photos.ts";
 
 Deno.test("검색어 정리", () => {
   assertEquals(cleanQuery("  서면   OO노래방  부산진구 "), "서면 OO노래방 부산진구");
@@ -112,4 +112,16 @@ Deno.test("최근 글: 태그 벗기기, 오래된 글·뉴스·같은 주소 �
   assertEquals(posts.map((p) => p.title), ["새 글", "성수 팝업 & 후기"]);
   assertEquals(posts[1].text, "기간 10.3~10.19");
   assertEquals(posts[1].date, "2026-10-05");
+});
+
+Deno.test("가게 후기 최신 날짜·1년 안 글 수 (문 닫았을 수도 짐작)", () => {
+  const now = new Date("2026-10-13T00:00:00Z");
+  const d = (title: string, datetime: string, blogname = "놀러가자") => ({ title, contents: "", url: "https://blog.naver.com/x/" + title.length + datetime, blogname, datetime });
+  assertEquals(postFreshness([
+    d("VR스카이 후기", "2023-05-01T10:00:00+09:00"),
+    d("VR스카이 다녀옴", "2024-02-01T10:00:00+09:00"),
+    d("다른 가게", "2026-10-01T10:00:00+09:00"),
+  ], "VR스카이 안동점", now), { latest: "2024-02-01", recent: 0 });
+  assertEquals(postFreshness([d("레드버튼 서면점 후기", "2026-09-01T10:00:00+09:00")], "레드버튼 서면점", now), { latest: "2026-09-01", recent: 1 });
+  assertEquals(postFreshness([], "어느 가게", now), { latest: null, recent: 0 });
 });

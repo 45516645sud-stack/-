@@ -2853,6 +2853,2436 @@
      "text": "용머리해안은 물때와 파도에 따라 닫혀요. 가기 전에 확인하세요."
     }
    ]
+  },
+  {
+   "id": "sj-arboretum-night",
+   "region": "세종",
+   "area": "세종시",
+   "title": "세종 국립세종수목원 + 호수공원 야경",
+   "summary": "국내 최대 실내 사계절온실을 보고, 호수공원 수상무대섬 야경까지.",
+   "with": [
+    "date",
+    "family",
+    "solo"
+   ],
+   "tags": [
+    "자연",
+    "산책",
+    "야경"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "국립세종수목원",
+     "q": "국립세종수목원",
+     "kind": "walk",
+     "stay": 120,
+     "tip": "사계절온실은 비 와도 OK. 한국전통정원도 꼭 들르세요."
+    },
+    {
+     "name": "세종호수공원",
+     "q": "세종호수공원",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "수상무대섬 쪽 해 질 녘 산책로가 예뻐요."
+    },
+    {
+     "name": "세종 나성동 먹자골목",
+     "q": "세종 나성동 음식점",
+     "kind": "food",
+     "stay": 60,
+     "tip": "호수공원에서 걸어갈 수 있는 맛집 거리예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "사계절온실 지중해관 올리브나무 앞이 사진 명소예요."
+    },
+    {
+     "kind": "time",
+     "text": "수목원은 월요일 휴관이에요."
+    }
+   ]
+  },
+  {
+   "id": "sj-library-walk",
+   "region": "세종",
+   "area": "세종시",
+   "title": "대통령기록관 + 국립세종도서관",
+   "summary": "도서관 덕후 코스. 조용히 책 읽고 대통령 기록 구경.",
+   "with": [
+    "solo",
+    "date",
+    "student"
+   ],
+   "tags": [
+    "실내",
+    "비오는날"
+   ],
+   "budget": 0,
+   "hours": 4,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "대통령기록관",
+     "q": "대통령기록관",
+     "kind": "culture",
+     "stay": 70,
+     "tip": "역대 대통령 선물·기록을 볼 수 있고 무료예요."
+    },
+    {
+     "name": "국립세종도서관",
+     "q": "국립세종도서관",
+     "kind": "culture",
+     "stay": 90,
+     "tip": "책 펼친 모양 건물. 창가 자리에서 호수가 보여요."
+    },
+    {
+     "name": "세종호수공원",
+     "q": "세종호수공원",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "도서관 바로 옆이라 산책으로 마무리."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "둘 다 무료라 돈 거의 안 드는 데이트예요."
+    },
+    {
+     "kind": "time",
+     "text": "대통령기록관·도서관 모두 월요일 휴관."
+    }
+   ]
+  },
+  {
+   "id": "sj-jochiwon",
+   "region": "세종",
+   "area": "조치원",
+   "title": "조치원 정수장 문화공간 + 전통시장",
+   "summary": "옛 정수장을 고친 감성 공간과 시장 먹거리.",
+   "with": [
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "카페",
+    "시장",
+    "전통"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "조치원 문화정원",
+     "q": "조치원 문화정원",
+     "kind": "culture",
+     "stay": 50,
+     "tip": "옛 정수장을 고친 전시·카페 공간이에요."
+    },
+    {
+     "name": "조치원전통시장",
+     "q": "조치원전통시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "장날(4·9일)엔 더 북적여요."
+    },
+    {
+     "name": "고복자연공원",
+     "q": "고복자연공원",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "저수지 둘레 산책로가 한적해요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "조치원 장은 4·9로 끝나는 날에 서요."
+    }
+   ]
+  },
+  {
+   "id": "us-ganjeolgot-jinha",
+   "region": "울산",
+   "area": "울주군",
+   "title": "진하해수욕장 + 명선도 야경",
+   "summary": "바다 위 작은 섬 명선도와 진하 해변, 밤엔 조명 산책.",
+   "with": [
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "바다",
+    "야경",
+    "산책"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "해 질 녘",
+   "stops": [
+    {
+     "name": "진하해수욕장",
+     "q": "진하해수욕장",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "서핑하는 사람이 많은 넓은 해변이에요."
+    },
+    {
+     "name": "명선도",
+     "q": "명선도",
+     "kind": "view",
+     "stay": 40,
+     "tip": "썰물 때는 걸어서 들어갈 수 있고 밤엔 미디어아트 조명이 켜져요."
+    },
+    {
+     "name": "간절곶",
+     "q": "간절곶",
+     "kind": "view",
+     "stay": 50,
+     "tip": "큰 우체통 앞에서 사진 한 장."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "명선도는 물때를 확인하고 가세요."
+    },
+    {
+     "kind": "photo",
+     "text": "명선도 야간 조명은 해 진 뒤 30분부터가 제일 예뻐요."
+    }
+   ]
+  },
+  {
+   "id": "us-ilsan-daewangam",
+   "region": "울산",
+   "area": "동구",
+   "title": "대왕암 출렁다리 + 일산해수욕장",
+   "summary": "바위 해안 위 출렁다리 건너고, 일산 바다에서 쉬기.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "자연",
+    "산책"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "대왕암공원 출렁다리",
+     "q": "대왕암공원 출렁다리",
+     "kind": "activity",
+     "stay": 50,
+     "tip": "바다 위 303m 출렁다리. 바람 불면 꽤 흔들려요."
+    },
+    {
+     "name": "대왕암",
+     "q": "대왕암공원",
+     "kind": "view",
+     "stay": 50,
+     "tip": "기암 바위 사이 다리를 건너 바다 끝까지 가 보세요."
+    },
+    {
+     "name": "일산해수욕장",
+     "q": "일산해수욕장",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "대왕암에서 산책로로 이어져요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "출렁다리는 월요일 쉬고, 바람이 세면 닫아요."
+    }
+   ]
+  },
+  {
+   "id": "us-oegosan",
+   "region": "울산",
+   "area": "울주군",
+   "title": "외고산 옹기마을 + 작천정 계곡",
+   "summary": "옹기 만들기 체험하고 계곡에서 쉬는 느린 하루.",
+   "with": [
+    "family",
+    "date"
+   ],
+   "tags": [
+    "전통",
+    "자연"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "외고산옹기마을",
+     "q": "외고산 옹기마을",
+     "kind": "culture",
+     "stay": 90,
+     "tip": "국내 최대 옹기 마을. 옹기 만들기 체험을 할 수 있어요."
+    },
+    {
+     "name": "울산옹기박물관",
+     "q": "울산옹기박물관",
+     "kind": "culture",
+     "stay": 40,
+     "tip": "세계 최대 옹기로 기네스에 오른 항아리가 있어요."
+    },
+    {
+     "name": "작천정",
+     "q": "작천정",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "넓은 바위 계곡이라 여름에 발 담그기 좋아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "옹기 체험은 주말에 예약하는 게 좋아요."
+    }
+   ]
+  },
+  {
+   "id": "us-seongnamdong",
+   "region": "울산",
+   "area": "중구",
+   "title": "성남동 젊음의거리 + 태화강 십리대숲 밤산책",
+   "summary": "울산 원도심 먹거리 골목과 은하수길 대숲 산책.",
+   "with": [
+    "friends",
+    "date",
+    "student"
+   ],
+   "tags": [
+    "맛집",
+    "야경",
+    "산책"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "울산 큰애기야시장",
+     "q": "울산 큰애기야시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "중앙시장 안 야시장. 주말 저녁에 열려요."
+    },
+    {
+     "name": "젊음의거리",
+     "q": "울산 성남동 젊음의거리",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "옷가게·카페가 모인 원도심 골목이에요."
+    },
+    {
+     "name": "태화강 국가정원 은하수길",
+     "q": "태화강 국가정원",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "밤에 대숲에 조명이 켜지는 은하수길이 유명해요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "은하수길 대숲 조명 아래서 찍으면 사진이 예뻐요."
+    }
+   ]
+  },
+  {
+   "id": "gj-asia-culture",
+   "region": "광주",
+   "area": "동구",
+   "title": "국립아시아문화전당 + 충장로",
+   "summary": "거대한 문화전당 전시 보고 충장로·동명동 골목 구경.",
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "실내",
+    "카페",
+    "비오는날"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "국립아시아문화전당",
+     "q": "국립아시아문화전당",
+     "kind": "culture",
+     "stay": 90,
+     "tip": "전시가 많고 대부분 무료예요. 하늘마당 잔디밭도 좋아요."
+    },
+    {
+     "name": "충장로",
+     "q": "광주 충장로",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "광주 대표 번화가. 옛날 다방부터 브랜드 매장까지."
+    },
+    {
+     "name": "동명동 카페거리",
+     "q": "동명동 카페거리",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "한옥·주택을 고친 카페가 모여 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "문화전당은 월요일 휴관이에요."
+    }
+   ]
+  },
+  {
+   "id": "gj-penguin",
+   "region": "광주",
+   "area": "남구",
+   "title": "펭귄마을 + 양림동 근대 선교사 사택",
+   "summary": "고물로 꾸민 펭귄마을과 붉은 벽돌 근대 건축 골목.",
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "전통",
+    "산책",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "양림동 펭귄마을",
+     "q": "양림동 펭귄마을",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "버려진 물건으로 꾸민 골목. 레트로 사진이 잘 나와요."
+    },
+    {
+     "name": "우일선 선교사 사택",
+     "q": "우일선선교사사택",
+     "kind": "culture",
+     "stay": 30,
+     "tip": "광주에서 가장 오래된 서양식 주택이에요."
+    },
+    {
+     "name": "양림동 카페",
+     "q": "양림동 카페",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "근대 건물을 고친 카페가 많아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "펭귄마을 시계 벽 앞이 사진 명소예요."
+    }
+   ]
+  },
+  {
+   "id": "gj-1913-night",
+   "region": "광주",
+   "area": "광산구",
+   "title": "송정역시장 + 광주송정역 근처 떡갈비거리",
+   "summary": "KTX 타고 와서 바로 먹방. 시장 먹거리와 떡갈비.",
+   "with": [
+    "friends",
+    "date",
+    "family"
+   ],
+   "tags": [
+    "맛집",
+    "시장"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "1913송정역시장",
+     "q": "1913송정역시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "역 바로 앞 레트로 시장. 꼬마김밥·수제맥주가 인기예요."
+    },
+    {
+     "name": "송정떡갈비거리",
+     "q": "송정떡갈비거리",
+     "kind": "food",
+     "stay": 60,
+     "tip": "광주 명물 떡갈비 식당이 줄지어 있어요."
+    },
+    {
+     "name": "광산구 황룡강 길",
+     "q": "황룡강 장록습지",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "배부르면 강변 산책으로 소화."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "떡갈비는 한우·돼지 섞은 걸 고르면 덜 부담돼요."
+    }
+   ]
+  },
+  {
+   "id": "gj-mudeung-cafe",
+   "region": "광주",
+   "area": "북구",
+   "title": "무등산 생태탐방 + 무등산 카페 드라이브",
+   "summary": "무등산 아래 숲길 걷고 전망 좋은 카페로.",
+   "with": [
+    "date",
+    "family"
+   ],
+   "tags": [
+    "자연",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "무등산 원효사",
+     "q": "원효사 광주",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "무등산 북쪽 원효사 계곡 숲길이 완만해요."
+    },
+    {
+     "name": "충효동 왕버들",
+     "q": "충효동 왕버들",
+     "kind": "walk",
+     "stay": 20,
+     "tip": "수백 년 된 왕버들 세 그루가 장관이에요."
+    },
+    {
+     "name": "광주호 호수생태원",
+     "q": "광주호 호수생태원",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "호숫가 데크길과 버드나무 숲이 예뻐요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "move",
+     "text": "차가 있으면 좋아요. 버스는 배차가 길어요."
+    }
+   ]
+  },
+  {
+   "id": "dg-kim-gwangseok",
+   "region": "대구",
+   "area": "중구",
+   "title": "김광석 다시그리기길 + 방천시장",
+   "summary": "벽화 골목에서 김광석 노래 듣고, 시장 먹거리.",
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "산책",
+    "시장",
+    "전통"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "김광석다시그리기길",
+     "q": "김광석 다시그리기길",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "김광석 벽화와 노래가 흐르는 골목이에요."
+    },
+    {
+     "name": "방천시장",
+     "q": "대구 방천시장",
+     "kind": "food",
+     "stay": 50,
+     "tip": "골목 끝 시장에 오래된 분식집이 있어요."
+    },
+    {
+     "name": "수성교",
+     "q": "수성교",
+     "kind": "view",
+     "stay": 20,
+     "tip": "신천 다리 위에서 보는 노을이 좋아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "김광석 동상 옆 벤치에서 같이 앉아 찍는 게 국룰."
+    }
+   ]
+  },
+  {
+   "id": "dg-dongseongno",
+   "region": "대구",
+   "area": "중구",
+   "title": "동성로 + 교동 야시장 + 삼덕동 카페",
+   "summary": "대구 핫플 동성로 쇼핑하고 카페, 밤엔 먹자골목.",
+   "with": [
+    "friends",
+    "date",
+    "student"
+   ],
+   "tags": [
+    "맛집",
+    "카페",
+    "야경"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "동성로",
+     "q": "대구 동성로",
+     "kind": "walk",
+     "stay": 80,
+     "tip": "대구 최대 번화가. 쇼핑·오락실·노래방이 다 있어요."
+    },
+    {
+     "name": "삼덕동 카페거리",
+     "q": "삼덕동 카페거리",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "주택을 고친 감성 카페가 많아요."
+    },
+    {
+     "name": "교동 먹자골목",
+     "q": "대구 교동 먹자골목",
+     "kind": "food",
+     "stay": 60,
+     "tip": "막창·찜갈비 같은 대구 음식을 맛보세요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "대구 막창은 된장 소스에 찍어 먹어요."
+    }
+   ]
+  },
+  {
+   "id": "dg-okyeon",
+   "region": "대구",
+   "area": "달성",
+   "title": "옥연지 송해공원 + 비슬산",
+   "summary": "출렁다리 호수 공원 산책하고 비슬산 자연휴양림.",
+   "with": [
+    "family",
+    "date"
+   ],
+   "tags": [
+    "자연",
+    "산책"
+   ],
+   "budget": 0,
+   "hours": 5,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "송해공원",
+     "q": "송해공원",
+     "kind": "walk",
+     "stay": 70,
+     "tip": "옥연지 호수를 도는 데크길과 출렁다리가 있어요."
+    },
+    {
+     "name": "비슬산 자연휴양림",
+     "q": "비슬산자연휴양림",
+     "kind": "walk",
+     "stay": 90,
+     "tip": "봄 진달래, 가을 억새로 유명해요."
+    },
+    {
+     "name": "유가사",
+     "q": "유가사 대구",
+     "kind": "culture",
+     "stay": 30,
+     "tip": "비슬산 아래 조용한 절이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "비슬산 진달래는 4월 말이 절정이에요."
+    }
+   ]
+  },
+  {
+   "id": "dg-alpine-night",
+   "region": "대구",
+   "area": "동구",
+   "title": "팔공산 갓바위 + 동화사 + 봉무공원",
+   "summary": "소원 하나는 들어준다는 갓바위, 내려와서 공원 산책.",
+   "with": [
+    "family",
+    "solo",
+    "date"
+   ],
+   "tags": [
+    "자연",
+    "전통"
+   ],
+   "budget": 0,
+   "hours": 6,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "팔공산 갓바위",
+     "q": "팔공산 갓바위",
+     "kind": "walk",
+     "stay": 150,
+     "tip": "돌계단을 1시간쯤 올라가요. 편한 신발 필수."
+    },
+    {
+     "name": "동화사",
+     "q": "동화사",
+     "kind": "culture",
+     "stay": 50,
+     "tip": "큰 통일약사여래대불이 있어요."
+    },
+    {
+     "name": "봉무공원",
+     "q": "봉무공원",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "단산지 호수 둘레길이 평탄해요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "갓바위는 물 챙겨 가세요. 계단이 꽤 가팔라요."
+    }
+   ]
+  },
+  {
+   "id": "ic-chinatown-wolmi",
+   "region": "인천",
+   "area": "중구",
+   "title": "차이나타운 짜장면 + 월미도 바다열차",
+   "summary": "짜장면 원조 거리에서 먹고, 월미바다열차로 바다 한 바퀴.",
+   "with": [
+    "friends",
+    "date",
+    "family"
+   ],
+   "tags": [
+    "맛집",
+    "바다",
+    "놀이공원"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "인천 차이나타운",
+     "q": "인천 차이나타운",
+     "kind": "food",
+     "stay": 60,
+     "tip": "짜장면박물관과 화덕만두·공갈빵이 유명해요."
+    },
+    {
+     "name": "월미바다열차",
+     "q": "월미바다열차",
+     "kind": "activity",
+     "stay": 40,
+     "tip": "높은 레일 위로 바다를 보며 달려요."
+    },
+    {
+     "name": "월미테마파크",
+     "q": "월미테마파크",
+     "kind": "activity",
+     "stay": 60,
+     "tip": "디스코팡팡 같은 바닷가 놀이기구가 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "월미바다열차 창가 자리에서 해 질 녘 바다를 찍어 보세요."
+    }
+   ]
+  },
+  {
+   "id": "ic-songwol-fairy",
+   "region": "인천",
+   "area": "중구",
+   "title": "송월동 동화마을 + 신포국제시장",
+   "summary": "동화 벽화 골목과 닭강정으로 유명한 시장.",
+   "with": [
+    "date",
+    "family",
+    "friends"
+   ],
+   "tags": [
+    "산책",
+    "시장"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "송월동 동화마을",
+     "q": "송월동 동화마을",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "골목마다 동화 주인공 벽화가 있어요."
+    },
+    {
+     "name": "신포국제시장",
+     "q": "신포국제시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "신포 닭강정과 쫄면의 원조 시장이에요."
+    },
+    {
+     "name": "자유공원",
+     "q": "인천 자유공원",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "인천항이 내려다보이는 오래된 공원이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "신포 닭강정은 줄이 길어도 금방 빠져요."
+    }
+   ]
+  },
+  {
+   "id": "ic-incheon-grand-park",
+   "region": "인천",
+   "area": "남동구",
+   "title": "인천대공원 + 인천대공원 수목원",
+   "summary": "넓은 호수 공원에서 자전거 타고 동물원·수목원까지.",
+   "with": [
+    "family",
+    "date",
+    "solo"
+   ],
+   "tags": [
+    "자연",
+    "산책"
+   ],
+   "budget": 0,
+   "hours": 4,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "인천대공원",
+     "q": "인천대공원",
+     "kind": "walk",
+     "stay": 90,
+     "tip": "호수 둘레 자전거 대여가 있어요."
+    },
+    {
+     "name": "인천대공원 어린이동물원",
+     "q": "인천대공원 어린이동물원",
+     "kind": "activity",
+     "stay": 40,
+     "tip": "무료 작은 동물원이에요."
+    },
+    {
+     "name": "인천수목원",
+     "q": "인천수목원",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "공원 안 수목원이라 함께 돌기 좋아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "가을 은행나무길이 예뻐요."
+    }
+   ]
+  },
+  {
+   "id": "ic-sinseongri",
+   "region": "인천",
+   "area": "옹진군",
+   "title": "영흥도 십리포 + 장경리 해변",
+   "summary": "서울에서 차로 1시간 반, 소사나무 숲이 있는 섬 바다.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "자연",
+    "노을"
+   ],
+   "budget": 1,
+   "hours": 6,
+   "best": "해 질 녘",
+   "stops": [
+    {
+     "name": "십리포해수욕장",
+     "q": "십리포해수욕장",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "바닷가 소사나무 군락 그늘이 시원해요."
+    },
+    {
+     "name": "장경리해수욕장",
+     "q": "장경리해수욕장",
+     "kind": "view",
+     "stay": 60,
+     "tip": "노을이 예쁜 서해 해변이에요."
+    },
+    {
+     "name": "영흥도 수산물직판장",
+     "q": "영흥도 진두항 수산물직판장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "회·조개구이를 바로 먹을 수 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "move",
+     "text": "영흥대교로 차를 타고 들어갈 수 있어요."
+    }
+   ]
+  },
+  {
+   "id": "dj-daedong",
+   "region": "대전",
+   "area": "동구",
+   "title": "대동 하늘공원 + 소제동 카페",
+   "summary": "벽화 골목 꼭대기 풍차 전망대에서 대전 야경.",
+   "with": [
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "야경",
+    "카페",
+    "산책"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "해 질 녘",
+   "stops": [
+    {
+     "name": "대동하늘공원",
+     "q": "대동하늘공원",
+     "kind": "view",
+     "stay": 40,
+     "tip": "언덕 위 풍차와 대전 시내 야경이 유명해요."
+    },
+    {
+     "name": "대동 벽화마을",
+     "q": "대동 벽화마을",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "하늘공원 가는 길 벽화 골목이에요."
+    },
+    {
+     "name": "소제동 카페거리",
+     "q": "소제동 카페거리",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "철도 관사촌을 고친 카페가 모여 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "풍차 앞에서 해 질 녘 시내 배경으로 찍으면 예뻐요."
+    }
+   ]
+  },
+  {
+   "id": "dj-yuseong-spa",
+   "region": "대전",
+   "area": "유성구",
+   "title": "유성온천 족욕 + 국립중앙과학관",
+   "summary": "족욕으로 쉬고 과학관에서 체험, 비 와도 OK.",
+   "with": [
+    "family",
+    "date",
+    "student"
+   ],
+   "tags": [
+    "실내",
+    "비오는날"
+   ],
+   "budget": 0,
+   "hours": 5,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "유성온천 족욕체험장",
+     "q": "유성온천 족욕체험장",
+     "kind": "activity",
+     "stay": 30,
+     "tip": "무료 야외 족욕장이에요. 수건 챙기세요."
+    },
+    {
+     "name": "국립중앙과학관",
+     "q": "국립중앙과학관",
+     "kind": "culture",
+     "stay": 120,
+     "tip": "천체관·자기부상열차 등 볼거리가 많아요."
+    },
+    {
+     "name": "유성온천 문화의거리",
+     "q": "유성온천 문화의거리",
+     "kind": "food",
+     "stay": 60,
+     "tip": "온천 동네 맛집이 모여 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "과학관은 월요일 휴관."
+    }
+   ]
+  },
+  {
+   "id": "dj-sungsimdang-2",
+   "region": "대전",
+   "area": "서구",
+   "title": "둔산동 + 한밭수목원 + 대전시립미술관",
+   "summary": "미술관 보고 수목원 걷고 둔산동에서 저녁.",
+   "with": [
+    "date",
+    "solo",
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "산책",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "대전시립미술관",
+     "q": "대전시립미술관",
+     "kind": "culture",
+     "stay": 60,
+     "tip": "엑스포공원 옆 미술관이에요."
+    },
+    {
+     "name": "한밭수목원",
+     "q": "한밭수목원",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "도심 속 큰 수목원. 열대식물원도 있어요."
+    },
+    {
+     "name": "둔산동 먹자골목",
+     "q": "대전 둔산동 음식점",
+     "kind": "food",
+     "stay": 60,
+     "tip": "대전 번화가 맛집 거리예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "미술관·수목원 열대식물원은 월요일 휴관."
+    }
+   ]
+  },
+  {
+   "id": "cb-cheongju-craft",
+   "region": "충북",
+   "area": "청주",
+   "title": "국립현대미술관 청주 + 문화제조창",
+   "summary": "옛 담배공장을 고친 수장고형 미술관과 카페.",
+   "with": [
+    "date",
+    "solo",
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "카페",
+    "비오는날"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "국립현대미술관 청주",
+     "q": "국립현대미술관 청주",
+     "kind": "culture",
+     "stay": 90,
+     "tip": "작품 보관 창고를 볼 수 있는 '보이는 수장고'가 독특해요."
+    },
+    {
+     "name": "청주 문화제조창",
+     "q": "청주 문화제조창",
+     "kind": "culture",
+     "stay": 40,
+     "tip": "옛 연초제조창 건물에 공예관·카페가 있어요."
+    },
+    {
+     "name": "성안길",
+     "q": "청주 성안길",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "청주 원도심 번화가예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "미술관은 무료예요. 월요일 휴관."
+    }
+   ]
+  },
+  {
+   "id": "cb-danyang-cave",
+   "region": "충북",
+   "area": "단양",
+   "title": "고수동굴 + 단양 구경시장 마늘 먹방",
+   "summary": "신비한 석회 동굴 탐험하고 마늘 순대·떡갈비.",
+   "with": [
+    "family",
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "자연",
+    "맛집",
+    "시장"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "고수동굴",
+     "q": "고수동굴",
+     "kind": "activity",
+     "stay": 60,
+     "tip": "천연기념물 석회동굴. 안은 사계절 시원해요."
+    },
+    {
+     "name": "단양구경시장",
+     "q": "단양구경시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "마늘 순대·마늘 떡갈비가 명물이에요."
+    },
+    {
+     "name": "단양강 잔도",
+     "q": "단양강잔도",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "절벽에 붙은 강변 데크길이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "동굴 안이 미끄러우니 운동화를 신으세요."
+    }
+   ]
+  },
+  {
+   "id": "cb-chungju-lake",
+   "region": "충북",
+   "area": "충주",
+   "title": "충주호 악어봉 + 수안보 온천",
+   "summary": "악어 떼처럼 보이는 산줄기 전망과 온천 마무리.",
+   "with": [
+    "date",
+    "family"
+   ],
+   "tags": [
+    "자연",
+    "노을"
+   ],
+   "budget": 1,
+   "hours": 6,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "악어봉",
+     "q": "악어봉 충주",
+     "kind": "view",
+     "stay": 90,
+     "tip": "충주호로 뻗은 산줄기가 악어 떼처럼 보여요. 오르막 30분."
+    },
+    {
+     "name": "충주호 유람선",
+     "q": "충주호 유람선",
+     "kind": "activity",
+     "stay": 60,
+     "tip": "호수 위에서 단풍·절벽을 볼 수 있어요."
+    },
+    {
+     "name": "수안보온천",
+     "q": "수안보온천",
+     "kind": "activity",
+     "stay": 60,
+     "tip": "족욕장과 온천탕이 있는 온천 마을이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "악어봉 길은 가파르니 물과 편한 신발 필수."
+    }
+   ]
+  },
+  {
+   "id": "cn-asan-gingko",
+   "region": "충남",
+   "area": "아산",
+   "title": "곡교천 은행나무길 + 현충사",
+   "summary": "가을 노란 터널 은행나무길과 이순신 장군 사당.",
+   "with": [
+    "date",
+    "family",
+    "solo"
+   ],
+   "tags": [
+    "자연",
+    "산책",
+    "전통"
+   ],
+   "budget": 0,
+   "hours": 4,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "곡교천 은행나무길",
+     "q": "곡교천 은행나무길",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "가을엔 2km 노란 터널이 돼요."
+    },
+    {
+     "name": "현충사",
+     "q": "현충사",
+     "kind": "culture",
+     "stay": 60,
+     "tip": "이순신 장군을 모신 곳. 잔디와 정원이 넓어요."
+    },
+    {
+     "name": "지중해마을",
+     "q": "아산 지중해마을",
+     "kind": "cafe",
+     "stay": 50,
+     "tip": "파란 지붕 건물이 모인 카페 거리예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "은행나무는 10월 말~11월 초가 절정이에요."
+    }
+   ]
+  },
+  {
+   "id": "cn-taean-tulip",
+   "region": "충남",
+   "area": "태안",
+   "title": "신두리 해안사구 + 꽃지 할미할아비바위 노을",
+   "summary": "우리나라에서 제일 큰 모래언덕과 서해 노을 명소.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "노을",
+    "자연"
+   ],
+   "budget": 1,
+   "hours": 6,
+   "best": "해 질 녘",
+   "stops": [
+    {
+     "name": "신두리 해안사구",
+     "q": "신두리 해안사구",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "사막 같은 모래언덕 데크길이에요."
+    },
+    {
+     "name": "천리포수목원",
+     "q": "천리포수목원",
+     "kind": "walk",
+     "stay": 80,
+     "tip": "바닷가 수목원. 목련이 유명해요."
+    },
+    {
+     "name": "꽃지해수욕장",
+     "q": "꽃지해수욕장",
+     "kind": "view",
+     "stay": 50,
+     "tip": "할미·할아비 바위 사이로 지는 노을이 명소예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "꽃지 노을은 바위 두 개 사이로 해가 떨어지는 순간을 노리세요."
+    }
+   ]
+  },
+  {
+   "id": "jb-jeonju-night",
+   "region": "전북",
+   "area": "전주",
+   "title": "전주 남부시장 야시장 + 오목대 야경",
+   "summary": "한옥마을 낮 말고 밤 코스. 야시장 먹방과 한옥 지붕 야경.",
+   "with": [
+    "friends",
+    "date"
+   ],
+   "tags": [
+    "야경",
+    "맛집",
+    "시장"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "전주 남부시장 야시장",
+     "q": "전주남부시장 야시장",
+     "kind": "food",
+     "stay": 70,
+     "tip": "금·토 저녁에 열려요. 청년몰도 구경하세요."
+    },
+    {
+     "name": "전동성당",
+     "q": "전동성당",
+     "kind": "culture",
+     "stay": 20,
+     "tip": "밤 조명이 켜진 성당이 예뻐요."
+    },
+    {
+     "name": "오목대",
+     "q": "오목대",
+     "kind": "view",
+     "stay": 30,
+     "tip": "한옥마을 지붕이 내려다보이는 언덕이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "야시장은 금·토 저녁에만 열려요."
+    }
+   ]
+  },
+  {
+   "id": "jb-gunsan-island",
+   "region": "전북",
+   "area": "군산",
+   "title": "고군산군도 선유도 + 장자도",
+   "summary": "새만금 다리로 들어가는 섬 드라이브와 해변.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "자연",
+    "노을"
+   ],
+   "budget": 1,
+   "hours": 6,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "선유도해수욕장",
+     "q": "선유도해수욕장",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "명사십리라 불리는 고운 모래 해변이에요."
+    },
+    {
+     "name": "선유도 짚라인",
+     "q": "선유도 짚라인",
+     "kind": "activity",
+     "stay": 30,
+     "tip": "바다 위를 건너는 짚라인이에요."
+    },
+    {
+     "name": "장자도",
+     "q": "장자도",
+     "kind": "view",
+     "stay": 40,
+     "tip": "섬 끝 마을 카페에서 바다를 봐요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "move",
+     "text": "섬 안은 주차가 어려우니 일찍 가는 게 좋아요."
+    }
+   ]
+  },
+  {
+   "id": "jj-jeju-night-market",
+   "region": "제주",
+   "area": "제주시",
+   "title": "동문시장 야시장 + 탑동 바다 산책",
+   "summary": "제주시 밤 코스. 야시장 먹방과 바닷바람 산책.",
+   "with": [
+    "friends",
+    "date",
+    "student"
+   ],
+   "tags": [
+    "야경",
+    "시장",
+    "바다"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "동문재래시장 야시장",
+     "q": "제주 동문시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "흑돼지 꼬치·딱새우·한라봉 주스가 인기예요."
+    },
+    {
+     "name": "탑동광장",
+     "q": "탑동광장",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "바다 앞 광장 산책로예요."
+    },
+    {
+     "name": "용연구름다리",
+     "q": "용연구름다리",
+     "kind": "view",
+     "stay": 30,
+     "tip": "밤 조명이 켜진 계곡 다리예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "야시장은 저녁 7시쯤부터 열려요."
+    }
+   ]
+  },
+  {
+   "id": "jj-saebyeol-oreum",
+   "region": "제주",
+   "area": "제주 서쪽",
+   "title": "새별오름 + 이시돌목장 + 애월 카페",
+   "summary": "억새 오름 오르고 테쉬폰 목장, 바다 카페로.",
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "자연",
+    "카페",
+    "노을"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "새별오름",
+     "q": "새별오름",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "가을 억새가 장관. 30분이면 정상이에요."
+    },
+    {
+     "name": "성 이시돌 목장",
+     "q": "성이시돌목장",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "이국적인 테쉬폰 건물과 우유 아이스크림."
+    },
+    {
+     "name": "애월 해안 카페",
+     "q": "애월 카페",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "애월 해안도로 따라 바다 뷰 카페가 많아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "새별오름 능선에서 억새를 배경으로 역광 사진이 예뻐요."
+    }
+   ]
+  },
+  {
+   "id": "jj-seongsan",
+   "region": "제주",
+   "area": "성산",
+   "title": "성산일출봉 + 광치기해변 + 섭지코지",
+   "summary": "제주 동쪽 대표 풍경 세 곳을 한 번에.",
+   "with": [
+    "date",
+    "family",
+    "friends"
+   ],
+   "tags": [
+    "바다",
+    "자연"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "성산일출봉",
+     "q": "성산일출봉",
+     "kind": "walk",
+     "stay": 80,
+     "tip": "정상까지 30분. 분화구가 한눈에 보여요."
+    },
+    {
+     "name": "광치기해변",
+     "q": "광치기해변",
+     "kind": "view",
+     "stay": 30,
+     "tip": "썰물 때 이끼 낀 바위와 일출봉 풍경이 멋져요."
+    },
+    {
+     "name": "섭지코지",
+     "q": "섭지코지",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "등대 언덕 산책로와 바다 절벽."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "광치기해변은 썰물 때 가야 바위가 드러나요."
+    }
+   ]
+  },
+  {
+   "id": "bs-haeundae-blueline",
+   "region": "부산",
+   "area": "해운대",
+   "title": "블루라인파크 스카이캡슐 + 청사포",
+   "summary": "바다 위 캡슐 타고 청사포 쌍둥이 등대까지.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "산책"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "해운대 블루라인파크 스카이캡슐",
+     "q": "해운대블루라인파크 미포정거장",
+     "kind": "activity",
+     "stay": 40,
+     "tip": "2~4인 캡슐이라 커플 사진 맛집. 예매 필수."
+    },
+    {
+     "name": "청사포",
+     "q": "청사포",
+     "kind": "view",
+     "stay": 40,
+     "tip": "빨강·하양 쌍둥이 등대가 예뻐요."
+    },
+    {
+     "name": "청사포 다릿돌전망대",
+     "q": "청사포 다릿돌전망대",
+     "kind": "view",
+     "stay": 30,
+     "tip": "바닥이 투명한 바다 전망대예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "스카이캡슐은 주말엔 매진되니 미리 예매하세요."
+    }
+   ]
+  },
+  {
+   "id": "bs-gijang-osiria",
+   "region": "부산",
+   "area": "기장",
+   "title": "오시리아 해안산책로 + 롯데 프리미엄아울렛",
+   "summary": "바다 산책하고 쇼핑, 해동용궁사까지.",
+   "with": [
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "바다",
+    "산책"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "오시리아 해안산책로",
+     "q": "오시리아 해안산책로",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "절벽 아래로 이어지는 바다 산책길이에요."
+    },
+    {
+     "name": "해동용궁사",
+     "q": "해동용궁사",
+     "kind": "culture",
+     "stay": 40,
+     "tip": "바다 바위 위에 세운 절이에요."
+    },
+    {
+     "name": "롯데프리미엄아울렛 동부산점",
+     "q": "롯데프리미엄아울렛 동부산점",
+     "kind": "activity",
+     "stay": 90,
+     "tip": "관람차가 있는 대형 아울렛이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "아울렛 관람차에서 바다가 보여요."
+    }
+   ]
+  },
+  {
+   "id": "bs-busan-station",
+   "region": "부산",
+   "area": "중구",
+   "title": "초량 이바구길 + 부산역 차이나타운",
+   "summary": "168계단 모노레일 타고 산복도로 전망, 내려와서 만두.",
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "전통",
+    "산책",
+    "맛집"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "초량 이바구길",
+     "q": "초량이바구길",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "부산 옛 이야기를 담은 산복도로 골목이에요."
+    },
+    {
+     "name": "168계단 모노레일",
+     "q": "168계단 모노레일",
+     "kind": "activity",
+     "stay": 20,
+     "tip": "가파른 계단 옆 무료 모노레일이에요."
+    },
+    {
+     "name": "부산 차이나타운",
+     "q": "부산 차이나타운",
+     "kind": "food",
+     "stay": 50,
+     "tip": "부산역 앞 만두·짜장 맛집 거리예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "168계단 위에서 부산항 대교가 보여요."
+    }
+   ]
+  },
+  {
+   "id": "seoul-seongsu-2",
+   "region": "서울",
+   "area": "성수",
+   "title": "서울숲 + 성수 팝업 투어 + 뚝섬 한강",
+   "summary": "요즘 서울 핫플 성수. 팝업 구경하고 한강 노을.",
+   "with": [
+    "date",
+    "friends",
+    "student"
+   ],
+   "tags": [
+    "카페",
+    "산책",
+    "노을"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "서울숲",
+     "q": "서울숲",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "사슴 방사장과 은행나무길이 있어요."
+    },
+    {
+     "name": "성수동 카페거리",
+     "q": "성수동 카페거리",
+     "kind": "cafe",
+     "stay": 80,
+     "tip": "연무장길 따라 팝업·카페가 모여 있어요."
+    },
+    {
+     "name": "뚝섬한강공원",
+     "q": "뚝섬한강공원",
+     "kind": "view",
+     "stay": 50,
+     "tip": "자벌레 전시관 옆에서 노을 보기."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "놀코 '이번 주말' 탭에서 성수 팝업을 미리 골라 가세요."
+    }
+   ]
+  },
+  {
+   "id": "seoul-ikseon-night",
+   "region": "서울",
+   "area": "종로",
+   "title": "인왕산 야경 + 서촌 와인바",
+   "summary": "가볍게 인왕산 성곽길 올라 서울 야경, 내려와서 서촌.",
+   "with": [
+    "date",
+    "friends"
+   ],
+   "tags": [
+    "야경",
+    "산책"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "해 질 녘",
+   "stops": [
+    {
+     "name": "인왕산 성곽길",
+     "q": "인왕산",
+     "kind": "walk",
+     "stay": 90,
+     "tip": "윤동주 문학관 쪽에서 오르면 40분쯤. 야경이 끝내줘요."
+    },
+    {
+     "name": "윤동주 시인의 언덕",
+     "q": "윤동주 시인의 언덕",
+     "kind": "view",
+     "stay": 20,
+     "tip": "서울 도심이 한눈에 보여요."
+    },
+    {
+     "name": "서촌 골목",
+     "q": "서촌 체부동 음식점",
+     "kind": "food",
+     "stay": 60,
+     "tip": "서촌엔 작은 와인바·식당이 많아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "야간 산행은 손전등(휴대폰 조명) 꼭 챙기세요."
+    }
+   ]
+  },
+  {
+   "id": "seoul-hangang-picnic",
+   "region": "서울",
+   "area": "반포",
+   "title": "반포 달빛무지개분수 + 세빛섬",
+   "summary": "한강 분수쇼 보고 물 위의 세빛섬 야경.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "야경",
+    "산책"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "반포한강공원",
+     "q": "반포한강공원",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "돗자리 펴고 치킨 시켜 먹기 좋아요."
+    },
+    {
+     "name": "달빛무지개분수",
+     "q": "달빛무지개분수",
+     "kind": "view",
+     "stay": 20,
+     "tip": "4~10월 저녁에 분수쇼를 해요."
+    },
+    {
+     "name": "세빛섬",
+     "q": "세빛섬",
+     "kind": "view",
+     "stay": 40,
+     "tip": "물 위에 뜬 건물에 조명이 켜져요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "분수쇼는 4~10월에만, 시간표를 확인하세요."
+    }
+   ]
+  },
+  {
+   "id": "seoul-mangwon-hip",
+   "region": "서울",
+   "area": "망원",
+   "title": "망원시장 먹방 + 망원 한강 + 합정 카페",
+   "summary": "망원시장에서 군것질하고 한강에서 노을.",
+   "with": [
+    "date",
+    "friends",
+    "student"
+   ],
+   "tags": [
+    "시장",
+    "노을",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "망원시장",
+     "q": "망원시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "고로케·닭강정·칼국수가 유명해요."
+    },
+    {
+     "name": "망원한강공원",
+     "q": "망원한강공원",
+     "kind": "view",
+     "stay": 60,
+     "tip": "노을 명소. 망원정 쪽이 한적해요."
+    },
+    {
+     "name": "합정 카페거리",
+     "q": "합정 카페거리",
+     "kind": "cafe",
+     "stay": 50,
+     "tip": "합정·상수 쪽 분위기 좋은 카페가 많아요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "망원한강공원 노을 + 양화대교가 사진 명소예요."
+    }
+   ]
+  },
+  {
+   "id": "gg-starfield-suwon",
+   "region": "경기",
+   "area": "수원",
+   "title": "스타필드 수원 별마당도서관 + 행리단길",
+   "summary": "거대한 서가 도서관 구경하고 행궁동 카페 골목.",
+   "with": [
+    "date",
+    "friends",
+    "student"
+   ],
+   "tags": [
+    "실내",
+    "카페",
+    "비오는날"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "스타필드 수원",
+     "q": "스타필드 수원",
+     "kind": "activity",
+     "stay": 90,
+     "tip": "별마당도서관 책장이 4층 높이로 쌓여 있어요."
+    },
+    {
+     "name": "행리단길",
+     "q": "행리단길",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "행궁동 한옥·주택 카페 골목이에요."
+    },
+    {
+     "name": "화성행궁",
+     "q": "화성행궁",
+     "kind": "culture",
+     "stay": 40,
+     "tip": "밤엔 야간 개장도 해요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "별마당도서관 계단 위에서 내려다보는 사진이 유명해요."
+    }
+   ]
+  },
+  {
+   "id": "gg-gwangmyeong",
+   "region": "경기",
+   "area": "광명",
+   "title": "광명동굴 + 이케아 광명",
+   "summary": "폐광을 고친 동굴 테마파크와 이케아 구경.",
+   "with": [
+    "date",
+    "family",
+    "friends"
+   ],
+   "tags": [
+    "실내",
+    "비오는날"
+   ],
+   "budget": 2,
+   "hours": 5,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "광명동굴",
+     "q": "광명동굴",
+     "kind": "activity",
+     "stay": 90,
+     "tip": "동굴 안이 사계절 12도라 겉옷 챙기세요."
+    },
+    {
+     "name": "이케아 광명점",
+     "q": "이케아 광명점",
+     "kind": "activity",
+     "stay": 90,
+     "tip": "쇼룸 구경하고 미트볼 먹기."
+    },
+    {
+     "name": "광명 전통시장",
+     "q": "광명전통시장",
+     "kind": "food",
+     "stay": 50,
+     "tip": "광명 시장 먹거리."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "동굴 와인 시음도 할 수 있어요."
+    }
+   ]
+  },
+  {
+   "id": "gg-paju-books",
+   "region": "경기",
+   "area": "파주",
+   "title": "파주출판도시 지혜의숲 + 프로방스마을",
+   "summary": "책 숲 도서관과 유럽풍 마을 데이트.",
+   "with": [
+    "date",
+    "family",
+    "solo"
+   ],
+   "tags": [
+    "실내",
+    "카페"
+   ],
+   "budget": 1,
+   "hours": 5,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "지혜의숲",
+     "q": "지혜의숲 파주",
+     "kind": "culture",
+     "stay": 70,
+     "tip": "8m 높이 책장이 이어진 24시간 도서관이에요."
+    },
+    {
+     "name": "파주 프로방스마을",
+     "q": "파주 프로방스마을",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "알록달록 유럽풍 건물과 빵집이 있어요."
+    },
+    {
+     "name": "마장호수 출렁다리",
+     "q": "마장호수 출렁다리",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "호수 위 출렁다리 산책."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "지혜의숲 책장 사이 복도가 사진 명소예요."
+    }
+   ]
+  },
+  {
+   "id": "gw-sokcho-night",
+   "region": "강원",
+   "area": "속초",
+   "title": "속초중앙시장 + 영금정 + 청초호 야경",
+   "summary": "닭강정 먹고 바다 정자, 밤엔 청초호 조명.",
+   "with": [
+    "friends",
+    "date",
+    "family"
+   ],
+   "tags": [
+    "시장",
+    "바다",
+    "야경"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "속초관광수산시장",
+     "q": "속초관광수산시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "만석닭강정·오징어순대가 명물이에요."
+    },
+    {
+     "name": "영금정",
+     "q": "영금정",
+     "kind": "view",
+     "stay": 30,
+     "tip": "바다 바위 위 정자에서 파도를 봐요."
+    },
+    {
+     "name": "청초호 호수공원",
+     "q": "청초호호수공원",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "밤엔 엑스포타워에 조명이 켜져요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "닭강정은 식어도 맛있어서 숙소 야식으로 딱."
+    }
+   ]
+  },
+  {
+   "id": "gw-gangneung-anmok",
+   "region": "강원",
+   "area": "강릉",
+   "title": "안목해변 카페거리 + 강문해변 + 오죽헌",
+   "summary": "커피거리에서 바다 보며 커피, 오죽헌 산책.",
+   "with": [
+    "date",
+    "friends",
+    "solo"
+   ],
+   "tags": [
+    "카페",
+    "바다",
+    "전통"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "안목해변 커피거리",
+     "q": "안목해변 커피거리",
+     "kind": "cafe",
+     "stay": 60,
+     "tip": "바다 앞 카페가 줄지어 있어요."
+    },
+    {
+     "name": "강문해변",
+     "q": "강문해변",
+     "kind": "view",
+     "stay": 30,
+     "tip": "액자 포토존이 있는 해변이에요."
+    },
+    {
+     "name": "오죽헌",
+     "q": "오죽헌",
+     "kind": "culture",
+     "stay": 50,
+     "tip": "율곡 이이가 태어난 곳. 검은 대나무 숲이 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "강문해변 '액자' 포토존이 유명해요."
+    }
+   ]
+  },
+  {
+   "id": "gn-changwon-night",
+   "region": "경남",
+   "area": "창원",
+   "title": "마산 어시장 + 창동예술촌 + 돝섬",
+   "summary": "아귀찜의 고향 마산에서 시장 먹방과 예술 골목.",
+   "with": [
+    "friends",
+    "date"
+   ],
+   "tags": [
+    "시장",
+    "맛집",
+    "산책"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "마산어시장",
+     "q": "마산어시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "싱싱한 회와 아귀찜 골목이 있어요."
+    },
+    {
+     "name": "창동예술촌",
+     "q": "창동예술촌",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "옛 원도심 골목에 공방·갤러리가 모였어요."
+    },
+    {
+     "name": "마산 아구찜거리",
+     "q": "마산 아구찜거리",
+     "kind": "food",
+     "stay": 60,
+     "tip": "마산식 건아귀찜의 원조 거리예요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "마산 아귀찜은 말린 아귀로 만들어 쫄깃해요."
+    }
+   ]
+  },
+  {
+   "id": "gn-geoje-island",
+   "region": "경남",
+   "area": "거제",
+   "title": "외도 보타니아 + 해금강",
+   "summary": "유람선 타고 바다 정원 섬 외도로.",
+   "with": [
+    "date",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "자연"
+   ],
+   "budget": 3,
+   "hours": 5,
+   "best": "낮",
+   "stops": [
+    {
+     "name": "외도 보타니아",
+     "q": "외도보타니아",
+     "kind": "walk",
+     "stay": 90,
+     "tip": "바다 위 정원 섬. 유람선으로만 갈 수 있어요."
+    },
+    {
+     "name": "해금강",
+     "q": "해금강 거제",
+     "kind": "view",
+     "stay": 40,
+     "tip": "유람선에서 보는 바다 절벽이 멋져요."
+    },
+    {
+     "name": "바람의 언덕",
+     "q": "바람의언덕 거제",
+     "kind": "view",
+     "stay": 40,
+     "tip": "풍차와 바다가 있는 언덕이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "바람이 세면 외도 유람선이 안 뜰 수 있어요."
+    }
+   ]
+  },
+  {
+   "id": "gb-pohang-yeongildae",
+   "region": "경북",
+   "area": "포항",
+   "title": "영일대 해수욕장 + 죽도시장",
+   "summary": "바다 위 누각 영일대와 물회의 고장 죽도시장.",
+   "with": [
+    "friends",
+    "date",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "시장",
+    "야경"
+   ],
+   "budget": 1,
+   "hours": 4,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "영일대해수욕장",
+     "q": "영일대해수욕장",
+     "kind": "walk",
+     "stay": 50,
+     "tip": "바다 위 영일대 누각과 해변 산책로."
+    },
+    {
+     "name": "죽도시장",
+     "q": "포항 죽도시장",
+     "kind": "food",
+     "stay": 60,
+     "tip": "포항 물회·과메기의 본고장이에요."
+    },
+    {
+     "name": "포항운하",
+     "q": "포항운하",
+     "kind": "walk",
+     "stay": 40,
+     "tip": "운하 따라 걷는 야경 산책로."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "tip",
+     "text": "포항 물회는 처음엔 그냥, 나중엔 국수 넣어 먹어요."
+    }
+   ]
+  },
+  {
+   "id": "jn-yeosu-cablecar",
+   "region": "전남",
+   "area": "여수",
+   "title": "여수 해상케이블카 + 오동도",
+   "summary": "바다 위 케이블카 타고 동백섬 오동도.",
+   "with": [
+    "date",
+    "friends",
+    "family"
+   ],
+   "tags": [
+    "바다",
+    "야경"
+   ],
+   "budget": 2,
+   "hours": 4,
+   "best": "오후",
+   "stops": [
+    {
+     "name": "여수해상케이블카",
+     "q": "여수해상케이블카",
+     "kind": "activity",
+     "stay": 30,
+     "tip": "바닥 투명 크리스탈 캐빈이 있어요."
+    },
+    {
+     "name": "오동도",
+     "q": "오동도",
+     "kind": "walk",
+     "stay": 60,
+     "tip": "동백나무 숲 섬. 방파제로 걸어 들어가요."
+    },
+    {
+     "name": "이순신광장",
+     "q": "이순신광장 여수",
+     "kind": "food",
+     "stay": 50,
+     "tip": "여수 딸기모찌·갓김치 가게가 모여 있어요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "photo",
+     "text": "케이블카에서 돌산대교 야경이 보여요."
+    }
+   ]
+  },
+  {
+   "id": "jn-mokpo-night",
+   "region": "전남",
+   "area": "목포",
+   "title": "목포 갓바위 + 평화광장 춤추는 바다분수",
+   "summary": "바다 분수쇼와 해상 보행교 야경.",
+   "with": [
+    "date",
+    "family",
+    "friends"
+   ],
+   "tags": [
+    "야경",
+    "바다"
+   ],
+   "budget": 1,
+   "hours": 3,
+   "best": "저녁",
+   "stops": [
+    {
+     "name": "갓바위",
+     "q": "목포 갓바위",
+     "kind": "view",
+     "stay": 30,
+     "tip": "삿갓 쓴 사람 모양 바위. 해상 보행교로 가요."
+    },
+    {
+     "name": "평화광장",
+     "q": "목포 평화광장",
+     "kind": "view",
+     "stay": 40,
+     "tip": "춤추는 바다분수 쇼가 열려요."
+    },
+    {
+     "name": "목포 근대역사관",
+     "q": "목포근대역사관",
+     "kind": "culture",
+     "stay": 40,
+     "tip": "옛 일본 영사관 건물이에요."
+    }
+   ],
+   "source": "curated",
+   "details": [
+    {
+     "kind": "time",
+     "text": "바다분수는 계절마다 시간이 달라요."
+    }
+   ]
   }
  ]
 }

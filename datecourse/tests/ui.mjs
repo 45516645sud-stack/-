@@ -11,7 +11,8 @@ const ok = (cond, msg) => { console.log((cond ? "  ✓ " : "  ✗ ") + msg); if 
 
 const P = (name, path, d) => ({ name, category: path.split(">").pop().trim(), path, address: "부산 부산진구 " + name, phone: "", url: "https://place.map.kakao.com/" + d, distance: d, x: 129.06, y: 35.15 });
 const PLACES = {
-  "보드게임카페": [P("레드버튼 서면점", "가정,생활 > 여가시설 > 보드카페 > 레드버튼", 120), P("어느 호프", "음식점 > 술집 > 호프,요리주점", 50)],
+  "보드게임카페": [P("오래된 보드게임 서면점", "가정,생활 > 여가시설 > 보드카페", 90), P("레드버튼 서면점", "가정,생활 > 여가시설 > 보드카페 > 레드버튼", 120),
+    P("어느 호프", "음식점 > 술집 > 호프,요리주점", 50), P("닫은 보드게임 서면점", "가정,생활 > 여가시설 > 보드카페", 400)],
   "디저트카페": [P("설빙 서면점", "음식점 > 카페 > 테마카페 > 디저트카페 > 설빙", 200)],
   "고기집": [P("서면 삼겹살", "음식점 > 한식 > 육류,고기 > 삼겹살", 150), P("고기 카페", "음식점 > 카페", 80), P("고기 호프", "음식점 > 술집 > 호프,요리주점", 90)],
 };
@@ -43,6 +44,8 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     if (mode === "docs") return send({ docs: Object.entries(store[u.searchParams.get("col")] || {}).map(([id, data]) => ({ id, data })) });
     if (mode === "places") return send({ places: PLACES[u.searchParams.get("q")] || [] });
     if (mode === "popups") return send({ popups: POPUPS });
+    if (mode === "closed") return send({ ids: ["400"] });   // '닫은 보드게임'은 두 사람이 알린 곳
+    if (u.searchParams.get("name")) return send({ photos: [], ...(u.searchParams.get("name").startsWith("오래된") ? { latest: "2022-01-01", recent: 0 } : { latest: "2026-09-01", recent: 3 }) });
     return send({ photos: [] });
   });
   return { p, errors, store };
@@ -86,6 +89,10 @@ console.log("우리 동네");
   await p.click('.act[data-a="boardgame"]'); await p.waitForTimeout(400);
   const names = await p.locator(".place b").allTextContents();
   ok(names.includes("레드버튼 서면점") && !names.includes("어느 호프"), "보드게임카페에 술집이 안 섞인다");
+  ok(!names.includes("닫은 보드게임 서면점"), "'문 닫았어요'가 쌓인 가게는 안 나온다");
+  await p.waitForTimeout(300);
+  const after = await p.locator(".place b").allTextContents();
+  ok(after[after.length - 1] === "오래된 보드게임 서면점" && await p.locator(".place.stale .stale-note").count() === 1, "1년 넘게 후기 없는 가게는 '문 닫았을 수도'로 뒤로 간다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 

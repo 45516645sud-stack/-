@@ -1,13 +1,16 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import postgres from "npm:postgres@3.4.5";
 import { SCHEMA } from "./schema.ts";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, toPostPhotos, toPosts } from "./photos.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPopupId, cleanPopupItem, HIDE_AT, validToken, visiblePopups, withoutHidden, withoutItem } from "./community.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, toPhotos, toPlaces, postFreshness, toPostPhotos, toPosts } from "./photos.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPlaceId, cleanPopupId, cleanPopupItem, closedIds, HIDE_AT, validToken, visiblePopups, withoutHidden, withoutItem } from "./community.ts";
 
 // 놀코 '우리 동네'의 가게 목록과 가게 사진을 찾아 주는 엔드포인트.
 // 카카오 REST API 키는 비밀이라 앱 화면에 둘 수 없어서, 이 함수가 대신 카카오에 물어본다.
 //   사진: GET ?q=<가게 이름 + 구>&name=<가게 이름>&size=4 → { photos: [{ thumb, link, site }] }
 //         name 이 있으면 블로그·카페 글 중 가게 이름이 나오는 글의 사진만 (없으면 예전처럼 이미지 검색)
+//         + { latest, recent }: 가장 최근 후기 날짜, 1년 안 후기 수 (문 닫았을 수도 표시용)
+//   닫은 가게: GET ?mode=closed → { ids: [카카오 장소 id] } (2명 넘게 '문 닫았어요' 한 곳)
+//              POST { mode: "place_report", id, token } → { ok }
 //   가게: GET ?mode=places&q=<동네 + 놀거리>&lat=&lng=&radius=2000&size=10[&page=2]
 //                                                    → { places: [{ name, category, path, address, phone, url, distance, x, y }] }
 //   최근 글:   GET ?mode=posts&q=<검색어>[&page=1~3] → { posts: [{ title, text, date, url, site, thumb }] } (블로그·카페, 최근 60일, 최신순)
@@ -17,7 +20,7 @@ import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanItem, cleanPo
 //   통계:       POST { mode: "hit", ev, item }               → { ok }   (날짜별 횟수만)
 //   팝업:       GET ?mode=popups → { popups: [{ id, name, place, address, region, start, end, url, lat, lng }] } (승인된 것, 안 끝난 것만)
 //               POST { mode: "popup_report", id, token } → { ok }   (3명이 신고하면 숨김)
-//   관리자:     POST { mode: "admin", pass, action: "stats" | "list" | "delete" | "popups" | "popup_set", col?, doc?, item?, id?, ok?, popup? }
+//   관리자:     POST { mode: "admin", pass, action: "stats" | "list" | "delete" | "popups" | "popup_set" | "closed" | "closed_set", col?, doc?, item?, id?, ok?, popup? }
 // 사진은 썸네일과 출처(블로그 등) 링크뿐이다. 원본 사진은 내려주지 않는다.
 
 const KAKAO_IMAGE_SEARCH = "https://dapi.kakao.com/v2/search/image";
@@ -43,7 +46,7 @@ Deno.serve(async (req) => {
   if (!origin) return json({ error: "허용되지 않은 사이트입니다." }, 403);
 
   const url = new URL(req.url);
-  if (req.method === "POST" || url.searchParams.get("mode") === "docs" || url.searchParams.get("mode") === "popups") return community(req, url, json);
+  if (req.method === "POST" || url.searchParams.get("mode") === "docs" || url.searchParams.get("mode") === "popups" || url.searchParams.get("mode") === "closed") return community(req, url, json);
   const q = cleanQuery(url.searchParams.get("q"));
   if (!q) return json({ error: "검색어는 2~60자로 보내 주세요." }, 400);
   const size = url.searchParams.get("mode") === "places"
@@ -122,8 +125,10 @@ Deno.serve(async (req) => {
         return Array.isArray(data?.documents) ? data.documents : [];
       };
       const [blog, cafe] = await Promise.all([ask(KAKAO_BLOG_SEARCH, 30), ask(KAKAO_CAFE_SEARCH, 20)]);
-      const photos = toPostPhotos([...blog, ...cafe], name, size);
-      return json({ photos }, 200, { "Cache-Control": "public, max-age=86400" });
+      const docs = [...blog, ...cafe];
+      const photos = toPostPhotos(docs, name, size);
+      // latest·recent: 문 닫은 가게 짐작용 (가장 최근 후기 날짜, 1년 안 후기 수)
+      return json({ photos, ...postFreshness(docs, name) }, 200, { "Cache-Control": "public, max-age=86400" });
     } catch (error) {
       console.error("post photos error:", error);
       return json({ error: "사진을 가져오지 못했어요." }, 502);
@@ -216,6 +221,11 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
   if (!sb) return json({ error: "저장소가 아직 설정되지 않았어요." }, 503);
   await ensureTables();
   try {
+    if (req.method === "GET" && url.searchParams.get("mode") === "closed") {
+      const { data, error } = await sb.from("nolco_reports").select("item_id,reporter").eq("col", "pc").limit(10000);
+      if (error) throw error;
+      return json({ ids: closedIds(data ?? []) }, 200, { "Cache-Control": "public, max-age=300" });
+    }
     if (req.method === "GET" && url.searchParams.get("mode") === "popups") {
       const [{ data, error }, hide] = await Promise.all([
         sb.from("nolco_popups").select("id,ok,item").eq("ok", true).limit(500),
@@ -252,6 +262,14 @@ async function community(req: Request, url: URL, json: Json): Promise<Response> 
     }
     if (msg.mode === "admin") return admin(sb, req, msg, json);
 
+    if (msg.mode === "place_report") {
+      const id = cleanPlaceId(msg.id);
+      if (!id || !validToken(msg.token)) return json({ error: "잘못된 신고예요." }, 400);
+      if (await tooMany(sb, req)) return json({ error: "잠시 뒤에 다시 해 주세요." }, 429);
+      const { error } = await sb.from("nolco_reports").upsert({ col: "pc", doc_id: "place", item_id: id, reporter: await authorId(msg.token) }, { ignoreDuplicates: true });
+      if (error) throw error;
+      return json({ ok: true }, 200);
+    }
     if (msg.mode === "popup_report") {
       const id = cleanPopupId(msg.id);
       if (!id || !validToken(msg.token)) return json({ error: "잘못된 신고예요." }, 400);
@@ -329,6 +347,17 @@ async function admin(sb: Sb, req: Request, msg: Record<string, unknown>, json: J
     await sb.from("nolco_reports").delete().eq("col", col).eq("doc_id", doc).eq("item_id", item);
     return json({ ok: true }, 200);
   }
+  if (msg.action === "closed") {   // '문 닫았어요' 신고 목록
+    const { data } = await sb.from("nolco_reports").select("item_id,reporter,created_at").eq("col", "pc").order("created_at", { ascending: false }).limit(5000);
+    return json({ reports: data ?? [] }, 200, { "Cache-Control": "no-store" });
+  }
+  if (msg.action === "closed_set") {   // 관리자: 확실히 닫음(바로 숨김) / 아님(신고 지우기)
+    const id = cleanPlaceId(msg.id);
+    if (!id || typeof msg.closed !== "boolean") return json({ error: "가게 id 가 이상해요." }, 400);
+    await sb.from("nolco_reports").delete().eq("col", "pc").eq("item_id", id);
+    if (msg.closed) await sb.from("nolco_reports").insert({ col: "pc", doc_id: "place", item_id: id, reporter: "admin" });
+    return json({ ok: true }, 200);
+  }
   if (msg.action === "popups") {
     const [{ data: rows }, { data: reports }] = await Promise.all([
       sb.from("nolco_popups").select("id,ok,item,updated_at").limit(2000),
@@ -352,5 +381,5 @@ async function admin(sb: Sb, req: Request, msg: Record<string, unknown>, json: J
     if (msg.ok) await sb.from("nolco_reports").delete().eq("col", "pp").eq("item_id", id);   // 고쳐서 다시 승인하면 신고는 비운다
     return json({ ok: true }, 200);
   }
-  return json({ error: "action 은 stats, list, delete, popups, popup_set 예요." }, 400);
+  return json({ error: "action 은 stats, list, delete, popups, popup_set, closed, closed_set 예요." }, 400);
 }
