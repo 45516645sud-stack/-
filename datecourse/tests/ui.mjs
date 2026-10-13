@@ -22,7 +22,9 @@ const POPUPS = [{ id: "p-0123456789", name: "테스트 팝업", place: "더현�
   { id: "p-0123456780", name: "곧 여는 팝업", place: "성수", address: "", region: "서울",
     start: new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10), end: "2100-01-01", url: "", lat: null, lng: null }];
 const EVENTS = { events: [{ id: "s-1", kind: "show", cat: "연극", title: "테스트 연극", regions: ["부산"], place: "어느 극장",
-  start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" }] };
+  start: "2000-01-01", end: "2100-01-01", long: false, price: 20000, note: "", poster: "", link: "https://example.com", info: "" },
+  { id: "f-1", kind: "festival", cat: "축제", title: "2026 진주남강유등축제", regions: ["경남"], place: "경남 진주시", start: "2026-10-01", end: "2026-10-15",
+    long: false, price: null, note: "", poster: "", link: "https://example.com", info: "" }] };
 
 // 친구 투표 (가짜 서버): 투표 id → { 작성자 id: 고른 번호 }
 const VOTES = {};
@@ -223,6 +225,36 @@ console.log("친구 투표: 후보 담기 → 보내기 → 고르기, 링크로
   await f.p.locator(".vote-opt .vote-see").first().click(); await f.p.waitForTimeout(300);
   ok(await f.p.locator("#sheet").evaluate((d) => d.open), "'자세히'를 누르면 코스가 열린다");
   ok(f.errors.length === 0, "오류 없음 " + f.errors.join(" / "));
+}
+
+console.log("시간·계절이 정해진 장소 (분수쇼·축제)");
+{
+  const { p, errors } = await page();
+  await open(p);
+  ok(await p.locator("#grid .item .timed-tag").count() > 0, "목록에 '⏰ 시간 확인' 표시가 붙는다");
+  await p.evaluate(() => openCourse("seoul-hangang-picnic")); await p.waitForTimeout(400);
+  const box = p.locator(".timed").first();
+  ok((await box.textContent()).includes("분수쇼") && await box.locator("a[href*='search.naver.com']").count() === 1, "분수쇼 시간과 '가기 전에 시간 확인' 버튼이 나온다");
+  const st = await p.evaluate(() => {
+    const c = findCourse("seoul-hangang-picnic"), t = timedOf(c, c.stops.find((s) => s.name === "달빛무지개분수"));
+    const j = findCourse("gn-jinju"), f = timedOf(j, j.stops.find((s) => s.name === "촉석루"));
+    const b = findCourse("busan-gwangan-night"), d = timedOf(b, b.stops.find((s) => s.name === "광안리해수욕장"));
+    const g = findCourse("gg-gapyeong"), w = timedOf(g, g.stops.find((s) => s.name === "아침고요수목원"));
+    const at = (iso) => new Date(iso + "T12:00:00");
+    return {
+      winter: timedStatus(c, t, at("2026-01-10")), summer: timedStatus(c, t, at("2026-07-10")),
+      festNow: timedStatus(j, f, at("2026-10-05")), festSoon: timedStatus(j, f, at("2026-09-21")),
+      sat: timedStatus(b, d, at("2026-10-17")), mon: timedStatus(b, d, at("2026-10-19")),
+      wrap: monthsText(w.months), off: timedStatus(g, w, at("2026-07-01")),
+    };
+  });
+  ok(st.winter.tone === "warn" && st.winter.text.includes("4~10월"), "겨울엔 '지금은 분수쇼 하는 철이 아니에요'");
+  ok(st.summer.tone === "ok", "여름엔 '지금 하는 철'");
+  ok(st.festNow.tone === "ok" && st.festNow.text.includes("10.15"), "축제 기간이면 '지금 축제 중! 10.15까지' (관광공사 날짜)");
+  ok(st.festSoon.text.includes("10.1") && st.festSoon.text.includes("10일 남았어요"), "곧 하면 올해 날짜와 남은 날");
+  ok(st.sat.tone === "ok" && st.mon.tone === "warn" && st.mon.text.includes("토요일"), "드론쇼: 토요일엔 '오늘 하는 날', 월요일엔 '보통 안 해요'");
+  ok(st.wrap === "12~3월" && st.off.tone === "warn", "해를 넘기는 기간은 '12~3월'로, 철이 아니면 알려 준다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 
 console.log("약관 페이지");
