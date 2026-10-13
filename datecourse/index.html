@@ -807,7 +807,7 @@ ILLU.show = `<g transform="rotate(-10 24 24)"><path d="M6 15h36v6a3 3 0 0 0 0 6v
 ILLU.festival = `<path d="M24 6v9M24 33v9M6 24h9M33 24h9M11.3 11.3l6.4 6.4M30.3 30.3l6.4 6.4M36.7 11.3l-6.4 6.4M17.7 30.3l-6.4 6.4" stroke="${C.y}" stroke-width="3" stroke-linecap="round"/>
     <circle cx="24" cy="24" r="5" fill="${C.r}"/><circle cx="9" cy="8" r="2.4" fill="${C.p}"/><circle cx="40" cy="9" r="2" fill="${C.m}"/><circle cx="40" cy="40" r="2.4" fill="${C.s}"/><circle cx="8" cy="39" r="2" fill="${C.v}"/>`;
 /* 입체 그림: Microsoft Fluent Emoji 3D (MIT, img/3d/LICENSE.txt). 없으면 위 색 그림(SVG) */
-const IMG3D = new Set(["coinsing", "karaoke", "boardgame", "escape", "bowling", "billiards", "arcade", "manga", "photo", "class",
+const IMG3D = new Set(["tarot", "pingpong", "fishing", "roller", "archery", "pub", "exhibit", "park", "coinsing", "karaoke", "boardgame", "escape", "bowling", "billiards", "arcade", "manga", "photo", "class",
   "climbing", "screenbase", "pc", "vr", "jjim", "cinema", "meal", "snack", "cafe", "cup", "spark", "wave", "moon", "roof", "leaf",
   "pin", "show", "festival"]);
 function illu(name) {
@@ -2305,7 +2305,7 @@ async function rollEat(spot, seen) {
       <span class="cat"></span><span class="addr"></span>
       <div class="links">
         ${kakaoUrl ? `<a class="link-pill" href="${esc(kakaoUrl)}" target="_blank" rel="noopener">가게 정보·후기</a>` : ""}
-        <a class="link-pill" id="eatRoute" href="${esc(naverSearchUrl(p.place_name, p.road_address_name || p.address_name))}" target="_blank" rel="noopener">네이버지도 길찾기</a>
+        <a class="link-pill" id="eatRoute" href="${esc(naverSearchUrl(p.place_name, Number(p.y), Number(p.x)))}" target="_blank" rel="noopener">네이버지도 길찾기</a>
         <button type="button" class="link-pill" id="eatShare">친구한테 보내기</button>
       </div>
     </div>
@@ -2331,9 +2331,10 @@ async function rollEat(spot, seen) {
 }
 
 /* 네이버지도: 휴대폰에 네이버지도 앱이 있으면 앱에서 바로 걷기 길찾기, 없거나 컴퓨터면 네이버지도 웹에서 가게 검색 */
-function naverSearchUrl(name, address = "") {
-  const area = String(address || "").split(" ").slice(0, 3).join(" ");   // 같은 이름 가게가 많아서 동네까지
-  return `https://map.naver.com/p/search/${encodeURIComponent(`${name} ${area}`.trim())}`;
+// 검색어는 가게 이름만 (주소를 붙이면 네이버가 '결과 없음'을 낸다). 같은 이름 가게가 많아서 지도를 그 가게 근처(c=경도,위도)로 연다
+function naverSearchUrl(name, lat, lng) {
+  const at = Number.isFinite(lat) && Number.isFinite(lng) ? `?c=${lng},${lat},16,0,0,0,dh` : "";
+  return `https://map.naver.com/p/search/${encodeURIComponent(String(name).trim())}${at}`;
 }
 function naverRoute(e, name, lat, lng) {
   if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || !Number.isFinite(lat) || !Number.isFinite(lng)) return;   // 그냥 웹 링크로
