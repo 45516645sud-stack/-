@@ -161,6 +161,9 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .mini small svg.i { width: 11px; height: 11px; color: var(--star, #ffc93a); }
 .stop-warn { margin: 6px 0 0; padding: 6px 10px; border-radius: 8px; font-size: 12px; background: #fdecec; color: #a12a2a; }
 :root[data-mode="dark"] .stop-warn { background: #3a1d1d; color: #ffb4b4; }
+:root[data-mode="dark"] .timed.warn { background: #3a1d1d; }
+:root[data-mode="dark"] .timed.warn .timed-now { color: #ffb4b4; }
+:root[data-mode="dark"] .timed.ok .timed-now { color: #6fd39a; }
 .stop-picks { margin: 8px 0 0; }
 .stop-picks small { display: block; font-size: 11px; color: var(--faint); margin-bottom: 4px; }
 .pick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -462,6 +465,15 @@ ol.stops li:not(:last-child)::after { content: ""; position: absolute; left: 11p
 .stop-name { font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
 .stop-kind { display: block; color: var(--sub); font-size: 13px; font-variant-numeric: tabular-nums; }
 .stop-tip { margin: 4px 0 8px; font-size: 14px; color: var(--ink); }
+.timed { margin: 4px 0 10px; padding: 10px 12px; border-radius: 12px; background: var(--fill); }
+.timed-top { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.timed-when { margin: 2px 0 0; font-size: 13px; color: var(--sub); }
+.timed-now { margin: 4px 0 0; font-size: 13px; font-weight: 700; }
+.timed.ok .timed-now { color: #1f8a4c; }
+.timed.warn { background: #fdecec; }
+.timed.warn .timed-now { color: #a12a2a; }
+.timed .link-pill { margin-top: 8px; }
+.timed-tag { color: var(--accent-text); font-weight: 700; }
 .links { display: flex; gap: 6px; flex-wrap: wrap; }
 .link-pill {
   display: inline-flex; align-items: center; height: 30px; padding: 0 11px; border-radius: 8px; background: var(--fill);
@@ -916,7 +928,8 @@ async function fetchJson(url) {
 
 /* 코스 썸네일 실제 사진: 직접 고른 코스는 data/course_photos.json (관광공사, 공공누리 1유형), 관광공사 코스는 대표 사진 */
 let COURSE_PHOTO = {};
-let STOP_PHOTO = {};   // 코스id → { 장소 번호: { img, place } } (한국관광공사 사진, scripts/fetch_stop_photos.py)
+let STOP_PHOTO = {};
+let COURSE_TIMED = {};   // 코스id → { 장소 이름: { type, label, months?, days?, time, fest?, ask } } (시간·계절이 정해진 쇼·축제)   // 코스id → { 장소 번호: { img, place } } (한국관광공사 사진, scripts/fetch_stop_photos.py)
 let COURSE_MISSING = {};   // 매주 점검에서 지도에 안 나온 정류장 (data/course_check.json)
 function photoOf(c) {
   const p = COURSE_PHOTO[c.id];
@@ -932,8 +945,9 @@ function thumbHtml(c, tone, pic) {
 
 async function loadCourses() {
   // courses.json: 직접 고른 기본 코스 / tour_courses.json: 한국관광공사 추천코스 수집 결과(있을 때만)
-  const [base, tour, photos, check] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"),
-    fetchJson("data/course_photos.json"), fetchJson("data/course_check.json")]);
+  const [base, tour, photos, check, timed] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"),
+    fetchJson("data/course_photos.json"), fetchJson("data/course_check.json"), fetchJson("data/course_timed.json")]);
+  COURSE_TIMED = (timed && timed.stops) || {};
   COURSE_PHOTO = (photos && photos.photos) || {};
   fetchJson("data/stop_photos.json").then((d) => { STOP_PHOTO = (d && d.photos) || {}; });
   COURSE_MISSING = (check && check.missing) || {};
@@ -1677,6 +1691,7 @@ function card(c) {
       <span class="meta">
         ${rate ? `<span class="rate">${icon("star")}${rate.avg.toFixed(1)}<small>(${rate.n})</small></span>` : ""}
         ${c.hours ? `<span>${c.hours}시간</span>` : ""}
+        ${hasTimed(c) ? `<span class="timed-tag">⏰ 시간 확인</span>` : ""}
         <span>${total !== null ? `<span class="won">1인 ${won(total)}</span>` : esc(BUDGET[c.budget] || "")}</span>
         ${Number.isFinite(d) ? `<span>${d < 1 ? "1km 안" : Math.round(d) + "km"}</span>` : ""}
       </span>
@@ -2179,6 +2194,7 @@ function openCourse(id, { push = true } = {}) {
           <div class="stop-name">${esc(s.name)}</div>
           <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : s.priceNote ? "보통 " + s.priceNote : ""].filter(Boolean).map(esc).join(" · ")}</span>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
+          ${timedOf(c, s) ? `<div class="timed" data-stop="${i}"></div>` : ""}
           ${(COURSE_MISSING[c.id] || []).includes(s.name) ? `<p class="stop-warn">최근 지도에서 확인되지 않았어요. 문을 닫았거나 이름이 바뀌었을 수 있으니 가기 전에 꼭 확인하세요.</p>` : ""}
           ${c.source === "local" && s.act ? `<div class="stop-picks" data-act="${esc(s.act)}"><span class="note">근처 실제 가게를 찾는 중…</span></div>` : ""}
           <div class="links">${mapLinks(s)}</div>
@@ -2217,10 +2233,67 @@ function openCourse(id, { push = true } = {}) {
   drawMap(c);
   fillStopPicks(c);
   fillStopPhotos(c);
+  fillTimed(c);
+  if (!WK.list) loadEvents().then(() => { if (openId === c.id) fillTimed(c); });   // 축제 실제 날짜는 '이번 주말' 데이터에서
   renderReviewForm(c.id);
   renderReviewList(c.id);
   renderMaker(c);
   if (push) history.pushState({ id }, "", "#c=" + encodeURIComponent(id));
+}
+
+/* ---------- 시간·계절이 정해진 장소 (분수쇼·드론쇼·축제 등) ----------
+   '보통'의 일정과 오늘 날짜를 비교해 "지금은 철이 아니에요" 같은 말을 붙이고, 늘 '가기 전에 확인' 버튼을 같이 준다.
+   축제는 '이번 주말' 데이터(관광공사 축제, 45일 안)에 있으면 올해 실제 날짜를 보여 준다 */
+const timedOf = (c, s) => (COURSE_TIMED[c.id] || {})[s.name] || null;
+const hasTimed = (c) => !!COURSE_TIMED[c.id];
+const DAY_NAME = "일월화수목금토";
+function monthsText(ms) {
+  if (!ms || !ms.length) return "";
+  if (ms.length === 1) return ms[0] + "월";
+  const sorted = [...ms];
+  // 12,1,2,3 처럼 해를 넘기는 것은 시작 달을 찾아 이어서
+  const start = sorted.find((m) => !sorted.includes(m === 1 ? 12 : m - 1)) ?? sorted[0];
+  const end = sorted.find((m) => !sorted.includes(m === 12 ? 1 : m + 1)) ?? sorted[sorted.length - 1];
+  return `${start}~${end}월`;
+}
+function festEvent(c, t) {
+  if (!t.fest || !WK.list) return null;
+  const key = t.fest.replace(/\s/g, "");
+  return WK.list.filter((e) => e.kind === "festival" && e.title.replace(/\s/g, "").includes(key) && (!e.regions.length || e.regions.includes(c.region)))
+    .sort((a, b) => a.start.localeCompare(b.start))[0] || null;
+}
+// { tone: "ok"(지금 해요) | "warn"(지금은 안 해요) | "", text }
+function timedStatus(c, t, now = new Date()) {
+  const month = now.getMonth() + 1, today = isoDay(now);
+  const ev = festEvent(c, t);
+  if (ev) {
+    if (ev.start <= today && today <= ev.end) return { tone: "ok", text: `지금 축제 중! ${md(ev.end)}까지` };
+    const dday = Math.round((new Date(ev.start + "T00:00:00") - new Date(today + "T00:00:00")) / 86400000);
+    return { tone: "", text: `올해 일정 ${md(ev.start)} ~ ${md(ev.end)} · ${dday}일 남았어요` };
+  }
+  if (t.months && t.months.length && !t.months.includes(month))
+    return { tone: "warn", text: t.type === "festival" ? `지금은 축제 기간이 아니에요 (보통 ${monthsText(t.months)})` : `지금은 ${t.label} 하는 철이 아니에요 (보통 ${monthsText(t.months)})` };
+  if (t.type === "festival") return { tone: "", text: "보통 이맘때 열려요. 올해 날짜를 꼭 확인하세요" };
+  if (t.days && t.days.length) return t.days.includes(now.getDay())
+    ? { tone: "ok", text: "오늘 하는 날이에요" }
+    : { tone: "warn", text: `오늘(${DAY_NAME[now.getDay()]})은 보통 안 해요 · 주로 ${t.days.map((d) => DAY_NAME[d]).join("·")}요일` };
+  if (t.months && t.months.length) return { tone: "ok", text: "지금 하는 철이에요" };
+  return { tone: "", text: "" };
+}
+function fillTimed(c) {
+  document.querySelectorAll("#sheetBody .timed[data-stop]").forEach((box) => {
+    const s = c.stops[Number(box.dataset.stop)];
+    const t = s && timedOf(c, s);
+    if (!t) { box.remove(); return; }
+    const st = timedStatus(c, t);
+    box.className = "timed" + (st.tone ? " " + st.tone : "");
+    box.innerHTML = `<div class="timed-top"><span class="timed-ic" aria-hidden="true">${t.type === "festival" ? "🎉" : "⏰"}</span><b></b></div>
+      <p class="timed-when"></p>${st.text ? `<p class="timed-now"></p>` : ""}
+      ${t.ask ? `<a class="link-pill" target="_blank" rel="noopener" href="https://search.naver.com/search.naver?query=${encodeURIComponent(t.ask)}">${t.type === "festival" ? "올해 날짜 확인" : "가기 전에 시간 확인"}</a>` : ""}`;
+    box.querySelector("b").textContent = t.label;
+    box.querySelector(".timed-when").textContent = t.time;
+    if (st.text) box.querySelector(".timed-now").textContent = st.text;
+  });
 }
 
 // 코스 순서의 장소마다 사진: 한국관광공사 사진(있으면 맨 앞) + 그 장소 이름이 나오는 블로그·카페 후기 사진 (누르면 원래 글)
