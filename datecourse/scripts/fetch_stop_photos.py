@@ -14,6 +14,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import time
 import sys
 from pathlib import Path
 
@@ -58,6 +59,7 @@ def pick(items: list[dict], stop: dict) -> dict | None:
 def main(argv: list[str] | None = None, client: ct.Client | None = None, fetch=download, today: dt.date | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--max-calls", type=int, default=800)
+    ap.add_argument("--max-seconds", type=int, default=720, help="이 시간이 지나면 받은 만큼 저장하고 멈춘다 (다음에 이어서)")
     args = ap.parse_args(argv)
     key = os.environ.get("DATA_GO_KR_KEY", "").strip()
     if client is None:
@@ -75,10 +77,13 @@ def main(argv: list[str] | None = None, client: ct.Client | None = None, fetch=d
     folder = ROOT / "img" / "stop"
     folder.mkdir(parents=True, exist_ok=True)
     got = 0
+    started = time.monotonic()
     try:
         for c in courses:
             for i, stop in enumerate(c["stops"]):
                 k = f"{c['id']}/{i}"
+                if time.monotonic() - started > args.max_seconds:
+                    raise TimeoutError
                 if str(i) in photos.get(c["id"], {}):
                     continue
                 last = misses.get(k)
@@ -107,6 +112,8 @@ def main(argv: list[str] | None = None, client: ct.Client | None = None, fetch=d
                 print(f"{k} {stop['name']}: {photos[c['id']][str(i)]['place']}")
     except ct.CallBudget:
         print("호출 한도에 닿아 여기서 멈춰요 (다음에 이어서)")
+    except TimeoutError:
+        print(f"{args.max_seconds}초가 지나 받은 만큼 저장하고 멈춰요 (다음에 이어서)")
     meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     total = sum(len(v) for v in photos.values())
     print(f"새 사진 {got}장, 모두 {total}장, 못 찾은 곳 {len(misses)}곳 (호출 {client.calls}회)")
