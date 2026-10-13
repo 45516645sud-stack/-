@@ -87,6 +87,7 @@
   "gg-anseong/1": "2026-10-13",
   "gg-gapyeong/0": "2026-10-13",
   "gg-gapyeong/1": "2026-10-13",
+  "gg-gwanggyo/1": "2026-10-13",
   "gg-gwangmyeong/1": "2026-10-13",
   "gg-gwangmyeong/2": "2026-10-13",
   "gg-ilsan/1": "2026-10-13",
@@ -125,6 +126,7 @@
   "gn-jinju/0": "2026-10-13",
   "gn-jinju/2": "2026-10-13",
   "gn-miryang/1": "2026-10-13",
+  "gn-namhae/0": "2026-10-13",
   "gn-namhae/2": "2026-10-13",
   "gn-sacheon/0": "2026-10-13",
   "gn-sacheon/1": "2026-10-13",
@@ -1049,6 +1051,10 @@
    "2": {
     "img": "img/stop/incheon-chinatown-2.webp",
     "place": "개항장 거리"
+   },
+   "3": {
+    "img": "img/stop/incheon-chinatown-3.webp",
+    "place": "월미도"
    }
   },
   "incheon-eurwangni": {
