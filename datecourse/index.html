@@ -92,6 +92,22 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .brand-row { display: flex; align-items: center; justify-content: space-between; height: 32px; }
 .brand { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.04em; color: var(--accent-ink); }
 .brand svg { width: 22px; height: 22px; }
+.brand-left { display: flex; align-items: center; gap: 10px; }
+.help-btn { height: 26px; padding: 0 10px; border: 1.5px solid rgba(255,255,255,.7); border-radius: 999px; background: transparent; color: var(--accent-ink); font-size: 12px; font-weight: 700; }
+/* 사용법 둘러보기 (게임 튜토리얼처럼 한 곳씩 밝게 비춘다) */
+.tour { position: fixed; inset: 0; z-index: 2000; }
+.tour-hole { position: fixed; border-radius: 14px; box-shadow: 0 0 0 9999px rgba(0,0,0,.62); transition: all .25s ease; pointer-events: none; }
+.tour-hole.none { width: 2px; height: 2px; left: 50%; top: 40%; }
+.tour-tip { position: fixed; left: 16px; right: 16px; max-width: 420px; margin: 0 auto; padding: 16px; border-radius: 16px; background: var(--bg); color: var(--ink); box-shadow: 0 10px 30px rgba(0,0,0,.25); transition: top .25s ease; }
+.tour-tip .step { font-size: 12px; font-weight: 700; color: var(--accent-text); }
+.tour-tip h3 { margin: 4px 0 6px; font-size: 18px; letter-spacing: -0.02em; }
+.tour-tip p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink); word-break: keep-all; }
+.tour-bar { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.tour-bar .btn { white-space: nowrap; flex: none; }
+.tour-dots { display: flex; gap: 3px; flex: 1; min-width: 0; overflow: hidden; }
+.tour-dots i { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--line); }
+.tour-dots i.on { background: var(--accent); width: 14px; border-radius: 3px; }
+@media (prefers-reduced-motion: reduce) { .tour-hole, .tour-tip { transition: none; } }
 .icon-btn {
   border: 0; background: transparent; width: 36px; height: 36px; border-radius: 10px;
   display: grid; place-items: center; color: inherit; padding: 0;
@@ -636,7 +652,10 @@ body.has-tray .toast { bottom: calc(var(--tab-h) + 70px + env(safe-area-inset-bo
   <div class="appbar-top">
     <div class="wrap">
       <div class="brand-row">
-        <h1 class="brand" id="brandMark">놀코</h1>
+        <div class="brand-left">
+          <h1 class="brand" id="brandMark">놀코</h1>
+          <button type="button" class="help-btn" id="tourBtn" aria-label="놀코 사용법 보기">? 사용법</button>
+        </div>
         <button class="icon-btn" id="themeBtn" aria-label="어둡게 보기"></button>
       </div>
       <label class="search" id="searchBox">
@@ -3638,9 +3657,111 @@ function drawInstallTip() {
   });
 }
 
+/* ---------- 사용법 둘러보기 ----------
+   처음 온 사람에게 한 번 자동으로, 그 뒤로는 왼쪽 위 '? 사용법' 버튼으로. 화면의 버튼을 하나씩 밝게 비추며 설명한다.
+   지금 화면에 없는 버튼(예: 데이터가 없어 숨긴 '이번 주말')은 건너뛴다 */
+const TOUR = [
+  { el: null, title: "놀코에 온 걸 환영해요! 👋", text: "놀 곳을 대신 골라 주는 앱이에요. 30초만 같이 둘러볼까요?" },
+  { el: ".seg", title: "여행 코스 · 우리 동네", text: "멀리 놀러 갈 땐 '여행 코스', 사는 동네에서 놀 땐 '우리 동네'를 눌러요." },
+  { el: "#regionRow", title: "지역 고르기", text: "옆으로 밀어서 지역을 골라요. '전국'이면 전체 코스가 나와요." },
+  { el: "#eatBtn", title: "뭐 먹지?", text: "메뉴만 고르면 근처 밥집 한 곳을 딱 골라 줘요. 결정이 어려울 때 눌러 보세요." },
+  { el: "#nearBtn", title: "지금 근처", text: "지금 있는 곳에서 걸어갈 만한 놀거리를 보여 줘요." },
+  { el: "#randomBtn", title: "어디 갈지 모르겠다면", text: "'뽑기'를 누르면 조건에 맞는 코스 하나를 골라 줘요." },
+  { el: "#grid .item", title: "코스 보기", text: "코스를 누르면 순서, 지도, 사진, 이동 시간이 나와요. ⏰ 표시는 시간이 정해진 쇼·축제가 있다는 뜻이에요." },
+  { el: "#quickRow", title: "필터", text: "누구와 · 분위기 · 예산 · 시간으로 코스를 좁힐 수 있어요." },
+  { el: "#weekendBtn", title: "이번 주말", text: "이번 주말 공연, 축제, 팝업스토어를 모아서 보여 줘요." },
+  { el: "#makeBtn", title: "코스 만들기", text: "가고 싶은 곳을 골라 나만의 코스를 만들고 친구한테 보낼 수 있어요." },
+  { el: "#favBtn", title: "찜", text: "코스 안의 ♡를 누르면 여기에 모여요." },
+  { el: null, title: "🗳 친구랑 정하기", text: "코스나 가게에서 '🗳 투표'를 눌러 후보를 담고, 단톡방에 보내면 친구들이 링크에서 골라요. 앱 설치는 필요 없어요." },
+  { el: "#tourBtn", title: "다 봤어요! 🎉", text: "다시 보고 싶으면 언제든 왼쪽 위 '? 사용법'을 누르세요." },
+];
+let tourAt = 0, tourSteps = [];
+function tourTarget(step) {
+  if (!step.el) return null;
+  const el = document.querySelector(step.el);
+  if (!el || el.hidden || !el.getClientRects().length) return null;
+  return el;
+}
+function startTour() {
+  hit("visit", "tour");
+  tourSteps = TOUR.filter((st) => !st.el || tourTarget(st));
+  tourAt = 0;
+  document.querySelectorAll("dialog[open]").forEach((d) => d.close());
+  let box = $("tour");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "tour"; box.className = "tour";
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "놀코 사용법");
+    box.innerHTML = `<div class="tour-hole"></div><div class="tour-tip"><div class="step"></div><h3></h3><p></p>
+      <div class="tour-bar"><div class="tour-dots"></div><button type="button" class="btn small ghost" id="tourSkip">건너뛰기</button>
+      <button type="button" class="btn small" id="tourPrev">이전</button><button type="button" class="btn small primary" id="tourNext">다음</button></div></div>`;
+    document.body.append(box);
+    $("tourSkip").addEventListener("click", endTour);
+    $("tourPrev").addEventListener("click", () => { if (tourAt > 0) { tourAt--; drawTour(); } });
+    $("tourNext").addEventListener("click", () => { if (tourAt < tourSteps.length - 1) { tourAt++; drawTour(); } else endTour(); });
+    window.addEventListener("resize", () => { if ($("tour") && !$("tour").hidden) placeTour(); });
+    window.addEventListener("scroll", () => { if ($("tour") && !$("tour").hidden) placeTour(); }, { passive: true });
+    document.addEventListener("keydown", (e) => {
+      if (!$("tour") || $("tour").hidden) return;
+      if (e.key === "Escape") endTour();
+      if (e.key === "ArrowRight") $("tourNext").click();
+      if (e.key === "ArrowLeft") $("tourPrev").click();
+    });
+  }
+  box.hidden = false;
+  drawTour();
+}
+function drawTour() {
+  const st = tourSteps[tourAt];
+  const box = $("tour");
+  box.querySelector(".step").textContent = `${tourAt + 1} / ${tourSteps.length}`;
+  box.querySelector("h3").textContent = st.title;
+  box.querySelector("p").textContent = st.text;
+  box.querySelector(".tour-dots").innerHTML = tourSteps.map((_, i) => `<i class="${i === tourAt ? "on" : ""}"></i>`).join("");
+  $("tourPrev").hidden = tourAt === 0;
+  $("tourNext").textContent = tourAt === tourSteps.length - 1 ? "시작하기" : "다음";
+  $("tourSkip").hidden = tourAt === tourSteps.length - 1;
+  const el = tourTarget(st);
+  // 화면 위·아래 고정 줄(머리, 아래 메뉴)에 있는 것은 스크롤하지 않고, 목록 안의 것은 화면 가운데로
+  if (el && !el.closest(".appbar, .tabbar")) {
+    el.scrollIntoView({ block: "center" });
+    // 위에 붙어 있는 머리(검색·지역 줄)에 가리면 그 아래로 내린다
+    const top = document.querySelector(".appbar").getBoundingClientRect().bottom, r = el.getBoundingClientRect();
+    if (r.top < top + 12) window.scrollBy(0, r.top - top - 12);
+  }
+  placeTour();
+  setTimeout(placeTour, 350);
+  $("tourNext").focus({ preventScroll: true });
+}
+function placeTour() {
+  const st = tourSteps[tourAt];
+  const box = $("tour");
+  if (!st || !box) return;
+  const hole = box.querySelector(".tour-hole"), tip = box.querySelector(".tour-tip");
+  const el = tourTarget(st);
+  if (!el) {
+    hole.classList.add("none");
+    hole.removeAttribute("style");
+    tip.style.top = Math.max(16, (innerHeight - tip.offsetHeight) / 2) + "px";
+    return;
+  }
+  hole.classList.remove("none");
+  const r = el.getBoundingClientRect(), pad = 6;
+  Object.assign(hole.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + pad * 2 + "px", height: r.height + pad * 2 + "px" });
+  // 설명 상자는 비춘 곳 아래에 자리가 있으면 아래, 없으면 위
+  const below = r.bottom + pad + 12, h = tip.offsetHeight;
+  tip.style.top = (below + h < innerHeight - 8 ? below : Math.max(8, r.top - pad - 12 - h)) + "px";
+}
+function endTour() {
+  if ($("tour")) $("tour").hidden = true;
+  save("nolco.tourDone", true);
+  window.scrollTo({ top: 0 });
+}
+
 /* ---------- 시작 ---------- */
 applyTheme(load(STORE.theme, ""));
 $("themeBtn").addEventListener("click", toggleTheme);
+$("tourBtn").addEventListener("click", startTour);
 $("randomBtn").addEventListener("click", () => pickRandom(""));
 const goTab = (fav_, user_) => { state.view = "courses"; state.favOnly = fav_; state.userOnly = user_; update(); window.scrollTo({ top: 0 }); };
 $("tabHome").addEventListener("click", () => goTab(false, false));
@@ -3711,6 +3832,8 @@ window.addEventListener("popstate", () => {
   else if (id) pendingId = id;
   const vote = voteFromHash();
   if (vote) openVote(vote);
+  // 처음 온 사람에게 한 번 (공유 링크로 코스·투표를 보러 온 경우는 방해하지 않는다)
+  if (!load("nolco.tourDone", false) && !location.hash && !navigator.webdriver) setTimeout(() => { if (!document.querySelector("dialog[open]")) startTour(); }, 900);
   initShared().catch(() => {});
   loadEvents();
   loadPopups();

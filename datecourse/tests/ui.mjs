@@ -283,6 +283,30 @@ console.log("시간·계절이 정해진 장소 (분수쇼·축제)");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 
+console.log("사용법 둘러보기 (튜토리얼)");
+{
+  const { p, errors } = await page();
+  await open(p);
+  await p.click("#tourBtn"); await p.waitForTimeout(300);
+  ok(await p.locator("#tour").isVisible() && (await p.locator("#tour .step").textContent()).startsWith("1 /"), "왼쪽 위 '? 사용법'을 누르면 둘러보기가 열린다");
+  const total = Number((await p.locator("#tour .step").textContent()).split("/")[1]);
+  let eatOk = false;
+  for (let i = 1; i < total; i++) {
+    await p.click("#tourNext"); await p.waitForTimeout(450);
+    if ((await p.locator("#tour h3").textContent()).includes("뭐 먹지")) {
+      const [h, e] = await Promise.all([p.locator(".tour-hole").boundingBox(), p.locator("#eatBtn").boundingBox()]);
+      eatOk = Math.abs(h.x + 6 - e.x) < 3 && Math.abs(h.y + 6 - e.y) < 3;
+      const tip = await p.locator(".tour-tip").boundingBox();
+      eatOk = eatOk && (tip.y >= h.y + h.height || tip.y + tip.height <= h.y);   // 설명 상자가 비춘 곳을 가리지 않는다
+    }
+  }
+  ok(eatOk, "'뭐 먹지?' 차례엔 그 버튼을 밝게 비추고, 설명이 버튼을 가리지 않는다");
+  ok((await p.locator("#tourNext").textContent()) === "시작하기", "마지막 차례는 '시작하기'");
+  await p.click("#tourNext"); await p.waitForTimeout(200);
+  ok(await p.locator("#tour").isHidden() && await p.evaluate(() => localStorage.getItem("nolco.tourDone") === "true"), "끝내면 닫히고, 다음부터는 저절로 안 열린다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
 console.log("약관 페이지");
 {
   const { p } = await page();
