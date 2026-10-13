@@ -69,7 +69,8 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     if (mode === "vote") return send(voteRes(u.searchParams.get("id"), u.searchParams.get("me")));
     if (mode === "closed") return send({ ids: ["400"] });   // '닫은 보드게임'은 두 사람이 알린 곳
     if (u.searchParams.get("name") === "뚝섬한강공원") return send({ photos: [{ thumb: "https://search1.kakaocdn.net/a.jpg", link: "https://blog.naver.com/a/2", site: "어느 블로그" }], latest: "2026-09-01", recent: 3 });
-    if (u.searchParams.get("name")) return send({ photos: [], ...(u.searchParams.get("name").startsWith("오래된") ? { latest: "2022-01-01", recent: 0 } : { latest: "2026-09-01", recent: 3 }) });
+    if (u.searchParams.get("name")) return send({ photos: [], ...(u.searchParams.get("name").startsWith("오래된") ? { latest: "2022-01-01", recent: 0 }
+      : u.searchParams.get("name").startsWith("레드버튼") ? { latest: null, recent: 0 } : { latest: "2026-09-01", recent: 3 }) });   // 레드버튼: 후기가 아예 없는 가게
     return send({ photos: [] });
   });
   return { p, errors, store };
@@ -121,6 +122,7 @@ console.log("우리 동네");
   await p.waitForTimeout(300);
   const after = await p.locator(".place b").allTextContents();
   ok(after[after.length - 1] === "오래된 보드게임 서면점" && await p.locator(".place.stale .stale-note").count() === 1, "1년 넘게 후기 없는 가게는 '문 닫았을 수도'로 뒤로 간다");
+  ok(await p.locator(".place", { hasText: "레드버튼" }).locator(".stale-note").count() === 0, "후기가 아예 없는 가게는 '문 닫았을 수도'로 보지 않는다 (노래방 등)");
   ok(await p.locator(".place .vote-add").count() === await p.locator(".place").count(), "가게마다 '투표 후보' 버튼이 있다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
