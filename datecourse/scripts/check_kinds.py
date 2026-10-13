@@ -21,7 +21,7 @@ from verify_hoods import ROOT, http_fetch  # noqa: E402
 
 SAMPLE = ["andongdowntown", "andongokdong", "seomyeon", "hongdae", "dongseongro", "bupyeong", "chungjang",
           "eunhaeng", "seongan", "gumi", "gaeksa", "dujeong", "samsan"]
-BRANDS = ["벌툰", "놀숲", "만화방", "놀숲 만화카페", "레드버튼", "홈즈앤루팡", "나인블럭", "인생네컷", "포토이즘", "하루필름", "코인노래방", "오락실",
+BRANDS = ["타로", "사주카페", "탁구장", "실내낚시", "롤러장", "양궁카페", "이자카야", "칵테일바", "미술관", "호수공원", "벌툰", "놀숲", "만화방", "놀숲 만화카페", "레드버튼", "홈즈앤루팡", "나인블럭", "인생네컷", "포토이즘", "하루필름", "코인노래방", "오락실",
           "만화카페", "보드게임카페", "방탈출", "스크린야구", "VR"]
 
 
@@ -39,11 +39,14 @@ def places(q: str, h: dict, page: int = 1, radius: int = 2000) -> list[dict]:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--hood", action="append")
+    ap.add_argument("--act", action="append", help="이 놀거리만 점검 (여러 번 쓸 수 있음)")
     args = ap.parse_args(argv)
     local = json.loads((ROOT / "data" / "local.json").read_text(encoding="utf-8"))
     hoods = {h["id"]: h for hs in local["hoods"].values() for h in hs}
     ids = [i for i in (args.hood or SAMPLE) if i in hoods]
     acts = local["activities"]
+    if args.act:
+        acts = [a for a in acts if a["id"] in args.act]
 
     def run(job):
         h, a = job

@@ -211,6 +211,9 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .places-empty small { color: var(--sub); font-size: 12px; }
 .places-empty .row-actions .btn { flex: 1; }
 .places-more { margin-top: 10px; }
+.place.stale { opacity: .55; }
+.stale-note { grid-column: 1 / -1; font-size: 12px; color: #a12a2a; }
+.gone-btn { color: var(--sub); }
 /* 지금 근처: 뭐 먹지? · 근처 놀거리 */
 .now-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 6px; }
 .now-btn { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px 14px 14px; min-height: 112px; border: 0; border-radius: 20px; color: var(--ink); text-align: left; min-width: 0; overflow: hidden; }
@@ -1262,12 +1265,13 @@ function serverPlaces(a, keyword, center) {
       const seen = new Set();
       return list.filter((p) => {
         const k = `${p.place_name}|${p.road_address_name || p.address_name}`;
-        if (seen.has(k) || !fitsAct(a, p)) return false;
+        if (seen.has(k) || !fitsAct(a, p) || isClosed(p)) return false;
         seen.add(k);
         return true;
       });
     };
     try {
+      await loadClosed().catch(() => {});
       const pages = await Promise.all(kws.map((kw) => get(1, kw).catch(() => null)));
       if (pages.every((x) => x === null)) return null;
       let list = pages.flatMap((x) => x || []);
@@ -1297,7 +1301,7 @@ async function showPlaces(keyword, h, q, a) {
     const seen = new Set();
     return list.filter((p) => {
       const k = `${p.place_name}|${p.road_address_name || p.address_name}`;
-      if (seen.has(k) || !fitsAct(a, p)) return false;
+      if (seen.has(k) || !fitsAct(a, p) || isClosed(p)) return false;
       seen.add(k);
       return true;
     });
@@ -1345,8 +1349,11 @@ function placeItem(p) {
       <a class="link-pill" href="https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}" target="_blank" rel="noopener">길찾기</a>
       ${p.phone ? `<span class="link-pill tel"></span>` : ""}
       ${/24\s*시|24\s*h|24hour/i.test(p.place_name || "") ? `<span class="link-pill h24">24시간</span>` : ""}
+      ${placeId(p) ? `<button type="button" class="link-pill gone-btn">문 닫았어요</button>` : ""}
     </div>`;
   el.querySelector("b").textContent = p.place_name || "";
+  const gone = el.querySelector(".gone-btn");
+  if (gone) gone.addEventListener("click", () => reportClosed(p, el, gone));
   el.querySelector(".cat").textContent = cat;
   el.querySelector(".addr").textContent = p.road_address_name || p.address_name || "";
   const tel = el.querySelector(".tel");
@@ -1362,6 +1369,57 @@ function photoEndpoint() {
 }
 const NEWS_SITE = /뉴스|news|일보|신문|방송|기자|타임스|타임즈|times|press|헤럴드|투데이|매일|경제|KBS|MBC|SBS|YTN|JTBC|MBN|채널A|TV조선|연합|뉴시스|노컷|시청|군청|구청|도청|경찰|소방|정부|공사|위키/i;
 const NEWS_URL = /news|v\.daum\.net|\/article|\.go\.kr|\.or\.kr|police|wiki/i;
+/* ---------- 문 닫은 가게 거르기 ----------
+   카카오 지도는 문 닫은 가게도 한동안 남아 있다. ① 이 가게 이름이 나오는 블로그·카페 후기가 1년 넘게 없으면 '문 닫았을 수도'로 표시하고
+   목록 뒤로 보낸다. ② '문 닫았어요'를 두 사람이 누르면(또는 관리자가 확인하면) 모두에게 숨긴다 (서버 mode=closed) */
+const placeId = (p) => (String(p.place_url || "").match(/^https:\/\/place\.map\.kakao\.com\/(\d{3,15})$/) || [])[1] || "";
+const CLOSED = { ids: new Set(), loading: null };
+function loadClosed() {
+  const endpoint = photoEndpoint();
+  CLOSED.loading ??= (endpoint ? fetchJson(`${endpoint}?mode=closed`) : Promise.resolve(null))
+    .then((d) => { if (d && Array.isArray(d.ids)) CLOSED.ids = new Set(d.ids.map(String)); });
+  return CLOSED.loading;
+}
+const isClosed = (p) => CLOSED.ids.has(placeId(p));
+// 후기가 1년 넘게 없음 (서버가 latest 를 준 경우만 판단. 서버가 없거나 실패하면 판단하지 않음)
+function isStale(d) {
+  if (!d || !("latest" in d)) return false;
+  return !d.latest || Date.now() - Date.parse(d.latest) > 365 * 86400000;
+}
+function markStale(el) {
+  if (el.classList.contains("stale")) return;
+  el.classList.add("stale");
+  el.querySelector(".cat").insertAdjacentHTML("afterend", `<span class="stale-note">최근 1년 후기가 없어요 · 문 닫았을 수 있어요</span>`);
+  const list = el.parentElement;
+  if (list) { const more = list.querySelector(".places-more"); more ? list.insertBefore(el, more) : list.append(el); }
+}
+// 가게 후기 정보 (사진과 같은 요청을 함께 쓴다)
+function placeInfo(p) {
+  const endpoint = photoEndpoint();
+  if (!endpoint || !p.place_name) return Promise.resolve({});
+  const gu = String(p.address_name || p.road_address_name || "").split(" ")[1] || "";
+  const q = `${p.place_name} ${gu}`.trim();
+  if (!photoCache.has(q)) photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
+    .then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
+  return photoCache.get(q);
+}
+async function reportClosed(p, el, btn) {
+  if (!confirm(`'${p.place_name}'이(가) 문을 닫았나요? 두 사람이 알리면 모두에게서 빠져요.`)) return;
+  btn.disabled = true;
+  let token = load("nolco.token", "");
+  if (!/^[a-f0-9]{32,64}$/.test(token)) {
+    token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    save("nolco.token", token);
+  }
+  try {
+    const res = await fetch(photoEndpoint(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "place_report", id: placeId(p), token }) });
+    if (!res.ok) throw new Error();
+    toast("알려 주셔서 고마워요");
+    btn.textContent = "알렸어요";
+    el.classList.add("stale");
+  } catch { toast("지금은 보내지 못했어요"); btn.disabled = false; }
+}
+
 async function addPhotos(el, p) {
   const endpoint = photoEndpoint();
   if (!endpoint || !p.place_name) return;
@@ -1371,12 +1429,13 @@ async function addPhotos(el, p) {
     if (!photoCache.has(q)) {
       // name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글의 사진만 받는다
       photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
-        .then((r) => (r.ok ? r.json() : { photos: [] }))
-        .then((d) => (Array.isArray(d.photos) ? d.photos : []))
-        .catch(() => []));
+        .then((r) => (r.ok ? r.json() : {}))
+        .catch(() => ({})));
     }
+    const data = await photoCache.get(q);
+    if (isStale(data) && el.isConnected) markStale(el);
     // 뉴스·관공서 사진(사건·단속 사진 등)은 가게 이미지를 해칠 수 있어 빼고 블로그·카페 후기 위주로 (서버도 같은 규칙)
-    const photos = (await photoCache.get(q)).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link)
+    const photos = (Array.isArray(data.photos) ? data.photos : []).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link)
       && !NEWS_SITE.test(x.site || "") && !NEWS_URL.test(x.link));
     if (!photos.length || !el.isConnected) return;
     const strip = document.createElement("div");
@@ -2280,7 +2339,14 @@ async function rollEat(spot, seen) {
   let pool = (close.length >= 6 ? close : list).slice(0, 20);
   if (pool.every((p) => seen.has(p.place_name))) seen.clear();
   pool = pool.filter((p) => !seen.has(p.place_name));
-  const p = pool[Math.floor(Math.random() * pool.length)];
+  // 문 닫았을 수도 있는 곳(1년 넘게 후기 없음)은 피해서 고른다 (최대 4곳 확인)
+  const order = [...pool].sort(() => Math.random() - 0.5);
+  let p = order[0];
+  for (const c of order.slice(0, 4)) {
+    if (!isStale(await placeInfo(c))) { p = c; break; }
+    seen.add(c.place_name);
+  }
+  if (!$("eatOut") || out !== $("eatOut")) return;
   seen.add(p.place_name);
 
   // 룰렛: 이름이 몇 번 바뀌다가 멈춘다 (움직임 줄이기 설정이면 바로)
@@ -3136,6 +3202,7 @@ window.addEventListener("popstate", () => {
   initShared().catch(() => {});
   loadEvents();
   loadPopups();
+  loadClosed();
   hit("visit", state.mode);
 })();
 

@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert@1";
 import { SCHEMA } from "./schema.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups, cleanPlaceId, closedIds } from "./community.ts";
 
 Deno.test("col·token 확인", () => {
   assertEquals(cleanCol("rv"), "rv");
@@ -83,4 +83,15 @@ Deno.test("팝업: 승인·안 끝남·신고 안 된 것만, 끝나는 날 순"
   ];
   const got = visiblePopups(rows, new Set(["p-0000000005"]), "2026-10-12");
   assertEquals(got.map((p) => p.name), ["곧 끝남", "늦게 끝남"]);
+});
+
+Deno.test("문 닫은 가게: 두 사람이 알리거나 관리자가 확인하면", () => {
+  assertEquals(cleanPlaceId("1234567"), "1234567");
+  assertEquals(cleanPlaceId(98765), "98765");
+  assertEquals(cleanPlaceId("abc"), null);
+  assertEquals(closedIds([
+    { item_id: "111", reporter: "a" }, { item_id: "111", reporter: "b" },
+    { item_id: "222", reporter: "a" },
+    { item_id: "333", reporter: "admin" },
+  ]), ["111", "333"]);
 });

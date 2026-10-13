@@ -97,6 +97,24 @@ export function toPostPhotos(docs: KakaoPostDoc[], name: string, size: number, n
   return out;
 }
 
+/** 가게가 아직 영업하는지 짐작: 가게 이름이 나오는 블로그·카페 글 중 가장 최근 날짜와, 1년 안 글 수.
+ *  카카오 지도는 문 닫은 가게도 한동안 남아 있어서, 1년 넘게 후기가 없으면 앱이 '문 닫았을 수도'로 보여 준다 */
+export function postFreshness(docs: KakaoPostDoc[], name: string, now: Date = new Date()): { latest: string | null; recent: number } {
+  const core = coreName(name);
+  if (core.length < 2) return { latest: null, recent: 0 };
+  const yearAgo = now.getTime() - 365 * 86400000;
+  let latest = 0, recent = 0;
+  for (const d of docs) {
+    const t = Date.parse(String(d.datetime ?? ""));
+    if (!Number.isFinite(t) || t > now.getTime() + 86400000) continue;
+    if (!goodSource({ doc_url: d.url, display_sitename: String(d.blogname ?? d.cafename ?? "") })) continue;
+    if (!(plain(d.title) + plain(d.contents)).includes(core)) continue;
+    if (t > latest) latest = t;
+    if (t >= yearAgo) recent++;
+  }
+  return { latest: latest ? new Date(latest).toISOString().slice(0, 10) : null, recent };
+}
+
 /* ---------- 최근 글 (팝업 소식 등) ---------- */
 export type Post = { title: string; text: string; date: string; url: string; site: string; thumb: string };
 

@@ -65,6 +65,7 @@ button.ok { background: #2e7a45; color: #fff; }
     <div class="row tabs" style="margin-bottom:12px">
       <button data-tab="stats" aria-pressed="true">방문 통계</button>
       <button data-tab="pp" aria-pressed="false">팝업 확인</button>
+      <button data-tab="pc" aria-pressed="false">닫은 가게 신고</button>
       <button data-tab="rv" aria-pressed="false">리뷰</button>
       <button data-tab="uc" aria-pressed="false">만든 코스</button>
       <button id="out">나가기</button>
@@ -138,6 +139,7 @@ async function render() {
       return;
     }
     if (tab === "pp") return renderPopups(v);
+    if (tab === "pc") return renderClosed(v);
     const { docs, reports } = await call({ action: "list" });
     const rep = {};
     for (const r of reports) { const k = `${r.col}/${r.doc_id}/${r.item_id}`; rep[k] = (rep[k] || 0) + 1; }
@@ -160,6 +162,26 @@ async function render() {
     });
   } catch (e) { v.innerHTML = `<p class="flag">${esc(e.message)}</p>`; }
 }
+/* ---------- 닫은 가게 신고: 앱에서 '문 닫았어요'를 누른 가게. 두 사람이 누르면 이미 앱에서 숨겨져 있다 ---------- */
+async function renderClosed(v) {
+  const { reports } = await call({ action: "closed" });
+  const by = {};
+  for (const r of reports) (by[r.item_id] ??= { n: 0, admin: false, last: r.created_at }).n += r.reporter === "admin" ? 0 : 1, by[r.item_id].admin ||= r.reporter === "admin";
+  const rows = Object.entries(by).sort((a, b) => b[1].n - a[1].n);
+  v.innerHTML = `<h2>닫은 가게 신고 ${rows.length}곳</h2>
+    <p class="note">'가게 정보'를 눌러 카카오 지도에서 확인하세요. 정말 닫았으면 <b>확실히 닫음</b>(바로 숨김), 아니면 <b>영업 중</b>(신고 지움). 두 사람이 알린 곳은 이미 앱에서 빠져 있어요.</p>
+    <table><tr><th>신고</th><th>가게</th><th>상태</th><th></th></tr>
+    ${rows.map(([id, r]) => `<tr><td class="${r.n >= 2 ? "flag" : ""}">${r.n}</td>
+      <td><a href="https://place.map.kakao.com/${esc(id)}" target="_blank" rel="noopener">가게 정보 (${esc(id)})</a></td>
+      <td>${r.admin ? "확실히 닫음" : r.n >= 2 ? "앱에서 숨김" : "보이는 중"}</td>
+      <td><button class="danger" data-id="${esc(id)}" data-c="1">확실히 닫음</button> <button data-id="${esc(id)}" data-c="0">영업 중</button></td></tr>`).join("")}
+    </table>${rows.length ? "" : "<p class='note'>아직 신고가 없어요.</p>"}`;
+  v.querySelectorAll("button[data-id]").forEach((b) => b.onclick = async () => {
+    b.disabled = true;
+    try { await call({ action: "closed_set", id: b.dataset.id, closed: b.dataset.c === "1" }); renderClosed(v); } catch (e) { alert(e.message); b.disabled = false; }
+  });
+}
+
 /* ---------- 팝업 확인: 자동으로 찾은 후보를 보고 승인(앱에 나옴) / 거절 ---------- */
 let ppTab = "wait", ppKind = "";
 const KINDS = { anime: "애니·만화", idol: "아이돌·K-POP", character: "캐릭터", game: "게임", beauty: "뷰티", fashion: "패션", food: "먹거리",
