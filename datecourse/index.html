@@ -568,8 +568,11 @@ textarea { resize: vertical; }
   font-size: 14px; font-weight: 600; white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,.18);
 }
 .vote-tray b { color: var(--accent); }
+body.has-tray .site-foot { padding-bottom: calc(var(--tab-h) + 86px + env(safe-area-inset-bottom, 0px)); }
 body.has-tray .toast { bottom: calc(var(--tab-h) + 70px + env(safe-area-inset-bottom, 0px)); }
 .sheet-bar .btn { white-space: nowrap; }
+.sheet-bar .btn.grow { min-width: 0; }
+@media (max-width: 360px) { #shareBtn .lbl { display: none; } #shareBtn { padding: 0 14px; } }
 .vote-add[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-text); border-color: transparent; font-weight: 700; }
 .vote-q { display: flex; align-items: center; gap: 10px; margin: 6px 0 12px; }
 .vote-q span { font-size: 13px; color: var(--sub); flex: none; }
@@ -2168,7 +2171,7 @@ function openCourse(id, { push = true } = {}) {
     </section>
     <div class="sheet-bar">
       <button class="btn square" id="favToggle" aria-pressed="${fav.has(c.id)}" aria-label="찜하기">${icon("heart", fav.has(c.id) ? "fillc" : "")}</button>
-      <button class="btn" id="shareBtn">${icon("copy")}공유</button>
+      <button class="btn" id="shareBtn" aria-label="공유">${icon("copy")}<span class="lbl">공유</span></button>
       <span id="voteSlot"></span>
       <button class="btn primary grow" id="againBtn">${icon("shuffle")}다른 코스</button>
     </div>`;
@@ -3296,7 +3299,7 @@ function openVoteMake() {
     ${n < 2 ? `<p class="note vote-hint">${n ? "후보를 하나 더 담아 주세요. " : ""}코스나 가게, '뭐 먹지?' 결과에서 <b>🗳 투표 후보</b>를 누르면 담겨요. (최대 ${VOTE_MAX}개)</p>` : ""}
     ${n ? `<div class="sheet-bar"><button class="btn" type="button" id="voteClear">비우기</button>
       <button class="btn primary grow" type="button" id="voteSend" ${n < 2 ? "disabled" : ""}>단톡방에 투표 보내기</button></div>` : ""}
-    ${recent.length ? `<h3 class="sec-title">최근 보낸 투표</h3><div class="vote-recent" id="voteRecent"></div>` : ""}`);
+    ${recent.length ? `<h3 class="sec-title">최근 투표</h3><div class="vote-recent" id="voteRecent"></div>` : ""}`);
   if (n) {
     $("voteCart").replaceChildren(...VOTE.cart.map((x, i) => {
       const li = document.createElement("li");
@@ -3332,7 +3335,6 @@ async function sendVote() {
     try { await navigator.clipboard.writeText(text + "\n" + url); toast("투표 링크를 복사했어요. 단톡방에 붙여 넣으세요"); }
     catch { prompt("이 주소를 단톡방에 붙여 넣으세요", url); }
   }
-  save("nolco.votes", [{ h: hash, q, at: Date.now() }, ...recentVotes().filter((v) => v.h !== hash)].slice(0, 5));
   VOTE.cart = [];
   save("nolco.voteCart", []);
   drawVoteTray();
@@ -3341,7 +3343,13 @@ async function sendVote() {
 }
 
 // 투표 보기·고르기 (링크로 들어온 친구, 보낸 사람 모두)
+function rememberVote(vote) {
+  save("nolco.votes", [{ h: vote.hash, q: vote.q, at: (recentVotes().find((v) => v.h === vote.hash) || {}).at || Date.now() },
+    ...recentVotes().filter((v) => v.h !== vote.hash)].slice(0, 5));
+}
 function openVote(vote) {
+  rememberVote(vote);
+  drawVoteTray();
   VOTE.open = vote;
   VOTE.res = null;
   voteSheet(`${voteHead("친구 투표", vote.q)}
@@ -3393,8 +3401,9 @@ async function pullVote() {
 async function pickVote(i) {
   const vote = VOTE.open, endpoint = photoEndpoint();
   if (!endpoint) { toast("지금은 투표할 수 없어요"); return; }
-  if (VOTE.res && VOTE.res.mine === i) return;
+  if ((VOTE.res && VOTE.res.mine === i) || VOTE.busy) return;
   hit("vote", "pick");
+  VOTE.busy = true;
   try {
     const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "vote", id: vote.id, pick: i, token: myToken() }) });
     if (!res.ok) throw new Error();
@@ -3404,11 +3413,13 @@ async function pickVote(i) {
     drawVote();
     toast(`'${vote.items[i].t}'에 투표했어요`);
   } catch { toast("지금은 투표를 보내지 못했어요"); }
+  finally { VOTE.busy = false; }
 }
 function seeVoteItem(x) {
   if (x.k === "c") {
     if (findCourse(x.id)) openCourse(x.id);
-    else toast("이 코스를 찾지 못했어요");
+    else if (/^u-/.test(x.id) && !Object.keys(shared.courseDocs).length) { pendingId = x.id; toast("코스를 불러오는 중이에요. 잠시 뒤에 열려요"); }
+    else toast("이 코스를 찾지 못했어요. 지워졌을 수 있어요");
     return;
   }
   const url = /^\d{3,15}$/.test(x.id) ? `https://place.map.kakao.com/${x.id}` : naverSearchUrl(x.t, x.y, x.x);

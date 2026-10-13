@@ -73,3 +73,27 @@ jobs:
           cp -r supabase/functions/place-photos "supabase/functions/$FUNCTION_NAME"
           rm -f "supabase/functions/$FUNCTION_NAME/"*_test.ts
           supabase functions deploy "$FUNCTION_NAME" --project-ref "$PROJECT_REF" --no-verify-jwt
+
+      - name: 배포 후 확인 (실제 서버)
+        # 앱이 쓰는 요청을 실제 서버에 한 번씩 보내 본다. 투표는 시험용 id(v-000000000t)로만
+        env:
+          ENDPOINT: https://hzomhheyccapnzuwtzxh.supabase.co/functions/v1/${{ env.FUNCTION_NAME }}
+          ORIGIN: https://45516645sud-stack.github.io
+        run: |
+          sleep 15   # 새 코드가 켜질 때까지
+          get() { curl -sS -o out.json -w '%{http_code}' -H "Origin: $ORIGIN" "$ENDPOINT?$1"; }
+          post() { curl -sS -o out.json -w '%{http_code}' -H "Origin: $ORIGIN" -H "Content-Type: application/json" -X POST -d "$1" "$ENDPOINT"; }
+          fail=0
+          check() { echo "$1: HTTP $2 $(head -c 200 out.json)"; if [ "$2" != 200 ] || ! grep -q "$3" out.json; then echo "::error::$1 이(가) 이상해요"; fail=1; fi; }
+          check "리뷰 읽기" "$(get 'mode=docs&col=rv')" '"docs"'
+          check "팝업" "$(get 'mode=popups')" '"popups"'
+          check "닫은 가게" "$(get 'mode=closed')" '"ids"'
+          tok=$(openssl rand -hex 16)
+          me=$(printf 'nolco:%s' "$tok" | sha256sum | cut -c1-24)
+          check "투표 보기" "$(get "mode=vote&id=v-000000000a&me=$me")" '"counts"'
+          check "투표하기" "$(post "{\"mode\":\"vote\",\"id\":\"v-000000000a\",\"pick\":1,\"token\":\"$tok\"}")" '"mine":1'
+          check "표 바꾸기" "$(post "{\"mode\":\"vote\",\"id\":\"v-000000000a\",\"pick\":0,\"token\":\"$tok\"}")" '"mine":0'
+          check "내 표 보기" "$(get "mode=vote&id=v-000000000a&me=$me")" '"mine":0'
+          code=$(post '{"mode":"vote","id":"v-000000000a","pick":7,"token":"'"$tok"'"}'); echo "잘못된 번호: HTTP $code"
+          if [ "$code" != 400 ]; then echo "::error::잘못된 투표 번호를 막지 않아요"; fail=1; fi
+          exit $fail
