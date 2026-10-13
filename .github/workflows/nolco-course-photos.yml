@@ -7,6 +7,7 @@ on:
     paths:
       - "datecourse/data/courses.json"
       - "datecourse/scripts/fetch_course_photos.py"
+      - "datecourse/scripts/fetch_stop_photos.py"
       - ".github/workflows/nolco-course-photos.yml"
   schedule:
     - cron: "07 19 * * 1"   # 매주 화요일 새벽 4시 7분 (한국 시간): 새 코스 사진
@@ -34,14 +35,16 @@ jobs:
       - run: pip install --quiet Pillow
       - name: 사진 받기
         run: python datecourse/scripts/fetch_course_photos.py
+      - name: 코스 순서 장소 사진 받기
+        run: python datecourse/scripts/fetch_stop_photos.py
       - name: 바뀐 사진 커밋
         run: |
-          if [ -z "$(git status --porcelain -- datecourse/img/course datecourse/data/course_photos.json)" ]; then
+          if [ -z "$(git status --porcelain -- datecourse/img/course datecourse/data/course_photos.json datecourse/img/stop datecourse/data/stop_photos.json)" ]; then
             echo "바뀐 사진 없음"; exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add datecourse/img/course datecourse/data/course_photos.json
+          git add datecourse/img/course datecourse/data/course_photos.json datecourse/img/stop datecourse/data/stop_photos.json
           git commit -m "놀코: 코스 사진 받기 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push

@@ -48,6 +48,8 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
   // 바깥 글꼴(CDN)은 테스트 기계에서 느릴 때가 있어 받지 않는다 (화면 흐름과 상관없음)
   await p.route("https://cdn.jsdelivr.net/**", (r) => r.abort());
   await p.route("https://tile.openstreetmap.org/**", (r) => r.abort());
+  // 블로그 사진 썸네일 (가짜 1px 그림)
+  await p.route("https://search1.kakaocdn.net/**", (r) => r.fulfill({ contentType: "image/gif", body: Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64") }));
   await p.route("**/data/events.json", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify(EVENTS) }));
   await p.route("https://hzomhheyccapnzuwtzxh.supabase.co/**", async (r) => {
     const req = r.request(); const u = new URL(req.url());
@@ -64,6 +66,7 @@ async function page(store = { rv: {}, uc: {} }, opts = {}) {
     if (mode === "popups") return send({ popups: POPUPS });
     if (mode === "vote") return send(voteRes(u.searchParams.get("id"), u.searchParams.get("me")));
     if (mode === "closed") return send({ ids: ["400"] });   // '닫은 보드게임'은 두 사람이 알린 곳
+    if (u.searchParams.get("name") === "뚝섬한강공원") return send({ photos: [{ thumb: "https://search1.kakaocdn.net/a.jpg", link: "https://blog.naver.com/a/2", site: "어느 블로그" }], latest: "2026-09-01", recent: 3 });
     if (u.searchParams.get("name")) return send({ photos: [], ...(u.searchParams.get("name").startsWith("오래된") ? { latest: "2022-01-01", recent: 0 } : { latest: "2026-09-01", recent: 3 }) });
     return send({ photos: [] });
   });
@@ -78,6 +81,10 @@ console.log("여행 코스");
   await p.locator("#grid .item").first().click();
   await p.waitForTimeout(300);
   ok((await p.locator("#sheetTitle").textContent()).length > 2, "코스를 열면 상세가 나온다");
+  await p.waitForTimeout(400);
+  ok(await p.locator(".stops > li").first().locator(".ph-lead img").count() === 1, "코스 순서 첫 장소에 관광공사 사진이 붙는다");
+  ok(await p.locator(".stops > li").nth(2).locator(".photos a[href='https://blog.naver.com/a/2']").count() === 1, "장소 이름이 나오는 블로그 사진이 붙고, 누르면 원래 글로 간다");
+  ok(await p.locator(".stops > li .stale-note").count() === 0, "관광지에는 '문 닫았을 수도'를 붙이지 않는다");
   const star = p.locator('.star[data-n="4"]'); await star.scrollIntoViewIfNeeded();
   const box = await star.boundingBox();
   await p.mouse.click(box.x + box.width * 0.25, box.y + box.height / 2);

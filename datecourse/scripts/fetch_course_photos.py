@@ -62,12 +62,12 @@ def find_photo(client: ct.Client, course: dict) -> dict | None:
     return None
 
 
-def shrink(data: bytes) -> bytes:
+def shrink(data: bytes, size: int = SIZE) -> bytes:
     from PIL import Image  # GitHub Actions 에서만 설치
     im = Image.open(io.BytesIO(data)).convert("RGB")
     w, h = im.size
     s = min(w, h)
-    im = im.crop(((w - s) // 2, (h - s) // 2, (w - s) // 2 + s, (h - s) // 2 + s)).resize((SIZE, SIZE), Image.LANCZOS)
+    im = im.crop(((w - s) // 2, (h - s) // 2, (w - s) // 2 + s, (h - s) // 2 + s)).resize((size, size), Image.LANCZOS)
     out = io.BytesIO()
     im.save(out, "WEBP", quality=76, method=6)
     return out.getvalue()
