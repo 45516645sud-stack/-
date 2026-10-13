@@ -71,7 +71,7 @@ export function withoutHidden(col: Col, id: string, body: unknown, hidden: Set<s
 }
 
 /* ---------- 방문 통계 ---------- */
-export const STAT_EVENTS = new Set(["visit", "course", "act", "event", "share", "eat", "near"]);
+export const STAT_EVENTS = new Set(["visit", "course", "act", "event", "share", "eat", "near", "vote", "install"]);
 
 /** 통계 한 건: 종류(ev)와 대상(item, 코스 id 등)만. 이상하면 null */
 export function cleanHit(raw: unknown): { ev: string; item: string } | null {
@@ -169,4 +169,30 @@ export function closedIds(rows: { item_id: string; reporter: string }[]): string
   const n = new Map<string, number>();
   for (const r of rows) n.set(r.item_id, (n.get(r.item_id) ?? 0) + (r.reporter === "admin" ? CLOSE_AT : 1));
   return [...n].filter(([, c]) => c >= CLOSE_AT).map(([id]) => id).sort();
+}
+
+/* ---------- 친구 투표 (단톡방에 '어디 갈래?' 링크) ----------
+   후보(코스·가게 이름)는 링크 안에 들어 있고, 서버는 투표 id 별로 누가 몇 번째 후보를 골랐는지만 둔다.
+   한 사람은 한 표: 다시 고르면 바꾼다. 저장은 nolco_reports (col 'vt', doc_id 투표 id, item_id 후보 번호) */
+export const VOTE_MAX = 5;   // 후보는 최대 5개
+
+export function cleanVoteId(raw: unknown): string | null {
+  return typeof raw === "string" && /^v-[a-f0-9]{10}$/.test(raw) ? raw : null;
+}
+
+export function cleanPick(raw: unknown): number | null {
+  return typeof raw === "number" && Number.isInteger(raw) && raw >= 0 && raw < VOTE_MAX ? raw : null;
+}
+
+/** 후보별 표 수와 참여한 사람 수 (한 사람이 여러 줄이면 하나만 센다) */
+export function voteCounts(rows: { item_id: string; reporter: string }[]): { counts: number[]; voters: number } {
+  const counts = Array(VOTE_MAX).fill(0);
+  const seen = new Set<string>();
+  for (const r of rows) {
+    const i = Number(r.item_id);
+    if (seen.has(r.reporter) || !Number.isInteger(i) || i < 0 || i >= VOTE_MAX) continue;
+    seen.add(r.reporter);
+    counts[i]++;
+  }
+  return { counts, voters: seen.size };
 }

@@ -42,6 +42,7 @@ button.ok { background: #2e7a45; color: #fff; }
 .guide { background: #fff6d2; border-radius: 10px; padding: 10px 12px; }
 .guide ol { margin: 6px 0; padding-left: 20px; }
 .pp a.note { display: block; color: #2c76b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+[data-tab] .cnt { display: inline-block; margin-left: 4px; min-width: 18px; padding: 0 5px; border-radius: 9px; background: #e5484d; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
 </style>
 </head>
 <body>
@@ -111,18 +112,39 @@ async function login() {
     sessionStorage.setItem("nolco.admin", pass);
     $("login").hidden = true; $("panel").hidden = false;
     render();
+    badges();
   } catch (e) { $("msg").textContent = e.message; }
 }
 $("go").onclick = login;
 $("pass").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
 $("out").onclick = () => { sessionStorage.removeItem("nolco.admin"); location.reload(); };
+// 탭 이름 옆에 '할 일' 개수: 확인 안 한 팝업, 아직 판단 안 한 닫은 가게 신고 (일주일에 한 번 몰아서 보면 된다)
+async function badges() {
+  try {
+    const [cand, pp, pc] = await Promise.all([
+      fetch("data/popups.json?t=" + Date.now()).then((r) => r.ok ? r.json() : { items: [] }).catch(() => ({ items: [] })),
+      call({ action: "popups" }), call({ action: "closed" }),
+    ]);
+    const today = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
+    const done = new Set(pp.rows.map((r) => r.id));
+    const wait = (cand.items || []).filter((c) => c.end > today && c.young !== false && !done.has(c.id)).length;
+    const decided = new Set(pc.reports.filter((r) => r.reporter === "admin").map((r) => r.item_id));
+    const open = new Set(pc.reports.filter((r) => !decided.has(r.item_id)).map((r) => r.item_id)).size;
+    for (const [t, n] of [["pp", wait], ["pc", open]]) {
+      const b = document.querySelector(`[data-tab="${t}"]`);
+      b.querySelector(".cnt")?.remove();
+      if (n) b.insertAdjacentHTML("beforeend", `<span class="cnt">${n}</span>`);
+    }
+  } catch { /* 개수는 없어도 된다 */ }
+}
 document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => {
   tab = b.dataset.tab;
   document.querySelectorAll("[data-tab]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
   render();
+  badges();
 });
 
-const EV = { visit: "방문", course: "코스 열기", act: "놀거리 열기", event: "공연·축제 열기", share: "공유", eat: "뭐 먹지 돌리기", near: "지금 근처 열기" };
+const EV = { visit: "방문", course: "코스 열기", act: "놀거리 열기", event: "공연·축제 열기", share: "공유", eat: "뭐 먹지 돌리기", near: "지금 근처 열기", vote: "친구 투표", install: "홈 화면 추가" };
 async function render() {
   const v = $("view");
   v.innerHTML = "<p class='note'>불러오는 중…</p>";

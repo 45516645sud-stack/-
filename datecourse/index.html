@@ -561,6 +561,48 @@ textarea { resize: vertical; }
   background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 12px; font-size: 14px; white-space: nowrap;
   opacity: 0; pointer-events: none; transition: opacity .2s;
 }
+/* 친구 투표 */
+.vote-tray {
+  position: fixed; left: 50%; bottom: calc(var(--tab-h) + 12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 900;
+  height: 46px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg);
+  font-size: 14px; font-weight: 600; white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,.18);
+}
+.vote-tray b { color: var(--accent); }
+body.has-tray .toast { bottom: calc(var(--tab-h) + 70px + env(safe-area-inset-bottom, 0px)); }
+.sheet-bar .btn { white-space: nowrap; }
+.vote-add[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-text); border-color: transparent; font-weight: 700; }
+.vote-q { display: flex; align-items: center; gap: 10px; margin: 6px 0 12px; }
+.vote-q span { font-size: 13px; color: var(--sub); flex: none; }
+.vote-q input { flex: 1; min-width: 0; height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card, transparent); color: var(--ink); font: inherit; font-size: 16px; }
+.vote-cart { list-style: none; margin: 0; padding: 0; counter-reset: v; }
+.vote-cart li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); counter-increment: v; }
+.vote-cart li::before { content: counter(v); flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.vote-cart li > span, .vote-opt .txt { flex: 1; min-width: 0; }
+.vote-cart b, .vote-opt b { display: block; font-size: 15px; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vote-cart small, .vote-opt small { display: block; font-size: 12px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vote-hint { margin: 10px 0; }
+.vote-recent { display: grid; gap: 8px; }
+.vote-recent-btn { justify-content: flex-start; }
+.vote-list { display: grid; gap: 10px; margin: 8px 0 4px; }
+.vote-opt { display: flex; align-items: center; gap: 8px; }
+.vote-pick { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 14px; background: transparent; color: var(--ink); text-align: left; overflow: hidden; }
+.vote-pick .bar { position: absolute; inset: 0 auto 0 0; background: var(--accent-soft); transition: width .3s; z-index: 0; }
+.vote-pick .txt, .vote-pick .cnt { position: relative; z-index: 1; }
+.vote-pick .cnt { flex: none; font-size: 14px; font-weight: 700; color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.vote-opt.mine .vote-pick { border-color: var(--accent); }
+.vote-opt.mine .vote-pick::after { content: "내 선택"; position: absolute; top: 6px; right: 10px; z-index: 1; font-size: 10px; font-weight: 700; color: var(--accent-text); }
+.vote-opt.mine .cnt { margin-top: 10px; }
+.vote-see { flex: none; }
+@media (prefers-reduced-motion: reduce) { .vote-pick .bar { transition: none; } }
+/* 홈 화면에 추가 안내 */
+.install-tip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 16px; }
+.install-tip img { border-radius: 10px; flex: none; }
+.install-tip .txt { flex: 1; min-width: 0; }
+.install-tip .txt b { display: block; font-size: 14px; }
+.install-tip .txt small { display: block; font-size: 12px; color: var(--sub); word-break: keep-all; }
+.install-tip .icon-btn { width: 32px; height: 32px; }
+.install-how { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--ink); word-break: keep-all; }
+.pop-share { margin-top: 8px; }
 .toast.on { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 </style>
@@ -603,6 +645,7 @@ textarea { resize: vertical; }
     <span><b>어디 갈지 모르겠다면</b><small>조건에 맞는 코스 하나 골라 드려요</small></span>
     <span class="go" id="randomGo">뽑기</span>
   </button>
+  <section class="install-tip" id="installTip" hidden></section>
   <div class="list-head">
     <h2 id="listTitle">전체 코스</h2>
     <small id="status" aria-live="polite">불러오는 중</small>
@@ -662,6 +705,11 @@ textarea { resize: vertical; }
   <div class="sheet-in" id="sheetBody"></div>
 </dialog>
 
+<dialog class="sheet" id="voteSheet" aria-label="친구 투표">
+  <div class="sheet-in" id="voteBody"></div>
+</dialog>
+
+<button type="button" class="vote-tray" id="voteTray" hidden></button>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1356,6 +1404,7 @@ function placeItem(p) {
   if (gone) gone.addEventListener("click", () => reportClosed(p, el, gone));
   el.querySelector(".cat").textContent = cat;
   el.querySelector(".addr").textContent = p.road_address_name || p.address_name || "";
+  el.querySelector(".links").append(voteBtn(placeVoteItem(p)));
   const tel = el.querySelector(".tel");
   if (tel) tel.textContent = p.phone;
   addPhotos(el, p);
@@ -1406,13 +1455,8 @@ function placeInfo(p) {
 async function reportClosed(p, el, btn) {
   if (!confirm(`'${p.place_name}'이(가) 문을 닫았나요? 두 사람이 알리면 모두에게서 빠져요.`)) return;
   btn.disabled = true;
-  let token = load("nolco.token", "");
-  if (!/^[a-f0-9]{32,64}$/.test(token)) {
-    token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
-    save("nolco.token", token);
-  }
   try {
-    const res = await fetch(photoEndpoint(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "place_report", id: placeId(p), token }) });
+    const res = await fetch(photoEndpoint(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "place_report", id: placeId(p), token: myToken() }) });
     if (!res.ok) throw new Error();
     toast("알려 주셔서 고마워요");
     btn.textContent = "알렸어요";
@@ -1898,6 +1942,7 @@ function renderWeekend() {
     <div class="wk-head">
       <h2>${esc(where)} ${esc(WK_PERIOD[WK.period])} 뭐 하지</h2>
       <small>${esc(span)} · 공연·축제 ${list.length}개${popShown.length ? ` · 팝업 ${popShown.length}개` : ""}</small>
+      ${popShown.length ? `<button type="button" class="btn small pop-share" id="popShare">📣 이 팝업들 친구한테 보내기</button>` : ""}
     </div>
     <div class="chips wk-chips" id="wkPeriod" role="group" aria-label="기간"></div>
     <div class="chips wk-chips" id="wkCat" role="group" aria-label="종류"></div>
@@ -1907,6 +1952,7 @@ function renderWeekend() {
   $("wkPeriod").replaceChildren(...Object.entries(WK_PERIOD).map(([k, v]) => chip(v, WK.period === k, () => { WK.period = k; WK.shown = 30; renderWeekend(); })));
   $("wkCat").replaceChildren(chip("전체", !WK.cat, () => { WK.cat = ""; WK.shown = 30; renderWeekend(); }),
     ...cats.map(([c, n]) => chip(`${c} ${n}`, WK.cat === c, () => { WK.cat = WK.cat === c ? "" : c; WK.shown = 30; renderWeekend(); })));
+  if ($("popShare")) $("popShare").addEventListener("click", () => sharePopups(popShown.filter((p) => !POP.kind || WK.cat !== "팝업" || popKind(p) === POP.kind), where));
   const wl = $("wkList");
   // '팝업'을 고르면 종류별로 (애니는 애니끼리, 캐릭터는 캐릭터끼리)
   if (WK.cat === "팝업" && popShown.length) {
@@ -1967,6 +2013,18 @@ function renderWeekend() {
     h.className = "sec-title"; h.textContent = `늘 하는 공연 ${always.length}`;
     wl.append(h, ...always.slice(0, 20).map(eventCard));
   }
+}
+// 지금 하는 팝업 목록을 단톡방에 (가장 빨리 끝나는 것부터 5개)
+async function sharePopups(list, where) {
+  hit("share", "popups");
+  const today = isoDay(new Date());
+  const lines = list.slice(0, 5).map((p) => `· ${p.name}${p.place ? ` (${p.place})` : ""} ~${md(p.end)}${(p.start || "") > today ? ` · ${md(p.start)} 시작` : ""}`);
+  const text = `${where} 지금 하는 팝업스토어 ${list.length}곳 🎪\n${lines.join("\n")}${list.length > 5 ? `\n외 ${list.length - 5}곳` : ""}`;
+  const url = location.href.split("#")[0].split("?")[0];
+  try { if (navigator.share) { await navigator.share({ title: "놀코 팝업스토어", text, url }); return; } }
+  catch (e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(text + "\n" + url); toast("팝업 목록을 복사했어요. 단톡방에 붙여 넣으세요"); }
+  catch { prompt("이 내용을 복사하세요", text + "\n" + url); }
 }
 // 코스 홈 맨 위 입구: '이번 주말 부산 공연 12 · 축제 3'
 function renderWeekendEntry() {
@@ -2111,7 +2169,8 @@ function openCourse(id, { push = true } = {}) {
     <div class="sheet-bar">
       <button class="btn square" id="favToggle" aria-pressed="${fav.has(c.id)}" aria-label="찜하기">${icon("heart", fav.has(c.id) ? "fillc" : "")}</button>
       <button class="btn" id="shareBtn">${icon("copy")}공유</button>
-      <button class="btn primary grow" id="againBtn">${icon("shuffle")}다른 코스 뽑기</button>
+      <span id="voteSlot"></span>
+      <button class="btn primary grow" id="againBtn">${icon("shuffle")}다른 코스</button>
     </div>`;
 
   $("closeBtn").addEventListener("click", closeCourse);
@@ -2124,6 +2183,7 @@ function openCourse(id, { push = true } = {}) {
     update();
   });
   $("shareBtn").addEventListener("click", () => share(c));
+  $("voteSlot").replaceWith(voteBtn(courseVoteItem(c), "btn", true));
   $("againBtn").addEventListener("click", () => pickRandom(c.id));
 
   const sheet = $("sheet");
@@ -2381,6 +2441,7 @@ async function rollEat(spot, seen) {
   out.querySelector(".addr").textContent = p.road_address_name || p.address_name || "";
   go.textContent = "다시 돌리기";
   $("eatRoute").addEventListener("click", (e) => naverRoute(e, p.place_name, Number(p.y), Number(p.x)));
+  out.querySelector(".links").append(voteBtn(placeVoteItem(p)));
   $("eatShare").addEventListener("click", async () => {
     const text = `오늘 밥은 여기! 🍚 ${p.place_name}${dist ? ` (${dist})` : ""}`;
     const url = kakaoUrl || `https://map.kakao.com/link/search/${encodeURIComponent(p.place_name)}`;
@@ -3139,6 +3200,250 @@ function enableSwipeClose(d) {
 }
 document.querySelectorAll("dialog.sheet").forEach(enableSwipeClose);
 
+/* ---------- 친구 투표: 단톡방에서 "어디 갈래?" 할 때 ----------
+   코스·가게에서 '투표 후보'를 담고 링크를 보내면, 친구들이 링크에서 하나씩 고른다 (설치·가입 없음).
+   후보 목록은 링크(#v=투표id.내용) 안에 들어 있고, 서버는 누가 몇 번째를 골랐는지만 센다 (mode=vote) */
+const VOTE = { cart: [], open: null, timer: 0 };
+const VOTE_MAX = 5;
+const okVoteItem = (x) => !!x && (x.k === "c" || x.k === "p") && typeof x.id === "string" && x.id.length > 0 && x.id.length <= 80 && !/[<>"'\u0000-\u001f]/.test(x.id) && typeof x.t === "string" && x.t.length > 0;
+const cleanVoteItem = (x) => ({
+  k: x.k, id: x.id, t: String(x.t).slice(0, 40), s: typeof x.s === "string" ? x.s.slice(0, 40) : "",
+  ...(Number.isFinite(x.x) && Number.isFinite(x.y) ? { x: Math.round(x.x * 1e5) / 1e5, y: Math.round(x.y * 1e5) / 1e5 } : {}),
+});
+VOTE.cart = (load("nolco.voteCart", []) || []).filter(okVoteItem).map(cleanVoteItem).slice(0, VOTE_MAX);
+const sameVote = (a, b) => a.k === b.k && a.id === b.id;
+const inVoteCart = (x) => VOTE.cart.some((y) => sameVote(x, y));
+const courseVoteItem = (c) => ({ k: "c", id: c.id, t: c.title, s: [c.region, c.area].filter(Boolean).join(" ") + ` · ${c.stops.length}곳` });
+function placeVoteItem(p) {
+  const cat = String(p.category_name || "").split(">").pop().trim();
+  const gu = String(p.address_name || p.road_address_name || "").split(" ").slice(1, 3).join(" ");
+  return cleanVoteItem({ k: "p", id: placeId(p) || String(p.place_name || "").slice(0, 60), t: p.place_name || "", s: [cat, gu].filter(Boolean).join(" · "), x: Number(p.x), y: Number(p.y) });
+}
+function myToken() {
+  let token = load("nolco.token", "");
+  if (!/^[a-f0-9]{32,64}$/.test(token)) {
+    token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    save("nolco.token", token);
+  }
+  return token;
+}
+// 작성자 id (서버 authorId 와 같은 계산: 'nolco:' + 비밀 값의 sha256 앞 24자리)
+async function myId() {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("nolco:" + myToken()));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 24);
+}
+// '투표 후보' 버튼 (다시 누르면 뺀다)
+function voteBtn(item, cls = "link-pill", short = false) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = cls + " vote-add";
+  const draw = () => { const on = inVoteCart(item); b.textContent = on ? (short ? "✓ 담음" : "✓ 후보에 담음") : (short ? "🗳 투표" : "🗳 투표 후보"); b.setAttribute("aria-pressed", String(on)); };
+  draw();
+  b.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (inVoteCart(item)) VOTE.cart = VOTE.cart.filter((y) => !sameVote(item, y));
+    else if (VOTE.cart.length >= VOTE_MAX) { toast(`후보는 ${VOTE_MAX}개까지 담을 수 있어요`); return; }
+    else VOTE.cart.push(item);
+    save("nolco.voteCart", VOTE.cart);
+    draw();
+    drawVoteTray();
+    const n = VOTE.cart.length;
+    if (inVoteCart(item)) toast(n === 1 ? "투표 후보에 담았어요. 하나 더 담아 보세요" : `투표 후보 ${n}개 · 아래 버튼으로 친구한테 보내요`);
+  });
+  return b;
+}
+// 화면 아래 '투표 후보 N개 · 친구한테 보내기' (후보가 있거나 이틀 안에 만든 투표가 있을 때만)
+function recentVotes() {
+  return (load("nolco.votes", []) || []).filter((v) => v && typeof v.h === "string" && Date.now() - (v.at || 0) < 2 * 86400000);
+}
+function drawVoteTray() {
+  const tray = $("voteTray");
+  const n = VOTE.cart.length, recent = recentVotes();
+  tray.hidden = !n && !recent.length;
+  document.body.classList.toggle("has-tray", !tray.hidden);
+  tray.innerHTML = n ? `🗳 투표 후보 <b>${n}개</b> · 친구한테 보내기` : `🗳 진행 중인 투표 결과 보기`;
+}
+const b64u = (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const unb64u = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)));
+function voteFromHash(hash = location.hash) {
+  const m = hash.match(/^#v=(v-[a-f0-9]{10})\.([\w-]{4,4000})$/);
+  if (!m) return null;
+  try {
+    const d = JSON.parse(unb64u(m[2]));
+    const items = (Array.isArray(d.i) ? d.i : []).filter(okVoteItem).map(cleanVoteItem).slice(0, VOTE_MAX);
+    if (items.length < 2) return null;
+    return { id: m[1], q: typeof d.q === "string" && d.q.trim() ? d.q.trim().slice(0, 30) : "어디 갈래?", items, hash: m[0] };
+  } catch { return null; }
+}
+function voteSheet(html) {
+  const d = $("voteSheet");
+  $("voteBody").innerHTML = `<div class="grabber"></div>${html}`;
+  $("voteBody").querySelector(".vote-close").addEventListener("click", () => d.close());
+  if (!d.open) d.showModal();
+  d.scrollTop = 0;
+}
+const voteHead = (where, title) => `<div class="sheet-head"><div><div class="where">${esc(where)}</div><h2>${esc(title)}</h2></div>
+  <button class="icon-btn vote-close" aria-label="닫기">${icon("close")}</button></div>`;
+
+// 후보 담은 것 확인하고 보내기
+function openVoteMake() {
+  const n = VOTE.cart.length;
+  const recent = recentVotes();
+  voteSheet(`${voteHead("친구랑 정하기", "단톡방에 투표 보내기")}
+    <p class="summary">후보를 단톡방에 보내면 친구들이 링크를 눌러 하나씩 골라요. 앱 설치나 가입은 필요 없어요.</p>
+    ${n ? `<label class="vote-q"><span>질문</span><input id="voteQ" maxlength="30" value="어디 갈래?"></label>
+    <ol class="vote-cart" id="voteCart"></ol>` : ""}
+    ${n < 2 ? `<p class="note vote-hint">${n ? "후보를 하나 더 담아 주세요. " : ""}코스나 가게, '뭐 먹지?' 결과에서 <b>🗳 투표 후보</b>를 누르면 담겨요. (최대 ${VOTE_MAX}개)</p>` : ""}
+    ${n ? `<div class="sheet-bar"><button class="btn" type="button" id="voteClear">비우기</button>
+      <button class="btn primary grow" type="button" id="voteSend" ${n < 2 ? "disabled" : ""}>단톡방에 투표 보내기</button></div>` : ""}
+    ${recent.length ? `<h3 class="sec-title">최근 보낸 투표</h3><div class="vote-recent" id="voteRecent"></div>` : ""}`);
+  if (n) {
+    $("voteCart").replaceChildren(...VOTE.cart.map((x, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span><b></b><small></small></span><button type="button" class="icon-btn" aria-label="빼기">${icon("close")}</button>`;
+      li.querySelector("b").textContent = x.t;
+      li.querySelector("small").textContent = (x.k === "c" ? "코스 · " : "가게 · ") + x.s;
+      li.querySelector("button").addEventListener("click", () => { VOTE.cart.splice(i, 1); save("nolco.voteCart", VOTE.cart); drawVoteTray(); openVoteMake(); });
+      return li;
+    }));
+    $("voteClear").addEventListener("click", () => { VOTE.cart = []; save("nolco.voteCart", []); drawVoteTray(); openVoteMake(); });
+    $("voteSend").addEventListener("click", sendVote);
+  }
+  if (recent.length) {
+    $("voteRecent").replaceChildren(...recent.map((v) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "btn vote-recent-btn"; b.textContent = `${v.q} (${md(isoDay(new Date(v.at)))}) 결과 보기`;
+      b.addEventListener("click", () => { const vote = voteFromHash(v.h); if (vote) openVote(vote); });
+      return b;
+    }));
+  }
+}
+async function sendVote() {
+  const q = ($("voteQ").value || "").trim().slice(0, 30) || "어디 갈래?";
+  const id = "v-" + [...crypto.getRandomValues(new Uint8Array(5))].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hash = `#v=${id}.${b64u(JSON.stringify({ q, i: VOTE.cart }))}`;
+  const url = location.href.split("#")[0].split("?")[0] + hash;
+  const text = `${q} 🗳 하나 골라 줘!\n${VOTE.cart.map((x, i) => `${i + 1}. ${x.t}`).join("\n")}`;
+  hit("vote", "make");
+  let sent = false;
+  try { if (navigator.share) { await navigator.share({ title: q, text, url }); sent = true; } }
+  catch (e) { if (e && e.name === "AbortError") return; }
+  if (!sent) {
+    try { await navigator.clipboard.writeText(text + "\n" + url); toast("투표 링크를 복사했어요. 단톡방에 붙여 넣으세요"); }
+    catch { prompt("이 주소를 단톡방에 붙여 넣으세요", url); }
+  }
+  save("nolco.votes", [{ h: hash, q, at: Date.now() }, ...recentVotes().filter((v) => v.h !== hash)].slice(0, 5));
+  VOTE.cart = [];
+  save("nolco.voteCart", []);
+  drawVoteTray();
+  const vote = voteFromHash(hash);
+  if (vote) openVote(vote);
+}
+
+// 투표 보기·고르기 (링크로 들어온 친구, 보낸 사람 모두)
+function openVote(vote) {
+  VOTE.open = vote;
+  VOTE.res = null;
+  voteSheet(`${voteHead("친구 투표", vote.q)}
+    <p class="summary">마음에 드는 곳을 하나 눌러요. 다시 누르면 바꿀 수 있어요.</p>
+    <div class="vote-list" id="voteList"></div>
+    <p class="note" id="voteNote" aria-live="polite">결과를 불러오는 중…</p>
+    <div class="sheet-bar"><button class="btn" type="button" id="voteAgain">${icon("copy")}다시 보내기</button>
+      <button class="btn primary grow" type="button" id="voteMine">나도 투표 만들기</button></div>`);
+  $("voteAgain").addEventListener("click", async () => {
+    const url = location.href.split("#")[0].split("?")[0] + vote.hash;
+    try { if (navigator.share) { await navigator.share({ title: vote.q, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); toast("투표 링크를 복사했어요"); } catch { prompt("이 주소를 복사하세요", url); }
+  });
+  $("voteMine").addEventListener("click", () => { $("voteSheet").close(); toast("코스나 가게에서 🗳 투표 후보를 눌러 담아 보세요"); });
+  drawVote();
+  pullVote();
+  clearInterval(VOTE.timer);
+  VOTE.timer = setInterval(() => { if (VOTE.open === vote && document.visibilityState === "visible") pullVote(); }, 8000);
+}
+function drawVote() {
+  const vote = VOTE.open, r = VOTE.res;
+  if (!vote || !$("voteList")) return;
+  const total = r ? r.voters : 0;
+  const top = r ? Math.max(...r.counts) : 0;
+  $("voteList").replaceChildren(...vote.items.map((x, i) => {
+    const n = r ? r.counts[i] || 0 : 0;
+    const row = document.createElement("div");
+    row.className = "vote-opt" + (r && r.mine === i ? " mine" : "") + (top > 0 && n === top ? " top" : "");
+    row.innerHTML = `<button type="button" class="vote-pick" aria-pressed="${r && r.mine === i}">
+        <span class="bar" style="width:${total ? Math.round((n / total) * 100) : 0}%"></span>
+        <span class="txt"><b></b><small></small></span><span class="cnt">${r ? n + "표" : ""}</span>
+      </button><button type="button" class="link-pill vote-see">자세히</button>`;
+    row.querySelector("b").textContent = (top > 0 && n === top ? "👑 " : "") + x.t;
+    row.querySelector("small").textContent = (x.k === "c" ? "코스 · " : "") + x.s;
+    row.querySelector(".vote-pick").addEventListener("click", () => pickVote(i));
+    row.querySelector(".vote-see").addEventListener("click", () => seeVoteItem(x));
+    return row;
+  }));
+  if (r) $("voteNote").textContent = total ? `${total}명이 골랐어요${r.mine === null ? " · 아직 안 골랐어요" : ""}` : "아직 아무도 안 골랐어요. 첫 표를 던져 보세요!";
+}
+async function pullVote() {
+  const vote = VOTE.open, endpoint = photoEndpoint();
+  if (!endpoint) { if ($("voteNote")) $("voteNote").textContent = "투표 서버에 연결하지 못했어요."; return; }
+  const d = await fetchJson(`${endpoint}?mode=vote&id=${vote.id}&me=${await myId()}`);
+  if (VOTE.open !== vote) return;
+  if (d && Array.isArray(d.counts)) { VOTE.res = d; drawVote(); }
+  else if (!VOTE.res && $("voteNote")) $("voteNote").textContent = "결과를 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.";
+}
+async function pickVote(i) {
+  const vote = VOTE.open, endpoint = photoEndpoint();
+  if (!endpoint) { toast("지금은 투표할 수 없어요"); return; }
+  if (VOTE.res && VOTE.res.mine === i) return;
+  hit("vote", "pick");
+  try {
+    const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "vote", id: vote.id, pick: i, token: myToken() }) });
+    if (!res.ok) throw new Error();
+    const d = await res.json();
+    if (VOTE.open !== vote) return;
+    VOTE.res = d;
+    drawVote();
+    toast(`'${vote.items[i].t}'에 투표했어요`);
+  } catch { toast("지금은 투표를 보내지 못했어요"); }
+}
+function seeVoteItem(x) {
+  if (x.k === "c") {
+    if (findCourse(x.id)) openCourse(x.id);
+    else toast("이 코스를 찾지 못했어요");
+    return;
+  }
+  const url = /^\d{3,15}$/.test(x.id) ? `https://place.map.kakao.com/${x.id}` : naverSearchUrl(x.t, x.y, x.x);
+  window.open(url, "_blank", "noopener");
+}
+
+/* ---------- 홈 화면에 추가 안내 (두 번째 방문부터, 한 번 닫으면 다시 안 나옴) ----------
+   안드로이드 크롬은 '설치' 창을 바로 띄우고, 아이폰 사파리는 공유 → '홈 화면에 추가' 방법을 보여 준다.
+   카카오톡·인스타 안 브라우저에서는 홈 화면 추가가 안 되므로 안내하지 않는다 */
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e; drawInstallTip(); });
+function drawInstallTip() {
+  const box = $("installTip");
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  const ua = navigator.userAgent;
+  const iosSafari = /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|KAKAOTALK|Instagram|FBAN|NAVER|Line\//i.test(ua);
+  const show = !standalone && !load("nolco.installTip", false) && load("nolco.visits", 0) >= 2 && (installEvt || iosSafari);
+  box.hidden = !show;
+  if (!show) return;
+  box.innerHTML = `<img src="img/icon-192.png" alt="" width="40" height="40">
+    <span class="txt"><b>놀코를 앱처럼 쓰기</b><small>홈 화면에 추가하면 아이콘 하나로 바로 열려요</small></span>
+    <button type="button" class="btn small primary" id="installGo">추가하기</button>
+    <button type="button" class="icon-btn" id="installNo" aria-label="안내 닫기">${icon("close")}</button>
+    <p class="install-how" id="installHow" hidden>화면 아래 <b>공유 버튼(네모 위 화살표)</b>을 누르고 <b>'홈 화면에 추가'</b>를 고르세요.</p>`;
+  $("installNo").addEventListener("click", () => { save("nolco.installTip", true); box.hidden = true; });
+  $("installGo").addEventListener("click", async () => {
+    hit("install", installEvt ? "prompt" : "ios");
+    if (!installEvt) { $("installHow").hidden = false; return; }
+    installEvt.prompt();
+    const r = await installEvt.userChoice.catch(() => null);
+    installEvt = null;
+    if (r && r.outcome === "accepted") { save("nolco.installTip", true); box.hidden = true; }
+  });
+}
+
 /* ---------- 시작 ---------- */
 applyTheme(load(STORE.theme, ""));
 $("themeBtn").addEventListener("click", toggleTheme);
@@ -3153,6 +3458,17 @@ $("weekendBtn").addEventListener("click", () => openWeekend());
 $("eatBtn").innerHTML = `<span class="tag">NEW</span><span><b>뭐 먹지?</b><small>근처 밥집 한 곳 딱 골라 줘요</small></span>${illu("meal")}`;
 $("nearBtn").innerHTML = `<span class="tag">NEW</span><span><b>지금 근처</b><small>걸어갈 만한 놀거리 보기</small></span>${illu("pin")}`;
 $("eatBtn").addEventListener("click", openEat);
+$("voteTray").addEventListener("click", () => (VOTE.cart.length || !recentVotes().length ? openVoteMake() : openVote(voteFromHash(recentVotes()[0].h))));
+$("voteSheet").addEventListener("close", () => {
+  VOTE.open = null;
+  clearInterval(VOTE.timer);
+  if (/^#v=/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+});
+$("voteSheet").addEventListener("click", (e) => { if (e.target === $("voteSheet")) $("voteSheet").close(); });
+window.addEventListener("hashchange", () => { const v = voteFromHash(); if (v) openVote(v); });
+save("nolco.visits", (Number(load("nolco.visits", 0)) || 0) + 1);
+drawVoteTray();
+drawInstallTip();
 $("nearBtn").addEventListener("click", openNear);
 $("filterClose").innerHTML = icon("close");
 ["regionRow", "hoodRow", "quickRow"].forEach((id) => enableHScroll($(id)));
@@ -3199,6 +3515,8 @@ window.addEventListener("popstate", () => {
   const id = courseFromHash();
   if (id && findCourse(id)) openCourse(id, { push: false });
   else if (id) pendingId = id;
+  const vote = voteFromHash();
+  if (vote) openVote(vote);
   initShared().catch(() => {});
   loadEvents();
   loadPopups();

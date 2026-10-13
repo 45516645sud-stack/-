@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert@1";
 import { SCHEMA } from "./schema.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups, cleanPlaceId, closedIds } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups, cleanPlaceId, closedIds, cleanVoteId, cleanPick, voteCounts } from "./community.ts";
 
 Deno.test("col·token 확인", () => {
   assertEquals(cleanCol("rv"), "rv");
@@ -94,4 +94,21 @@ Deno.test("문 닫은 가게: 두 사람이 알리거나 관리자가 확인하�
     { item_id: "222", reporter: "a" },
     { item_id: "333", reporter: "admin" },
   ]), ["111", "333"]);
+});
+
+Deno.test("친구 투표: id·후보 번호 확인과 한 사람 한 표", () => {
+  assertEquals(cleanVoteId("v-0123456789"), "v-0123456789");
+  assertEquals(cleanVoteId("v-01234"), null);
+  assertEquals(cleanVoteId("p-0123456789"), null);
+  assertEquals(cleanPick(0), 0);
+  assertEquals(cleanPick(4), 4);
+  assertEquals(cleanPick(5), null);
+  assertEquals(cleanPick(1.5), null);
+  assertEquals(cleanPick("1"), null);
+  const r = voteCounts([
+    { item_id: "0", reporter: "a" }, { item_id: "2", reporter: "b" }, { item_id: "2", reporter: "c" },
+    { item_id: "1", reporter: "a" },   // 같은 사람 두 번째 줄은 세지 않음
+    { item_id: "9", reporter: "d" },   // 이상한 번호
+  ]);
+  assertEquals(r, { counts: [1, 0, 2, 0, 0], voters: 3 });
 });
