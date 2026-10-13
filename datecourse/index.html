@@ -1452,10 +1452,12 @@ function loadClosed() {
   return CLOSED.loading;
 }
 const isClosed = (p) => CLOSED.ids.has(placeId(p));
-// 후기가 1년 넘게 없음 (서버가 latest 를 준 경우만 판단. 서버가 없거나 실패하면 판단하지 않음)
+// 예전엔 후기가 있었는데 1년 넘게 끊김 (서버가 latest 를 준 경우만 판단. 서버가 없거나 실패하면 판단하지 않음)
+// 후기가 아예 없는 가게(노래방·PC방처럼 원래 블로그 후기가 드문 곳)는 문 닫았다는 증거가 아니라서 표시하지 않는다
 function isStale(d) {
-  if (!d || !("latest" in d)) return false;
-  return !d.latest || Date.now() - Date.parse(d.latest) > 365 * 86400000;
+  if (!d || !d.latest) return false;
+  const t = Date.parse(d.latest);
+  return Number.isFinite(t) && Date.now() - t > 365 * 86400000;
 }
 function markStale(el) {
   if (el.classList.contains("stale")) return;
