@@ -238,6 +238,9 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .photos::-webkit-scrollbar { display: none; }
 .photos a { flex: none; width: 96px; height: 96px; border-radius: 10px; overflow: hidden; background: var(--fill); }
 .photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photos .ph-lead { position: relative; flex: none; width: 150px; height: 96px; border-radius: 10px; overflow: hidden; background: var(--fill); }
+.photos .ph-lead small { position: absolute; right: 4px; bottom: 4px; padding: 1px 5px; border-radius: 5px; background: rgba(0,0,0,.55); color: #fff; font-size: 10px; }
+.stops .photos { margin: 8px 0 2px; }
 .photo-src { font-size: 11px; color: var(--faint); grid-column: 1 / -1; }
 
 /* 지역 탭 */
@@ -913,6 +916,7 @@ async function fetchJson(url) {
 
 /* 코스 썸네일 실제 사진: 직접 고른 코스는 data/course_photos.json (관광공사, 공공누리 1유형), 관광공사 코스는 대표 사진 */
 let COURSE_PHOTO = {};
+let STOP_PHOTO = {};   // 코스id → { 장소 번호: { img, place } } (한국관광공사 사진, scripts/fetch_stop_photos.py)
 let COURSE_MISSING = {};   // 매주 점검에서 지도에 안 나온 정류장 (data/course_check.json)
 function photoOf(c) {
   const p = COURSE_PHOTO[c.id];
@@ -931,6 +935,7 @@ async function loadCourses() {
   const [base, tour, photos, check] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"),
     fetchJson("data/course_photos.json"), fetchJson("data/course_check.json")]);
   COURSE_PHOTO = (photos && photos.photos) || {};
+  fetchJson("data/stop_photos.json").then((d) => { STOP_PHOTO = (d && d.photos) || {}; });
   COURSE_MISSING = (check && check.missing) || {};
   const seen = new Set();
   const list = [];
@@ -1467,8 +1472,27 @@ async function reportClosed(p, el, btn) {
   } catch { toast("지금은 보내지 못했어요"); btn.disabled = false; }
 }
 
-async function addPhotos(el, p) {
+// opts.lead: 맨 앞에 둘 공식 사진 { src, credit }, opts.stale: false 면 '문 닫았을 수도' 표시를 안 한다 (관광지 등)
+async function addPhotos(el, p, opts = {}) {
   const endpoint = photoEndpoint();
+  let strip = null;
+  const makeStrip = () => {
+    if (strip) return strip;
+    strip = document.createElement("div");
+    strip.className = "photos";
+    el.querySelector(".links").before(strip);
+    return strip;
+  };
+  if (opts.lead) {
+    const lead = document.createElement("span");
+    lead.className = "ph-lead";
+    lead.innerHTML = `<img alt="" loading="lazy" decoding="async"><small></small>`;
+    lead.querySelector("img").src = opts.lead.src;
+    lead.querySelector("img").alt = `${p.place_name} 사진`;
+    lead.querySelector("img").addEventListener("error", () => { lead.remove(); if (strip && !strip.children.length) strip.remove(); });
+    lead.querySelector("small").textContent = opts.lead.credit;
+    makeStrip().append(lead);
+  }
   if (!endpoint || !p.place_name) return;
   const gu = String(p.address_name || p.road_address_name || "").split(" ")[1] || "";
   const q = `${p.place_name} ${gu}`.trim();
@@ -1480,14 +1504,13 @@ async function addPhotos(el, p) {
         .catch(() => ({})));
     }
     const data = await photoCache.get(q);
-    if (isStale(data) && el.isConnected) markStale(el);
+    if (opts.stale !== false && isStale(data) && el.isConnected) markStale(el);
     // 뉴스·관공서 사진(사건·단속 사진 등)은 가게 이미지를 해칠 수 있어 빼고 블로그·카페 후기 위주로 (서버도 같은 규칙)
     const photos = (Array.isArray(data.photos) ? data.photos : []).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link)
       && !NEWS_SITE.test(x.site || "") && !NEWS_URL.test(x.link));
     if (!photos.length || !el.isConnected) return;
-    const strip = document.createElement("div");
-    strip.className = "photos";
-    for (const ph of photos) {
+    makeStrip();
+    for (const ph of photos.slice(0, opts.lead ? 3 : 4)) {
       const a = document.createElement("a");
       a.href = ph.link;
       a.target = "_blank";
@@ -1502,7 +1525,6 @@ async function addPhotos(el, p) {
       a.appendChild(img);
       strip.appendChild(a);
     }
-    el.querySelector(".links").before(strip);
   } catch { /* 사진 없이 */ }
 }
 
@@ -2194,10 +2216,28 @@ function openCourse(id, { push = true } = {}) {
   sheet.scrollTop = 0;
   drawMap(c);
   fillStopPicks(c);
+  fillStopPhotos(c);
   renderReviewForm(c.id);
   renderReviewList(c.id);
   renderMaker(c);
   if (push) history.pushState({ id }, "", "#c=" + encodeURIComponent(id));
+}
+
+// 코스 순서의 장소마다 사진: 한국관광공사 사진(있으면 맨 앞) + 그 장소 이름이 나오는 블로그·카페 후기 사진 (누르면 원래 글)
+// 동네 코스는 단계마다 실제 가게 목록(사진 포함)이 따로 나오므로 뺀다
+function fillStopPhotos(c) {
+  if (c.source === "local") return;
+  const cover = COURSE_PHOTO[c.id];
+  document.querySelectorAll("#sheetBody .stops > li").forEach((li, i) => {
+    const s = c.stops[i];
+    if (!s) return;
+    const own = (STOP_PHOTO[c.id] || {})[i];
+    const img = own && /^img\/stop\/[\w-]+\.webp$/.test(own.img) ? own.img
+      : cover && cover.stop === s.name && /^img\/course\/[\w-]+\.webp$/.test(cover.img) ? cover.img : "";
+    const name = String(s.q || s.name).split("(")[0].trim();
+    addPhotos(li, { place_name: name, address_name: `${c.region} ${(c.area || "").split(/[·,\s]/)[0]}` },
+      { stale: false, lead: img ? { src: img, credit: "한국관광공사" } : null });
+  });
 }
 
 // 동네 코스: 단계마다 가까운 실제 가게 3곳 (앞 단계에서 고른 가게는 빼고)
