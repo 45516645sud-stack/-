@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-10-15",
+ "updated": "2026-10-16",
  "note": "블로그·카페 글에서 자동으로 찾은 팝업 후보. 관리자가 승인한 것만 앱에 나온다 (scripts/check_popups.py)",
  "items": [
   {
@@ -32,34 +32,6 @@
    "young": true
   },
   {
-   "id": "p-3e0788c92e",
-   "name": "센녹",
-   "start": "2026-10-07",
-   "end": "2026-10-16",
-   "place": "성수 연무장길",
-   "address": "서울 성동구 연무장7길 13",
-   "lat": 37.5441733194254,
-   "lng": 127.054430448058,
-   "region": "서울",
-   "url": "https://blog.naver.com/happycapys/224440192229",
-   "urls": [
-    "https://blog.naver.com/happycapys/224440192229",
-    "https://blog.naver.com/letsgolife/224439280206",
-    "https://blog.naver.com/heejin0906/224438770553"
-   ],
-   "titles": [
-    "센녹 성수 팝업 10월 16일까지, 운영시간과 노 모어 키스 시향 포인트",
-    "센녹 배스 하우스 성수 오픈 이벤트 10월 16일까지 플래그십은 상시 운영",
-    "10월 성수 팝업 추천｜주말 센녹 배스 하우스 성수 후기"
-   ],
-   "agree": 7,
-   "posts": 8,
-   "sure": true,
-   "state": "now",
-   "kind": "beauty",
-   "young": true
-  },
-  {
    "id": "p-51513b85e9",
    "name": "룩백",
    "start": "2026-10-03",
@@ -81,7 +53,7 @@
     "실사 영화에 이어 스페셜 에디션도 신간으로 나왔다. 후지모토 타츠키의 만화 『룩백』. feat. 팝업 소식"
    ],
    "agree": 6,
-   "posts": 7,
+   "posts": 6,
    "sure": true,
    "state": "now",
    "kind": "anime",
@@ -113,6 +85,34 @@
    "sure": true,
    "state": "now",
    "kind": "art",
+   "young": true
+  },
+  {
+   "id": "p-caaa5ca14e",
+   "name": "조앤프렌즈",
+   "start": "2026-10-16",
+   "end": "2026-10-25",
+   "place": "케이팝스퀘어 홍대",
+   "address": "서울 마포구 양화로 141",
+   "lat": 37.5555448178997,
+   "lng": 126.921548131764,
+   "region": "서울",
+   "url": "https://sundry-fan.tistory.com/70",
+   "urls": [
+    "https://sundry-fan.tistory.com/70",
+    "https://blog.naver.com/sia_mom2025/224440755286",
+    "https://blog.naver.com/boeunkim1234/224440357370"
+   ],
+   "titles": [
+    "조앤프렌즈 팝업 피스마이너스원 10월 16일~25일 | 홍대·잠실·센텀 첫날 예약·현장 대기·키캡 키링...",
+    "지드래곤 팝업 잠실 롯데월드몰 상륙! 피스마이너스원 X 조앤프렌즈 굿즈 총정리 (10/16~10/25)",
+    "피스마이너스원 X 조앤프렌즈 팝업 일정 지드래곤 ZOA 인형 키링 굿즈 가격 총정리"
+   ],
+   "agree": 5,
+   "posts": 5,
+   "sure": true,
+   "state": "now",
+   "kind": "character",
    "young": true
   },
   {
@@ -172,6 +172,34 @@
    "young": true
   },
   {
+   "id": "p-71984e500b",
+   "name": "캐릭캐릭체인지",
+   "start": "2026-10-16",
+   "end": "2026-10-29",
+   "place": "AK플라자 홍대",
+   "address": "서울 마포구 양화로 188",
+   "lat": 37.55780854901018,
+   "lng": 126.92640783829829,
+   "region": "서울",
+   "url": "https://blog.naver.com/kmiso77/224434710996",
+   "urls": [
+    "https://blog.naver.com/kmiso77/224434710996",
+    "https://blog.naver.com/insunga9/224431014743",
+    "https://blog.naver.com/wkdqhr73/224428747889"
+   ],
+   "titles": [
+    "캐릭캐릭체인지 팝업 홍대 AK플라자 — 오리지널 굿즈 가격·구매 특전·10/16 오픈 일정",
+    "캐릭캐릭체인지 홍대 AK 플라자 팝업스토어 MD리스트까지 공개!",
+    "홍대 캐릭캐릭 체인지 팝업스토어 MD 굿즈 및 일자 장소 총 정리!"
+   ],
+   "agree": 4,
+   "posts": 4,
+   "sure": true,
+   "state": "now",
+   "kind": "etc",
+   "young": true
+  },
+  {
    "id": "p-36d16443b1",
    "name": "던스트 에비뉴엘",
    "start": "2026-10-01",
@@ -225,34 +253,6 @@
    "sure": true,
    "state": "now",
    "kind": "living",
-   "young": true
-  },
-  {
-   "id": "p-c8742a9e41",
-   "name": "프링글스",
-   "start": "2026-10-03",
-   "end": "2026-10-16",
-   "place": "AK플라자 홍대",
-   "address": "서울 마포구 양화로 188",
-   "lat": 37.55780854901018,
-   "lng": 126.92640783829829,
-   "region": "서울",
-   "url": "https://blog.naver.com/rami_ring/224440157927",
-   "urls": [
-    "https://blog.naver.com/rami_ring/224440157927",
-    "https://blog.naver.com/bonita9988/224434663795",
-    "https://blog.naver.com/ohdori13/224429484404"
-   ],
-   "titles": [
-    "[AK 플라자 홍대] 산리오 문방구, 프링글스 팝업 방문 및 먼작귀 제초자격증 출력 후기",
-    "연희동카페> 푸어링아웃메라키 & 하루한알 (프링글스팝업 홍대AK몰)",
-    "과자로만 보던 프링글스의 변신! 홍대 국내 최초 굿즈 팝업 10월 3일~16일"
-   ],
-   "agree": 3,
-   "posts": 3,
-   "sure": true,
-   "state": "now",
-   "kind": "character",
    "young": true
   },
   {
@@ -340,6 +340,34 @@
    "young": true
   },
   {
+   "id": "p-40f0805098",
+   "name": "리센느",
+   "start": "2026-10-16",
+   "end": "2026-10-22",
+   "place": "용산 아이파크몰",
+   "address": "서울 용산구 한강대로23길 55",
+   "lat": 37.52881667725366,
+   "lng": 126.96453276994514,
+   "region": "서울",
+   "url": "https://hagendaz-greentea.tistory.com/51",
+   "urls": [
+    "https://hagendaz-greentea.tistory.com/51",
+    "https://blog.naver.com/damoahousing/224439945495",
+    "https://cafe.daum.net/dotax/Elgq/4781746"
+   ],
+   "titles": [
+    "리센느 ‘리트와 메트’ 팝업, 예약이 필요할까? MAMA 투표 일정까지",
+    "10월 용산 아이파크몰 가볼만한 곳, 리센느 리트와메트 무료 팝업스토어 위치·시간 정리",
+    "리센느 팝업 예고"
+   ],
+   "agree": 2,
+   "posts": 3,
+   "sure": true,
+   "state": "now",
+   "kind": "anime",
+   "young": true
+  },
+  {
    "id": "p-83adb22249",
    "name": "구름도원",
    "start": "2026-10-12",
@@ -420,6 +448,34 @@
    "young": false
   },
   {
+   "id": "p-a2e157df66",
+   "name": "헬로키티 X aeae",
+   "start": "2026-10-16",
+   "end": "2026-10-25",
+   "place": "성수 연무장길",
+   "address": "서울 성동구 연무장7길 13",
+   "lat": 37.5441733194254,
+   "lng": 127.054430448058,
+   "region": "서울",
+   "url": "https://blog.naver.com/ppo-gom/224440901668",
+   "urls": [
+    "https://blog.naver.com/ppo-gom/224440901668",
+    "https://blog.naver.com/yoojin7980/224441292033",
+    "https://blog.naver.com/hi_youm/224437830608"
+   ],
+   "titles": [
+    "헬로키티 X aeae 성수 팝업, 아일릿 민주 콜라보와 네 컷 사진 및 헬륨 풍선, 구매 기프트와 수량 제한...",
+    "aeae × 헬로키티 성수 팝업｜일정·콜라보 컬렉션·가격 총정리",
+    "아일릿 민주 aeae 헬로키티 성수 팝업, 현장대기와 패션 기프트"
+   ],
+   "agree": 2,
+   "posts": 3,
+   "sure": true,
+   "state": "now",
+   "kind": "character",
+   "young": true
+  },
+  {
    "id": "p-80df9149f2",
    "name": "월드몰 남대문시장 아주키친",
    "start": "2026-08-24",
@@ -473,214 +529,6 @@
    "sure": true,
    "state": "now",
    "kind": "pet",
-   "young": true
-  },
-  {
-   "id": "p-52219713df",
-   "name": "실라리안",
-   "start": "2026-10-16",
-   "end": "2026-10-21",
-   "place": "서울 성동구 성수동",
-   "address": "",
-   "lat": null,
-   "lng": null,
-   "region": "서울",
-   "url": "https://blog.naver.com/livego_go/224440095628",
-   "urls": [
-    "https://blog.naver.com/livego_go/224440095628"
-   ],
-   "titles": [
-    "경북의 장인들이 성수에 등장! &#34;실라리안 팝업&#34; 정보 안내"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "etc",
-   "young": true
-  },
-  {
-   "id": "p-908af1dfb7",
-   "name": "지드래곤",
-   "start": "2026-10-16",
-   "end": "2026-10-25",
-   "place": "롯데월드몰",
-   "address": "서울 송파구 올림픽로 300",
-   "lat": 37.51260447840551,
-   "lng": 127.10255558658325,
-   "region": "서울",
-   "url": "https://blog.naver.com/sia_mom2025/224440755286",
-   "urls": [
-    "https://blog.naver.com/sia_mom2025/224440755286",
-    "https://blog.naver.com/8888cherry/224439294459"
-   ],
-   "titles": [
-    "지드래곤 팝업 잠실 롯데월드몰 상륙! 피스마이너스원 X 조앤프렌즈 굿즈 총정리 (10/16~10/25)",
-    "🌼 지드래곤 향수 한정판 등장! 프레데릭 말 X 피스마이너스원 팝업 총정리"
-   ],
-   "agree": 1,
-   "posts": 2,
-   "sure": false,
-   "state": "soon",
-   "kind": "character",
-   "young": true
-  },
-  {
-   "id": "p-67d82e3926",
-   "name": "르플레인",
-   "start": "2026-10-16",
-   "end": "2026-10-18",
-   "place": "팝업스토어 기본 정보 ​ *",
-   "address": "",
-   "lat": null,
-   "lng": null,
-   "region": "",
-   "url": "https://blog.naver.com/kkk010s/224439208233",
-   "urls": [
-    "https://blog.naver.com/kkk010s/224439208233",
-    "https://blog.naver.com/eun211223/224435992487"
-   ],
-   "titles": [
-    "르플레인 팝업 , (with.apoa Bag)",
-    "[공지] 르플레인 팝업 예약 성공 팁부터 대리구매 시세·사기 예방까지"
-   ],
-   "agree": 1,
-   "posts": 2,
-   "sure": false,
-   "state": "soon",
-   "kind": "etc",
-   "young": true
-  },
-  {
-   "id": "p-71984e500b",
-   "name": "캐릭캐릭체인지",
-   "start": "2026-10-16",
-   "end": "2026-10-29",
-   "place": "AK플라자 홍대",
-   "address": "서울 마포구 양화로 188",
-   "lat": 37.55780854901018,
-   "lng": 126.92640783829829,
-   "region": "서울",
-   "url": "https://blog.naver.com/kmiso77/224434710996",
-   "urls": [
-    "https://blog.naver.com/kmiso77/224434710996",
-    "https://blog.naver.com/insunga9/224431014743",
-    "https://blog.naver.com/wkdqhr73/224428747889"
-   ],
-   "titles": [
-    "캐릭캐릭체인지 팝업 홍대 AK플라자 — 오리지널 굿즈 가격·구매 특전·10/16 오픈 일정",
-    "캐릭캐릭체인지 홍대 AK 플라자 팝업스토어 MD리스트까지 공개!",
-    "홍대 캐릭캐릭 체인지 팝업스토어 MD 굿즈 및 일자 장소 총 정리!"
-   ],
-   "agree": 4,
-   "posts": 4,
-   "sure": true,
-   "state": "soon",
-   "kind": "etc",
-   "young": true
-  },
-  {
-   "id": "p-727196b323",
-   "name": "역대급 헬로키티 의류",
-   "start": "2026-10-16",
-   "end": "2026-10-25",
-   "place": "< 일시 > 2026.10.16",
-   "address": "",
-   "lat": null,
-   "lng": null,
-   "region": "",
-   "url": "https://blog.naver.com/mininote_blog/224441270295",
-   "urls": [
-    "https://blog.naver.com/mininote_blog/224441270295"
-   ],
-   "titles": [
-    "역대급 헬로키티 의류 팝업 정보 sanrio ootd aeae X hello kitty pop up store"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "character",
-   "young": true
-  },
-  {
-   "id": "p-a2e157df66",
-   "name": "헬로키티 X aeae",
-   "start": "2026-10-16",
-   "end": "2026-10-25",
-   "place": "성수 연무장길",
-   "address": "서울 성동구 연무장7길 13",
-   "lat": 37.5441733194254,
-   "lng": 127.054430448058,
-   "region": "서울",
-   "url": "https://blog.naver.com/ppo-gom/224440901668",
-   "urls": [
-    "https://blog.naver.com/ppo-gom/224440901668",
-    "https://blog.naver.com/yoojin7980/224441292033",
-    "https://blog.naver.com/hi_youm/224437830608"
-   ],
-   "titles": [
-    "헬로키티 X aeae 성수 팝업, 아일릿 민주 콜라보와 네 컷 사진 및 헬륨 풍선, 구매 기프트와 수량 제한...",
-    "aeae × 헬로키티 성수 팝업｜일정·콜라보 컬렉션·가격 총정리",
-    "아일릿 민주 aeae 헬로키티 성수 팝업, 현장대기와 패션 기프트"
-   ],
-   "agree": 2,
-   "posts": 3,
-   "sure": true,
-   "state": "soon",
-   "kind": "character",
-   "young": true
-  },
-  {
-   "id": "p-6a0458ac3c",
-   "name": "25 플라워노즈 10주년",
-   "start": "2026-10-16",
-   "end": "2026-10-25",
-   "place": "서울 성동구 성수동",
-   "address": "",
-   "lat": null,
-   "lng": null,
-   "region": "서울",
-   "url": "https://blog.naver.com/sweetheart0418/224440779741",
-   "urls": [
-    "https://blog.naver.com/sweetheart0418/224440779741"
-   ],
-   "titles": [
-    "🎀 10/16~25 성수 플라워노즈 10주년 팝업! 스노우 발레 컬렉션 국내 최초 공개(일정, 사전예약, 이벤트 등)"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "fashion",
-   "young": true
-  },
-  {
-   "id": "p-6b793a9db8",
-   "name": "피스마이너스원 조앤프렌즈",
-   "start": "2026-10-16",
-   "end": "2026-10-25",
-   "place": "롯데월드몰",
-   "address": "서울 송파구 올림픽로 300",
-   "lat": 37.51260447840551,
-   "lng": 127.10255558658325,
-   "region": "서울",
-   "url": "https://blog.naver.com/sia_mom2025/224440755286",
-   "urls": [
-    "https://blog.naver.com/sia_mom2025/224440755286",
-    "https://blog.naver.com/boeunkim1234/224440357370",
-    "https://blog.naver.com/moo_new/224438264028"
-   ],
-   "titles": [
-    "지드래곤 팝업 잠실 롯데월드몰 상륙! 피스마이너스원 X 조앤프렌즈 굿즈 총정리 (10/16~10/25)",
-    "피스마이너스원 X 조앤프렌즈 팝업 일정 지드래곤 ZOA 인형 키링 굿즈 가격 총정리",
-    "피스마이너스원 조앤프렌즈 팝업스토어┃일정 장소 굿즈 특전 정보 총정리┃피마원 조아 콜라보"
-   ],
-   "agree": 3,
-   "posts": 3,
-   "sure": true,
-   "state": "soon",
-   "kind": "character",
    "young": true
   },
   {
@@ -808,6 +656,34 @@
    "young": true
   },
   {
+   "id": "p-513bad2cb6",
+   "name": "꿈나라 별나라 마루 창신동",
+   "start": "2026-10-30",
+   "end": "2026-11-29",
+   "place": "AK플라자 홍대",
+   "address": "서울 마포구 양화로 188",
+   "lat": 37.55780854901018,
+   "lng": 126.92640783829829,
+   "region": "서울",
+   "url": "https://blog.naver.com/ppo-gom/224440870977",
+   "urls": [
+    "https://blog.naver.com/ppo-gom/224440870977",
+    "https://blog.naver.com/junhochic/224441171726",
+    "https://blog.naver.com/min-bly/224440590247"
+   ],
+   "titles": [
+    "꿈나라 별나라 마루 창신동 팝업, 10월 15일 네이버 예약과 현장 입장 및 신규 굿즈와 구매 특전 안내",
+    "마루는 강쥐 팝업스토어｜꿈나라 별나라 마루 일정·사전예약·굿즈 총정리",
+    "마루 팝업스토어 오픈 꿈나라 별나라 마루 일정 장소 네이버 예약 총정리"
+   ],
+   "agree": 5,
+   "posts": 6,
+   "sure": true,
+   "state": "soon",
+   "kind": "living",
+   "young": true
+  },
+  {
    "id": "p-cb6f6b920b",
    "name": "에얼스",
    "start": "2026-10-12",
@@ -829,6 +705,32 @@
    "sure": false,
    "state": "now",
    "kind": "beauty",
+   "young": true
+  },
+  {
+   "id": "p-67d82e3926",
+   "name": "르플레인",
+   "start": "2026-10-16",
+   "end": "2026-10-18",
+   "place": "팝업스토어 기본 정보 ​ *",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "",
+   "url": "https://blog.naver.com/kkk010s/224439208233",
+   "urls": [
+    "https://blog.naver.com/kkk010s/224439208233",
+    "https://blog.naver.com/eun211223/224435992487"
+   ],
+   "titles": [
+    "르플레인 팝업 , (with.apoa Bag)",
+    "[공지] 르플레인 팝업 예약 성공 팁부터 대리구매 시세·사기 예방까지"
+   ],
+   "agree": 1,
+   "posts": 2,
+   "sure": false,
+   "state": "now",
+   "kind": "etc",
    "young": true
   },
   {
@@ -904,6 +806,30 @@
    "young": true
   },
   {
+   "id": "p-52219713df",
+   "name": "실라리안",
+   "start": "2026-10-16",
+   "end": "2026-10-21",
+   "place": "서울 성동구 성수동",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "서울",
+   "url": "https://blog.naver.com/livego_go/224440095628",
+   "urls": [
+    "https://blog.naver.com/livego_go/224440095628"
+   ],
+   "titles": [
+    "경북의 장인들이 성수에 등장! &#34;실라리안 팝업&#34; 정보 안내"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "etc",
+   "young": true
+  },
+  {
    "id": "p-a0f56bc96c",
    "name": "비옷도 패션이다",
    "start": "",
@@ -951,6 +877,80 @@
    "sure": false,
    "state": "now",
    "kind": "etc",
+   "young": true
+  },
+  {
+   "id": "p-908af1dfb7",
+   "name": "지드래곤",
+   "start": "2026-10-16",
+   "end": "2026-10-25",
+   "place": "롯데월드몰",
+   "address": "서울 송파구 올림픽로 300",
+   "lat": 37.51260447840551,
+   "lng": 127.10255558658325,
+   "region": "서울",
+   "url": "https://blog.naver.com/sia_mom2025/224440755286",
+   "urls": [
+    "https://blog.naver.com/sia_mom2025/224440755286",
+    "https://blog.naver.com/8888cherry/224439294459"
+   ],
+   "titles": [
+    "지드래곤 팝업 잠실 롯데월드몰 상륙! 피스마이너스원 X 조앤프렌즈 굿즈 총정리 (10/16~10/25)",
+    "🌼 지드래곤 향수 한정판 등장! 프레데릭 말 X 피스마이너스원 팝업 총정리"
+   ],
+   "agree": 1,
+   "posts": 2,
+   "sure": false,
+   "state": "now",
+   "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-727196b323",
+   "name": "역대급 헬로키티 의류",
+   "start": "2026-10-16",
+   "end": "2026-10-25",
+   "place": "< 일시 > 2026.10.16",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "",
+   "url": "https://blog.naver.com/mininote_blog/224441270295",
+   "urls": [
+    "https://blog.naver.com/mininote_blog/224441270295"
+   ],
+   "titles": [
+    "역대급 헬로키티 의류 팝업 정보 sanrio ootd aeae X hello kitty pop up store"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-6a0458ac3c",
+   "name": "25 플라워노즈 10주년",
+   "start": "2026-10-16",
+   "end": "2026-10-25",
+   "place": "서울 성동구 성수동",
+   "address": "",
+   "lat": null,
+   "lng": null,
+   "region": "서울",
+   "url": "https://blog.naver.com/sweetheart0418/224440779741",
+   "urls": [
+    "https://blog.naver.com/sweetheart0418/224440779741"
+   ],
+   "titles": [
+    "🎀 10/16~25 성수 플라워노즈 10주년 팝업! 스노우 발레 컬렉션 국내 최초 공개(일정, 사전예약, 이벤트 등)"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "fashion",
    "young": true
   },
   {
@@ -1101,10 +1101,10 @@
     "하남 스타필드 블로키x하비소울 캐릭터 콜라보 팝업 스토어 26년 9월1일~15일"
    ],
    "agree": 1,
-   "posts": 4,
+   "posts": 3,
    "sure": false,
    "state": "now",
-   "kind": "anime",
+   "kind": "character",
    "young": true
   },
   {
