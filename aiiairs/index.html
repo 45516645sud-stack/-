@@ -12,6 +12,14 @@
 <meta name="author" content="정문경">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#efe8da">
+<!-- 앱처럼 설치 (홈 화면에 추가) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="AIIairs">
+<meta name="mobile-web-app-capable" content="yes">
+<script>/* 설치 창 신호는 일찍 오므로 먼저 받아 둔다 */window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__installEvt=e;});</script>
 <!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
 <meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
 <link rel="canonical" href="https://45516645sud-stack.github.io/-/">
@@ -113,6 +121,16 @@ button{cursor:pointer}
 .brand{display:flex;align-items:baseline;gap:14px;color:inherit;text-decoration:none}
 .brand-word{font-family:var(--f-display);font-size:var(--s3);font-weight:600;letter-spacing:-.02em;line-height:1;font-variation-settings:"opsz" 144}
 .brand-sub{font-size:var(--s-1);color:var(--muted)}
+.brand-mark{align-self:center;width:28px;height:28px;flex:none;margin-right:-4px}
+/* 홈 화면에 추가 안내 */
+.install{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;border:1px solid var(--ink);background:var(--surface);padding:12px 16px;margin:20px 0 0}
+.install[hidden]{display:none}
+.install img{width:40px;height:40px;flex:none}
+.install-txt{flex:1;min-width:0;margin:0;font-size:var(--s-1);color:var(--muted);line-height:1.5}
+.install-txt b{display:block;color:var(--ink);font-size:var(--s0);font-weight:600}
+.install-act{display:flex;align-items:center;gap:14px;flex:none}
+.install-how{flex-basis:100%;margin:0;font-size:var(--s-1);color:var(--ink);line-height:1.6}
+@media (max-width:560px){.install-act{flex-basis:100%;justify-content:flex-start}.install-txt{word-break:keep-all}}
 .mast-meta{margin:0;font-size:var(--s-1);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .mast-meta b{color:var(--ink);font-weight:500}
 
@@ -615,6 +633,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 <header class="mast">
   <div class="wrap mast-top">
     <a class="brand" href="./" aria-label="AIIairs 처음으로">
+      <img class="brand-mark" src="favicon.svg" alt="" width="28" height="28">
       <span class="brand-word">AIIairs</span>
       <span class="brand-sub">전국 소극장·소공연 일정</span>
     </a>
@@ -626,6 +645,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 </header>
 
 <main>
+  <div class="wrap"><section class="install" id="installTip" aria-label="앱처럼 설치" hidden></section></div>
   <section class="wrap grid intro" aria-labelledby="h1">
     <div class="lede">
       <p class="eyebrow">Index of Small Stages <span>/</span> <span id="season"></span></p>
@@ -731,7 +751,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
     <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
-    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span><br><a href="privacy.html">개인정보 처리방침</a></p>
+    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span><br><a href="privacy.html">개인정보 처리방침</a><span id="installFoot" hidden> · <a href="#" id="installLink">앱으로 설치</a></span></p>
   </div>
 </footer>
 
@@ -2230,6 +2250,59 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   syncBox();
   wide.addEventListener('change', syncBox);
   box.querySelector('summary').addEventListener('click', e => { if (wide.matches) e.preventDefault(); });
+
+  /* ---- 앱처럼 설치 (홈 화면에 추가) ----
+     두 번째 방문부터 위에 한 번 안내하고, 닫으면 다시 안 띄운다. 아래 '앱으로 설치' 링크는 늘 남는다.
+     안드로이드·PC 크롬은 설치 창을 바로 띄우고, 아이폰 사파리는 공유 → '홈 화면에 추가' 방법을 보여 준다.
+     카카오톡·인스타 같은 앱 안 브라우저에서는 설치가 안 되므로 안내하지 않는다. */
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  const INSTALL_KEY = 'aiiairs.installTip';
+  const VISITS_KEY = 'aiiairs.visits';
+  const ls = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* 저장 불가 환경 */ } }
+  };
+  try { if (!sessionStorage.getItem('aiiairs.visitSeen')) { sessionStorage.setItem('aiiairs.visitSeen', '1'); ls.set(VISITS_KEY, String(Number(ls.get(VISITS_KEY) || 0) + 1)); } } catch { /* 저장 불가 환경 */ }
+  let installEvt = window.__installEvt || null;
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const ua = navigator.userAgent;
+  const iosSafari = /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|KAKAOTALK|Instagram|FBAN|NAVER|Line\//i.test(ua);
+  async function installNow(howEl) {
+    if (!installEvt) { if (howEl) howEl.hidden = false; return false; }
+    installEvt.prompt();
+    const r = await installEvt.userChoice.catch(() => null);
+    installEvt = null;
+    drawInstall();
+    return !!(r && r.outcome === 'accepted');
+  }
+  function drawInstall() {
+    const can = !standalone() && (installEvt || iosSafari);
+    $('installFoot').hidden = !can;
+    const box = $('installTip');
+    const show = can && ls.get(INSTALL_KEY) !== 'off' && Number(ls.get(VISITS_KEY) || 0) >= 2;
+    box.hidden = !show;
+    if (!show) return;
+    box.innerHTML = `<img src="img/icon-192.png" alt="">
+      <p class="install-txt"><b>AIIairs를 앱처럼 쓰기</b>홈 화면에 추가하면 아이콘 하나로 바로 열려요</p>
+      <span class="install-act"><button type="button" class="btn btn-sm" id="installGo">추가하기</button>
+      <button type="button" class="linkish" id="installNo">닫기</button></span>
+      <p class="install-how" id="installHow" hidden>화면 아래 <b>공유 버튼(네모 위 화살표)</b>을 누르고 <b>'홈 화면에 추가'</b>를 고르세요.</p>`;
+    $('installNo').addEventListener('click', () => { ls.set(INSTALL_KEY, 'off'); box.hidden = true; });
+    $('installGo').addEventListener('click', async () => { if (await installNow($('installHow'))) { ls.set(INSTALL_KEY, 'off'); box.hidden = true; } });
+  }
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; drawInstall(); });
+  window.addEventListener('appinstalled', () => { ls.set(INSTALL_KEY, 'off'); installEvt = null; drawInstall(); });
+  $('installLink').addEventListener('click', e => {
+    e.preventDefault();
+    if (installEvt) { installNow(null); return; }
+    // 아이폰: 위 안내를 다시 펼쳐 방법을 보여 준다
+    ls.set(INSTALL_KEY, '');
+    ls.set(VISITS_KEY, String(Math.max(2, Number(ls.get(VISITS_KEY) || 0))));
+    drawInstall();
+    const how = $('installHow');
+    if (how) { how.hidden = false; $('installTip').scrollIntoView({ block: 'center' }); }
+  });
+  drawInstall();
 
   /* ---- 사용 의견: 사이트에 들어올 때마다, 그 방문에서 화면을 본 시간이 5분이 되면 딱 한 번 묻는다
      1 별로예요 → 개선점, 2 좋아요 → 좋았던 점. 기록 주소가 있을 때만 묻는다.
