@@ -211,3 +211,40 @@ export function toPlaces(docs: KakaoPlaceDoc[], size: number): Place[] {
   }
   return out;
 }
+
+/* ---------- PC방 1시간 가격 (블로그·카페 후기에서 찾기) ----------
+   "시간당 1,200원", "1시간에 1500원", "1,300원/1시간" 같은 말을 가게 이름이 나오는 최근 2년 글에서 찾아 가운데 값.
+   회원가·이벤트가가 섞일 수 있어 앱은 '후기 기준 약'으로 보여 준다 */
+export const HOUR_MIN = 500, HOUR_MAX = 3500;
+const WON = String.raw`(?<![\d,.])(\d{1,2}[,.]\d{3}|\d{3,4})\s*원`;
+const HOUR = String.raw`(?:시간당|(?<!\d)1\s*시간(?:에|당)?|한\s*시간(?:에|당)?)`;
+const HOUR_RE = [new RegExp(HOUR + String.raw`\s*(?:은|는|이|가|에)?\s*(?:약\s*)?` + WON, "g"), new RegExp(WON + String.raw`\s*(?:\/|에|per)?\s*` + HOUR.replace("시간당|", ""), "g")];
+
+export function hourPrices(text: string): number[] {
+  const out: number[] = [];
+  for (const re of HOUR_RE) {
+    for (const m of text.matchAll(re)) {
+      const won = Number(m[1].replace(/[,.]/g, ""));
+      if (won >= HOUR_MIN && won <= HOUR_MAX) out.push(won);
+    }
+  }
+  return out;
+}
+
+export function hourPrice(docs: KakaoPostDoc[], name: string, now: Date = new Date()): { won: number; n: number } | null {
+  const core = coreName(name);
+  if (core.length < 2) return null;
+  const oldest = now.getTime() - MAX_POST_AGE_DAYS * 86400000;
+  const found: number[] = [];
+  for (const d of docs) {
+    const t = Date.parse(String(d.datetime ?? ""));
+    if (!Number.isFinite(t) || t < oldest) continue;
+    if (!goodSource({ doc_url: d.url, display_sitename: String(d.blogname ?? d.cafename ?? "") })) continue;
+    const text = plain(d.title) + " " + plain(d.contents);
+    if (!text.replace(/\s/g, "").toLowerCase().includes(core)) continue;
+    found.push(...hourPrices(text));
+  }
+  if (!found.length) return null;
+  found.sort((a, b) => a - b);
+  return { won: Math.round(found[Math.floor((found.length - 1) / 2)] / 100) * 100, n: found.length };
+}

@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos, toPosts, postFreshness } from "./photos.ts";
+import { allowedOrigin, cleanCoord, cleanQuery, cleanRadius, cleanSize, coreName, toPhotos, toPlaces, toPostPhotos, toPosts, postFreshness, hourPrice, hourPrices } from "./photos.ts";
 
 Deno.test("검색어 정리", () => {
   assertEquals(cleanQuery("  서면   OO노래방  부산진구 "), "서면 OO노래방 부산진구");
@@ -124,4 +124,23 @@ Deno.test("가게 후기 최신 날짜·1년 안 글 수 (문 닫았을 수도 �
   ], "VR스카이 안동점", now), { latest: "2024-02-01", recent: 0 });
   assertEquals(postFreshness([d("레드버튼 서면점 후기", "2026-09-01T10:00:00+09:00")], "레드버튼 서면점", now), { latest: "2026-09-01", recent: 1 });
   assertEquals(postFreshness([], "어느 가게", now), { latest: null, recent: 0 });
+});
+
+Deno.test("PC방 1시간 가격: 후기 글에서 찾기", () => {
+  assertEquals(hourPrices("시간당1,200원"), [1200]);
+  assertEquals(hourPrices("1시간에1500원이에요"), [1500]);
+  assertEquals(hourPrices("요금은1,300원/1시간"), [1300]);
+  assertEquals(hourPrices("한시간당 1000원"), [1000]);
+  assertEquals(hourPrices("11시간12000원"), []);          // 11시간 묶음은 아님
+  assertEquals(hourPrices("시간당10,000원"), []);           // 너무 비쌈 (PC방 아님)
+  assertEquals(hourPrices("12시간9,900원"), []);
+  const now = new Date("2026-10-01T00:00:00Z");
+  const doc = (title: string, contents: string, datetime = "2026-05-01T00:00:00.000+09:00") => ({ title, contents, datetime, url: "https://blog.naver.com/a/1", blogname: "어느 블로그" });
+  assertEquals(hourPrice([
+    doc("레드PC 강남점 후기", "레드PC 시간당 1,200원"),
+    doc("레드PC", "회원 1시간에 1000원, 비회원 시간당 1,500원"),
+    doc("다른 피시방", "시간당 900원"),                      // 다른 가게 글
+    doc("레드PC", "시간당 800원", "2020-01-01T00:00:00.000+09:00"),  // 너무 오래된 글
+  ], "레드PC 강남점", now), { won: 1200, n: 3 });
+  assertEquals(hourPrice([doc("레드PC", "좋아요")], "레드PC", now), null);
 });

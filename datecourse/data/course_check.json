@@ -1,0 +1,134 @@
+{
+ "checked": "2026-10-14",
+ "note": "카카오 지도에서 1.5km 안에 같은 이름이 안 나온 정류장 (문을 닫았거나 이름이 바뀌었을 수 있음)",
+ "missing": {
+  "busan-gwangan-night": [
+   "민락수변공원·회센터"
+  ],
+  "busan-nampo": [
+   "자갈치시장"
+  ],
+  "daegu-modern": [
+   "서문시장 야시장"
+  ],
+  "incheon-chinatown": [
+   "개항장 거리"
+  ],
+  "gwangju-songjeong": [
+   "송정 떡갈비 골목"
+  ],
+  "gwangju-mudeung": [
+   "증심사",
+   "증심사 입구 보리밥 거리"
+  ],
+  "daejeon-bakery": [
+   "소제동 카페거리"
+  ],
+  "daejeon-daecheong": [
+   "대청호 호수 뷰 카페"
+  ],
+  "sejong-jochiwon": [
+   "조치원 시내"
+  ],
+  "gg-suwon": [
+   "행궁동 카페거리"
+  ],
+  "gg-gapyeong": [
+   "가평 닭갈비"
+  ],
+  "gg-yangpyeong": [
+   "양평 강변 카페"
+  ],
+  "gw-gangneung": [
+   "안목해변 커피거리"
+  ],
+  "gw-sokcho": [
+   "속초관광수산시장"
+  ],
+  "cb-cheongju": [
+   "국립현대미술관 청주"
+  ],
+  "cn-gongju": [
+   "제민천 카페거리"
+  ],
+  "cn-taean": [
+   "안면암"
+  ],
+  "jn-damyang": [
+   "담양 떡갈비"
+  ],
+  "gwangju-biennale": [
+   "광주시립미술관"
+  ],
+  "cn-boryeong": [
+   "대천 스카이바이크"
+  ],
+  "sj-arboretum-night": [
+   "세종 나성동 먹자골목"
+  ],
+  "sj-jochiwon": [
+   "조치원전통시장"
+  ],
+  "gj-penguin": [
+   "양림동 카페"
+  ],
+  "dg-dongseongno": [
+   "삼덕동 카페거리",
+   "교동 먹자골목"
+  ],
+  "dj-daedong": [
+   "소제동 카페거리"
+  ],
+  "dj-sungsimdang-2": [
+   "둔산동 먹자골목"
+  ],
+  "jb-gunsan-island": [
+   "선유도 짚라인"
+  ],
+  "jj-saebyeol-oreum": [
+   "애월 해안 카페"
+  ],
+  "bs-haeundae-blueline": [
+   "해운대 블루라인파크 스카이캡슐"
+  ],
+  "seoul-ikseon-night": [
+   "서촌 골목"
+  ],
+  "gw-sokcho-night": [
+   "속초관광수산시장"
+  ],
+  "gw-gangneung-anmok": [
+   "안목해변 커피거리"
+  ],
+  "gn-changwon-night": [
+   "마산 아구찜거리"
+  ],
+  "ic-sinseongri": [
+   "영흥도 진두항"
+  ],
+  "dj-daecheong-lake": [
+   "대청댐 물문화관"
+  ],
+  "seoul-garosu-dosan": [
+   "신사동 가로수길"
+  ],
+  "seoul-sinchon-campus": [
+   "신촌 연세로"
+  ],
+  "busan-haeridan-marine": [
+   "해운대시장"
+  ],
+  "gwangju-rainy-sangmu": [
+   "상무지구 먹자골목"
+  ],
+  "gw-gangneung-wolhwa": [
+   "강릉중앙시장"
+  ],
+  "gw-chuncheon-kimyujeong": [
+   "구봉산 카페거리"
+  ],
+  "gg-goyang-haengju": [
+   "행주산성 국수거리"
+  ]
+ }
+}

@@ -92,6 +92,22 @@ svg.i.fillc { fill: currentColor; stroke: none; }
 .brand-row { display: flex; align-items: center; justify-content: space-between; height: 32px; }
 .brand { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.04em; color: var(--accent-ink); }
 .brand svg { width: 22px; height: 22px; }
+.brand-left { display: flex; align-items: center; gap: 10px; }
+.help-btn { height: 26px; padding: 0 10px; border: 1.5px solid rgba(255,255,255,.7); border-radius: 999px; background: transparent; color: var(--accent-ink); font-size: 12px; font-weight: 700; }
+/* 사용법 둘러보기 (게임 튜토리얼처럼 한 곳씩 밝게 비춘다) */
+.tour { position: fixed; inset: 0; z-index: 2000; }
+.tour-hole { position: fixed; border-radius: 14px; box-shadow: 0 0 0 9999px rgba(0,0,0,.62); transition: all .25s ease; pointer-events: none; }
+.tour-hole.none { width: 2px; height: 2px; left: 50%; top: 40%; }
+.tour-tip { position: fixed; left: 16px; right: 16px; max-width: 420px; margin: 0 auto; padding: 16px; border-radius: 16px; background: var(--bg); color: var(--ink); box-shadow: 0 10px 30px rgba(0,0,0,.25); transition: top .25s ease; }
+.tour-tip .step { font-size: 12px; font-weight: 700; color: var(--accent-text); }
+.tour-tip h3 { margin: 4px 0 6px; font-size: 18px; letter-spacing: -0.02em; }
+.tour-tip p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink); word-break: keep-all; }
+.tour-bar { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.tour-bar .btn { white-space: nowrap; flex: none; }
+.tour-dots { display: flex; gap: 3px; flex: 1; min-width: 0; overflow: hidden; }
+.tour-dots i { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--line); }
+.tour-dots i.on { background: var(--accent); width: 14px; border-radius: 3px; }
+@media (prefers-reduced-motion: reduce) { .tour-hole, .tour-tip { transition: none; } }
 .icon-btn {
   border: 0; background: transparent; width: 36px; height: 36px; border-radius: 10px;
   display: grid; place-items: center; color: inherit; padding: 0;
@@ -161,6 +177,9 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .mini small svg.i { width: 11px; height: 11px; color: var(--star, #ffc93a); }
 .stop-warn { margin: 6px 0 0; padding: 6px 10px; border-radius: 8px; font-size: 12px; background: #fdecec; color: #a12a2a; }
 :root[data-mode="dark"] .stop-warn { background: #3a1d1d; color: #ffb4b4; }
+:root[data-mode="dark"] .timed.warn { background: #3a1d1d; }
+:root[data-mode="dark"] .timed.warn .timed-now { color: #ffb4b4; }
+:root[data-mode="dark"] .timed.ok .timed-now { color: #6fd39a; }
 .stop-picks { margin: 8px 0 0; }
 .stop-picks small { display: block; font-size: 11px; color: var(--faint); margin-bottom: 4px; }
 .pick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -203,6 +222,12 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .place b { font-size: 16px; letter-spacing: -0.02em; }
 .place .cat { font-size: 12px; color: var(--sub); }
 .place .addr { grid-column: 1 / -1; font-size: 13px; color: var(--sub); }
+.place .price-line { grid-column: 1 / -1; font-size: 13px; color: var(--sub); margin-top: 2px; }
+.place .price-line b { color: var(--ink); font-size: 15px; }
+.place .price-line small { color: var(--faint); font-size: 11px; }
+.price-best { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.place.cheapest { background: var(--accent-soft); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 14px; }
+.price-note { margin: 4px 0 0; }
 .place .dist { font-size: 13px; font-weight: 700; color: var(--accent-text); align-self: start; font-variant-numeric: tabular-nums; }
 .place .links { grid-column: 1 / -1; margin-top: 6px; }
 .place .tel { font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; user-select: all; }
@@ -462,6 +487,15 @@ ol.stops li:not(:last-child)::after { content: ""; position: absolute; left: 11p
 .stop-name { font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
 .stop-kind { display: block; color: var(--sub); font-size: 13px; font-variant-numeric: tabular-nums; }
 .stop-tip { margin: 4px 0 8px; font-size: 14px; color: var(--ink); }
+.timed { margin: 4px 0 10px; padding: 10px 12px; border-radius: 12px; background: var(--fill); }
+.timed-top { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.timed-when { margin: 2px 0 0; font-size: 13px; color: var(--sub); }
+.timed-now { margin: 4px 0 0; font-size: 13px; font-weight: 700; }
+.timed.ok .timed-now { color: #1f8a4c; }
+.timed.warn { background: #fdecec; }
+.timed.warn .timed-now { color: #a12a2a; }
+.timed .link-pill { margin-top: 8px; }
+.timed-tag { color: var(--accent-text); font-weight: 700; }
 .links { display: flex; gap: 6px; flex-wrap: wrap; }
 .link-pill {
   display: inline-flex; align-items: center; height: 30px; padding: 0 11px; border-radius: 8px; background: var(--fill);
@@ -618,7 +652,10 @@ body.has-tray .toast { bottom: calc(var(--tab-h) + 70px + env(safe-area-inset-bo
   <div class="appbar-top">
     <div class="wrap">
       <div class="brand-row">
-        <h1 class="brand" id="brandMark">놀코</h1>
+        <div class="brand-left">
+          <h1 class="brand" id="brandMark">놀코</h1>
+          <button type="button" class="help-btn" id="tourBtn" aria-label="놀코 사용법 보기">? 사용법</button>
+        </div>
         <button class="icon-btn" id="themeBtn" aria-label="어둡게 보기"></button>
       </div>
       <label class="search" id="searchBox">
@@ -916,7 +953,8 @@ async function fetchJson(url) {
 
 /* 코스 썸네일 실제 사진: 직접 고른 코스는 data/course_photos.json (관광공사, 공공누리 1유형), 관광공사 코스는 대표 사진 */
 let COURSE_PHOTO = {};
-let STOP_PHOTO = {};   // 코스id → { 장소 번호: { img, place } } (한국관광공사 사진, scripts/fetch_stop_photos.py)
+let STOP_PHOTO = {};
+let COURSE_TIMED = {};   // 코스id → { 장소 이름: { type, label, months?, days?, time, fest?, ask } } (시간·계절이 정해진 쇼·축제)   // 코스id → { 장소 번호: { img, place } } (한국관광공사 사진, scripts/fetch_stop_photos.py)
 let COURSE_MISSING = {};   // 매주 점검에서 지도에 안 나온 정류장 (data/course_check.json)
 function photoOf(c) {
   const p = COURSE_PHOTO[c.id];
@@ -932,8 +970,9 @@ function thumbHtml(c, tone, pic) {
 
 async function loadCourses() {
   // courses.json: 직접 고른 기본 코스 / tour_courses.json: 한국관광공사 추천코스 수집 결과(있을 때만)
-  const [base, tour, photos, check] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"),
-    fetchJson("data/course_photos.json"), fetchJson("data/course_check.json")]);
+  const [base, tour, photos, check, timed] = await Promise.all([fetchJson("data/courses.json"), fetchJson("data/tour_courses.json"),
+    fetchJson("data/course_photos.json"), fetchJson("data/course_check.json"), fetchJson("data/course_timed.json")]);
+  COURSE_TIMED = (timed && timed.stops) || {};
   COURSE_PHOTO = (photos && photos.photos) || {};
   fetchJson("data/stop_photos.json").then((d) => { STOP_PHOTO = (d && d.photos) || {}; });
   COURSE_MISSING = (check && check.missing) || {};
@@ -1366,6 +1405,7 @@ async function showPlaces(keyword, h, q, a) {
   const draw = (list) => {
     list = pick(list);
     if (!list.length) { empty(); return; }
+    if (a && PRICE_ACTS.has(a.id)) { drawPriced(box, list.slice(0, 12), q); return; }
     box.replaceChildren(...list.slice(0, 10).map(placeItem));
     box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
   };
@@ -1391,6 +1431,73 @@ async function showPlaces(keyword, h, q, a) {
     location: new window.kakao.maps.LatLng(center.lat, center.lng),
     radius: 2000, sort: window.kakao.maps.services.SortBy.DISTANCE, size: 15,
   });
+}
+
+/* ---------- PC방: 1시간 가격이 싼 순 ----------
+   가격은 ① 놀코 이용자가 알려 준 값(있으면 우선) ② 블로그·카페 후기에서 찾은 값('후기 기준 약').
+   가격을 아는 곳을 싼 순으로 위에, 모르는 곳은 가까운 순으로 아래에. 맨 위에 '추천 · 가장 싸요' */
+const PRICE_ACTS = new Set(["pc"]);
+const wonText = (n) => n.toLocaleString("ko-KR") + "원";
+async function drawPriced(box, list, q) {
+  const els = list.map((p) => {
+    const el = placeItem(p);
+    el.querySelector(".cat").insertAdjacentHTML("afterend", `<span class="price-line">1시간 가격 확인 중…</span>`);
+    if (placeId(p)) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "link-pill price-tell"; b.textContent = "💬 가격 알려주기";
+      b.addEventListener("click", () => tellPrice(p, el, b));
+      el.querySelector(".links").append(b);
+    }
+    return el;
+  });
+  box.replaceChildren(...els);
+  box.insertAdjacentHTML("afterbegin", `<p class="note price-note">1시간 가격이 싼 순이에요. 회원가·시간대·좌석마다 달라서 대략이에요.</p>`);
+  box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
+  const endpoint = photoEndpoint();
+  const ids = list.map(placeId).filter(Boolean);
+  const wait = (pr) => Promise.race([pr, new Promise((ok) => setTimeout(() => ok(null), 4000))]);
+  const [told, infos] = await Promise.all([
+    wait(endpoint && ids.length ? fetchJson(`${endpoint}?mode=prices&ids=${ids.join(",")}`) : Promise.resolve(null)),
+    Promise.all(list.map((p) => wait(placeInfo(p)))),
+  ]);
+  if (!box.isConnected) return;
+  const userP = (told && told.prices) || {};
+  const rows = list.map((p, i) => {
+    const u = userP[placeId(p)], b = infos[i] && infos[i].price;
+    const price = u && u.won ? { won: u.won, how: `놀코 이용자 ${u.n}명이 알려준 가격` } : b && b.won ? { won: b.won, how: "후기 기준 약" } : null;
+    return { p, el: els[i], price, i };
+  });
+  rows.sort((x, y) => (x.price ? 0 : 1) - (y.price ? 0 : 1) || (x.price && y.price ? x.price.won - y.price.won : 0) || x.i - y.i);
+  rows.forEach((r, k) => {
+    const line = r.el.querySelector(".price-line");
+    r.el.classList.remove("cheapest");
+    if (r.price) {
+      line.innerHTML = `${k === 0 ? `<span class="price-best">추천 · 가장 싸요</span>` : ""}<b>1시간 ${wonText(r.price.won)}</b> <small></small>`;
+      line.querySelector("small").textContent = r.price.how;
+      if (k === 0) r.el.classList.add("cheapest");
+    } else line.textContent = "1시간 가격 정보가 아직 없어요";
+  });
+  const more = box.querySelector(".places-more");
+  rows.forEach((r) => box.insertBefore(r.el, more));
+}
+async function tellPrice(p, el, btn) {
+  const raw = prompt(`'${p.place_name}' 1시간에 얼마였나요? (숫자만, 예: 1200)`);
+  if (raw === null) return;
+  const won = Math.round(Number(String(raw).replace(/[^\d]/g, "")) / 100) * 100;
+  if (!(won >= 500 && won <= 5000)) { toast("500~5000원 사이로 알려 주세요"); return; }
+  btn.disabled = true;
+  try {
+    const res = await fetch(photoEndpoint(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: "price_set", id: placeId(p), won, token: myToken() }) });
+    if (!res.ok) throw new Error();
+    const d = await res.json();
+    const line = el.querySelector(".price-line");
+    if (d.price && line) {
+      line.innerHTML = `<b>1시간 ${wonText(d.price.won)}</b> <small></small>`;
+      line.querySelector("small").textContent = `놀코 이용자 ${d.price.n}명이 알려준 가격`;
+    }
+    btn.textContent = "알려줬어요";
+    toast("고마워요! 다른 사람들한테 도움이 돼요");
+  } catch { toast("지금은 보내지 못했어요"); btn.disabled = false; }
 }
 
 function placeItem(p) {
@@ -1438,10 +1545,12 @@ function loadClosed() {
   return CLOSED.loading;
 }
 const isClosed = (p) => CLOSED.ids.has(placeId(p));
-// 후기가 1년 넘게 없음 (서버가 latest 를 준 경우만 판단. 서버가 없거나 실패하면 판단하지 않음)
+// 예전엔 후기가 있었는데 1년 넘게 끊김 (서버가 latest 를 준 경우만 판단. 서버가 없거나 실패하면 판단하지 않음)
+// 후기가 아예 없는 가게(노래방·PC방처럼 원래 블로그 후기가 드문 곳)는 문 닫았다는 증거가 아니라서 표시하지 않는다
 function isStale(d) {
-  if (!d || !("latest" in d)) return false;
-  return !d.latest || Date.now() - Date.parse(d.latest) > 365 * 86400000;
+  if (!d || !d.latest) return false;
+  const t = Date.parse(d.latest);
+  return Number.isFinite(t) && Date.now() - t > 365 * 86400000;
 }
 function markStale(el) {
   if (el.classList.contains("stale")) return;
@@ -1451,12 +1560,14 @@ function markStale(el) {
   if (list) { const more = list.querySelector(".places-more"); more ? list.insertBefore(el, more) : list.append(el); }
 }
 // 가게 후기 정보 (사진과 같은 요청을 함께 쓴다)
+// 사진·후기 날짜를 한 요청으로 (name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글만). PC방이면 후기에서 찾은 1시간 가격도
+const isPcPlace = (p) => /pc방|피시방|pc카페/i.test(`${p.category_name || ""} ${p.place_name || ""}`.replace(/\s/g, ""));
 function placeInfo(p) {
   const endpoint = photoEndpoint();
   if (!endpoint || !p.place_name) return Promise.resolve({});
   const gu = String(p.address_name || p.road_address_name || "").split(" ")[1] || "";
   const q = `${p.place_name} ${gu}`.trim();
-  if (!photoCache.has(q)) photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
+  if (!photoCache.has(q)) photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4${isPcPlace(p) ? "&price=hour" : ""}`)
     .then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
   return photoCache.get(q);
 }
@@ -1494,16 +1605,8 @@ async function addPhotos(el, p, opts = {}) {
     makeStrip().append(lead);
   }
   if (!endpoint || !p.place_name) return;
-  const gu = String(p.address_name || p.road_address_name || "").split(" ")[1] || "";
-  const q = `${p.place_name} ${gu}`.trim();
   try {
-    if (!photoCache.has(q)) {
-      // name: 블로그·카페 글 중 이 가게 이름이 실제로 나오는 글의 사진만 받는다
-      photoCache.set(q, fetch(`${endpoint}?q=${encodeURIComponent(q)}&name=${encodeURIComponent(p.place_name)}&size=4`)
-        .then((r) => (r.ok ? r.json() : {}))
-        .catch(() => ({})));
-    }
-    const data = await photoCache.get(q);
+    const data = await placeInfo(p);
     if (opts.stale !== false && isStale(data) && el.isConnected) markStale(el);
     // 뉴스·관공서 사진(사건·단속 사진 등)은 가게 이미지를 해칠 수 있어 빼고 블로그·카페 후기 위주로 (서버도 같은 규칙)
     const photos = (Array.isArray(data.photos) ? data.photos : []).filter((x) => /^https:\/\//.test(x.thumb) && /^https?:\/\//.test(x.link)
@@ -1677,6 +1780,7 @@ function card(c) {
       <span class="meta">
         ${rate ? `<span class="rate">${icon("star")}${rate.avg.toFixed(1)}<small>(${rate.n})</small></span>` : ""}
         ${c.hours ? `<span>${c.hours}시간</span>` : ""}
+        ${hasTimed(c) ? `<span class="timed-tag">⏰ 시간 확인</span>` : ""}
         <span>${total !== null ? `<span class="won">1인 ${won(total)}</span>` : esc(BUDGET[c.budget] || "")}</span>
         ${Number.isFinite(d) ? `<span>${d < 1 ? "1km 안" : Math.round(d) + "km"}</span>` : ""}
       </span>
@@ -2179,6 +2283,7 @@ function openCourse(id, { push = true } = {}) {
           <div class="stop-name">${esc(s.name)}</div>
           <span class="stop-kind">${[KIND[s.kind], s.stay ? s.stay + "분" : "", Number.isFinite(s.price) ? won(s.price) : s.priceNote ? "보통 " + s.priceNote : ""].filter(Boolean).map(esc).join(" · ")}</span>
           ${s.tip ? `<p class="stop-tip">${esc(s.tip)}</p>` : ""}
+          ${timedOf(c, s) ? `<div class="timed" data-stop="${i}"></div>` : ""}
           ${(COURSE_MISSING[c.id] || []).includes(s.name) ? `<p class="stop-warn">최근 지도에서 확인되지 않았어요. 문을 닫았거나 이름이 바뀌었을 수 있으니 가기 전에 꼭 확인하세요.</p>` : ""}
           ${c.source === "local" && s.act ? `<div class="stop-picks" data-act="${esc(s.act)}"><span class="note">근처 실제 가게를 찾는 중…</span></div>` : ""}
           <div class="links">${mapLinks(s)}</div>
@@ -2217,10 +2322,67 @@ function openCourse(id, { push = true } = {}) {
   drawMap(c);
   fillStopPicks(c);
   fillStopPhotos(c);
+  fillTimed(c);
+  if (!WK.list) loadEvents().then(() => { if (openId === c.id) fillTimed(c); });   // 축제 실제 날짜는 '이번 주말' 데이터에서
   renderReviewForm(c.id);
   renderReviewList(c.id);
   renderMaker(c);
   if (push) history.pushState({ id }, "", "#c=" + encodeURIComponent(id));
+}
+
+/* ---------- 시간·계절이 정해진 장소 (분수쇼·드론쇼·축제 등) ----------
+   '보통'의 일정과 오늘 날짜를 비교해 "지금은 철이 아니에요" 같은 말을 붙이고, 늘 '가기 전에 확인' 버튼을 같이 준다.
+   축제는 '이번 주말' 데이터(관광공사 축제, 45일 안)에 있으면 올해 실제 날짜를 보여 준다 */
+const timedOf = (c, s) => (COURSE_TIMED[c.id] || {})[s.name] || null;
+const hasTimed = (c) => !!COURSE_TIMED[c.id];
+const DAY_NAME = "일월화수목금토";
+function monthsText(ms) {
+  if (!ms || !ms.length) return "";
+  if (ms.length === 1) return ms[0] + "월";
+  const sorted = [...ms];
+  // 12,1,2,3 처럼 해를 넘기는 것은 시작 달을 찾아 이어서
+  const start = sorted.find((m) => !sorted.includes(m === 1 ? 12 : m - 1)) ?? sorted[0];
+  const end = sorted.find((m) => !sorted.includes(m === 12 ? 1 : m + 1)) ?? sorted[sorted.length - 1];
+  return `${start}~${end}월`;
+}
+function festEvent(c, t) {
+  if (!t.fest || !WK.list) return null;
+  const key = t.fest.replace(/\s/g, "");
+  return WK.list.filter((e) => e.kind === "festival" && e.title.replace(/\s/g, "").includes(key) && (!e.regions.length || e.regions.includes(c.region)))
+    .sort((a, b) => a.start.localeCompare(b.start))[0] || null;
+}
+// { tone: "ok"(지금 해요) | "warn"(지금은 안 해요) | "", text }
+function timedStatus(c, t, now = new Date()) {
+  const month = now.getMonth() + 1, today = isoDay(now);
+  const ev = festEvent(c, t);
+  if (ev) {
+    if (ev.start <= today && today <= ev.end) return { tone: "ok", text: `지금 축제 중! ${md(ev.end)}까지` };
+    const dday = Math.round((new Date(ev.start + "T00:00:00") - new Date(today + "T00:00:00")) / 86400000);
+    return { tone: "", text: `올해 일정 ${md(ev.start)} ~ ${md(ev.end)} · ${dday}일 남았어요` };
+  }
+  if (t.months && t.months.length && !t.months.includes(month))
+    return { tone: "warn", text: t.type === "festival" ? `지금은 축제 기간이 아니에요 (보통 ${monthsText(t.months)})` : `지금은 ${t.label} 하는 철이 아니에요 (보통 ${monthsText(t.months)})` };
+  if (t.type === "festival") return { tone: "", text: "보통 이맘때 열려요. 올해 날짜를 꼭 확인하세요" };
+  if (t.days && t.days.length) return t.days.includes(now.getDay())
+    ? { tone: "ok", text: "오늘 하는 날이에요" }
+    : { tone: "warn", text: `오늘(${DAY_NAME[now.getDay()]})은 보통 안 해요 · 주로 ${t.days.map((d) => DAY_NAME[d]).join("·")}요일` };
+  if (t.months && t.months.length) return { tone: "ok", text: "지금 하는 철이에요" };
+  return { tone: "", text: "" };
+}
+function fillTimed(c) {
+  document.querySelectorAll("#sheetBody .timed[data-stop]").forEach((box) => {
+    const s = c.stops[Number(box.dataset.stop)];
+    const t = s && timedOf(c, s);
+    if (!t) { box.remove(); return; }
+    const st = timedStatus(c, t);
+    box.className = "timed" + (st.tone ? " " + st.tone : "");
+    box.innerHTML = `<div class="timed-top"><span class="timed-ic" aria-hidden="true">${t.type === "festival" ? "🎉" : "⏰"}</span><b></b></div>
+      <p class="timed-when"></p>${st.text ? `<p class="timed-now"></p>` : ""}
+      ${t.ask ? `<a class="link-pill" target="_blank" rel="noopener" href="https://search.naver.com/search.naver?query=${encodeURIComponent(t.ask)}">${t.type === "festival" ? "올해 날짜 확인" : "가기 전에 시간 확인"}</a>` : ""}`;
+    box.querySelector("b").textContent = t.label;
+    box.querySelector(".timed-when").textContent = t.time;
+    if (st.text) box.querySelector(".timed-now").textContent = st.text;
+  });
 }
 
 // 코스 순서의 장소마다 사진: 한국관광공사 사진(있으면 맨 앞) + 그 장소 이름이 나오는 블로그·카페 후기 사진 (누르면 원래 글)
@@ -3495,9 +3657,111 @@ function drawInstallTip() {
   });
 }
 
+/* ---------- 사용법 둘러보기 ----------
+   처음 온 사람에게 한 번 자동으로, 그 뒤로는 왼쪽 위 '? 사용법' 버튼으로. 화면의 버튼을 하나씩 밝게 비추며 설명한다.
+   지금 화면에 없는 버튼(예: 데이터가 없어 숨긴 '이번 주말')은 건너뛴다 */
+const TOUR = [
+  { el: null, title: "놀코에 온 걸 환영해요! 👋", text: "놀 곳을 대신 골라 주는 앱이에요. 30초만 같이 둘러볼까요?" },
+  { el: ".seg", title: "여행 코스 · 우리 동네", text: "멀리 놀러 갈 땐 '여행 코스', 사는 동네에서 놀 땐 '우리 동네'를 눌러요." },
+  { el: "#regionRow", title: "지역 고르기", text: "옆으로 밀어서 지역을 골라요. '전국'이면 전체 코스가 나와요." },
+  { el: "#eatBtn", title: "뭐 먹지?", text: "메뉴만 고르면 근처 밥집 한 곳을 딱 골라 줘요. 결정이 어려울 때 눌러 보세요." },
+  { el: "#nearBtn", title: "지금 근처", text: "지금 있는 곳에서 걸어갈 만한 놀거리를 보여 줘요." },
+  { el: "#randomBtn", title: "어디 갈지 모르겠다면", text: "'뽑기'를 누르면 조건에 맞는 코스 하나를 골라 줘요." },
+  { el: "#grid .item", title: "코스 보기", text: "코스를 누르면 순서, 지도, 사진, 이동 시간이 나와요. ⏰ 표시는 시간이 정해진 쇼·축제가 있다는 뜻이에요." },
+  { el: "#quickRow", title: "필터", text: "누구와 · 분위기 · 예산 · 시간으로 코스를 좁힐 수 있어요." },
+  { el: "#weekendBtn", title: "이번 주말", text: "이번 주말 공연, 축제, 팝업스토어를 모아서 보여 줘요." },
+  { el: "#makeBtn", title: "코스 만들기", text: "가고 싶은 곳을 골라 나만의 코스를 만들고 친구한테 보낼 수 있어요." },
+  { el: "#favBtn", title: "찜", text: "코스 안의 ♡를 누르면 여기에 모여요." },
+  { el: null, title: "🗳 친구랑 정하기", text: "코스나 가게에서 '🗳 투표'를 눌러 후보를 담고, 단톡방에 보내면 친구들이 링크에서 골라요. 앱 설치는 필요 없어요." },
+  { el: "#tourBtn", title: "다 봤어요! 🎉", text: "다시 보고 싶으면 언제든 왼쪽 위 '? 사용법'을 누르세요." },
+];
+let tourAt = 0, tourSteps = [];
+function tourTarget(step) {
+  if (!step.el) return null;
+  const el = document.querySelector(step.el);
+  if (!el || el.hidden || !el.getClientRects().length) return null;
+  return el;
+}
+function startTour() {
+  hit("visit", "tour");
+  tourSteps = TOUR.filter((st) => !st.el || tourTarget(st));
+  tourAt = 0;
+  document.querySelectorAll("dialog[open]").forEach((d) => d.close());
+  let box = $("tour");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "tour"; box.className = "tour";
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "놀코 사용법");
+    box.innerHTML = `<div class="tour-hole"></div><div class="tour-tip"><div class="step"></div><h3></h3><p></p>
+      <div class="tour-bar"><div class="tour-dots"></div><button type="button" class="btn small ghost" id="tourSkip">건너뛰기</button>
+      <button type="button" class="btn small" id="tourPrev">이전</button><button type="button" class="btn small primary" id="tourNext">다음</button></div></div>`;
+    document.body.append(box);
+    $("tourSkip").addEventListener("click", endTour);
+    $("tourPrev").addEventListener("click", () => { if (tourAt > 0) { tourAt--; drawTour(); } });
+    $("tourNext").addEventListener("click", () => { if (tourAt < tourSteps.length - 1) { tourAt++; drawTour(); } else endTour(); });
+    window.addEventListener("resize", () => { if ($("tour") && !$("tour").hidden) placeTour(); });
+    window.addEventListener("scroll", () => { if ($("tour") && !$("tour").hidden) placeTour(); }, { passive: true });
+    document.addEventListener("keydown", (e) => {
+      if (!$("tour") || $("tour").hidden) return;
+      if (e.key === "Escape") endTour();
+      if (e.key === "ArrowRight") $("tourNext").click();
+      if (e.key === "ArrowLeft") $("tourPrev").click();
+    });
+  }
+  box.hidden = false;
+  drawTour();
+}
+function drawTour() {
+  const st = tourSteps[tourAt];
+  const box = $("tour");
+  box.querySelector(".step").textContent = `${tourAt + 1} / ${tourSteps.length}`;
+  box.querySelector("h3").textContent = st.title;
+  box.querySelector("p").textContent = st.text;
+  box.querySelector(".tour-dots").innerHTML = tourSteps.map((_, i) => `<i class="${i === tourAt ? "on" : ""}"></i>`).join("");
+  $("tourPrev").hidden = tourAt === 0;
+  $("tourNext").textContent = tourAt === tourSteps.length - 1 ? "시작하기" : "다음";
+  $("tourSkip").hidden = tourAt === tourSteps.length - 1;
+  const el = tourTarget(st);
+  // 화면 위·아래 고정 줄(머리, 아래 메뉴)에 있는 것은 스크롤하지 않고, 목록 안의 것은 화면 가운데로
+  if (el && !el.closest(".appbar, .tabbar")) {
+    el.scrollIntoView({ block: "center" });
+    // 위에 붙어 있는 머리(검색·지역 줄)에 가리면 그 아래로 내린다
+    const top = document.querySelector(".appbar").getBoundingClientRect().bottom, r = el.getBoundingClientRect();
+    if (r.top < top + 12) window.scrollBy(0, r.top - top - 12);
+  }
+  placeTour();
+  setTimeout(placeTour, 350);
+  $("tourNext").focus({ preventScroll: true });
+}
+function placeTour() {
+  const st = tourSteps[tourAt];
+  const box = $("tour");
+  if (!st || !box) return;
+  const hole = box.querySelector(".tour-hole"), tip = box.querySelector(".tour-tip");
+  const el = tourTarget(st);
+  if (!el) {
+    hole.classList.add("none");
+    hole.removeAttribute("style");
+    tip.style.top = Math.max(16, (innerHeight - tip.offsetHeight) / 2) + "px";
+    return;
+  }
+  hole.classList.remove("none");
+  const r = el.getBoundingClientRect(), pad = 6;
+  Object.assign(hole.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + pad * 2 + "px", height: r.height + pad * 2 + "px" });
+  // 설명 상자는 비춘 곳 아래에 자리가 있으면 아래, 없으면 위
+  const below = r.bottom + pad + 12, h = tip.offsetHeight;
+  tip.style.top = (below + h < innerHeight - 8 ? below : Math.max(8, r.top - pad - 12 - h)) + "px";
+}
+function endTour() {
+  if ($("tour")) $("tour").hidden = true;
+  save("nolco.tourDone", true);
+  window.scrollTo({ top: 0 });
+}
+
 /* ---------- 시작 ---------- */
 applyTheme(load(STORE.theme, ""));
 $("themeBtn").addEventListener("click", toggleTheme);
+$("tourBtn").addEventListener("click", startTour);
 $("randomBtn").addEventListener("click", () => pickRandom(""));
 const goTab = (fav_, user_) => { state.view = "courses"; state.favOnly = fav_; state.userOnly = user_; update(); window.scrollTo({ top: 0 }); };
 $("tabHome").addEventListener("click", () => goTab(false, false));
@@ -3568,6 +3832,8 @@ window.addEventListener("popstate", () => {
   else if (id) pendingId = id;
   const vote = voteFromHash();
   if (vote) openVote(vote);
+  // 처음 온 사람에게 한 번 (공유 링크로 코스·투표를 보러 온 경우는 방해하지 않는다)
+  if (!load("nolco.tourDone", false) && !location.hash && !navigator.webdriver) setTimeout(() => { if (!document.querySelector("dialog[open]")) startTour(); }, 900);
   initShared().catch(() => {});
   loadEvents();
   loadPopups();

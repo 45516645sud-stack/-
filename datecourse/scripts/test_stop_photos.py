@@ -99,5 +99,36 @@ class MainTest(unittest.TestCase):
                 self.assertEqual(meta["misses"], {})
 
 
+class QuotaTest(unittest.TestCase):
+    def test_429_stops_like_call_budget(self):
+        import urllib.error
+
+        def busy(url):
+            raise urllib.error.HTTPError(url, 429, "Too Many Requests", {}, None)
+
+        c = ct.Client("k", 10, fetch=busy, pause=0)
+        with self.assertRaises(ct.CallBudget):
+            c.get("searchKeyword2", keyword="서울숲")
+
+
+class TimeTest(unittest.TestCase):
+    def test_stops_after_time_budget_and_saves(self):
+        courses = {"courses": [{"id": "c1", "stops": [{"name": "가나다", "lat": 37.0, "lng": 127.0}]}]}
+
+        class Never:
+            calls = 0
+
+            def get(self, op, **kw):
+                raise AssertionError("시간이 지났으면 묻지 않아야 함")
+
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / "data").mkdir()
+            (root / "data" / "courses.json").write_text(json.dumps(courses), encoding="utf-8")
+            with mock.patch.object(sp, "ROOT", root):
+                self.assertEqual(sp.main(["--max-seconds", "-1"], client=Never()), 0)
+                self.assertTrue((root / "data" / "stop_photos.json").exists())
+
+
 if __name__ == "__main__":
     unittest.main()

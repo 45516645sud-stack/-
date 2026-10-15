@@ -80,7 +80,13 @@ class Client:
         self.calls += 1
         q = {"serviceKey": self.key, "MobileOS": "ETC", "MobileApp": APP_NAME, "_type": "json", **params}
         url = f"{BASE}/{op}?{urllib.parse.urlencode(q)}"
-        text = self.fetch(url)
+        try:
+            text = self.fetch(url)
+        except urllib.error.HTTPError as e:
+            if e.code == 429:   # 하루 호출 한도를 다 씀: 더 물어봐야 소용없으니 멈춘다 (내일 다시)
+                print("TourAPI 하루 호출 한도를 다 썼어요 (429). 여기서 멈춰요")
+                raise CallBudget() from e
+            raise
         if self.pause:
             time.sleep(self.pause)
         return parse_items(text, op)
@@ -93,7 +99,7 @@ def http_get(url: str) -> str:
             with urllib.request.urlopen(req, timeout=20) as res:
                 return res.read().decode("utf-8")
         except (urllib.error.URLError, TimeoutError) as e:
-            if attempt == 2:
+            if attempt == 2 or (isinstance(e, urllib.error.HTTPError) and e.code == 429):
                 raise
             time.sleep(2 ** attempt)
     raise RuntimeError("unreachable")

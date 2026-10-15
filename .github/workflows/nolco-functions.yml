@@ -94,6 +94,8 @@ jobs:
           check "투표하기" "$(post "{\"mode\":\"vote\",\"id\":\"v-000000000a\",\"pick\":1,\"token\":\"$tok\"}")" '"mine":1'
           check "표 바꾸기" "$(post "{\"mode\":\"vote\",\"id\":\"v-000000000a\",\"pick\":0,\"token\":\"$tok\"}")" '"mine":0'
           check "내 표 보기" "$(get "mode=vote&id=v-000000000a&me=$me")" '"mine":0'
+          check "PC방 가격 알려 주기" "$(post "{\"mode\":\"price_set\",\"id\":\"000\",\"won\":1200,\"token\":\"$tok\"}")" '"won":1200'
+          check "PC방 가격 보기" "$(get 'mode=prices&ids=000')" '"000"'
           code=$(post '{"mode":"vote","id":"v-000000000a","pick":7,"token":"'"$tok"'"}'); echo "잘못된 번호: HTTP $code"
           if [ "$code" != 400 ]; then echo "::error::잘못된 투표 번호를 막지 않아요"; fail=1; fi
           exit $fail

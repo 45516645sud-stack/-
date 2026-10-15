@@ -196,3 +196,28 @@ export function voteCounts(rows: { item_id: string; reporter: string }[]): { cou
   }
   return { counts, voters: seen.size };
 }
+
+/* ---------- PC방 1시간 가격 (이용자가 알려 주기) ----------
+   한 사람이 한 가게에 하나 (다시 알려 주면 바뀜). 저장은 nolco_reports (col 'pr', doc_id 가게 id, item_id 가격) */
+export function cleanWon(raw: unknown): number | null {
+  if (typeof raw !== "number" || !Number.isFinite(raw)) return null;
+  const won = Math.round(raw / 100) * 100;
+  return won >= 500 && won <= 5000 ? won : null;
+}
+
+/** 가게별 알려 준 가격의 가운데 값과 사람 수 */
+export function priceSummary(rows: { doc_id: string; item_id: string }[]): Record<string, { won: number; n: number }> {
+  const by = new Map<string, number[]>();
+  for (const r of rows) {
+    const won = cleanWon(Number(r.item_id));
+    if (won === null) continue;
+    if (!by.has(r.doc_id)) by.set(r.doc_id, []);
+    by.get(r.doc_id)!.push(won);
+  }
+  const out: Record<string, { won: number; n: number }> = {};
+  for (const [id, list] of by) {
+    list.sort((a, b) => a - b);
+    out[id] = { won: list[Math.floor((list.length - 1) / 2)], n: list.length };
+  }
+  return out;
+}

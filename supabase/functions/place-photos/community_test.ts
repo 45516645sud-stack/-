@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert@1";
 import { SCHEMA } from "./schema.ts";
-import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups, cleanPlaceId, closedIds, cleanVoteId, cleanPick, voteCounts } from "./community.ts";
+import { authorId, checkAdmin, cleanBody, cleanCol, cleanHit, cleanNick, pbkdf2, validToken, withoutHidden, withoutItem, cleanPopupId, cleanPopupItem, visiblePopups, cleanPlaceId, closedIds, cleanVoteId, cleanPick, voteCounts, cleanWon, priceSummary } from "./community.ts";
 
 Deno.test("col·token 확인", () => {
   assertEquals(cleanCol("rv"), "rv");
@@ -111,4 +111,15 @@ Deno.test("친구 투표: id·후보 번호 확인과 한 사람 한 표", () =>
     { item_id: "9", reporter: "d" },   // 이상한 번호
   ]);
   assertEquals(r, { counts: [1, 0, 2, 0, 0], voters: 3 });
+});
+
+Deno.test("PC방 가격 알려 주기: 값 확인과 가게별 가운데 값", () => {
+  assertEquals(cleanWon(1234), 1200);
+  assertEquals(cleanWon(400), null);
+  assertEquals(cleanWon(9000), null);
+  assertEquals(cleanWon("1200"), null);
+  assertEquals(priceSummary([
+    { doc_id: "111", item_id: "1200" }, { doc_id: "111", item_id: "1000" }, { doc_id: "111", item_id: "1500" },
+    { doc_id: "222", item_id: "1300" }, { doc_id: "222", item_id: "abc" },
+  ]), { "111": { won: 1200, n: 3 }, "222": { won: 1300, n: 1 } });
 });

@@ -24,7 +24,7 @@ jobs:
   photos:
     if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     env:
       DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
     steps:
