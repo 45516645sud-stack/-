@@ -37,7 +37,7 @@ def svg(bg,leafc,starc,scale=1.0,rx=0):
     bgel=f'<rect width="512" height="512" rx="{rx}" fill="{bg}"/>' if bg else ''
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">{bgel}{stem}<path d="{path(leaf(cx,cy,s))}" fill="{leafc}" stroke="{leafc}" stroke-width="{10*scale:.1f}" stroke-linejoin="round"/><path d="{st}" fill="{starc}" stroke="{starc}" stroke-width="{3*scale:.1f}" stroke-linejoin="round"/></svg>'
 INK,BG,ACC='#14110f','#efe8da','#c2410c'
-open('icon.svg','w').write(svg(INK,ACC,BG,1.0,0))
-open('icon-maskable.svg','w').write(svg(INK,ACC,BG,0.74,0))
-open('icon-light.svg','w').write(svg(BG,ACC,BG,1.0,0))
-open('favicon.svg','w').write(svg(INK,ACC,BG,1.12,96))
+# 바탕은 사이트 바탕색(크림), 잎은 주황, 별은 크림
+open('icon.svg','w').write(svg(BG,ACC,BG,1.0,0))
+open('icon-maskable.svg','w').write(svg(BG,ACC,BG,0.74,0))
+open('favicon.svg','w').write(svg(BG,ACC,BG,1.12,96))
