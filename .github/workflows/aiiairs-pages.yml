@@ -52,7 +52,7 @@ jobs:
       - name: 공개할 파일만 모으기
         run: |
           mkdir -p _site
-          cp aiiairs/index.html aiiairs/privacy.html aiiairs/og.png aiiairs/robots.txt aiiairs/sitemap.xml aiiairs/manifest.webmanifest aiiairs/sw.js aiiairs/icon.svg aiiairs/favicon.svg _site/
+          cp aiiairs/index.html aiiairs/privacy.html aiiairs/og.png aiiairs/robots.txt aiiairs/sitemap.xml aiiairs/manifest.webmanifest aiiairs/sw.js aiiairs/icon.svg aiiairs/favicon.svg aiiairs/admin.html aiiairs/admin.webmanifest _site/
           cp -r aiiairs/img aiiairs/data _site/
           # 운영용 파일(직접 입력 원본 표)은 올리지 않는다
           rm -f _site/data/manual.csv

@@ -2011,8 +2011,19 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     state.cost = it.cost || 'all';
     state.budget = it.budget ?? null;
     render();
+    logSearch(q);
     $('schedule').focus({ preventScroll: true });
     $('schedule').scrollIntoView({ block: 'start' });
+  }
+  // 취향 검색에 쓴 문장을 운영자 시트 '검색' 탭에 남긴다 (같은 방문에서 같은 문장은 한 번만, 운영자·예시 데이터는 빼고)
+  const searchLogged = new Set();
+  function logSearch(q) {
+    try {
+      if (!statOn() || searchLogged.has(q)) return;
+      searchLogged.add(q);
+      const count = Number(($('sheetCount').textContent.match(/\d+/) || ['0'])[0]);
+      report({ type: 'search', q, count, device: window.matchMedia('(hover:none)').matches ? '모바일' : 'PC' });
+    } catch { /* 페이지를 처음 그리는 중에는 아직 준비가 안 됐을 수 있다 */ }
   }
   function clearQuery() {
     state.query = '';

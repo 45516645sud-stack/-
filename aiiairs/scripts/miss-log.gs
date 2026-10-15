@@ -13,11 +13,17 @@
  *       실행 계정: 나 / 액세스 권한: 모든 사용자
  *  4. 나온 웹 앱 주소(https://script.google.com/macros/s/…/exec)를
  *     index.html 의 <meta name="aiiairs-log-endpoint" content="여기"> 에 넣는다
+ *
+ * 관리자 앱(admin.html)
+ *  - 취향 검색에 쓴 문장(type: "search")은 '검색' 탭에 쌓는다.
+ *  - doGet 은 비밀번호가 맞을 때만 시트 내용을 돌려준다. 비밀번호는 코드에 적지 않고
+ *    Apps Script → 프로젝트 설정(톱니) → 스크립트 속성 → ADMIN_TOKEN 에 12자 이상으로 넣는다.
  */
 
 var HEADER = ['시각', '종류', '어디서', '검색어', '조건', '조건을 풀면', '예시 데이터'];
-var TYPES = { miss: '결과 없음', alert: '알림 신청', feedback: '의견' };
+var TYPES = { miss: '결과 없음', alert: '알림 신청', feedback: '의견', search: '검색' };
 var FEEDBACK_HEADER = ['시각', '평가', '고른 이유', '의견', '사용 시간(분)', '화면'];
+var SEARCH_HEADER = ['시각', '검색어', '결과 수', '화면'];
 var STAT_HEADER = ['날짜', '방문', '모바일', 'PC', '공연 열기', '검색', '예매 클릭', 'KOPIS 정보', '지도', '링크 복사', '캘린더'];
 var STAT_KEYS = ['visit', 'mobile', 'pc', 'open', 'search', 'book', 'info', 'map', 'share', 'cal'];
 
@@ -35,6 +41,10 @@ function doPost(e) {
   if (!TYPES[data.type]) return ContentService.createTextOutput('ignored');
 
   var sheet = sheetFor_(data.type);
+  if (data.type === 'search') {
+    sheet.appendRow([new Date(), cut_(data.q, 200), count_(data.count), data.device === '모바일' ? '모바일' : 'PC']);
+    return ContentService.createTextOutput('ok');
+  }
   if (data.type === 'feedback') {
     sheet.appendRow([
       new Date(),
@@ -58,13 +68,13 @@ function doPost(e) {
   return ContentService.createTextOutput('ok');
 }
 
-// 종류별로 탭을 나눈다: '결과 없음', '알림 신청', '의견'
+// 종류별로 탭을 나눈다: '결과 없음', '알림 신청', '의견', '검색'
 function sheetFor_(type) {
   var book = SpreadsheetApp.getActiveSpreadsheet();
   var name = TYPES[type];
   var sheet = book.getSheetByName(name) || book.insertSheet(name);
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(type === 'feedback' ? FEEDBACK_HEADER : HEADER);
+    sheet.appendRow(type === 'feedback' ? FEEDBACK_HEADER : type === 'search' ? SEARCH_HEADER : HEADER);
     sheet.setFrozenRows(1);
   }
   return sheet;
@@ -144,8 +154,76 @@ function findRow_(sheet, key, recent) {
   return -1;
 }
 
+// 숫자만, 0~5000 사이로 (검색 결과 수용). 통계는 아래 num_ 이 0~500 으로 자른다
+function count_(v) {
+  var n = Math.floor(Number(v) || 0);
+  return n < 0 ? 0 : n > 5000 ? 5000 : n;
+}
+
 // 숫자만, 0~500 사이로 (가짜로 큰 숫자를 보내도 통계가 망가지지 않게)
 function num_(v) {
   var n = Math.floor(Number(v) || 0);
   return n < 0 ? 0 : n > 500 ? 500 : n;
+}
+
+/* ---------------- 관리자 앱(admin.html)이 읽어 가는 곳 ----------------
+   ?token=비밀번호 가 스크립트 속성 ADMIN_TOKEN 과 같을 때만 시트 내용을 JSON 으로 돌려준다. */
+function doGet(e) {
+  var want = PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN') || '';
+  var got = String((e && e.parameter && e.parameter.token) || '');
+  if (want.length < 12) return json_({ ok: false, error: 'setup', message: 'Apps Script 스크립트 속성에 ADMIN_TOKEN(12자 이상)을 넣어 주세요.' });
+  if (!same_(got, want)) {
+    Utilities.sleep(1500);  // 마구 넣어 보기 늦추기
+    return json_({ ok: false, error: 'token', message: '비밀번호가 맞지 않아요.' });
+  }
+  var book = SpreadsheetApp.getActiveSpreadsheet();
+  return json_({
+    ok: true,
+    now: Utilities.formatDate(new Date(), 'Asia/Seoul', "yyyy-MM-dd'T'HH:mm:ss"),
+    visits: rows_(book, '방문', 120).map(function (r) {
+      var o = { date: r[0] };
+      STAT_KEYS.forEach(function (k, i) { o[k] = Number(r[i + 1]) || 0; });
+      return o;
+    }),
+    top: rows_(book, '많이 본 공연', 0)
+      .map(function (r) { return { title: r[0], count: Number(r[1]) || 0, last: r[2] }; })
+      .sort(function (a, b) { return b.count - a.count; }).slice(0, 50),
+    feedback: rows_(book, '의견', 300).map(function (r) {
+      return { at: r[0], rating: r[1], reasons: r[2], text: r[3], minutes: r[4], device: r[5] };
+    }).reverse(),
+    searches: rows_(book, '검색', 2000).map(function (r) {
+      return { at: r[0], q: r[1], count: Number(r[2]) || 0, device: r[3] };
+    }).reverse(),
+    misses: rows_(book, '결과 없음', 300).map(function (r) {
+      return { at: r[0], source: r[2], q: r[3], label: r[4], relax: r[5] };
+    }).reverse(),
+    alerts: rows_(book, '알림 신청', 300).map(function (r) {
+      return { at: r[0], q: r[3], label: r[4] };
+    }).reverse()
+  });
+}
+
+// 탭의 마지막 n 줄 (n 이 0 이면 전부). 날짜는 한국 시간 글자로 바꾼다.
+function rows_(book, name, n) {
+  var sheet = book.getSheetByName(name);
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var last = sheet.getLastRow();
+  var from = n > 0 ? Math.max(2, last - n + 1) : 2;
+  return sheet.getRange(from, 1, last - from + 1, sheet.getLastColumn()).getValues().map(function (r) {
+    return r.map(function (v) {
+      return v instanceof Date ? Utilities.formatDate(v, 'Asia/Seoul', 'yyyy-MM-dd HH:mm') : v;
+    });
+  });
+}
+
+function json_(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// 길이와 글자를 끝까지 비교한다 (어디서 틀렸는지 시간으로 알 수 없게)
+function same_(a, b) {
+  if (a.length !== b.length) return false;
+  var d = 0;
+  for (var i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
 }
