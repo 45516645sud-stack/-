@@ -1862,6 +1862,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   function renderNotice() {
     let html = '';
+    // 진짜 일정을 못 불러와 예시를 보여 줄 때는 예매하러 가지 않게 크게 알린다
+    if (DATA.sample && /^https?:/.test(location.protocol)) {
+      html += `<div class="notice is-alert"><p><b>지금 보이는 공연은 예시예요.</b> 실제 일정을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요.</p></div>`;
+    }
     if (state.relaxed) {
       html += `<div class="notice"><p><b>원래 조건엔 없어서 넓혀 찾은 결과예요.</b> ${esc(state.relaxed.note)}</p>` +
         `<button type="button" class="linkish" data-act="undo-relax">원래 조건으로</button></div>`;
