@@ -1,5 +1,5 @@
 // AIIairs: 홈 화면에 추가한 앱. 늘 새 파일을 먼저 받고, 인터넷이 끊기면 마지막으로 본 일정을 보여 준다.
-const CACHE = "aiiairs-v1";
+const CACHE = "aiiairs-v2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon.svg", "favicon.svg", "img/icon-192.png", "data/fairs.json"];
 
 self.addEventListener("install", (e) => {
