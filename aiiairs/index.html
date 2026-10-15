@@ -12,6 +12,14 @@
 <meta name="author" content="정문경">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#efe8da">
+<!-- 앱처럼 설치 (홈 화면에 추가) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="AIIairs">
+<meta name="mobile-web-app-capable" content="yes">
+<script>/* 설치 창 신호는 일찍 오므로 먼저 받아 둔다 */window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__installEvt=e;});</script>
 <!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
 <meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
 <link rel="canonical" href="https://45516645sud-stack.github.io/-/">
@@ -113,6 +121,16 @@ button{cursor:pointer}
 .brand{display:flex;align-items:baseline;gap:14px;color:inherit;text-decoration:none}
 .brand-word{font-family:var(--f-display);font-size:var(--s3);font-weight:600;letter-spacing:-.02em;line-height:1;font-variation-settings:"opsz" 144}
 .brand-sub{font-size:var(--s-1);color:var(--muted)}
+.brand-mark{align-self:center;width:28px;height:28px;flex:none;margin-right:-4px}
+/* 홈 화면에 추가 안내 */
+.install{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;border:1px solid var(--ink);background:var(--surface);padding:12px 16px;margin:20px 0 0}
+.install[hidden]{display:none}
+.install img{width:40px;height:40px;flex:none}
+.install-txt{flex:1;min-width:0;margin:0;font-size:var(--s-1);color:var(--muted);line-height:1.5}
+.install-txt b{display:block;color:var(--ink);font-size:var(--s0);font-weight:600}
+.install-act{display:flex;align-items:center;gap:14px;flex:none}
+.install-how{flex-basis:100%;margin:0;font-size:var(--s-1);color:var(--ink);line-height:1.6}
+@media (max-width:560px){.install-act{flex-basis:100%;justify-content:flex-start}.install-txt{word-break:keep-all}}
 .mast-meta{margin:0;font-size:var(--s-1);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .mast-meta b{color:var(--ink);font-weight:500}
 
@@ -489,6 +507,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 /* 사용 의견: 5분쯤 써 본 뒤 한 번만 묻는다. 오른쪽 아래, 일정표에 끼워 둔 엽서 한 장처럼 */
 .fb{position:fixed;right:24px;bottom:24px;z-index:20;width:min(420px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;background:var(--surface);border:1px solid var(--ink)}
 .fb[hidden],.fb-step[hidden]{display:none}
+/* 오른쪽 끝 '피드백' 버튼: 언제든 의견 창을 연다 */
+.fb-tab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:19;writing-mode:vertical-rl;background:var(--ink);color:var(--bg);border:0;padding:14px 8px;font:inherit;font-size:var(--s-1);font-weight:500;letter-spacing:.12em;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fb-tab:hover,.fb-tab:focus-visible{background:var(--accent)}
+.fb-tab[hidden]{display:none}
+.fb.is-tab .fb-chosen{display:none}
 .fb button{-webkit-tap-highlight-color:transparent}
 .fb-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--ink);color:var(--bg);padding:10px 20px}
 .fb-bar b{font-family:var(--f-display);font-weight:600;font-size:var(--s0);letter-spacing:.01em}
@@ -533,6 +556,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .fb-title{font-size:var(--s2)}
   .fb-no{font-size:var(--s5)}
   .fb-hint{display:none}
+  .fb-tab{padding:12px 6px}
 
   :root{--pad:16px;--gap:16px;--col-date:3.6rem}
   .filters,.schedule{grid-column:1 / -1}
@@ -609,6 +633,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 <header class="mast">
   <div class="wrap mast-top">
     <a class="brand" href="./" aria-label="AIIairs 처음으로">
+      <img class="brand-mark" src="favicon.svg" alt="" width="28" height="28">
       <span class="brand-word">AIIairs</span>
       <span class="brand-sub">전국 소극장·소공연 일정</span>
     </a>
@@ -620,6 +645,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 </header>
 
 <main>
+  <div class="wrap"><section class="install" id="installTip" aria-label="앱처럼 설치" hidden></section></div>
   <section class="wrap grid intro" aria-labelledby="h1">
     <div class="lede">
       <p class="eyebrow">Index of Small Stages <span>/</span> <span id="season"></span></p>
@@ -725,12 +751,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <div class="wrap">
     <span class="f-brand">AIIairs</span>
     <p class="f-note">일정과 관람료는 주최 측 사정으로 바뀔 수 있어요. 방문 전에 공식 공지를 한 번 더 확인하세요.<span id="logNote"></span></p>
-    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span><br><a href="privacy.html">개인정보 처리방침</a></p>
+    <p class="f-end">전국 소극장·소공연 일정<br><span id="srcNote"></span><br><a href="privacy.html">개인정보 처리방침</a><span id="installFoot" hidden> · <a href="#" id="installLink">앱으로 설치</a></span></p>
   </div>
 </footer>
 
 <dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
 
+<button type="button" class="fb-tab" id="fbTab" aria-controls="feedback" hidden>피드백</button>
 <aside class="fb" id="feedback" aria-labelledby="fbTitle" aria-live="polite" hidden>
   <div class="fb-bar">
     <p class="fb-brand"><b>AIIairs</b><span>사용 의견 · <i id="fbStepNo">1 / 2</i></span></p>
@@ -2224,6 +2251,59 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   wide.addEventListener('change', syncBox);
   box.querySelector('summary').addEventListener('click', e => { if (wide.matches) e.preventDefault(); });
 
+  /* ---- 앱처럼 설치 (홈 화면에 추가) ----
+     두 번째 방문부터 위에 한 번 안내하고, 닫으면 다시 안 띄운다. 아래 '앱으로 설치' 링크는 늘 남는다.
+     안드로이드·PC 크롬은 설치 창을 바로 띄우고, 아이폰 사파리는 공유 → '홈 화면에 추가' 방법을 보여 준다.
+     카카오톡·인스타 같은 앱 안 브라우저에서는 설치가 안 되므로 안내하지 않는다. */
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  const INSTALL_KEY = 'aiiairs.installTip';
+  const VISITS_KEY = 'aiiairs.visits';
+  const ls = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* 저장 불가 환경 */ } }
+  };
+  try { if (!sessionStorage.getItem('aiiairs.visitSeen')) { sessionStorage.setItem('aiiairs.visitSeen', '1'); ls.set(VISITS_KEY, String(Number(ls.get(VISITS_KEY) || 0) + 1)); } } catch { /* 저장 불가 환경 */ }
+  let installEvt = window.__installEvt || null;
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const ua = navigator.userAgent;
+  const iosSafari = /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|KAKAOTALK|Instagram|FBAN|NAVER|Line\//i.test(ua);
+  async function installNow(howEl) {
+    if (!installEvt) { if (howEl) howEl.hidden = false; return false; }
+    installEvt.prompt();
+    const r = await installEvt.userChoice.catch(() => null);
+    installEvt = null;
+    drawInstall();
+    return !!(r && r.outcome === 'accepted');
+  }
+  function drawInstall() {
+    const can = !standalone() && (installEvt || iosSafari);
+    $('installFoot').hidden = !can;
+    const box = $('installTip');
+    const show = can && ls.get(INSTALL_KEY) !== 'off' && Number(ls.get(VISITS_KEY) || 0) >= 2;
+    box.hidden = !show;
+    if (!show) return;
+    box.innerHTML = `<img src="img/icon-192.png" alt="">
+      <p class="install-txt"><b>AIIairs를 앱처럼 쓰기</b>홈 화면에 추가하면 아이콘 하나로 바로 열려요</p>
+      <span class="install-act"><button type="button" class="btn btn-sm" id="installGo">추가하기</button>
+      <button type="button" class="linkish" id="installNo">닫기</button></span>
+      <p class="install-how" id="installHow" hidden>화면 아래 <b>공유 버튼(네모 위 화살표)</b>을 누르고 <b>'홈 화면에 추가'</b>를 고르세요.</p>`;
+    $('installNo').addEventListener('click', () => { ls.set(INSTALL_KEY, 'off'); box.hidden = true; });
+    $('installGo').addEventListener('click', async () => { if (await installNow($('installHow'))) { ls.set(INSTALL_KEY, 'off'); box.hidden = true; } });
+  }
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; drawInstall(); });
+  window.addEventListener('appinstalled', () => { ls.set(INSTALL_KEY, 'off'); installEvt = null; drawInstall(); });
+  $('installLink').addEventListener('click', e => {
+    e.preventDefault();
+    if (installEvt) { installNow(null); return; }
+    // 아이폰: 위 안내를 다시 펼쳐 방법을 보여 준다
+    ls.set(INSTALL_KEY, '');
+    ls.set(VISITS_KEY, String(Math.max(2, Number(ls.get(VISITS_KEY) || 0))));
+    drawInstall();
+    const how = $('installHow');
+    if (how) { how.hidden = false; $('installTip').scrollIntoView({ block: 'center' }); }
+  });
+  drawInstall();
+
   /* ---- 사용 의견: 사이트에 들어올 때마다, 그 방문에서 화면을 본 시간이 5분이 되면 딱 한 번 묻는다
      1 별로예요 → 개선점, 2 좋아요 → 좋았던 점. 기록 주소가 있을 때만 묻는다.
      방문(탭)마다 sessionStorage 로 세므로, 다음에 다시 들어오면 또 5분 뒤에 한 번 묻는다.
@@ -2237,7 +2317,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
          ph: '예) 우리 동네 공연이 더 있었으면 좋겠어요' },
     2: { title: '왜 좋으신가요?', ask: '좋았던 점을 적어 주시면 감사합니다. 해당하는 것을 눌러도 돼요.', rating: '좋아요',
          reasons: ['소극장만 모아 봐서', '포스터로 고르기 쉬워서', '취향 검색이 잘 맞아서', '날짜·지역 거르기 편해서', '디자인이 차분해서'],
-         ph: '예) 대학로 공연을 한눈에 볼 수 있어서 좋아요' }
+         ph: '예) 대학로 공연을 한눈에 볼 수 있어서 좋아요' },
+    // 오른쪽 '피드백' 버튼으로 연 경우: 고르기 없이 바로 쓰는 칸
+    tab: { title: '불편한 점이 있으면 알려주세요', ask: '알려 주시면 사이트를 개선하는 데 큰 도움이 됩니다. 해당하는 것을 눌러도 돼요.', rating: '피드백',
+         reasons: ['찾는 공연이 없어요', '검색이 잘 안 맞아요', '보기가 불편해요', '정보가 틀렸어요', '느려요', '이런 기능이 있으면 좋겠어요'],
+         ph: '예) 공연 시간이 틀려요 / 지도로도 보고 싶어요' }
   };
   const fb = $('feedback');
   const fbForce = new URLSearchParams(location.search).has('feedback');
@@ -2254,7 +2338,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   };
   function fbStep(name) {
     fb.querySelectorAll('.fb-step').forEach(el => { el.hidden = el.dataset.step !== name; });
-    $('fbStepNo').textContent = name === 'done' ? '완료' : name === 'why' ? '2 / 2' : '1 / 2';
+    $('fbStepNo').textContent = name === 'done' ? '완료' : fbRating === 'tab' ? '피드백' : name === 'why' ? '2 / 2' : '1 / 2';
   }
   function fbPicked() {
     return [...$('fbReasons').querySelectorAll('button[aria-pressed="true"]')].map(b => b.textContent);
@@ -2269,16 +2353,48 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     });
   }
   function fbClose() {
-    if (fbRating && !fbSent) fbSend('');
+    // 버튼으로 연 창은 아무것도 안 쓰고 닫으면 보내지 않는다
+    if (fbRating && fbRating !== 'tab' && !fbSent) fbSend('');
     fb.hidden = true;
+    fb.classList.remove('is-tab');
+    fbTab.hidden = !fbTabOn;
   }
   function fbShow() {
     if (!fb.hidden) return;
     // 공연 상세를 보거나 글을 쓰는 중에는 끼어들지 않는다
     if (dlgEl.open || document.activeElement === $('askInput')) { setTimeout(fbShow, 20000); return; }
     visit.set(FB_KEY, 'asked');
+    fbRating = null;
+    fbSent = false;
     fbStep('ask');
     fb.hidden = false;
+    fbTab.hidden = true;
+  }
+  // 오른쪽 끝 '피드백' 버튼: 언제든 바로 불편한 점을 쓰는 칸을 연다 (기록 주소가 있을 때만 보인다)
+  const fbTab = $('fbTab');
+  const fbTabOn = /^https:\/\//.test(LOG_ENDPOINT);
+  fbTab.hidden = !fbTabOn;
+  fbTab.addEventListener('click', () => {
+    if (fbRating && fbRating !== 'tab' && !fbSent) fbSend($('fbText').value);  // 5분 창에서 고른 평가는 먼저 보낸다
+    fbSent = false;
+    fb.classList.add('is-tab');
+    fb.hidden = false;
+    fbTab.hidden = true;
+    fbChoose('tab');
+  });
+  function fbChoose(act) {
+    fbRating = act;
+    const c = FB_COPY[act];
+    $('fbNo').textContent = act;
+    $('fbChosen').textContent = c.rating;
+    $('fbWhy').textContent = c.title;
+    $('fbAsk').textContent = c.ask;
+    $('fbText').placeholder = c.ph;
+    $('fbText').value = '';
+    fb.querySelector('[data-fb="skip"]').textContent = act === 'tab' ? '취소' : '건너뛰기';
+    $('fbReasons').innerHTML = c.reasons.map(r => `<button type="button" aria-pressed="false" data-reason>${r}</button>`).join('');
+    fbStep('why');
+    $('fbText').focus();
   }
   fb.addEventListener('click', e => {
     const r = e.target.closest('[data-reason]');
@@ -2287,20 +2403,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (!b) return;
     const act = b.dataset.fb;
     if (act === '1' || act === '2') {
-      fbRating = act;
-      const c = FB_COPY[act];
-      $('fbNo').textContent = act;
-      $('fbChosen').textContent = c.rating;
-      $('fbWhy').textContent = c.title;
-      $('fbAsk').textContent = c.ask;
-      $('fbText').placeholder = c.ph;
-      $('fbReasons').innerHTML = c.reasons.map(r => `<button type="button" aria-pressed="false" data-reason>${r}</button>`).join('');
-      fbStep('why');
-      $('fbText').focus();
+      fbChoose(act);
     } else if (act === 'back') {
       fbRating = null;
       fbStep('ask');
     } else if (act === 'skip') {
+      if (fbRating === 'tab') { fbClose(); return; }
       fbSend('');
       fbStep('done');
     } else if (act === 'close') {
@@ -2309,11 +2417,17 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   });
   fb.querySelector('form').addEventListener('submit', e => {
     e.preventDefault();
+    // 버튼으로 연 창에서 아무것도 안 고르고 안 썼으면 보내지 않고 칸을 가리킨다
+    if (fbRating === 'tab' && !$('fbText').value.trim() && !fbPicked().length) { $('fbText').focus(); return; }
     fbSend($('fbText').value);
     fbStep('done');
   });
   fb.addEventListener('keydown', e => { if (e.key === 'Escape') fbClose(); });
-  window.addEventListener('pagehide', () => { if (!fb.hidden && fbRating) fbSend($('fbText').value); });
+  window.addEventListener('pagehide', () => {
+    if (fb.hidden || !fbRating) return;
+    if (fbRating === 'tab' && !$('fbText').value.trim() && !fbPicked().length) return;
+    fbSend($('fbText').value);
+  });
 
   // 운영자 모드: 주소 끝에 ?owner=1 을 한 번 붙여 들어오면, 이 브라우저에서는 들어올 때마다 바로 묻는다 (?owner=0 으로 끔)
   const OWNER_KEY = 'aiiairs.owner';

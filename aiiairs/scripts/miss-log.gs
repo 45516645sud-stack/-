@@ -38,7 +38,7 @@ function doPost(e) {
   if (data.type === 'feedback') {
     sheet.appendRow([
       new Date(),
-      data.rating === '좋아요' ? '2 좋아요' : '1 별로예요',
+      data.rating === '좋아요' ? '2 좋아요' : data.rating === '피드백' ? '피드백 버튼' : '1 별로예요',
       cut_((data.reasons || []).join(', '), 200),
       cut_(data.text, 500),
       Number(data.minutes) || '',
