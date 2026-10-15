@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIIairs 관리</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#14110f">
+<link rel="manifest" href="admin.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="AIIairs 관리">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- 운영자만 쓰는 화면. 데이터는 구글 시트(Apps Script doGet)에서 비밀번호가 맞을 때만 받아 온다. -->
+<meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{--bg:#efe8da;--surface:#fff;--ink:#14110f;--accent:#c2410c;--muted:#6e6357;--hair:#c2b9ac;--wash:#e4ddd0;--good:#3f6b3a}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable","Pretendard",system-ui,sans-serif;font-size:15px;line-height:1.55;word-break:keep-all}
+  button,input,select{font:inherit;color:inherit}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+  header.top{background:var(--ink);color:var(--bg)}
+  .top .wrap{display:flex;align-items:center;gap:12px;min-height:56px;flex-wrap:wrap}
+  .top img{width:28px;height:28px}
+  .top h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .top h1 span{color:var(--hair);font-weight:400;margin-left:6px;font-size:13px}
+  .top .sp{flex:1}
+  .top button{background:none;border:1px solid var(--muted);color:var(--bg);padding:5px 12px;cursor:pointer}
+  .top button:hover{border-color:var(--bg)}
+  .top .when{font-size:12px;color:var(--hair)}
+  .bar-top{position:sticky;top:0;z-index:5}
+  nav.tabs{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--ink);background:var(--bg);scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs a{flex:none;padding:12px 16px;text-decoration:none;font-size:14px;color:var(--muted);border-right:1px solid var(--hair)}
+  nav.tabs a:hover{color:var(--ink)}
+  main{padding:20px 0 64px}
+  section{margin:0 0 36px;scroll-margin-top:130px}
+  h2{font-size:20px;margin:0 0 4px;font-weight:600;letter-spacing:-.01em}
+  .sub{margin:0 0 14px;color:var(--muted);font-size:13px}
+  .panel{background:var(--surface);border:1px solid var(--ink);padding:16px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--ink);background:var(--surface)}
+  .tile{padding:14px 16px;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .tile .k{font-size:13px;color:var(--muted)}
+  .tile .v{font-size:32px;font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .tile .d{font-size:12px;color:var(--muted)}
+  .tile .v.accent{color:var(--accent)}
+  /* 방문 막대 */
+  .readout{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;min-height:26px;margin-bottom:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .readout b{color:var(--ink);font-size:15px}
+  .chart{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;align-items:end;gap:2px;height:180px;border-bottom:1px solid var(--ink);position:relative}
+  .chart .grid{position:absolute;left:0;right:0;border-top:1px dashed var(--wash);pointer-events:none}
+  .chart .grid span{position:absolute;right:0;top:-8px;z-index:1;font-size:11px;line-height:16px;color:var(--muted);background:var(--surface);padding:0 0 0 4px}
+  .bar{height:100%;display:flex;align-items:flex-end;background:none;border:0;padding:0;cursor:pointer;position:relative}
+  .bar i{display:block;width:100%;background:var(--accent);min-height:1px}
+  .bar.zero i{background:var(--hair)}
+  .bar:hover i,.bar:focus-visible i,.bar.on i{background:var(--ink)}
+  .bar:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+  details.tbl{margin-top:12px}
+  details.tbl summary{cursor:pointer;font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--wash);vertical-align:top}
+  th{color:var(--muted);font-weight:500}
+  td.n,th.n{text-align:right}
+  .scroll{overflow-x:auto}
+  /* 목록 */
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+  .chips button{border:1px solid var(--hair);background:var(--surface);padding:5px 12px;cursor:pointer;font-size:13px}
+  .chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .list{list-style:none;margin:0;padding:0;border:1px solid var(--ink);background:var(--surface)}
+  .list li{padding:12px 16px;border-bottom:1px solid var(--wash)}
+  .list li:last-child{border-bottom:0}
+  .meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px}
+  .tag{display:inline-block;font-size:12px;padding:1px 8px;border:1px solid currentColor}
+  .tag.bad{color:var(--accent)}
+  .tag.good{color:var(--good)}
+  .tag.tab{color:var(--ink)}
+  .txt{margin:6px 0 0;white-space:pre-wrap;word-break:break-word}
+  .reasons{margin:4px 0 0;font-size:13px;color:var(--muted)}
+  .empty{padding:16px;color:var(--muted);font-size:14px}
+  .rank{counter-reset:r}
+  .rank li{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:baseline}
+  .rank li::before{counter-increment:r;content:counter(r);color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+  .rank .c{font-variant-numeric:tabular-nums;font-weight:600}
+  .rank .zero{color:var(--accent);font-size:12px;margin-left:6px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .more{margin-top:8px;background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;color:var(--muted);padding:4px 0}
+  /* 로그인 */
+  .login{max-width:420px;margin:12vh auto 0;padding:0 16px}
+  .login .panel{padding:24px}
+  .login h1{display:flex;align-items:center;gap:10px;font-size:22px;margin:0 0 6px}
+  .login h1 img{width:36px;height:36px}
+  .login p{color:var(--muted);margin:0 0 16px;font-size:14px}
+  .login input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--hair);background:var(--surface);font-size:16px}
+  .login input:focus{outline:0;border-color:var(--accent)}
+  .login label.keep{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:10px 0 16px}
+  .btn{background:var(--ink);color:var(--bg);border:0;padding:10px 18px;cursor:pointer;font-weight:500}
+  .btn:hover{background:var(--accent)}
+  .err{color:var(--accent);font-size:14px;margin:12px 0 0;min-height:1em}
+  [hidden]{display:none !important}
+  @media (max-width:720px){
+    .two{grid-template-columns:1fr}
+    .tile .v{font-size:26px}
+    .top .when{flex-basis:100%;order:5;margin:-6px 0 8px}
+  }
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <form class="panel" id="loginForm">
+    <h1><img src="favicon.svg" alt="">AIIairs 관리</h1>
+    <p>운영자만 볼 수 있어요. Apps Script에 넣어 둔 비밀번호(ADMIN_TOKEN)를 적어 주세요.</p>
+    <input type="password" id="token" autocomplete="current-password" aria-label="비밀번호" placeholder="비밀번호" required>
+    <label class="keep"><input type="checkbox" id="keep" checked> 이 기기에서 기억하기</label>
+    <button class="btn" type="submit">들어가기</button>
+    <p class="err" id="loginErr" role="alert"></p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <div class="bar-top">
+  <header class="top">
+    <div class="wrap">
+      <img src="favicon.svg" alt="">
+      <h1>AIIairs<span>관리</span></h1>
+      <span class="sp"></span>
+      <span class="when" id="when"></span>
+      <button type="button" id="reload">새로고침</button>
+      <button type="button" id="logout">나가기</button>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="바로 가기">
+    <a href="#sum">요약</a><a href="#visits">방문</a><a href="#fb">의견</a><a href="#search">취향 검색</a><a href="#miss">결과 없음</a><a href="#shows">많이 본 공연</a>
+  </nav>
+  </div>
+  <main class="wrap">
+    <section id="sum">
+      <h2>요약</h2>
+      <p class="sub">누가 들어왔는지(이름·IP)는 모으지 않아요. 숫자와 사람들이 직접 쓴 글만 보여요.</p>
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section id="visits">
+      <h2>방문</h2>
+      <p class="sub">최근 30일, 하루에 몇 번 들어왔는지 (같은 탭에서 여러 번 봐도 1번). 막대를 누르면 그날 숫자가 나와요.</p>
+      <div class="panel">
+        <div class="readout" id="readout" aria-live="polite"></div>
+        <div class="chart" id="chart" role="group" aria-label="최근 30일 방문"></div>
+        <div class="axis" id="axis"></div>
+        <details class="tbl"><summary>표로 보기</summary><div class="scroll" id="visitTable"></div></details>
+      </div>
+    </section>
+
+    <section id="fb">
+      <h2>의견</h2>
+      <p class="sub">5분 뒤 질문과 오른쪽 '피드백' 버튼으로 받은 것. 새것이 위에 있어요.</p>
+      <div class="chips" id="fbChips" role="group" aria-label="의견 거르기"></div>
+      <ul class="list" id="fbList"></ul>
+      <button type="button" class="more" id="fbMore" hidden>더 보기</button>
+    </section>
+
+    <section id="search">
+      <h2>취향 검색</h2>
+      <p class="sub">사람들이 검색창에 쓴 문장. 결과 0개는 주황색으로 표시해요. 사전에 넣을 말을 고를 때 보세요.</p>
+      <div class="two">
+        <div>
+          <h3 class="sub" style="color:var(--ink);font-weight:600;margin-bottom:8px">많이 쓴 문장</h3>
+          <ol class="list rank" id="topQ"></ol>
+        </div>
+        <div>
+          <h3 class="sub" style="color:var(--ink);font-weight:600;margin-bottom:8px">최근 검색</h3>
+          <ul class="list" id="recentQ"></ul>
+          <button type="button" class="more" id="qMore" hidden>더 보기</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="miss">
+      <h2>결과 없음</h2>
+      <p class="sub">검색이나 필터로 찾았는데 맞는 공연이 없던 조건.</p>
+      <ul class="list" id="missList"></ul>
+      <button type="button" class="more" id="missMore" hidden>더 보기</button>
+    </section>
+
+    <section id="shows">
+      <h2>많이 본 공연</h2>
+      <p class="sub">사람들이 눌러서 자세히 본 공연 순서.</p>
+      <ol class="list rank" id="topShows"></ol>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  const ENDPOINT = document.querySelector('meta[name="aiiairs-log-endpoint"]').content;
+  const KEY = 'aiiairs.adminToken';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const store = {
+    get() { try { return localStorage.getItem(KEY) || sessionStorage.getItem(KEY) || ''; } catch { return ''; } },
+    set(v, keep) { try { (keep ? localStorage : sessionStorage).setItem(KEY, v); } catch { /* 저장 불가 */ } },
+    clear() { try { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); } catch { /* 저장 불가 */ } }
+  };
+  let token = '';
+  let D = null;
+
+  async function load(t) {
+    const res = await fetch(`${ENDPOINT}?token=${encodeURIComponent(t)}&t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('연결 실패 (' + res.status + ')');
+    return res.json();
+  }
+  async function enter(t, keep) {
+    $('loginErr').textContent = '확인하는 중…';
+    try {
+      const d = await load(t);
+      if (!d.ok) {
+        $('loginErr').textContent = d.error === 'setup' ? d.message
+          : d.error === 'token' ? '비밀번호가 맞지 않아요.'
+          : 'Apps Script를 새 버전으로 배포했는지 확인해 주세요.';
+        return false;
+      }
+      token = t;
+      store.set(t, keep);
+      D = d;
+      $('login').hidden = true;
+      $('app').hidden = false;
+      draw();
+      return true;
+    } catch (e) {
+      $('loginErr').textContent = '불러오지 못했어요. Apps Script를 새 버전으로 배포했는지, 인터넷이 되는지 확인해 주세요.';
+      return false;
+    }
+  }
+  $('loginForm').addEventListener('submit', e => { e.preventDefault(); enter($('token').value.trim(), $('keep').checked); });
+  $('logout').addEventListener('click', () => { store.clear(); location.reload(); });
+  $('reload').addEventListener('click', async () => {
+    $('reload').textContent = '불러오는 중…';
+    try { const d = await load(token); if (d.ok) { D = d; draw(); } } catch { /* 그대로 둔다 */ }
+    $('reload').textContent = '새로고침';
+  });
+
+  /* ---------- 날짜 ---------- */
+  const DAY = 86400000;
+  const kst = d => new Date(d.getTime() + 9 * 3600000);
+  const ymd = d => kst(d).toISOString().slice(0, 10);
+  const WD = ['일', '월', '화', '수', '목', '금', '토'];
+  const label = s => { const [y, m, d] = s.split('-').map(Number); return `${m}.${d} (${WD[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]})`; };
+  const sum = (arr, k) => arr.reduce((a, r) => a + (Number(r[k]) || 0), 0);
+  const norm = q => String(q || '').trim().replace(/\s+/g, ' ');
+
+  function draw() {
+    $('when').textContent = '불러온 시각 ' + (D.now || '').replace('T', ' ').slice(0, 16);
+    const today = ymd(new Date());
+    const byDate = new Map(D.visits.map(v => [String(v.date).slice(0, 10), v]));
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+      const key = ymd(new Date(Date.now() - i * DAY));
+      days.push(byDate.get(key) || { date: key, visit: 0, mobile: 0, pc: 0, open: 0, search: 0, book: 0 });
+    }
+    const last7 = days.slice(-7), prev7 = days.slice(-14, -7);
+    const t = byDate.get(today) || { visit: 0 };
+    const y = byDate.get(ymd(new Date(Date.now() - DAY))) || { visit: 0 };
+    const weekAgo = s => D[s].filter(r => String(r.at) >= ymd(new Date(Date.now() - 6 * DAY))).length;
+    const v7 = sum(last7, 'visit'), p7 = sum(prev7, 'visit');
+    const diff = p7 ? Math.round((v7 - p7) / p7 * 100) : null;
+    const tiles = [
+      ['오늘 방문', t.visit, `어제 ${y.visit}`, true],
+      ['최근 7일 방문', v7, diff == null ? '지난주 기록 없음' : `지난 7일보다 ${diff >= 0 ? '+' : ''}${diff}%`],
+      ['최근 7일 예매 클릭', sum(last7, 'book'), `공연 열기 ${sum(last7, 'open')}`],
+      ['최근 7일 의견', weekAgo('feedback'), `전체 ${D.feedback.length}`],
+      ['최근 7일 취향 검색', weekAgo('searches'), `결과 0개 ${D.searches.filter(r => String(r.at) >= ymd(new Date(Date.now() - 6 * DAY)) && !r.count).length}`],
+      ['30일 모바일 비율', (() => { const m = sum(days, 'mobile'), p = sum(days, 'pc'); return m + p ? Math.round(m / (m + p) * 100) + '%' : '-'; })(), `모바일 ${sum(days, 'mobile')} · PC ${sum(days, 'pc')}`]
+    ];
+    $('tiles').innerHTML = tiles.map(([k, v, d, a]) => `<div class="tile"><div class="k">${k}</div><div class="v${a ? ' accent' : ''}">${esc(v)}</div><div class="d">${esc(d)}</div></div>`).join('');
+    drawChart(days);
+    drawFeedback();
+    drawSearch();
+    drawMiss();
+    $('topShows').innerHTML = D.top.length
+      ? D.top.slice(0, 20).map(r => `<li><span>${esc(r.title)}</span><span class="c">${r.count}</span></li>`).join('')
+      : '<li class="empty">아직 기록이 없어요.</li>';
+  }
+
+  function drawChart(days) {
+    const max = Math.max(1, ...days.map(d => d.visit));
+    const step = max <= 5 ? 1 : max <= 20 ? 5 : max <= 50 ? 10 : max <= 200 ? 50 : 100;
+    const top = Math.ceil(max / step) * step;
+    let grid = '';
+    for (let v = step; v <= top; v += step) grid += `<div class="grid" style="bottom:${v / top * 100}%"><span>${v}</span></div>`;
+    $('chart').innerHTML = grid + days.map((d, i) =>
+      `<button type="button" class="bar${d.visit ? '' : ' zero'}" data-i="${i}" aria-label="${label(d.date)} 방문 ${d.visit}"><i style="height:${d.visit / top * 100}%"></i></button>`).join('');
+    $('axis').innerHTML = `<span>${label(days[0].date)}</span><span>${label(days[14].date)}</span><span>오늘</span>`;
+    const show = i => {
+      const d = days[i];
+      $('readout').innerHTML = `<b>${label(d.date)} 방문 ${d.visit}</b><span>모바일 ${d.mobile} · PC ${d.pc}</span><span>공연 열기 ${d.open}</span><span>검색 ${d.search}</span><span>예매 클릭 ${d.book}</span>`;
+      $('chart').querySelectorAll('.bar').forEach(b => b.classList.toggle('on', Number(b.dataset.i) === i));
+    };
+    $('chart').onmouseover = $('chart').onfocusin = $('chart').onclick = e => { const b = e.target.closest('.bar'); if (b) show(Number(b.dataset.i)); };
+    show(days.length - 1);
+    $('visitTable').innerHTML = `<table><thead><tr><th>날짜</th><th class="n">방문</th><th class="n">모바일</th><th class="n">PC</th><th class="n">공연 열기</th><th class="n">검색</th><th class="n">예매 클릭</th></tr></thead><tbody>${
+      days.slice().reverse().map(d => `<tr><td>${label(d.date)}</td><td class="n">${d.visit}</td><td class="n">${d.mobile}</td><td class="n">${d.pc}</td><td class="n">${d.open}</td><td class="n">${d.search}</td><td class="n">${d.book}</td></tr>`).join('')}</tbody></table>`;
+  }
+
+  /* ---------- 의견 ---------- */
+  let fbFilter = 'all', fbShown = 30;
+  const fbKind = r => /좋아요/.test(r.rating) ? 'good' : /피드백/.test(r.rating) ? 'tab' : 'bad';
+  function drawFeedback() {
+    const kinds = [['all', '전체'], ['bad', '별로예요'], ['good', '좋아요'], ['tab', '피드백 버튼']];
+    $('fbChips').innerHTML = kinds.map(([k, l]) => `<button type="button" data-k="${k}" aria-pressed="${fbFilter === k}">${l} ${k === 'all' ? D.feedback.length : D.feedback.filter(r => fbKind(r) === k).length}</button>`).join('');
+    const rows = D.feedback.filter(r => fbFilter === 'all' || fbKind(r) === fbFilter);
+    $('fbList').innerHTML = rows.length ? rows.slice(0, fbShown).map(r => {
+      const k = fbKind(r);
+      return `<li><div class="meta"><span class="tag ${k}">${esc(r.rating)}</span><span>${esc(r.at)}</span><span>${esc(r.device)}</span>${r.minutes !== '' && r.minutes != null ? `<span>${esc(r.minutes)}분 사용</span>` : ''}</div>
+        ${r.reasons ? `<p class="reasons">${esc(r.reasons)}</p>` : ''}
+        ${r.text ? `<p class="txt">${esc(r.text)}</p>` : ''}</li>`;
+    }).join('') : '<li class="empty">아직 받은 의견이 없어요.</li>';
+    $('fbMore').hidden = rows.length <= fbShown;
+  }
+  $('fbChips').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; fbFilter = b.dataset.k; fbShown = 30; drawFeedback(); });
+  $('fbMore').addEventListener('click', () => { fbShown += 30; drawFeedback(); });
+
+  /* ---------- 취향 검색 ---------- */
+  let qShown = 30;
+  function drawSearch() {
+    const agg = new Map();
+    for (const r of D.searches) {
+      const k = norm(r.q);
+      if (!k) continue;
+      const a = agg.get(k) || { q: k, n: 0, zero: 0 };
+      a.n++;
+      if (!r.count) a.zero++;
+      agg.set(k, a);
+    }
+    const top = [...agg.values()].sort((a, b) => b.n - a.n || b.zero - a.zero).slice(0, 20);
+    $('topQ').innerHTML = top.length ? top.map(a => `<li><span>${esc(a.q)}${a.zero ? `<span class="zero">결과 0개 ${a.zero}번</span>` : ''}</span><span class="c">${a.n}</span></li>`).join('')
+      : '<li class="empty">아직 검색 기록이 없어요.</li>';
+    $('recentQ').innerHTML = D.searches.length ? D.searches.slice(0, qShown).map(r =>
+      `<li><div>${esc(r.q)}</div><div class="meta"><span>${esc(r.at)}</span><span>${esc(r.device)}</span><span${r.count ? '' : ' style="color:var(--accent)"'}>결과 ${r.count}개</span></div></li>`).join('')
+      : '<li class="empty">아직 검색 기록이 없어요.</li>';
+    $('qMore').hidden = D.searches.length <= qShown;
+  }
+  $('qMore').addEventListener('click', () => { qShown += 30; drawSearch(); });
+
+  /* ---------- 결과 없음 ---------- */
+  let missShown = 30;
+  function drawMiss() {
+    $('missList').innerHTML = D.misses.length ? D.misses.slice(0, missShown).map(r =>
+      `<li><div>${esc(r.q || r.label)}</div><div class="meta"><span>${esc(r.at)}</span><span>${esc(r.source)}</span>${r.q && r.label ? `<span>${esc(r.label)}</span>` : ''}${r.relax ? `<span>조건을 풀면 ${esc(r.relax)}</span>` : ''}</div></li>`).join('')
+      : '<li class="empty">아직 기록이 없어요.</li>';
+    $('missMore').hidden = D.misses.length <= missShown;
+  }
+  $('missMore').addEventListener('click', () => { missShown += 30; drawMiss(); });
+
+  const saved = store.get();
+  if (saved) enter(saved, true).then(ok => { if (!ok) { $('login').hidden = false; } });
+})();
+</script>
+</body>
+</html>
