@@ -10,6 +10,7 @@ on:
     paths:
       - "aiiairs/**"
       - "datecourse/**"
+      - "aiiairs-cinema/**"
       - ".github/workflows/aiiairs-pages.yml"
   # 일정 수집·놀코 동네·코스 확인이 끝났을 때. 로봇의 커밋은 push 이벤트를 깨우지 않아서 따로 연결한다.
   workflow_run:
@@ -61,6 +62,9 @@ jobs:
           cp datecourse/index.html datecourse/privacy.html datecourse/terms.html datecourse/admin.html datecourse/manifest.webmanifest datecourse/sw.js datecourse/icon.svg _site/nolco/
           cp -r datecourse/data _site/nolco/
           cp -r datecourse/img _site/nolco/
+          # AIIairs 영화: https://<계정>.github.io/<저장소>/cinema/
+          mkdir -p _site/cinema
+          cp aiiairs-cinema/index.html _site/cinema/
           touch _site/.nojekyll
 
       # 공식 포스터: 저장소에 쌓지 않고 사이트를 올릴 때 받는다. 받아 둔 것은 Actions 캐시에 두고 새것만 받는다.
