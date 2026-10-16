@@ -1,8 +1,8 @@
 {
   "id": "./admin.html",
-  "name": "AIIairs 관리",
-  "short_name": "AIIairs 관리",
-  "description": "AIIairs 운영자용: 방문·의견·취향 검색 보기",
+  "name": "소극콕 관리",
+  "short_name": "소극콕 관리",
+  "description": "소극콕 운영자용: 방문·의견·취향 검색 보기",
   "lang": "ko",
   "start_url": "./admin.html",
   "scope": "./",

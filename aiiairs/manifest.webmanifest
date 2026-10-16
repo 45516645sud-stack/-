@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "AIIairs 소극장 일정",
-  "short_name": "AIIairs",
+  "name": "소극콕 · 전국 소극장·소공연 일정",
+  "short_name": "소극콕",
   "description": "전국 소극장·소공연 일정을 한곳에서",
   "lang": "ko",
   "start_url": "./",
