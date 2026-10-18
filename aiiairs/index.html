@@ -357,8 +357,13 @@ legend + *{clear:both}
 .card-venue{flex:1 1 6.5rem;min-width:6.5rem;font-size:var(--s-1);font-weight:600;line-height:1.35;text-align:right}
 .card-poster{position:absolute;inset:0;display:none;background:var(--ink)}
 .card-poster svg,.card-poster img,.dlg-poster svg,.dlg-poster img{display:block;width:100%;height:100%;object-fit:cover}
-.poster-stack{position:relative;display:block;width:100%;height:100%}
+.poster-stack{position:relative;display:block;width:100%;height:100%;background:var(--wash)}
 .poster-stack img{position:absolute;inset:0}
+/* 진짜 포스터를 기다리는 동안은 옅은 빈 바탕만. 못 불러오면 바로, 3초가 지나도 안 오면 그때 그림 포스터를 보인다 */
+.poster-stack svg{visibility:hidden;animation:art-late 0s 3s forwards}
+.poster-stack.show-art svg{visibility:visible;animation:none}
+.poster-stack.has-img svg{display:none}
+@keyframes art-late{to{visibility:visible}}
 @media (hover:hover){
   .card-btn:hover .card-poster{display:block}
 }
@@ -1541,7 +1546,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { bg: 'var(--ink)', title: 'var(--surface)', meta: 'var(--hair)', shape: 'bars', fill: 'var(--accent)' },
     { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'circle', fill: 'var(--ink)' }
   ];
-  // 진짜 포스터는 그림 포스터 위에 겹쳐 둔다. 늦게 오거나 못 불러와도 까만 화면 대신 그림 포스터가 보인다.
+  // 진짜 포스터는 그림 포스터 위에 겹쳐 둔다. 기다리는 동안은 옅은 바탕, 못 불러오거나 3초가 넘으면 그림 포스터가 보인다.
   function posterHTML(f, lazy = true) {
     const src = f.poster || f.img;
     if (!src) return artHTML(f);
@@ -2254,8 +2259,29 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (!f) return;
     // 올려 둔 포스터가 안 되면 KOPIS 원본을 한 번 더, 그것도 안 되면 그림 포스터
     if (!img.dataset.try && f.poster && f.img && !img.src.endsWith(f.img)) { img.dataset.try = '1'; img.src = f.img; return; }
+    img.parentElement.classList.add('show-art');
     img.remove();
   }, true);
+
+  // 진짜 포스터가 오면 밑에 깔린 그림 포스터는 아예 뺀다
+  document.addEventListener('load', e => {
+    const img = e.target;
+    if (img instanceof HTMLImageElement && img.dataset.poster && img.parentElement) img.parentElement.classList.add('has-img');
+  }, true);
+
+  // 카드에 손가락·마우스가 닿는 순간 포스터를 미리 받아 둔다 (상세 창이 열릴 때 바로 보이게)
+  const warmed = new Set();
+  const warm = e => {
+    const b = e.target.closest && e.target.closest('[data-card]');
+    const f = b && BY_ID.get(b.dataset.card);
+    const src = f && (f.poster || f.img);
+    if (!src || warmed.has(src)) return;
+    warmed.add(src);
+    new Image().src = src;
+  };
+  document.addEventListener('pointerover', warm, { passive: true });
+  document.addEventListener('touchstart', warm, { passive: true });
+  document.addEventListener('focusin', warm);
 
   const dlgEl = $('fairDialog');
   dlgEl.addEventListener('click', e => { if (e.target === dlgEl) closeDialog(); });
