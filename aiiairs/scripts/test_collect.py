@@ -1,5 +1,6 @@
 """collect.py 테스트. 실행: python3 -m unittest aiiairs/scripts/test_collect.py"""
 import datetime as dt
+import io
 import json
 import sys
 import tempfile
@@ -263,6 +264,27 @@ class PostersOnlyTest(unittest.TestCase):
                 self.assertTrue(any(cache_dir.iterdir()))
         finally:
             collect.fetch = real
+
+
+    def test_transparent_png_is_not_black(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow 없음")
+        # 가운데만 빨갛고 나머지는 투명한 PNG: 줄인 포스터의 투명한 곳은 검정이 아니라 흰색이어야 한다
+        im = Image.new("RGBA", (40, 50), (0, 0, 0, 0))
+        im.paste((200, 30, 20, 255), (15, 20, 25, 30))
+        buf = io.BytesIO()
+        im.save(buf, "PNG")
+        with tempfile.TemporaryDirectory() as tmp:
+            items = [{"id": "kopis-pf9", "img": "https://a.kr/9.png"}]
+            got = collect.cache_posters(items, Path(tmp) / "posters", getter=lambda url: buf.getvalue())
+            self.assertEqual(got, 1)
+            out = Image.open(Path(tmp) / "posters" / items[0]["poster"].split("/")[-1]).convert("RGB")
+            self.assertGreater(min(out.getpixel((2, 2))), 240)
+            r, g, b = out.getpixel((20, 25))
+            self.assertGreater(r, 150)
+            self.assertLess(g, 80)
 
 
 if __name__ == "__main__":

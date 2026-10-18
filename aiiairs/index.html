@@ -354,6 +354,8 @@ legend + *{clear:both}
 .card-venue{flex:1 1 6.5rem;min-width:6.5rem;font-size:var(--s-1);font-weight:600;line-height:1.35;text-align:right}
 .card-poster{position:absolute;inset:0;display:none;background:var(--ink)}
 .card-poster svg,.card-poster img,.dlg-poster svg,.dlg-poster img{display:block;width:100%;height:100%;object-fit:cover}
+.poster-stack{position:relative;display:block;width:100%;height:100%}
+.poster-stack img{position:absolute;inset:0}
 @media (hover:hover){
   .card-btn:hover .card-poster{display:block}
 }
@@ -1536,9 +1538,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { bg: 'var(--ink)', title: 'var(--surface)', meta: 'var(--hair)', shape: 'bars', fill: 'var(--accent)' },
     { bg: 'var(--bg)', title: 'var(--ink)', meta: 'var(--muted)', shape: 'circle', fill: 'var(--ink)' }
   ];
-  function posterHTML(f) {
+  // 진짜 포스터는 그림 포스터 위에 겹쳐 둔다. 늦게 오거나 못 불러와도 까만 화면 대신 그림 포스터가 보인다.
+  function posterHTML(f, lazy = true) {
     const src = f.poster || f.img;
-    if (src) return `<img src="${esc(src)}" alt="" loading="lazy" data-poster="${esc(f.id)}">`;
+    if (!src) return artHTML(f);
+    return `<span class="poster-stack">${artHTML(f)}<img src="${esc(src)}" alt=""${lazy ? ' loading="lazy"' : ''} data-poster="${esc(f.id)}"></span>`;
+  }
+  function artHTML(f) {
     const seed = hash(f.id);
     const r = rng(seed);
     const L = LAYOUTS[seed % LAYOUTS.length];
@@ -1590,7 +1596,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     stat('open', f.t);
     state.openId = id;
     const st = statusOf(f);
-    dlg.innerHTML = `<div class="dlg-inner"><div class="dlg-poster">${posterHTML(f)}</div>` +
+    dlg.innerHTML = `<div class="dlg-inner"><div class="dlg-poster">${posterHTML(f, false)}</div>` +
       `<div class="dlg-body"><div class="dlg-bar"><span class="card-cat">${CAT[f.cat].ko}</span>` +
       `<button type="button" class="dlg-close" data-act="close">닫기</button></div>` +
       `<h2 id="dlgTitle">${esc(f.t)}</h2><p class="dlg-status">${st.text} · ${esc(f.region)}</p>` +
@@ -2242,7 +2248,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (img instanceof SVGImageElement) { img.remove(); return; }
     if (!(img instanceof HTMLImageElement) || !img.dataset.poster) return;
     const f = BY_ID.get(img.dataset.poster);
-    if (f) img.outerHTML = posterHTML({ ...f, img: null });
+    if (!f) return;
+    // 올려 둔 포스터가 안 되면 KOPIS 원본을 한 번 더, 그것도 안 되면 그림 포스터
+    if (!img.dataset.try && f.poster && f.img && !img.src.endsWith(f.img)) { img.dataset.try = '1'; img.src = f.img; return; }
+    img.remove();
   }, true);
 
   const dlgEl = $('fairDialog');
