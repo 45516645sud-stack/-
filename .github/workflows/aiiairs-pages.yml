@@ -75,12 +75,13 @@ jobs:
       - name: 포스터 줄이기 도구 설치
         run: pip install --quiet Pillow
 
+      # v2: 투명한 PNG 포스터가 까맣게 저장되던 것을 고친 뒤 처음부터 다시 받는다
       - name: 받아 둔 포스터 꺼내기
         uses: actions/cache/restore@v4
         with:
           path: .poster-cache
-          key: posters-${{ github.run_id }}
-          restore-keys: posters-
+          key: posters-v2-${{ github.run_id }}
+          restore-keys: posters-v2-
 
       - name: 포스터 준비
         run: |
@@ -106,7 +107,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .poster-cache
-          key: posters-${{ github.run_id }}
+          key: posters-v2-${{ github.run_id }}
 
       - uses: actions/configure-pages@v5
 

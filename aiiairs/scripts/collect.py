@@ -693,6 +693,17 @@ def image_ext(data: bytes) -> str | None:
     return None
 
 
+def flatten_rgb(Image, im):
+    """투명한 부분이 있는 포스터(PNG 등)를 흰 바탕 위에 올려 RGB 로 만든다.
+    그냥 convert("RGB") 하면 투명한 곳이 검정이 되어 포스터가 통째로 까맣게 보인다."""
+    if im.mode in ("RGBA", "LA", "PA") or (im.mode == "P" and "transparency" in im.info):
+        im = im.convert("RGBA")
+        bg = Image.new("RGB", im.size, (255, 255, 255))
+        bg.paste(im, mask=im.getchannel("A"))
+        return bg
+    return im.convert("RGB")
+
+
 def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None, prefix: str | None = None) -> int:
     """공식 포스터(img)를 내려받아 작게 줄여 folder 에 저장하고, 각 행사에 poster 경로를 단다.
 
@@ -726,8 +737,7 @@ def cache_posters(items: list[dict], folder: Path, width: int = 360, getter=None
             return None
         if Image is not None:
             try:
-                im = Image.open(io.BytesIO(data))
-                im = im.convert("RGB")
+                im = flatten_rgb(Image, Image.open(io.BytesIO(data)))
                 if im.width > width:
                     im = im.resize((width, max(1, round(im.height * width / im.width))), Image.LANCZOS)
                 im.save(folder / (base + ".webp"), "WEBP", quality=72, method=6)
