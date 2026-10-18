@@ -287,5 +287,14 @@ class PostersOnlyTest(unittest.TestCase):
             self.assertLess(g, 80)
 
 
+
+class OverseasTest(unittest.TestCase):
+    def test_overseas(self):
+        self.assertTrue(collect.is_overseas("", "사이공 오페라하우스 (Saigon Opera House) [베트남]"))
+        self.assertTrue(collect.is_overseas("해외", ""))
+        self.assertTrue(collect.is_overseas("SHIBUYA CLUB QUATTRO [일본 도쿄]"))
+        self.assertFalse(collect.is_overseas("서울특별시", "대학로 아트원씨어터 [2관]"))
+        self.assertFalse(collect.is_overseas("연극 [대학로]"))
+
 if __name__ == "__main__":
     unittest.main()
