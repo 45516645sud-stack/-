@@ -531,6 +531,14 @@ def seats_for(venue: str, halls: list[tuple[str, int]]) -> int | None:
     return None
 
 
+OVERSEAS = re.compile(r"해외|\[[^\]]*(일본|베트남|미국|중국|대만|홍콩|태국|필리핀|싱가포르|말레이시아|인도네시아|호주|캐나다|영국|프랑스|독일|몽골|카자흐스탄|우즈베키스탄)")
+
+
+def is_overseas(*texts: str) -> bool:
+    """KOPIS 에 올라온 한국 가수의 해외 공연(예: '사이공 오페라하우스 [베트남]')인지."""
+    return any(OVERSEAS.search(t or "") for t in texts)
+
+
 def kopis_item(r: dict, d: dict) -> dict | None:
     s, e = parse_day(first(r, "prfpdfrom")), parse_day(first(r, "prfpdto"))
     if not s or not e:
@@ -556,11 +564,17 @@ def kopis_item(r: dict, d: dict) -> dict | None:
     fee_text = first(d, "pcseguidance")
     venue = clean_venue(first(d, "fcltynm") or first(r, "fcltynm"))
     summary = clip(first(d, "sty"))
+    region = region_of(first(d, "area"), first(r, "area"), venue)
+    # 전국 '국내' 소극장 일정이므로 해외 공연은 뺀다
+    if region == "기타" and is_overseas(first(d, "area"), first(r, "area"), venue, first(r, "prfnm")):
+        return None
+    # 끝나는 날을 몇 년 뒤로 적어 둔 상시 공연(예: 2036년)은 오픈런으로 본다
+    openrun = (first(d, "openrun") or first(r, "openrun")) == "Y" or (e - s).days > 730
     return {
         "id": "kopis-" + first(r, "mt20id").lower(),
         "t": first(r, "prfnm"),
         "cat": cat,
-        "region": region_of(first(d, "area"), first(r, "area"), venue),
+        "region": region,
         "venue": venue,
         "s": s.isoformat(),
         "e": e.isoformat(),
@@ -572,7 +586,7 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "art": art,
         "url": url,                                        # 예매처 (없을 수 있음)
         "info": KOPIS_PAGE.format(urllib.parse.quote(first(r, "mt20id"))),  # KOPIS 공식 공연 페이지
-        "openrun": True if (first(d, "openrun") or first(r, "openrun")) == "Y" else None,
+        "openrun": True if openrun else None,
         "time": clip(first(d, "dtguidance"), 160),                 # 공연 시간 (예: 화~금 20:00, 토 15:00·19:00)
         "runtime": clip(first(d, "prfruntime"), 30),               # 공연 길이 (예: 1시간 30분)
         "age": clip(first(d, "prfage"), 30),                       # 관람 나이 (예: 만 13세 이상)
