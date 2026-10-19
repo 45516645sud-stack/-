@@ -967,6 +967,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     query: '',
     interp: null,
     relaxed: null,      // 조건을 넓혀 찾은 결과일 때 { note, prev }
+    noArea: false,      // 동네(홍대 등)를 풀고 그 지역 전체로 볼 때
     openId: null,
     view: (() => { try { return localStorage.getItem('aiiairs.view') === 'list' ? 'list' : 'card'; } catch { return 'card'; } })()
   };
@@ -1047,6 +1048,54 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     '전남': ['전남','여수','순천','목포'],
     '광주·전남': ['광주','전남','여수','순천','목포']
   };
+  // 동네: 지역보다 좁게, 공연장 주소(동·구·시)로 고른다. '홍대' → 마포구 서교동·합정동… 의 공연만
+  const AREAS = [
+    { label: '홍대·합정', region: '서울', w: ['홍대','홍익대','합정','상수동','연남','망원','서교동'], re: /(서교|동교|합정|상수|연남|망원)동|홍대|홍익|어울마당로|와우산로|잔다리로/ },
+    { label: '신촌·이대', region: '서울', w: ['신촌','이대앞','이화여대','연희동'], re: /(창천|대현|대신|연희|신촌|노고산)동|신촌/ },
+    { label: '성수·서울숲', region: '서울', w: ['성수','서울숲','뚝섬'], re: /성수/ },
+    { label: '건대', region: '서울', w: ['건대','건국대','자양동','화양동'], re: /(화양|자양)동|건대/ },
+    { label: '강남', region: '서울', w: ['강남','신사동','가로수길','압구정','청담','논현','역삼','삼성동'], re: /강남구/ },
+    { label: '서초·예술의전당', region: '서울', w: ['서초','예술의전당','방배','양재','교대'], re: /서초구/ },
+    { label: '이태원·한남', region: '서울', w: ['이태원','한남','용산','해방촌','녹사평'], re: /용산구/ },
+    { label: '광화문·종로', region: '서울', w: ['광화문','인사동','삼청동','서촌','북촌','종로'], re: /종로구(?!.*\((동숭|혜화|이화|명륜|연건)동)/ },
+    { label: '명동·을지로', region: '서울', w: ['명동','을지로','충무로','남산'], re: /서울\S*\s+중구/ },
+    { label: '잠실·송파', region: '서울', w: ['잠실','송파','올림픽공원','석촌'], re: /송파구/ },
+    { label: '여의도·문래', region: '서울', w: ['여의도','영등포','문래','당산'], re: /영등포구/ },
+    { label: '성북', region: '서울', w: ['성북','한성대','성신여대'], re: /성북구/ },
+    { label: '서면', region: '부산', w: ['서면','전포'], re: /부산진구/ },
+    { label: '해운대', region: '부산', w: ['해운대','센텀'], re: /해운대구/ },
+    { label: '광안리', region: '부산', w: ['광안리','광안'], re: /수영구/ },
+    { label: '남포동', region: '부산', w: ['남포','광복동','자갈치'], re: /부산\S*\s+중구/ },
+    { label: '동성로', region: '대구', w: ['동성로'], re: /대구\S*\s+중구/ },
+    { label: '유성', region: '대전', w: ['유성'], re: /유성구/ },
+    { label: '송도', region: '인천', w: ['송도'], re: /연수구/ },
+    { label: '일산', region: '경기', w: ['일산'], re: /일산/ },
+    { label: '판교·분당', region: '경기', w: ['판교','분당'], re: /분당구/ },
+    { label: '수원', region: '경기', w: ['수원'], re: /수원시/ },
+    { label: '성남', region: '경기', w: ['성남'], re: /성남시/ },
+    { label: '부천', region: '경기', w: ['부천'], re: /부천시/ },
+    { label: '안양', region: '경기', w: ['안양'], re: /안양시/ },
+    { label: '전주', region: '전북', w: ['전주'], re: /전주시/ },
+    { label: '군산', region: '전북', w: ['군산'], re: /군산시/ },
+    { label: '경주', region: '경북', w: ['경주'], re: /경주시/ },
+    { label: '포항', region: '경북', w: ['포항'], re: /포항시/ },
+    { label: '창원', region: '경남', w: ['창원'], re: /창원시/ },
+    { label: '춘천', region: '강원', w: ['춘천'], re: /춘천시/ },
+    { label: '강릉', region: '강원', w: ['강릉'], re: /강릉시/ },
+    { label: '속초', region: '강원', w: ['속초'], re: /속초시/ },
+    { label: '원주', region: '강원', w: ['원주'], re: /원주시/ },
+    { label: '청주', region: '충북', w: ['청주'], re: /청주시/ },
+    { label: '천안', region: '충남', w: ['천안'], re: /천안시/ },
+    { label: '여수', region: '광주·전남', w: ['여수'], re: /여수시/ },
+    { label: '순천', region: '광주·전남', w: ['순천'], re: /순천시/ },
+    { label: '목포', region: '광주·전남', w: ['목포'], re: /목포시/ }
+  ];
+  // 동네 말도 그 지역으로 알아듣게 지역 별칭에 더한다
+  for (const a of AREAS) {
+    const list = REGION_ALIAS[a.region] || (REGION_ALIAS[a.region] = [a.region]);
+    for (const w of a.w) if (!list.includes(w)) list.push(w);
+  }
+  const areaText = f => `${f.addr || ''} ${f.venue || ''} ${f.t || ''}`;
   // 사전에 없는 말을 이름에서 찾을 때 건너뛰는 흔한 말
   const FREE_STOP = new Set(['공연','공연들','보고','보고싶어','보고싶은','싶어','싶은','추천','추천해줘','해줘','알려줘','찾아줘','볼','볼만한','만한','거','것','좀','같이',
     '함께','근처','가까운','있는','하는','곳','어디','뭐','무슨','어떤','좋은','예쁜','분위기','느낌','사람','날','밤','저녁','오후','낮','아침','시간','쪽','데',
@@ -1085,7 +1134,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       }
     }
     // '기타'는 지역 이름이 아니라 '그 밖'이라는 뜻이라 문장에서 찾지 않는다 ('클래식 기타' ≠ 기타 지역)
-    let regions = REGIONS.filter(r => r !== '기타' && (REGION_ALIAS[r] || [r]).some(a => t.includes(a)));
+    const tr = t.replace(/고양이/g, '').replace(/공주(?!시)/g, '');   // '고양이' ≠ 고양시, '백설공주' ≠ 공주시
+    let regions = REGIONS.filter(r => r !== '기타' && (REGION_ALIAS[r] || [r]).some(a => tr.includes(a)));
+    // 동네(홍대·성수·서면 등): 그 지역 안에서 주소로 더 좁힌다
+    const areas = AREAS.filter(a => a.w.some(w => tr.includes(w)));
+    for (const a of areas) if (!regions.includes(a.region)) regions.push(a.region);
     let excludedOut = null;
     // '서울 말고', '부산 빼고' → 그 지역을 뺀 나머지. '지방' → 수도권을 뺀 나머지
     const NOT = /^(말고|빼고|제외|아닌|아니고|이외|외에|밖)/;
@@ -1212,7 +1265,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     for (const [k, v] of Object.entries(catWeight)) groupWeight[GROUP_OF[k]] = (groupWeight[GROUP_OF[k]] || 0) + v;
     const suggested = Object.entries(groupWeight).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
 
-    return { raw, hits, regions, period, cost, budget, suggested, excluded: excludedOut, age: viewerAge, unknown };
+    return { raw, hits, regions, areas: excludedOut ? [] : areas, period, cost, budget, suggested, excluded: excludedOut, age: viewerAge, unknown };
   }
 
   const TEXT = new Map();
@@ -1255,6 +1308,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
     if (skip !== 'budget' && st.budget != null && (f.fee == null || f.fee > st.budget)) return false;
     if (skip !== 'region' && st.regions.size && !st.regions.has(f.region)) return false;
+    // 동네: 그 동네가 속한 지역의 공연은 주소가 그 동네여야 한다 (다른 지역 공연은 지역 조건만 본다)
+    if (skip !== 'region' && skip !== 'area' && !st.noArea && st.regions.size && st.interp && st.interp.areas && st.interp.areas.length) {
+      const mine = st.interp.areas.filter(a => a.region === f.region && st.regions.has(a.region));
+      // 주소를 모르는 공연은 빼지 않는다 (공연장 이름·제목에 동네가 있으면 그걸로 맞춘다)
+      if (mine.length && f.addr && !mine.some(a => a.re.test(areaText(f)))) return false;
+    }
     if (skip !== 'period' && st.period !== 'all') {
       const r = bounds(st);
       if (r && !overlaps(f, r[0], r[1])) return false;
@@ -1688,7 +1747,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<p class="interp-q"><span class="qm">“</span>${esc(it.raw)}<span class="qm">”</span></p>` +
       (nothing ? '' :
       `<dl><dt>분위기·목적</dt><dd>${signals}</dd>` +
-      `<dt>지역</dt><dd>${it.excluded && !state.relaxed && state.regions.size > 4 ? esc(it.excluded.join('·') + ' 말고 다른 지역') : state.regions.size ? esc([...state.regions].join(', ')) : '<span class="none">전국</span>'}</dd>` +
+      `<dt>지역</dt><dd>${it.excluded && !state.relaxed && state.regions.size > 4 ? esc(it.excluded.join('·') + ' 말고 다른 지역') : state.regions.size ? esc([...state.regions].join(', ')) : '<span class="none">전국</span>'}` +
+        `${it.areas && it.areas.length && state.regions.size && !state.noArea ? ` <span class="area">· ${esc(it.areas.map(a => a.label).join(', '))} 근처</span>` : ''}</dd>` +
       `<dt>시기</dt><dd>${state.period === 'all' ? '<span class="none">언제든</span>' : esc((it.period && !state.relaxed && periodLabel(it.period) ? periodLabel(it.period) + ' · ' : '') + periodText(state))}</dd>` +
       `<dt>관람료</dt><dd>${esc([state.cost === 'free' ? '무료만' : state.cost === 'paid' ? '유료만' : '', state.budget != null ? budgetText(state.budget) : ''].filter(Boolean).join(' · ')) || '<span class="none">상관없음</span>'}</dd>` +
       (it.age != null ? `<dt>관람 나이</dt><dd>만 ${it.age}세도 볼 수 있는 공연</dd>` : '') +
@@ -1732,7 +1792,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
   const snapshot = (st = state) => ({
     cat: st.cat, cost: st.cost, regions: new Set(st.regions), period: st.period,
-    from: st.from, to: st.to, budget: st.budget, past: st.past, query: st.query, interp: st.interp
+    from: st.from, to: st.to, budget: st.budget, past: st.past, query: st.query, interp: st.interp, noArea: st.noArea
   });
 
   // 조건 하나씩만 풀어 본다. 실제로 행사가 나오는 것만 대안으로 보여준다.
@@ -1777,7 +1837,16 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
             : `<span>유료</span>는 없지만 <b>무료까지 보면 ${c.length}개</b> 있어요` });
       }
     }
-    if (st.regions.size) {
+    const areasOn = !st.noArea && st.regions.size && st.interp && st.interp.areas && st.interp.areas.length;
+    if (areasOn) {
+      const c = strictMatches(st, 'area');
+      const names = st.interp.areas.map(a => a.label).join('·');
+      const regs = [...new Set(st.interp.areas.map(a => a.region))].join('·');
+      if (c.length) out.push({ kind: 'area', count: c.length, apply: { noArea: true }, note: `${names} 근처에서 ${regs} 전체로 넓혔어요`,
+        html: `<span>${esc(names)} 근처</span>엔 없지만 <b>${esc(regs)} 전체로 보면 ${c.length}개</b> 있어요` });
+    }
+    // 동네를 풀어 그 지역 전체로 보는 길이 있으면, '그 지역엔 없지만'은 맞지 않는 말이라 내지 않는다
+    if (st.regions.size && !out.some(o => o.kind === 'area')) {
       const c = strictMatches(st, 'region');
       if (c.length) {
         const by = {};
@@ -2017,6 +2086,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     state.cat = 'all';
     state.openId = null;
     state.regions = new Set(it.regions);
+    state.noArea = false;
     if (it.period) {
       const [a, b] = periodRange(it.period);
       state.period = 'custom';
@@ -2050,6 +2120,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     state.cost = 'all';
     state.budget = null;
     state.regions = new Set();
+    state.noArea = false;
     state.period = 'all';
     cal.pick = null;
     state.past = false;
