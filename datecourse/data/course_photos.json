@@ -1440,6 +1440,12 @@
    "place": "죽변등대",
    "stop": "죽변등대",
    "credit": "한국관광공사"
+  },
+  "seoul-sinchon-campus": {
+   "img": "img/course/seoul-sinchon-campus.webp",
+   "place": "서울 연세대학교 스팀슨관",
+   "stop": "연세대학교",
+   "credit": "한국관광공사"
   }
  }
 }
