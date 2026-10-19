@@ -2485,9 +2485,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   if (ownerParam === '1') store.set(OWNER_KEY, '1');
   if (ownerParam === '0') { try { localStorage.removeItem(OWNER_KEY); } catch { /* 저장 불가 환경 */ } }
   const owner = store.get(OWNER_KEY) === '1';
+  // 관리자 앱(admin.html)에 한 번 들어간 기기는 운영자 기기로 보고 통계·검색 기록·5분 질문에서 뺀다
+  const ownerDevice = owner || store.get('aiiairs.noStat') === '1';
   if (owner) fb.querySelector('.fb-eyebrow em').textContent = '/ 운영자 시험';
   if (fbForce || owner) setTimeout(fbShow, 800);
-  else if (/^https:\/\//.test(LOG_ENDPOINT) && !visit.get(FB_KEY)) {
+  else if (/^https:\/\//.test(LOG_ENDPOINT) && !visit.get(FB_KEY) && !ownerDevice) {
     // 다른 탭에 가 있거나 화면이 꺼진 시간은 세지 않는다. 여러 번 나눠 들어와도 합쳐서 센다.
     const TICK = 15000;
     const timer = setInterval(() => {
@@ -2504,7 +2506,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const COUNTED_KEY = 'aiiairs.counted';
   const tally = { open: 0, search: 0, book: 0, info: 0, map: 0, share: 0, cal: 0 };
   let opened = {};
-  const statOn = () => /^https:\/\//.test(LOG_ENDPOINT) && !owner && !DATA.sample;
+  const statOn = () => /^https:\/\//.test(LOG_ENDPOINT) && !ownerDevice && !DATA.sample;
   function stat(name, title) {
     if (!statOn() || !(name in tally)) return;
     tally[name]++;

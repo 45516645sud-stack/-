@@ -130,6 +130,7 @@
       <h1>소극콕<span>관리</span></h1>
       <span class="sp"></span>
       <span class="when" id="when"></span>
+      <button type="button" id="noStat" title="이 기기에서 사이트를 볼 때 방문·검색 통계에 넣을지">내 방문 빼는 중</button>
       <button type="button" id="reload">새로고침</button>
       <button type="button" id="logout">나가기</button>
     </div>
@@ -141,7 +142,7 @@
   <main class="wrap">
     <section id="sum">
       <h2>요약</h2>
-      <p class="sub">누가 들어왔는지(이름·IP)는 모으지 않아요. 숫자와 사람들이 직접 쓴 글만 보여요.</p>
+      <p class="sub">누가 들어왔는지(이름·IP)는 모으지 않아요. 숫자와 사람들이 직접 쓴 글만 보여요. 이 관리 화면에 들어온 기기에서 본 사이트는 숫자에 넣지 않아요(위 '내 방문 빼는 중').</p>
       <div class="tiles" id="tiles"></div>
     </section>
 
@@ -199,6 +200,7 @@
 (() => {
   const ENDPOINT = document.querySelector('meta[name="aiiairs-log-endpoint"]').content;
   const KEY = 'aiiairs.adminToken';
+  const NOSTAT = 'aiiairs.noStat';   // 이 기기에서 본 사이트는 방문·검색 통계에 넣지 않는다 (index.html 이 읽음)
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const store = {
@@ -226,6 +228,8 @@
       }
       token = t;
       store.set(t, keep);
+      try { localStorage.setItem(NOSTAT, '1'); } catch { /* 저장 불가 */ }
+      drawNoStat();
       D = d;
       $('login').hidden = true;
       $('app').hidden = false;
@@ -237,6 +241,15 @@
     }
   }
   $('loginForm').addEventListener('submit', e => { e.preventDefault(); enter($('token').value.trim(), $('keep').checked); });
+  const drawNoStat = () => {
+    let on = false; try { on = localStorage.getItem(NOSTAT) === '1'; } catch { /* 저장 불가 */ }
+    $('noStat').textContent = on ? '내 방문 빼는 중 ✓' : '내 방문도 세는 중';
+  };
+  $('noStat').addEventListener('click', () => {
+    try { localStorage.getItem(NOSTAT) === '1' ? localStorage.removeItem(NOSTAT) : localStorage.setItem(NOSTAT, '1'); } catch { /* 저장 불가 */ }
+    drawNoStat();
+  });
+  drawNoStat();
   $('logout').addEventListener('click', () => { store.clear(); location.reload(); });
   $('reload').addEventListener('click', async () => {
     $('reload').textContent = '불러오는 중…';
