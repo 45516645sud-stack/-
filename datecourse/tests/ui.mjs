@@ -129,6 +129,7 @@ console.log("우리 동네");
   const after = await p.locator(".place b").allTextContents();
   ok(after[after.length - 1] === "오래된 보드게임 서면점" && await p.locator(".place.stale .stale-note").count() === 1, "1년 넘게 후기 없는 가게는 '문 닫았을 수도'로 뒤로 간다");
   ok(await p.locator(".place", { hasText: "레드버튼" }).locator(".stale-note").count() === 0, "후기가 아예 없는 가게는 '문 닫았을 수도'로 보지 않는다 (노래방 등)");
+  ok(await p.locator(".place .book").count() === 0, "보드게임카페엔 '예약하기'를 안 붙인다 (예약이 필요 없는 곳)");
   ok(await p.locator(".place .vote-add").count() === await p.locator(".place").count(), "가게마다 '투표 후보' 버튼이 있다");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
@@ -148,6 +149,28 @@ console.log("PC방: 1시간 가격이 싼 순");
   p.once("dialog", (d) => d.accept("1,300"));
   await p.locator("#placeList .place").nth(3).locator(".price-tell").click(); await p.waitForTimeout(300);
   ok((await p.locator("#placeList .place").nth(3).textContent()).includes("1시간 1,300원"), "'가격 알려주기'로 알려 주면 바로 반영된다");
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+
+console.log("예약하기");
+{
+  const { p, errors } = await page();
+  await p.addInitScript(() => { localStorage.setItem("datecourse.mode", '"local"'); localStorage.setItem("datecourse.hood", '"seomyeon"'); });
+  await open(p);
+  await p.click('.act[data-a="pc"]'); await p.waitForTimeout(600);
+  const href = await p.locator("#placeList .place .book").first().getAttribute("href");
+  ok(href.startsWith("https://map.naver.com/p/search/") && href.includes("?c="), "가게의 '예약하기'는 네이버 지도의 그 가게(좌표 포함)로");
+  await p.evaluate(() => closeCourse());
+  await p.evaluate(() => { state.mode = "trip"; });
+  ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
+}
+{
+  const { p, errors } = await page();
+  await open(p);
+  const id = await p.evaluate(() => state.courses.find((c) => c.stops.some((s) => s.kind === "activity")).id);
+  await p.evaluate((id) => openCourse(id), id); await p.waitForTimeout(300);
+  const b = p.locator(".stops .book").first();
+  ok(await b.count() === 1 && (await b.getAttribute("href")).includes("search.naver.com") && (await b.getAttribute("href")).includes(encodeURIComponent(" 예약")), "체험·놀거리 장소엔 '예약·예매' (네이버 검색)");
   ok(errors.length === 0, "오류 없음 " + errors.join(" / "));
 }
 

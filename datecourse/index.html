@@ -186,6 +186,7 @@ img.il { object-fit: contain; filter: drop-shadow(0 3px 4px rgba(60, 40, 0, .14)
 .pick-chip { display: inline-flex; align-items: baseline; gap: 5px; max-width: 100%; padding: 6px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--ink); text-decoration: none; font-size: 13px; }
 .pick-chip b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
 .pick-chip span { font-size: 11px; color: var(--sub); }
+.link-pill.book { background: var(--accent-soft); color: var(--accent-text); font-weight: 700; }
 .link-pill.h24 { background: var(--accent-soft); color: var(--accent-text); font-weight: 700; }
 
 /* 동네 고르기 */
@@ -1297,6 +1298,7 @@ function openActivity(actId, at) {
       <a class="map-link" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 보기</a>
     </div>
     <div class="places" id="placeList" aria-live="polite"><p class="note">가게를 찾는 중이에요…</p></div>
+    ${BOOK_ACTS.has(actId) ? `<p class="note book-note">${actId === "cinema" ? "🎬 '상영시간·예매'를 누르면 그 영화관의 상영시간표와 예매처가 나와요." : "📅 '예약하기'를 누르면 네이버 지도에서 그 가게가 열려요. 네이버 예약을 받는 가게는 거기서 바로 예약할 수 있어요 (안 받는 가게도 있어요)."}</p>` : ""}
     <p class="note">가격·영업시간은 대략이에요. 가게마다 다르니 '가게 정보'에서 꼭 확인해 주세요. 사진은 이 가게 이름이 나오는 블로그·카페 후기 사진이에요(뉴스·관공서 글은 뺌). 드물게 다른 사진이 섞일 수 있고, 누르면 원래 글로 가요.</p>`;
   $("closeBtn").addEventListener("click", closeCourse);
   if ($("actCourses")) $("actCourses").addEventListener("click", () => {
@@ -1406,7 +1408,8 @@ async function showPlaces(keyword, h, q, a) {
     list = pick(list);
     if (!list.length) { empty(); return; }
     if (a && PRICE_ACTS.has(a.id)) { drawPriced(box, list.slice(0, 12), q); return; }
-    box.replaceChildren(...list.slice(0, 10).map(placeItem));
+    const book = { book: !!a && BOOK_ACTS.has(a.id), cinema: !!a && a.id === "cinema" };
+    box.replaceChildren(...list.slice(0, 10).map((p) => placeItem(p, book)));
     box.insertAdjacentHTML("beforeend", `<a class="btn small places-more" href="https://map.kakao.com/link/search/${q}" target="_blank" rel="noopener">지도에서 더 보기</a>`);
   };
 
@@ -1440,7 +1443,7 @@ const PRICE_ACTS = new Set(["pc"]);
 const wonText = (n) => n.toLocaleString("ko-KR") + "원";
 async function drawPriced(box, list, q) {
   const els = list.map((p) => {
-    const el = placeItem(p);
+    const el = placeItem(p, { book: true });
     el.querySelector(".cat").insertAdjacentHTML("afterend", `<span class="price-line">1시간 가격 확인 중…</span>`);
     if (placeId(p)) {
       const b = document.createElement("button");
@@ -1500,7 +1503,17 @@ async function tellPrice(p, el, btn) {
   } catch { toast("지금은 보내지 못했어요"); btn.disabled = false; }
 }
 
-function placeItem(p) {
+/* ---------- 예약하기 ----------
+   놀코가 직접 예약을 받지는 않고, 이미 있는 예약 서비스로 한 번에 보낸다.
+   가게: 네이버 지도의 그 가게(이름 + 좌표) — 네이버 예약을 받는 가게는 거기서 바로 예약돼요. 영화관: 상영시간표 검색 */
+const BOOK_ACTS = new Set(["escape", "class", "climbing", "screenbase", "vr", "bowling", "archery", "fishing", "tarot", "meal", "pub", "cinema", "karaoke"]);
+function bookPill(name, lat, lng, cinema = false) {
+  const href = cinema ? `https://search.naver.com/search.naver?query=${encodeURIComponent(name + " 상영시간표")}` : naverSearchUrl(name, lat, lng);
+  return `<a class="link-pill book" href="${esc(href)}" target="_blank" rel="noopener" data-book="1">${cinema ? "🎬 상영시간·예매" : "📅 예약하기"}</a>`;
+}
+document.addEventListener("click", (e) => { if (e.target.closest && e.target.closest("[data-book]")) hit("book", ""); });
+
+function placeItem(p, opts = {}) {
   const el = document.createElement("div");
   el.className = "place";
   const d = Number(p.distance);
@@ -1510,6 +1523,7 @@ function placeItem(p) {
     <div class="links">
       ${/^https:\/\/place\.map\.kakao\.com\//.test(p.place_url) ? `<a class="link-pill" href="${esc(p.place_url)}" target="_blank" rel="noopener">가게 정보</a>` : ""}
       <a class="link-pill" href="https://map.kakao.com/link/to/${encodeURIComponent(p.place_name)},${Number(p.y)},${Number(p.x)}" target="_blank" rel="noopener">길찾기</a>
+      ${opts.book ? bookPill(p.place_name, Number(p.y), Number(p.x), opts.cinema) : ""}
       ${p.phone ? `<span class="link-pill tel"></span>` : ""}
       ${/24\s*시|24\s*h|24hour/i.test(p.place_name || "") ? `<span class="link-pill h24">24시간</span>` : ""}
       ${placeId(p) ? `<button type="button" class="link-pill gone-btn">문 닫았어요</button>` : ""}
@@ -2235,7 +2249,10 @@ function mapLinks(s) {
     links.push(["카카오맵", `https://map.kakao.com/link/search/${name}`]);
   }
   links.push(["네이버지도", `https://map.naver.com/p/search/${name}`]);
-  return links.map(([label, href]) => `<a class="link-pill" href="${href}" target="_blank" rel="noopener">${label}</a>`).join("");
+  // 레일바이크·케이블카·체험·숙소처럼 예약이 필요한 곳은 '예약·예매' (네이버 검색: 예약·예매처가 맨 위에 나온다)
+  const book = s.kind === "activity" || s.kind === "stay"
+    ? `<a class="link-pill book" data-book="1" href="https://search.naver.com/search.naver?query=${encodeURIComponent((s.q || s.name).split("(")[0].trim() + " 예약")}" target="_blank" rel="noopener">📅 예약·예매</a>` : "";
+  return links.map(([label, href]) => `<a class="link-pill" href="${href}" target="_blank" rel="noopener">${label}</a>`).join("") + book;
 }
 
 function moveHint(a, b) {
@@ -2637,6 +2654,7 @@ async function rollEat(spot, seen) {
       <div class="links">
         ${kakaoUrl ? `<a class="link-pill" href="${esc(kakaoUrl)}" target="_blank" rel="noopener">가게 정보·후기</a>` : ""}
         <a class="link-pill" id="eatRoute" href="${esc(naverSearchUrl(p.place_name, Number(p.y), Number(p.x)))}" target="_blank" rel="noopener">네이버지도 길찾기</a>
+        ${bookPill(p.place_name, Number(p.y), Number(p.x))}
         <button type="button" class="link-pill" id="eatShare">친구한테 보내기</button>
       </div>
     </div>
