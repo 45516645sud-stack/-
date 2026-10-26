@@ -1446,6 +1446,24 @@
    "place": "서울 연세대학교 스팀슨관",
    "stop": "연세대학교",
    "credit": "한국관광공사"
+  },
+  "gw-donghae": {
+   "img": "img/course/gw-donghae.webp",
+   "place": "동해 논골담길(등대 담화마을)",
+   "stop": "논골담길",
+   "credit": "한국관광공사"
+  },
+  "busan-bosu-retro": {
+   "img": "img/course/busan-bosu-retro.webp",
+   "place": "부산근현대역사관 별관",
+   "stop": "부산근현대역사관",
+   "credit": "한국관광공사"
+  },
+  "gw-jeongseon": {
+   "img": "img/course/gw-jeongseon.webp",
+   "place": "병방치 스카이워크",
+   "stop": "병방치 스카이워크",
+   "credit": "한국관광공사"
   }
  }
 }
