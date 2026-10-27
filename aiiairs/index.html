@@ -2375,11 +2375,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (btn) btn.focus();
   });
 
-  // 넓은 화면에서는 상세 설정을 항상 펼쳐 둔다.
+  // 상세 설정은 처음부터 펼쳐 둔다. 넓은 화면에서는 접을 수 없고, 휴대폰에서는 '−'로 접을 수 있다.
   const wide = window.matchMedia('(min-width: 821px)');
   const box = $('filterBox');
-  const syncBox = () => { box.open = wide.matches; };
-  syncBox();
+  const syncBox = () => { if (wide.matches) box.open = true; };
+  box.open = true;
   wide.addEventListener('change', syncBox);
   box.querySelector('summary').addEventListener('click', e => { if (wide.matches) e.preventDefault(); });
   // 휴대폰: 상세 설정이 일정 목록 위에 있어 찾아보기 후엔 화면 밖이다. 목록 머리에서 바로 열고, 고른 뒤엔 결과로 돌아온다.
