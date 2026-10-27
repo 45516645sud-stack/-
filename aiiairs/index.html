@@ -304,6 +304,7 @@ legend + *{clear:both}
 
 .filter-end{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--hair)}
 .m-only{display:none}
+.tabbar{display:none}
 .filter-jump{border:1px solid var(--ink);background:none;padding:4px 10px;font-size:var(--s-1);font-weight:500}
 .filter-jump b{color:var(--accent);font-weight:600}
 .see-results[hidden]{display:none}
@@ -352,6 +353,7 @@ legend + *{clear:both}
 .card-cat::before{content:"";width:7px;height:7px;background:var(--accent);flex:0 0 auto;transform:translateY(-1px)}
 .card-state{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .card-state .free{color:var(--accent);font-weight:600}
+.card-state .free + .st::before{content:" · "}
 .card-title{
   margin-top:14px;font-size:var(--s3);font-weight:700;line-height:1.3;letter-spacing:-.025em;
   text-wrap:balance;
@@ -693,6 +695,90 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .detail{padding-left:16px}
   .rail button{padding:10px 12px 11px}
 }
+/* ---------- 휴대폰: 앱처럼 깔끔하게 (흰 바탕, 둥근 카드, 태그, 아래 탭) ---------- */
+@media (max-width:560px){
+  :root{--bg:#ffffff;--wash:#f6f4f1;--hair:#e7e2db;--muted:#7a7068;--f-display:"Pretendard Variable","Pretendard",system-ui,sans-serif}
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  .mast{border-bottom:1px solid var(--hair)}
+  /* 장르: 둥근 칩 한 줄 */
+  .rail{border-top:0;padding:2px 0 12px}
+  .rail ol{gap:6px}
+  .rail li,.rail li:first-child{flex:none;border:0}
+  .rail button{display:flex;align-items:baseline;gap:6px;padding:7px 14px;border:1px solid var(--hair);border-radius:999px}
+  .rail .r-no{display:none}
+  .rail .r-count{font-size:var(--s-2)}
+  .rail button[aria-pressed="true"]{border-color:var(--ink)}
+  .install{border:0;border-radius:14px;background:var(--wash)}
+  .install .btn-sm{border-radius:8px}
+  .figures{border-top:0;background:var(--wash);border-radius:14px;padding:10px 12px 12px}
+  .figures div:first-child{padding-left:0}
+  .figures dd{font-weight:700;font-size:var(--s2)}
+  .ask,.ask.is-compact{border:1px solid var(--hair);border-radius:16px}
+  .ask.is-compact .ask-body{border:1px solid var(--hair);border-radius:12px;overflow:hidden}
+  .ask-label{font-weight:700}
+  .ask-size{border-color:var(--hair);border-radius:8px;overflow:hidden}
+  .ask-size button + button{border-color:var(--hair)}
+  .examples button{border-radius:999px;background:var(--wash);border-color:var(--wash)}
+  .btn{border-radius:10px}
+  .ask.is-compact .btn{border-radius:0}
+  /* 상세 설정 */
+  .filters details{border-top:0}
+  .filters details:not([open]){border-bottom:1px solid var(--hair)}
+  .filters summary{font-weight:700}
+  fieldset{border-top-color:var(--wash)}
+  .seg{border-color:var(--hair);border-radius:10px;overflow:hidden}
+  .seg label{border-color:var(--hair)}
+  .check{border-radius:999px}
+  .presets button{border-color:var(--hair);border-radius:999px}
+  .presets button[aria-pressed="true"]{border-color:var(--ink)}
+  .date{border-radius:10px}
+  .see-results,.filter-jump,.view{border-radius:8px;overflow:hidden}
+  .filter-jump,.view{border-color:var(--hair)}
+  .view button + button{border-color:var(--hair)}
+  /* 일정: 둥근 카드 목록 */
+  .sheet-head{border-top:0;padding-top:4px}
+  .sheet-head h2{font-weight:700}
+  .sheet{border:0;background:none}
+  .group + .group{border-top:0;margin-top:8px}
+  .group-h,.group-h[data-fold]{grid-template-columns:minmax(0,1fr) auto;padding:14px 0 10px;border-bottom:0}
+  .group-h[data-fold]:hover{background:none}
+  .g-big{display:none}
+  .g-label b{font-size:var(--s1);font-weight:700}
+  .g-label i{font-family:var(--f-body);font-style:normal}
+  .fold{border-color:var(--hair);border-radius:8px;font-size:var(--s1)}
+  .group-body{background:none;border-top:0;padding:0 0 8px}
+  .cards,.group-body .cards{margin:0;border:0;gap:12px}
+  .card{border:1px solid var(--hair);border-radius:16px;overflow:hidden;background:var(--surface)}
+  .card-btn,.group-body .card-btn{align-items:flex-start;padding:12px;gap:14px}
+  .card-poster{flex:0 0 96px;max-width:96px;border:0;margin:0;border-radius:10px;overflow:hidden}
+  .card-text,.group-body .card-text{padding:2px 0 0}
+  .card-top{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:6px}
+  .card-cat,.card-state .free,.card-state .st{display:inline-block;padding:3px 9px;border-radius:999px;font-size:var(--s-2);font-weight:600;line-height:1.4}
+  .card-cat{order:2;background:#fdeee6;color:var(--accent)}
+  .card-cat::before{content:none}
+  .card-state{display:contents}
+  .card-state .st{order:1;background:var(--wash);color:var(--ink)}
+  .card-state .st.hot{background:var(--accent);color:#fff}
+  .card-state .free{order:3;background:#e8f5ec;color:#1b7a3d}
+  .card-state .free + .st::before{content:none}
+  .card-title,.group-body .card-title{margin-top:8px;font-size:var(--s0);font-weight:700;line-height:1.4}
+  .card-foot{padding-top:6px;gap:2px}
+  .card-date,.card-venue{display:flex;align-items:center;gap:6px;font-size:var(--s-1);font-weight:400;color:var(--muted)}
+  .card-date::before,.card-venue::before{content:"";width:14px;height:14px;flex:none;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  .card-date{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E")}
+  .card-venue{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z'/%3E%3Ccircle cx='12' cy='9.5' r='2.5'/%3E%3C/svg%3E")}
+  .card.is-past{opacity:.6}
+  .more{border-color:var(--hair);border-radius:12px}
+  .group-body .fairs{border-radius:12px;overflow:hidden}
+  /* 상세 창 */
+  .dlg{border-radius:16px}
+  /* 아래 탭 (피드백도 여기로 옮겨 오른쪽 탭은 숨김) */
+  .fb-tab{display:none}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:18;background:rgba(255,255,255,.96);border-top:1px solid var(--hair);padding:6px 4px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px 0;font-size:var(--s-2);color:var(--muted);-webkit-tap-highlight-color:transparent}
+  .tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .tabbar button:active{color:var(--accent)}
+}
 </style>
 </head>
 <body>
@@ -829,6 +915,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 <dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
 
 <button type="button" class="fb-tab" id="fbTab" aria-controls="feedback" hidden>피드백</button>
+<nav class="tabbar" id="tabbar" aria-label="빠른 이동">
+  <button type="button" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>홈</button>
+  <button type="button" data-tab="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>찾기</button>
+  <button type="button" data-tab="filter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>상세 설정</button>
+  <button type="button" data-tab="list"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>일정</button>
+  <button type="button" data-tab="fb" id="tabFb" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H10l-4 4v-4H5z"/></svg>피드백</button>
+</nav>
 <aside class="fb" id="feedback" aria-labelledby="fbTitle" aria-live="polite" hidden>
   <div class="fb-bar">
     <p class="fb-brand"><b>소극콕</b><span>사용 의견 · <i id="fbStepNo">1 / 2</i></span></p>
@@ -1709,7 +1802,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     return `<li class="card${isPast(f) ? ' is-past' : ''}">` +
       `<button type="button" class="card-btn" data-card="${f.id}" aria-haspopup="dialog">` +
         `<span class="card-text"><span class="card-top"><span class="card-cat">${CAT[f.cat].ko}</span>` +
-        `<span class="card-state">${f.free ? '<span class="free">무료</span> · ' : ''}${st.text}</span></span>` +
+        `<span class="card-state">${f.free ? '<span class="free">무료</span>' : ''}<span class="st${st.text === '오늘 마감' || st.text === '내일 시작' ? ' hot' : ''}">${st.text}</span></span></span>` +
         `<span class="card-title">${esc(f.t)}</span>` +
         (why && why.length ? `<span class="card-why">${why.map(esc).join(' · ')}</span>` : '') +
         `<span class="card-foot"><span class="card-date">${f.start.getFullYear()}.${md(f.start)}${endTxt}</span>` +
@@ -2443,6 +2536,15 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     box.querySelector('summary').focus({ preventScroll: true });
   });
   $('seeResults').addEventListener('click', () => $('schedule').scrollIntoView({ block: 'start' }));
+  // 휴대폰 아래 탭: 홈(맨 위), 찾기(검색칸), 상세 설정, 일정 목록, 피드백
+  $('tabbar').addEventListener('click', e => {
+    const t = e.target.closest('button[data-tab]')?.dataset.tab;
+    if (t === 'home') window.scrollTo({ top: 0 });
+    else if (t === 'ask') { $('askForm').scrollIntoView({ block: 'center' }); $('askInput').focus({ preventScroll: true }); }
+    else if (t === 'filter') $('filterJump').click();
+    else if (t === 'list') $('schedule').scrollIntoView({ block: 'start' });
+    else if (t === 'fb') $('fbTab').click();
+  });
 
   /* ---- 앱처럼 설치 (홈 화면에 추가) ----
      두 번째 방문부터 위에 한 번 안내하고, 닫으면 다시 안 띄운다. 아래 '앱으로 설치' 링크는 늘 남는다.
@@ -2566,6 +2668,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   // 오른쪽 끝 '피드백' 버튼: 언제든 바로 불편한 점을 쓰는 칸을 연다 (기록 주소가 있을 때만 보인다)
   const fbTab = $('fbTab');
   const fbTabOn = /^https:\/\//.test(LOG_ENDPOINT);
+  $('tabFb').hidden = !fbTabOn;
   fbTab.hidden = !fbTabOn;
   fbTab.addEventListener('click', () => {
     if (fbRating && fbRating !== 'tab' && !fbSent) fbSend($('fbText').value);  // 5분 창에서 고른 평가는 먼저 보낸다
