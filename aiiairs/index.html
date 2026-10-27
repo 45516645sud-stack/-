@@ -306,6 +306,7 @@ legend + *{clear:both}
 .m-only{display:none}
 .filter-jump{border:1px solid var(--ink);background:none;padding:4px 10px;font-size:var(--s-1);font-weight:500}
 .filter-jump b{color:var(--accent);font-weight:600}
+.see-results[hidden]{display:none}
 .see-results{border:0;background:var(--ink);color:var(--bg);padding:9px 14px;font-size:var(--s-1);font-weight:500}
 .linkish{background:none;border:0;padding:0;font-size:var(--s-1);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .linkish:hover{color:var(--accent)}
@@ -619,13 +620,63 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .dlg h2{font-size:var(--s3)}
 }
 @media (max-width:560px){
-  /* 휴대폰 간략 검색: 입력칸을 한 줄 전체로, 버튼은 그 아래 */
-  .ask.is-compact .ask-body{flex-direction:column}
-  .ask.is-compact textarea{flex:none}
-  .ask.is-compact .btn{width:100%;justify-content:center;border-width:1px 0 0;padding:11px 18px}
   .cards{grid-template-columns:minmax(0,1fr)}
   .card-btn{min-height:12.5rem}
   .sheet-head{flex-wrap:wrap}
+
+  /* ---- 휴대폰 첫 화면: 공연이 빨리 보이도록 위쪽을 짧게 ---- */
+  .mast-top{padding-top:14px;padding-bottom:12px}
+  .rail button{padding:8px 12px 9px}
+  /* 앱 설치 안내: 한 줄로 */
+  .install{margin-top:12px;padding:8px 12px;gap:8px 10px}
+  .install img{width:28px;height:28px}
+  .install-txt{font-size:0;line-height:0}
+  .install-txt b{font-size:var(--s-1);line-height:1.4}
+  .install-act{flex-basis:auto;gap:12px}
+  .install-act .btn-sm{padding:6px 10px}
+  /* 소개: 큰 제목·영문 줄을 줄이고 숫자는 한 줄 네 칸 */
+  .intro{padding-top:18px;padding-bottom:20px;row-gap:16px}
+  .eyebrow{display:none}
+  h1{font-size:var(--s2);line-height:1.35;letter-spacing:-.02em}
+  h1 br{display:none}
+  .figures{margin-top:12px;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .figures div,.figures div:nth-child(n){padding:8px 6px 0 8px;margin-top:0;border-top:0;border-right:1px solid var(--hair)}
+  .figures div:first-child{padding-left:0}
+  .figures div:last-child{border-right:0}
+  .figures dt{font-size:var(--s-2);white-space:nowrap}
+  .figures dd{font-size:var(--s3)}
+  /* 검색: 한 줄 입력 + 찾기 버튼, 예시는 옆으로 넘기는 칩 */
+  .ask.is-compact{padding:14px}
+  .ask.is-compact .ask-body{margin-top:10px}
+  .ask.is-compact .btn{padding:0 14px;gap:6px}
+  .ask.is-compact .btn .arrow{display:none}
+  .ask.is-compact .examples{display:block;margin:10px -14px 0;padding:0;border-top:0}
+  .ask.is-compact .examples p{display:none}
+  .examples ul{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 14px}
+  .examples ul::-webkit-scrollbar{display:none}
+  .examples li{flex:none}
+  .examples li + li{border-top:0}
+  .examples button{width:auto;white-space:nowrap;border:1px solid var(--hair);padding:6px 10px;font-size:var(--s-1)}
+  .examples button::after{content:none}
+  /* 상세 설정: 지역은 옆으로 넘기는 칩, 설명 줄은 숨김 */
+  .filters{margin-bottom:16px}
+  .filters summary{padding-top:12px;padding-bottom:10px}
+  fieldset{padding:12px 0 14px}
+  legend{margin-bottom:8px}
+  .checks{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-right:calc(-1 * var(--pad));padding-right:var(--pad)}
+  .checks::-webkit-scrollbar{display:none}
+  .check{position:relative;flex:none;gap:6px;padding:6px 10px;border:1px solid var(--hair);background:var(--surface)}
+  .check input{position:absolute;opacity:0;pointer-events:none}
+  .check .n{margin-left:0;font-size:var(--s-2)}
+  .check:has(input:checked){background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .check:has(input:checked) .n{color:var(--hair)}
+  .check:has(input:focus-visible){outline:1px solid var(--accent);outline-offset:2px}
+  .check:has(input:disabled){display:none}
+  .presets button{padding:7px 0}
+  .range-note{display:none}
+  .filter-end{padding:12px 0}
+  /* 피드백 탭: 작게, 아래쪽으로 비켜서 글을 덜 가리게 */
+  .fb-tab{top:auto;bottom:22%;transform:none;padding:10px 4px;font-size:var(--s-2)}
 }
 /* 터치 기기: 마우스를 올릴 수 없으니 포스터를 카드 왼쪽 썸네일로 늘 보여준다 */
 @media (hover:none){
@@ -667,7 +718,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <section class="wrap grid intro" aria-labelledby="h1">
     <div class="lede">
       <p class="eyebrow">Index of Small Stages <span>/</span> <span id="season"></span></p>
-      <h1 id="h1">전국의 작은 무대를<br>한 장의 일정표로.</h1>
+      <h1 id="h1">전국의 작은 무대를 <br>한 장의 일정표로.</h1>
       <dl class="figures" id="figures"></dl>
     </div>
 
@@ -681,7 +732,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       </div>
       <p class="ask-help">장르를 몰라도 괜찮아요. 보고 싶은 분위기나 함께 갈 사람을 한 문장으로 적으면, 문장을 읽고 맞는 공연과 장르를 골라드려요.</p>
       <div class="ask-body">
-        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극" data-ph-compact="예) 이번 주말 대학로 연극" data-ph-full="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극"></textarea>
+        <textarea id="askInput" name="q" rows="3" maxlength="200" placeholder="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극" data-ph-compact="예) 주말 대학로 연극" data-ph-full="예) 이번 주말 대학로에서 2만원 이하로 볼 만한 연극"></textarea>
         <div class="ask-foot">
           <span class="ask-hint">Enter 찾기 · Shift+Enter 줄바꿈</span>
           <button class="btn" type="submit">찾아보기 <span class="arrow" aria-hidden="true">→</span></button>
@@ -1526,6 +1577,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const n = (state.cost !== 'all') + (state.budget != null) + (state.regions.size > 0) + (state.period !== 'all') + state.past;
     $('sumState').innerHTML = n ? `<b>${n}</b>개 적용 중` : '적용 없음';
     $('filterJump').innerHTML = n ? `상세 설정 <b>${n}</b>` : '상세 설정';
+    $('seeResults').hidden = !n;
     document.querySelectorAll('#costSeg input').forEach(i => { i.checked = i.value === state.cost; });
   }
 
@@ -2304,7 +2356,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     render();
   }
   const askForm = $('askForm');
-  function setAskSize(size) {
+  function setAskSize(size, save) {
     const compact = size !== 'full';
     askForm.classList.toggle('is-compact', compact);
     askForm.querySelectorAll('.ask-size button').forEach(b => b.setAttribute('aria-pressed', b.dataset.size === (compact ? 'compact' : 'full')));
@@ -2312,7 +2364,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     input.rows = compact ? 1 : 3;
     input.placeholder = compact ? input.dataset.phCompact : input.dataset.phFull;
     fitAsk();
-    try { localStorage.setItem('aiiairs.ask', compact ? 'compact' : 'full'); } catch { /* 저장 불가 환경 */ }
+    if (save) try { localStorage.setItem('aiiairs.askSize', compact ? 'compact' : 'full'); } catch { /* 저장 불가 환경 */ }
   }
   // 간략 보기에서는 글이 잘리지 않도록 입력칸이 줄 수만큼 늘어난다.
   function fitAsk() {
@@ -2326,10 +2378,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   askForm.querySelector('.ask-size').addEventListener('click', e => {
     const b = e.target.closest('button[data-size]');
     if (!b) return;
-    setAskSize(b.dataset.size);
+    setAskSize(b.dataset.size, true);
     $('askInput').focus();
   });
-  setAskSize((() => { try { return localStorage.getItem('aiiairs.ask') || 'full'; } catch { return 'full'; } })());
+  // 처음 오면 휴대폰은 간단히(한 줄), 넓은 화면은 크게. 직접 고른 뒤로는 그 크기를 기억한다.
+  const phone = window.matchMedia('(max-width: 560px)').matches;
+  setAskSize((() => { try { return localStorage.getItem('aiiairs.askSize'); } catch { return null; } })() || (phone ? 'compact' : 'full'));
 
   // 실제 포스터를 못 불러오면 그 자리를 행사 정보로 만든 포스터로 바꾼다.
   document.addEventListener('error', e => {
