@@ -93,6 +93,13 @@ jobs:
           ls _site/posters | wc -l
           du -sh _site
 
+      # 공연마다 페이지(show/<id>.html)와 전체 목록·sitemap.xml: 구글·네이버가 공연 이름으로 찾게 한다.
+      # 위에서 포스터 경로를 단 일정을 읽는다. 실패하면 사이트를 올리지 않는다 (sitemap 이 빈 페이지를 가리키지 않게)
+      - name: 공연별 페이지
+        run: |
+          python -m unittest aiiairs/scripts/test_show_pages.py
+          python aiiairs/scripts/build_show_pages.py --site _site --base "https://45516645sud-stack.github.io/-/"
+
       # 놀코 '이번 주말': 위 일정(포스터 경로까지 단 것)을 읽어 놀코 전용 events.json 을 만든다. 실패해도 사이트는 올린다
       - name: 놀코 이번 주말 데이터
         env:
