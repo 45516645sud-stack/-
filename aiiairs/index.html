@@ -305,6 +305,7 @@ legend + *{clear:both}
 .filter-end{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--hair)}
 .m-only{display:none}
 .tabbar{display:none}
+.m-tools{display:none}
 .filter-jump{border:1px solid var(--ink);background:none;padding:4px 10px;font-size:var(--s-1);font-weight:500}
 .filter-jump b{color:var(--accent);font-weight:600}
 .see-results[hidden]{display:none}
@@ -772,6 +773,20 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .group-body .fairs{border-radius:12px;overflow:hidden}
   /* 상세 창 */
   .dlg{border-radius:16px}
+  /* 취향으로 검색·상세 설정은 버튼을 눌렀을 때만 펼친다 */
+  .m-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;grid-column:1 / -1}
+  .m-tools button{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border:1px solid var(--hair);border-radius:12px;background:var(--surface);font-size:var(--s0);font-weight:600;-webkit-tap-highlight-color:transparent}
+  .m-tools svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .m-tools b{min-width:1.4em;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:var(--s-2);line-height:1.6;text-align:center}
+  .m-tools button[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  body:not(.show-ask) .ask{display:none}
+  .filter-jump{display:none}  /* 아래 탭과 위 버튼이 같은 일을 한다 */
+  body:not(.show-filter) .filters{display:none}
+  .ask-head,.filters summary{display:none}
+  .ask.is-compact .ask-body{margin-top:0}
+  .filters details{border-top:0}
+  .filters details:not([open]){border-bottom:0}
+  .filters fieldset:first-of-type{border-top:0;padding-top:4px}
   /* 아래 탭 (피드백도 여기로 옮겨 오른쪽 탭은 숨김) */
   .fb-tab{display:none}
   .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:18;background:rgba(255,255,255,.96);border-top:1px solid var(--hair);padding:6px 4px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -806,6 +821,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       <p class="eyebrow">Index of Small Stages <span>/</span> <span id="season"></span></p>
       <h1 id="h1">전국의 작은 무대를 <br>한 장의 일정표로.</h1>
       <dl class="figures" id="figures"></dl>
+    </div>
+
+    <div class="m-tools" id="mTools" role="group" aria-label="공연 찾기">
+      <button type="button" id="askToggle" aria-controls="askForm" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>취향으로 검색</button>
+      <button type="button" id="filterToggle" aria-controls="filterBox" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>상세 설정<b id="filterToggleN" hidden></b></button>
     </div>
 
     <form class="ask" id="askForm" role="search" autocomplete="off">
@@ -1671,6 +1691,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     $('sumState').innerHTML = n ? `<b>${n}</b>개 적용 중` : '적용 없음';
     $('filterJump').innerHTML = n ? `상세 설정 <b>${n}</b>` : '상세 설정';
     $('seeResults').hidden = !n;
+    $('filterToggleN').hidden = !n;
+    $('filterToggleN').textContent = n || '';
     document.querySelectorAll('#costSeg input').forEach(i => { i.checked = i.value === state.cost; });
   }
 
@@ -2530,8 +2552,22 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   wide.addEventListener('change', syncBox);
   box.querySelector('summary').addEventListener('click', e => { if (wide.matches) e.preventDefault(); });
   // 휴대폰: 상세 설정이 일정 목록 위에 있어 찾아보기 후엔 화면 밖이다. 목록 머리에서 바로 열고, 고른 뒤엔 결과로 돌아온다.
+  // 휴대폰: 취향으로 검색·상세 설정은 위쪽 버튼을 눌러야 펼쳐진다.
+  const phoneNow = () => window.matchMedia('(max-width: 560px)').matches;
+  function showPanel(which, on) {
+    document.body.classList.toggle(`show-${which}`, on);
+    $(which === 'ask' ? 'askToggle' : 'filterToggle').setAttribute('aria-expanded', String(on));
+    if (which === 'filter' && on) box.open = true;
+  }
+  $('askToggle').addEventListener('click', () => {
+    const on = !document.body.classList.contains('show-ask');
+    showPanel('ask', on);
+    if (on) $('askInput').focus({ preventScroll: true });
+  });
+  $('filterToggle').addEventListener('click', () => showPanel('filter', !document.body.classList.contains('show-filter')));
   $('filterJump').addEventListener('click', () => {
     box.open = true;
+    if (phoneNow()) { showPanel('filter', true); $('mTools').scrollIntoView({ block: 'start' }); return; }
     box.closest('.filters').scrollIntoView({ block: 'start' });
     box.querySelector('summary').focus({ preventScroll: true });
   });
@@ -2540,7 +2576,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
     if (t === 'home') window.scrollTo({ top: 0 });
-    else if (t === 'ask') { $('askForm').scrollIntoView({ block: 'center' }); $('askInput').focus({ preventScroll: true }); }
+    else if (t === 'ask') { showPanel('ask', true); $('mTools').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
     else if (t === 'filter') $('filterJump').click();
     else if (t === 'list') $('schedule').scrollIntoView({ block: 'start' });
     else if (t === 'fb') $('fbTab').click();
