@@ -1150,7 +1150,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
      서버 없이 동작하도록 사전 기반으로 구성했다. interpret()만 교체하면
      외부 언어 모델 응답(같은 형태의 객체)으로 바꿔 끼울 수 있다. */
   const LEXICON = [
-    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서','로맨틱','로맨스','기념일','생일','프로포즈','썸','첫만남','설레','설렘'], latin: ['date','couple'], tags: ['데이트'], cats: { theater: 1, musical: 1, music: 1 } },
+    { label: '데이트', w: ['데이트','연인','여자친구','여친','남자친구','남친','애인','커플','둘이서','로맨틱','로맨스','기념일','생일','프로포즈','썸타','썸녀','썸남','첫만남','설레','설렘'], latin: ['date','couple'], tags: ['데이트'], cats: { theater: 1, musical: 1, music: 1 } },
     // '아이돌'의 '아이'는 아이(어린이)가 아니다
     { label: '아이와 함께', w: ['아이','아기','애기','아들','딸','유아','키즈','어린이','아동','초등','애들','유치원','인형극','동화','가족극'], strip: ['아이돌','아이디'], latin: ['kids','kid','children','family'], tags: ['아이', '가족'], cats: { kids: 3 } },
     { label: '가족', w: ['가족','온가족','나들이'], tags: ['가족'], cats: { kids: 1, classic: .5 } },
@@ -1160,25 +1160,37 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     { label: '여럿이', w: ['동료','회사','단체','회식','팀원','동아리','모임','친구들'], tags: ['친구'], cats: { musical: 1, theater: 1, music: 1 }, soft: true },
     { label: '조용한', w: ['조용','차분','한적','고요','여유','느긋','힐링','쉬고','쉬러','휴식'], tags: ['조용한'], cats: { classic: 1 } },
     { label: '감성', w: ['감성','비오는','비내리','잔잔','몽환','새벽','센치','우울','쓸쓸'], tags: ['조용한'], cats: { music: 1, classic: 1 } },
-    { label: '감동', w: ['감동','울고','눈물','먹먹','뭉클','위로','울컥','슬픈','여운'], tags: [], cats: { theater: .5, musical: .5 }, soft: true },
+    // 소개글에 이런 말이 있으면 더 위로 (boost)
+    { label: '감동', w: ['감동','울고','울수있','눈물','먹먹','뭉클','위로','울컥','슬픈','여운'], tags: [], cats: { theater: 2, musical: 2 },
+      boost: ['감동','눈물','위로','뭉클','먹먹','휴먼','가족','기억','이별','그리움','희망','사랑'] },
     { label: '영감', w: ['영감','자극','감각','새로운','실험','예술'], tags: ['영감'], cats: { theater: .5, dance: 1 } },
     { label: '활기찬', w: ['신나','활기','북적','재밌','재미','핫한','힙한','친구','스트레스'], tags: ['활기', '친구'], cats: { music: 1, musical: .5 }, strip: ['여자친구','남자친구','여사친','남사친','외국인친구'] },
     // '개그 콘서트'처럼 '콘서트'가 붙어도 음악 공연이 아니라 웃음 공연이다 (mutes: 이 단어가 있으면 다른 분야의 해당 단서를 무시)
     // 장르 이름이 따로 없어서(대부분 '연극') 공연 이름·소개에 웃음 단어가 실제로 있는 것만 고른다 (textOnly)
-    { label: '코미디·개그', w: ['개그','개콘','코미디','코믹','희극','웃긴','웃기','웃음','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'], latin: ['comedy','comedian','funny','standup'], tags: [], cats: { theater: 1 },
+    { label: '코미디·개그', w: ['개그','개콘','코미디','코믹','희극','웃긴','웃기','웃음','웃고','웃자','웃을','빵터','깔깔','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'], latin: ['comedy','comedian','funny','standup'], tags: [], cats: { theater: 1 },
       textOnly: ['개그','코미디','코믹','희극','웃음','웃기','웃긴','폭소','유머','유쾌','풍자','만담','스탠드업','슬랩스틱'],
       mutes: { '라이브 음악': ['콘서트','라이브','클럽'] } },
     { label: '공포·스릴러', w: ['무서','공포','호러','스릴러','추리','미스터리','미스테리','오싹','괴담','귀신','좀비','서스펜스'], latin: ['horror','thriller'], tags: [], cats: { theater: 1 },
       textOnly: ['공포','호러','스릴러','추리','미스터리','미스테리','괴담','귀신','좀비','살인','범죄','서스펜스','오싹'] },
     { label: '반려동물과', w: ['반려견','반려동물','반려묘','강아지','댕댕','펫'], latin: ['pet','dog'], tags: [], cats: {}, textOnly: ['펫프렌들리','반려견동반','반려동물동반','반려견입장','반려동물입장','반려견과함께','반려동물과함께'] },
     { label: '말 없이 즐기는', w: ['외국인','말안통','말없이','말이필요없','넌버벌','논버벌','대사없','언어상관'], latin: ['nonverbal','foreigner'], tags: [], cats: { dance: 2.5, music: 1, classic: 1 } },
-    { label: '연극', narrow: true, w: ['연극','희곡','배우','2인극','1인극','낭독','모노드라마','부조리극'], latin: ['theater','theatre','play','drama'], tags: [], cats: { theater: 3 } },
+    { label: '연극', narrow: true, w: ['연극','희곡','배우','2인극','1인극','낭독','모노드라마','부조리극','즉흥극','즉흥','마당극'], latin: ['theater','theatre','play','drama'], tags: [], cats: { theater: 3 } },
     { label: '뮤지컬', narrow: true, w: ['뮤지컬','넘버'], latin: ['musical'], tags: [], cats: { musical: 3 } },
     { label: '라이브 음악', narrow: true, w: ['라이브','밴드','인디','재즈','록','락페','락밴드','락공연','락음악','힙합','어쿠스틱','싱어송','버스킹','클럽','콘서트','노래','음악','트로트','발라드','아이돌','케이팝','k팝','팝송','알앤비','블루스','소울','포크','디제이'], latin: ['jazz','concert','live','band','indie','rock','hiphop','kpop','k-pop','pop','dj','edm'], tags: [], cats: { music: 3 } },
-    { label: '클래식·국악', narrow: true, w: ['클래식','현악','피아노','바이올린','첼로','실내악','사중주','오케스트라','오페라','성악','국악','가야금','판소리','하우스콘서트','사물놀이','풍물','대금','해금','장구','창극','민요','정가','타악','독주회','리사이틀','앙상블','합창','기타리스트'], latin: ['classical','classic','piano','violin','opera','recital','orchestra'], tags: [], cats: { classic: 3 },
+    { label: '클래식·국악', narrow: true, w: ['클래식','현악','피아노','바이올린','첼로','실내악','사중주','오케스트라','오페라','성악','국악','가야금','판소리','하우스콘서트','사물놀이','풍물','대금','해금','장구','창극','민요','정가','타악','독주회','리사이틀','앙상블','합창','기타리스트','가곡','연주회','기타연주','클래식기타','바로크','교향곡','심포니','소나타','협주곡','칸타타'], latin: ['classical','classic','piano','violin','opera','recital','orchestra'], tags: [], cats: { classic: 3 },
       mutes: { '라이브 음악': ['콘서트'] } },
-    { label: '무용·마임', narrow: true, w: ['무용','발레','현대무용','한국무용','전통춤','댄스','춤','비보잉','브레이킹','탭댄스','스트릿','마임','서커스','마술','저글링','퍼포먼스','몸짓','아크로바틱'], latin: ['dance','ballet','mime','circus','magic'], tags: [], cats: { dance: 3 } },
+    { label: '무용·마임', narrow: true, w: ['무용','발레','현대무용','한국무용','전통춤','댄스','춤','비보잉','비보이','비걸','브레이킹','브레이크댄스','탭댄스','스트릿','마임','서커스','마술','저글링','퍼포먼스','몸짓','아크로바틱'], latin: ['dance','ballet','mime','circus','magic'], tags: [], cats: { dance: 3 } },
+    // 이야기 주제: 이름·소개에 그 말이 있는 공연만 (textOnly)
+    { label: '셰익스피어', w: ['셰익스피어','세익스피어','햄릿','맥베스','리어왕','오셀로','로미오와줄리엣','한여름밤의꿈','베니스의상인'], latin: ['shakespeare','hamlet','macbeth'], tags: [], cats: { theater: 1 },
+      textOnly: ['셰익스피어','세익스피어','햄릿','맥베스','리어왕','오셀로','로미오','한여름밤','베니스의상인','shakespeare','hamlet','macbeth'] },
+    { label: '역사·사극', titleOnly: true, w: ['역사극','사극','역사','조선','고려','삼국시대','독립운동','궁중','왕실'], tags: [], cats: { theater: 1, musical: 1 },
+      textOnly: ['역사','사극','조선','고려','삼국','신라','백제','독립운동','임금','왕비','궁중','세자','이순신','정조','영조','단종','광해','명성황후','일제강점'] },
+    { label: '실화', titleOnly: true, w: ['실화','실제이야기','실존인물','논픽션'], tags: [], cats: {}, textOnly: ['실화','실제이야기','실존'] },
+    // '북콘서트'·'토크콘서트'의 '콘서트'는 음악 공연이 아니다
+    { label: '토크·강연', w: ['북콘서트','토크콘서트','토크쇼','북토크','강연','렉처','렉쳐','작가와의만남'], latin: ['talk','lecture'], tags: [], cats: {},
+      textOnly: ['북콘서트','토크콘서트','토크','북토크','강연','렉처','렉쳐','작가'], mutes: { '라이브 음악': ['콘서트'] } },
     // 공연 정보로 바로 판단하는 말 (test)
+    { label: '성인 관람', w: ['19금','19세','성인용','성인관람','성인만','성인코미디','성인극','성인연극','성인들','어른들끼리','어른만','섹시','야한'], tags: [], cats: {}, test: f => f.agemin != null && f.agemin >= 17 },
     // KOPIS 가 직접 표시해 준 것 (대학로·내한·축제·창작·라이선스). 이름·공연장에 그 말이 있어도 맞는 것으로 본다
     { label: '대학로', w: ['대학로','혜화'], tags: [], cats: {}, test: f => f.tags.includes('대학로') || /대학로|혜화/.test(f.venue + f.t + f.addr) },
     { label: '내한 공연', w: ['내한','해외팀','외국팀','해외아티스트'], tags: [], cats: {}, test: f => f.tags.includes('내한') || /내한/.test(f.t) },
@@ -1199,7 +1211,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const LEX_WORDS = LEXICON.flatMap(e => [...e.w, ...(e.latin || [])]).map(w => w.toLowerCase());
   // 장르 이름 자체(연극·콘서트 등)는 '이 단어가 적힌 공연만' 고르는 데 쓰지 않는다. '재즈', '판소리'처럼 구체적인 말만 쓴다.
   const BROAD = new Set(['연극','배우','대학로','혜화','뮤지컬','넘버','라이브','콘서트','노래','음악','클럽','인디','아이돌','클래식','국악','무용','댄스','퍼포먼스','몸짓','춤',
-    'THEATER','THEATRE','PLAY','DRAMA','MUSICAL','CONCERT','LIVE','CLASSIC','CLASSICAL','DANCE']);
+    '밴드','연주회','THEATER','THEATRE','PLAY','DRAMA','MUSICAL','CONCERT','LIVE','CLASSIC','CLASSICAL','DANCE']);
 
   const REGION_ALIAS = {
     '서울': ['서울','seoul','대학로','혜화','홍대','합정','신촌','성수','이태원','강남','종로','마포'],
@@ -1273,7 +1285,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const FREE_STOP = new Set(['공연','공연들','보고','보고싶어','보고싶은','싶어','싶은','추천','추천해줘','해줘','알려줘','찾아줘','볼','볼만한','만한','거','것','좀','같이',
     '함께','근처','가까운','있는','하는','곳','어디','뭐','무슨','어떤','좋은','예쁜','분위기','느낌','사람','날','밤','저녁','오후','낮','아침','시간','쪽','데',
     '갈','가고','가볼','만','이랑','하고','그리고','또는','진짜','정말','너무','완전','요즘','최근','인기','유명한','잘','더','제일','가장',
-    '하기','드는','되는','수','볼수','있는곳','중에','관람','구경','in','on','at','the','a','an','of','and','for','show','shows','with','near','me']);
+    '하기','드는','되는','수','볼수','있는곳','중에','관람','구경','싶다','싶어요','싶네','보고싶다','가고싶어','가고싶다','하고싶어','in','on','at','the','a','an','of','and','for','show','shows','with','near','me']);
   // 이름 찾기에 쓰지 않는 날짜·가격·때를 나타내는 말
   const FREE_SKIP = /요일$|^(이하|이상|까지|미만|이내|아래|안쪽|지금|바로|당장|연말|연초|새해|크리스마스|성탄절?|할로윈|핼러윈|주말|평일|오늘|내일|모레|이번|다음|싸|싼|저렴|가성비|비싼|비싸|무료|공짜|유료)/;
   const FREE_WORDS = ['무료','공짜','돈안드','돈안들','입장료없','부담없'];
@@ -1294,7 +1306,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (age && Number(age[1]) <= 12 && !hits.some(h => h.label === '아이와 함께')) {
       const kid = LEXICON.find(e => e.label === '아이와 함께');
       hits.push({ ...kid, words: [age[0]] });
-    } else if (age && Number(age[1]) >= 13 && Number(age[1]) <= 19 && !hits.some(h => h.label === '청소년')) {
+    } else if (age && Number(age[1]) >= 13 && Number(age[1]) <= 18 && !hits.some(h => h.label === '청소년')) {
       hits.push({ ...LEXICON.find(e => e.label === '청소년'), words: [age[0]] });
     }
     for (const h of [...hits]) {
@@ -1403,6 +1415,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     else if (/초등/.test(t)) viewerAge = 8;
     else if (/중학생|중딩/.test(t)) viewerAge = 13;
     else if (/고등학생|고딩/.test(t)) viewerAge = 16;
+    else if (/청소년|10대|십대|중고생/.test(t)) viewerAge = 15;
 
     // 사전에 없는 말 → 공연 이름·공연장·출연진에서 찾는다 ('빨래', '씨어터조이', 배우 이름 등)
     // 먼저 문장 전체가 공연 이름 등에 그대로 있는지 ('우리들의 계절', 'To Be Or Not To Be'), 아니면 낱말마다 (모두 맞아야 함)
@@ -1457,18 +1470,25 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         continue;
       }
       if (h.textOnly) {
-        const src = h.nameOnly ? nameText(f) : text(f);
+        // titleOnly: 공연 이름에서만 찾는다 ('역사'가 '○○역사박물관' 같은 공연장 이름에 걸리지 않게)
+        const src = h.nameOnly ? nameText(f) : h.titleOnly ? f.t.toLowerCase().replace(/\s+/g, '') : text(f);
         let n = h.textOnly.filter(w => src.includes(w)).length;
         if (h.allOf && n < h.textOnly.length) n = 0;
-        if (n) { const v = 6 + 3 * Math.min(2, n) + (h.cats[f.cat] || 0) * 3; score += v; core += v; why.push(h.label); }
+        // 적은 말 그대로('북콘서트')가 있으면 비슷한 말('렉처')보다 앞으로
+        if (n) { const v = 6 + 3 * Math.min(2, n) + (h.cats[f.cat] || 0) * 3 + (h.words.some(w => src.includes(String(w).toLowerCase())) ? 6 : 0); score += v; core += v; why.push(h.label); }
         continue;
       }
       let s = (h.cats[f.cat] || 0) * 3;
       for (const tag of h.tags) if (f.tags.includes(tag)) s += 2;
       // 적은 단어가 행사 이름·설명에 그대로 나오면 가산 (예: '재즈' → 재즈 공연)
       s += 5 * Math.min(2, h.words.filter(w => text(f).includes(w.toLowerCase())).length);
+      if (h.boost) s += 3 * Math.min(2, h.boost.filter(w => text(f).includes(w)).length);
       if (s > 0) { score += s; if (!h.soft) core += s; why.push(h.label); }
     }
+    // 아이 얘기가 없으면 어린이 공연은 뒤로, '가족'이면 어린 나이도 볼 수 있는 공연을 앞으로
+    const forKids = it.hits.some(h => h.cats.kids);
+    if (f.cat === 'kids' && !forKids) score -= 6;
+    if (it.hits.some(h => h.label === '가족') && f.agemin != null) score += f.agemin <= 8 ? 4 : f.agemin >= 15 ? -6 : 0;
     return { score, why, core };
   }
 
@@ -1503,6 +1523,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const needText = it.hits.filter(h => h.textOnly || h.test);
     // 장르를 정하는 단서(연극·재즈·아이와 함께 등, 가중치 3 이상)가 있으면 그 장르 공연만. 여럿이면 그중 하나
     const genres = new Set(it.hits.filter(h => !h.soft).flatMap(h => Object.entries(h.cats).filter(([, v]) => v >= 3).map(([k]) => k)));
+    // '가족 뮤지컬'·'가족 연극': 어린이 공연(아동·가족)도 함께
+    if (genres.size && it.hits.some(h => h.label === '가족')) genres.add('kids');
     if (it.age != null) pool = pool.filter(f => f.agemin == null || f.agemin <= it.age);
     let scored = pool.map(f => ({ f, ...scoreFair(f, it) }))
       .filter(x => (strict ? x.core > 0 : true) && needText.every(h => x.why.includes(h.label)) && (!genres.size || genres.has(x.f.cat)));
@@ -2190,7 +2212,15 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     // 분위기까지 맞는 곳이 없을 때: 이유와 대안을 먼저 보여주고, 조건만 맞는 곳을 '대안'으로 분명히 표시한다.
     if (fellBack && pool.length) {
       const relax = relaxations(state);
-      const alt = pool.slice().sort((a, b) => a.start - b.start);
+      // 대안: 공연 정보로 판단하는 말(19금 등)부터, 그다음 이름·소개에 있어야 하는 말(실화 등)을 빼고 다시 골라 본다.
+      // '성인 코미디' → 코미디만, '실화 연극' → 연극만. 그래도 없으면 조건만 맞는 공연 전부
+      const looser = [h => !h.test, h => !h.test && !h.textOnly]
+        .map(keep => ({ ...it, hits: it.hits.filter(keep) }))
+        .filter(l => l.hits.length && l.hits.length < it.hits.length);
+      let alt = [];
+      for (const l of looser) { alt = rankFor(pool, l).map(x => x.f); if (alt.length) break; }
+      if (!alt.length) alt = pool.slice().sort((a, b) => a.start - b.start);
+      shown = alt.length;
       html = missHTML(state, relax, alt.length) +
         groupHTML('Alt', true, '대안 · 조건만 맞는 공연', '분위기는 다를 수 있어요', alt, null, true);
       $('sheetTitle').textContent = '대안 결과';
