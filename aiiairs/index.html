@@ -324,6 +324,9 @@ legend + *{clear:both}
 .interp dd{margin:0}
 .interp .none{color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
+.refine{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:0;padding:12px 20px 16px;border-top:1px solid var(--hair)}
+.refine > p{margin:0;font-size:var(--s-1);color:var(--muted)}
+.refine .chip b{font-weight:600;color:var(--accent)}
 .chip{border:1px solid var(--ink);background:var(--surface);padding:2px 10px;font-size:var(--s-1);border-radius:0}
 .chip:hover{background:var(--ink);color:var(--bg)}
 .interp-note{margin:0;padding:12px 20px;border-top:1px solid var(--hair);font-size:var(--s-1);color:var(--muted)}
@@ -773,6 +776,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .group-body .fairs{border-radius:12px;overflow:hidden}
   /* 상세 창 */
   .dlg{border-radius:16px}
+  .interp{border-color:var(--hair);border-radius:16px;overflow:hidden}
+  .chip{border-color:var(--hair);border-radius:999px;padding:4px 12px}
   /* 취향으로 검색·상세 설정은 버튼을 눌렀을 때만 펼친다 */
   .m-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;grid-column:1 / -1}
   .m-tools button{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border:1px solid var(--hair);border-radius:12px;background:var(--surface);font-size:var(--s0);font-weight:600;-webkit-tap-highlight-color:transparent}
@@ -1952,7 +1957,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<dt>관람료</dt><dd>${esc([state.cost === 'free' ? '무료만' : state.cost === 'paid' ? '유료만' : '', state.budget != null ? budgetText(state.budget) : ''].filter(Boolean).join(' · ')) || '<span class="none">상관없음</span>'}</dd>` +
       (it.age != null ? `<dt>관람 나이</dt><dd>만 ${it.age}세도 볼 수 있는 공연</dd>` : '') +
       `<dt>추천 장르</dt><dd>${sug}</dd></dl>`) +
-      (note ? `<p class="interp-note">${note}</p>` : '');
+      (note ? `<p class="interp-note">${note}</p>` : '') +
+      (lastRefine.length ? `<div class="refine"><p>조건을 더하면</p><div class="chips">${lastRefine.map((r, i) =>
+        `<button type="button" class="chip" data-act="refine" data-i="${i}">${esc(r.label)} <b>${r.count}개</b></button>`).join('')}</div></div>` : '');
     box.hidden = false;
   }
 
@@ -2189,7 +2196,40 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     $('notice').innerHTML = html;
   }
 
+  /* 취향 검색 결과가 많을 때: 비슷한 걸 더 보여주는 대신 '이 조건을 더하면 몇 개'를 알려 준다.
+     지금 안 쓴 조건(이번 주말·오늘·무료·2만 원 이하·지역 하나)만, 결과가 줄어들되 0개가 아닌 것만 */
+  let lastRefine = [];
+  function refinements(st, list) {
+    if (list.length < 6) return [];
+    const out = [];
+    const add = (label, n, apply) => { if (n > 0 && n < list.length) out.push({ label, count: n, apply }); };
+    if (st.period === 'all') {
+      for (const [p, label] of [['weekend', '이번 주말'], ['today', '오늘']]) {
+        const [a, b] = periodRange(p);
+        add(label, list.filter(f => overlaps(f, a, b)).length, { period: 'custom', from: a, to: b });
+      }
+    }
+    if (st.cost === 'all') {
+      add('무료만', list.filter(f => f.free).length, { cost: 'free', budget: null });
+      if (st.budget == null) add('2만 원 이하', list.filter(f => f.fee != null && f.fee <= 20000).length, { budget: 20000 });
+    }
+    if (!st.regions.size) {
+      const byRegion = new Map();
+      for (const f of list) if (f.region !== '기타') byRegion.set(f.region, (byRegion.get(f.region) || 0) + 1);
+      const top = [...byRegion].sort((a, b) => b[1] - a[1])[0];
+      if (top) add(`${top[0]}만`, top[1], { regions: new Set([top[0]]) });
+    }
+    return out.slice(0, 5);
+  }
+  function applyRefine(i) {
+    const r = lastRefine[Number(i)];
+    if (!r) return;
+    Object.assign(state, r.apply, { openId: null });
+    render();
+  }
+
   function renderList() {
+    lastRefine = [];
     const pool = FAIRS.filter(f => passes(f));
     const it = state.interp;
     let html = '';
@@ -2199,6 +2239,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (it && it.hits.length) {
       const scored = rankFor(pool, it);
       matched = scored.length;
+      lastRefine = refinements(state, scored.map(x => x.f));
       if (scored.length) {
         const whyMap = new Map(scored.map(x => [x.f.id, x.why]));
         html = groupHTML('Fit', true, '취향에 맞는 순서', 'ranked by fit', scored.map(x => x.f), whyMap, true);
@@ -2487,6 +2528,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       case 'clear': clearQuery(); break;
       case 'reset': resetFilters(false); break;
       case 'relax': applyRelax(act.dataset.i); break;
+      case 'refine': applyRefine(act.dataset.i); break;
       case 'undo-relax': undoRelax(); break;
       case 'alert-on': addAlert(); break;
       case 'alert-open': openAlert(act.dataset.id); break;
