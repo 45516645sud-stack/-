@@ -136,9 +136,9 @@ supabase functions deploy place-photos
 
 ## 사이트 공개 (GitHub Pages)
 
-`.github/workflows/aiiairs-pages.yml` 이 AIIairs 사이트와 함께 놀코를 `https://45516645sud-stack.github.io/-/nolco/` 에 올려요.
+`.github/workflows/aiiairs-pages.yml` 이 AIIairs 사이트와 함께 놀코를 `https://sogeukkok.com/nolco/` 에 올려요 (옛 주소 `https://45516645sud-stack.github.io/-/nolco/` 는 새 주소로 넘어가요).
 GitHub Actions의 Pages 배포는 **기본 브랜치**에 합쳐진 뒤에만 돌아가요.
-카카오 개발자 사이트의 Web 플랫폼 사이트 도메인에는 `https://45516645sud-stack.github.io` 를 등록하세요.
+카카오 개발자 사이트의 Web 플랫폼 사이트 도메인에는 `https://sogeukkok.com` 과 `https://45516645sud-stack.github.io` 를 등록하세요.
 
 ## 여행 코스 늘리기
 

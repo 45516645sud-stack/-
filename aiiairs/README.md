@@ -45,7 +45,7 @@ aiiairs/
 
 ## 사이트 공개 (GitHub Pages)
 
-`.github/workflows/aiiairs-pages.yml`이 `aiiairs/` 폴더를 GitHub Pages로 올려요. 주소는 `https://45516645sud-stack.github.io/-/`예요.
+`.github/workflows/aiiairs-pages.yml`이 `aiiairs/` 폴더를 GitHub Pages로 올려요. 주소는 `https://sogeukkok.com/`예요.
 
 - **처음 한 번만**: 저장소 Settings → Pages → Build and deployment → Source를 **GitHub Actions**로 바꾸기
 - 그다음부터는 자동이에요. 사이트 파일을 고쳐 기본 브랜치에 올리거나, 매일 새벽 일정 수집이 끝나면 다시 올라가요.
@@ -64,7 +64,7 @@ KOPIS에서 오늘부터 180일 동안의 공연을 **한도 없이 전부** 가
 
 ## 사이트 주소 바꾸기
 
-검색·공유용 주소는 `https://45516645sud-stack.github.io/-/` 로 적혀 있어요.
+검색·공유용 주소는 `https://sogeukkok.com/` 로 적혀 있어요.
 나중에 내 도메인을 사면 `index.html`(canonical, og:url, twitter:url, JSON-LD, `ORIGIN`), `privacy.html`(canonical), `robots.txt`, `sitemap.xml` 의 주소를 함께 바꿔요.
 
 ## 공식 포스터
