@@ -44,7 +44,7 @@ POSTER_DIR = ROOT / "posters"
 CACHE_FILE = ROOT / ".cache" / "kopis.json"           # 이미 물어본 공연·공연장 정보 (저장소에 넣지 않음)
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 KST = dt.timezone(dt.timedelta(hours=9))
-UA = "AIIairs-collector/1.0 (+https://45516645sud-stack.github.io/-/)"
+UA = "AIIairs-collector/1.0 (+https://sogeukkok.com/)"
 
 KOPIS_BASE = "https://www.kopis.or.kr/openApi/restful"
 # 공연마다 있는 KOPIS 공식 상세 페이지 (예매처 링크가 없을 때도 늘 붙일 수 있다)

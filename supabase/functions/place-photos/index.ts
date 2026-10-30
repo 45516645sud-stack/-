@@ -32,10 +32,12 @@ const KAKAO_IMAGE_SEARCH = "https://dapi.kakao.com/v2/search/image";
 const KAKAO_PLACE_SEARCH = "https://dapi.kakao.com/v2/local/search/keyword.json";
 const KAKAO_BLOG_SEARCH = "https://dapi.kakao.com/v2/search/blog";
 const KAKAO_CAFE_SEARCH = "https://dapi.kakao.com/v2/search/cafe";
-const DEFAULT_ORIGINS = "https://45516645sud-stack.github.io,http://localhost:8000";
+// 사이트 주소: 2026-10 부터 sogeukkok.com (옛 github.io 주소도 계속 허용)
+const DEFAULT_ORIGINS = "https://sogeukkok.com,https://www.sogeukkok.com,https://45516645sud-stack.github.io,http://localhost:8000";
 
 Deno.serve(async (req) => {
-  const origin = allowedOrigin(req.headers.get("Origin"), Deno.env.get("ALLOWED_ORIGINS") ?? DEFAULT_ORIGINS);
+  // 시크릿 ALLOWED_ORIGINS 로 더 허용할 수 있다. 기본 목록(사이트 주소)은 늘 들어간다
+  const origin = allowedOrigin(req.headers.get("Origin"), [DEFAULT_ORIGINS, Deno.env.get("ALLOWED_ORIGINS") ?? ""].join(","));
   const cors: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "content-type",

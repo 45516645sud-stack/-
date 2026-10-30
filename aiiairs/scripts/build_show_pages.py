@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """공연마다 페이지(show/<공연id>.html)를 만든다. 사이트를 올릴 때(GitHub Pages 작업) 돌린다.
 
-    python aiiairs/scripts/build_show_pages.py --site _site --base https://45516645sud-stack.github.io/-/
+    python aiiairs/scripts/build_show_pages.py --site _site --base https://sogeukkok.com/
 
 - 구글·네이버가 공연 이름으로 찾을 수 있게, 공연 하나에 주소 하나와 내용(기간·시간·장소·가격·출연)을 글로 담는다
 - 검색 결과에 공연 정보가 예쁘게 나오도록 schema.org Event(JSON-LD)를 넣는다

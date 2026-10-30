@@ -22,25 +22,25 @@
 <script>/* 설치 창 신호는 일찍 오므로 먼저 받아 둔다 */window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__installEvt=e;});</script>
 <!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
 <meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
-<link rel="canonical" href="https://45516645sud-stack.github.io/-/">
+<link rel="canonical" href="https://sogeukkok.com/">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://45516645sud-stack.github.io/-/">
+<meta property="og:url" content="https://sogeukkok.com/">
 <meta property="og:title" content="소극콕 | 전국 소극장·소공연 일정">
 <meta property="og:description" content="소극콕: 전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
 <meta property="og:site_name" content="소극콕">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:image" content="https://45516645sud-stack.github.io/-/og.png">
+<meta property="og:image" content="https://sogeukkok.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="소극콕 — 오늘 볼 작은 무대, 콕 찾아 드려요">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://45516645sud-stack.github.io/-/">
+<meta name="twitter:url" content="https://sogeukkok.com/">
 <meta name="twitter:title" content="소극콕 | 전국 소극장·소공연 일정">
-<meta name="twitter:image" content="https://45516645sud-stack.github.io/-/og.png">
+<meta name="twitter:image" content="https://sogeukkok.com/og.png">
 <meta name="twitter:description" content="소극콕: 전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
 
 <script type="application/ld+json">
@@ -49,11 +49,11 @@
   "@type": "WebSite",
   "name": "소극콕",
   "alternateName": "AIIairs",
-  "url": "https://45516645sud-stack.github.io/-/",
+  "url": "https://sogeukkok.com/",
   "description": "전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://45516645sud-stack.github.io/-/?q={search_term_string}",
+    "target": "https://sogeukkok.com/?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -1020,7 +1020,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const WD = ['일', '월', '화', '수', '목', '금', '토'];
   const MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const DAY = 86400000;
-  const ORIGIN = 'https://45516645sud-stack.github.io/-/';
+  const ORIGIN = 'https://sogeukkok.com/';
 
   const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -2405,7 +2405,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const lines = [
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AIIairs//Fair Index//KO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
       'BEGIN:VEVENT',
-      `UID:${f.id}@45516645sud-stack.github.io`,
+      `UID:${f.id}@sogeukkok.com`,
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ymd(f.start)}`,
       `DTEND;VALUE=DATE:${ymd(addDays(f.openrun ? f.start : f.end, 1))}`,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """코스마다 공유·검색용 페이지(c/<코스id>.html)를 만든다. 사이트를 올릴 때(GitHub Pages 작업) 돌린다.
 
-    python scripts/build_share_pages.py --site _site/nolco --base https://45516645sud-stack.github.io/-/nolco/
+    python scripts/build_share_pages.py --site _site/nolco --base https://sogeukkok.com/nolco/
 
 - 카카오톡·SNS 미리보기(og:title·og:description·og:image)에 코스 제목·장소·사진이 나온다
 - 검색 로봇이 읽을 수 있게 코스 내용(장소 순서·팁)을 글로 담는다

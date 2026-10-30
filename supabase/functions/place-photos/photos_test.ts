@@ -34,6 +34,7 @@ Deno.test("허용한 사이트만", () => {
   const list = "https://45516645sud-stack.github.io, http://localhost:8000/";
   assertEquals(allowedOrigin("https://45516645sud-stack.github.io", list), "https://45516645sud-stack.github.io");
   assertEquals(allowedOrigin("http://localhost:8000", list), "http://localhost:8000");
+  assertEquals(allowedOrigin("https://sogeukkok.com", "https://sogeukkok.com,https://45516645sud-stack.github.io,"), "https://sogeukkok.com");
   assertEquals(allowedOrigin("https://evil.example", list), null);
   assertEquals(allowedOrigin(null, list), null);
 });
