@@ -1,0 +1,14 @@
+{
+  "serviceName": "[서비스 이름]",
+  "storeName": "[가게 이름]",
+  "category": "[업종]",
+  "issues": [
+    "[고칠 점 1]",
+    "[고칠 점 2]",
+    "[고칠 점 3]"
+  ],
+  "setupPrice": "[ ]원",
+  "monthlyPrice": "[ ]원",
+  "contact": "[연락처]",
+  "output": "place-promo.png"
+}
