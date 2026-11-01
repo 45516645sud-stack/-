@@ -1,0 +1,67 @@
+# 소극콕 서버 설정 (Supabase): 로그인·찜 표를 만들고, 로그인 뒤 돌아올 주소를 등록한다.
+# 놀코와 같은 Supabase 프로젝트를 쓴다. 저장소 시크릿 SUPABASE_ACCESS_TOKEN 이 필요하다 (놀코 배포와 같은 것).
+# 카카오·구글 로그인 자체(앱 키·비밀 키)는 Supabase 대시보드 → Authentication → Providers 에서 켠다.
+name: 소극콕 서버 설정
+
+on:
+  push:
+    paths:
+      - "supabase/migrations/*_sogeukkok_*.sql"
+      - ".github/workflows/sogeukkok-server.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sogeukkok-server
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PROJECT_REF: hzomhheyccapnzuwtzxh
+      API: https://api.supabase.com/v1/projects/hzomhheyccapnzuwtzxh
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 토큰 확인
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN 시크릿이 없어요. 저장소 Settings → Secrets and variables → Actions 에 등록해 주세요."
+            exit 1
+          fi
+
+      - name: 찜 표 만들기
+        run: |
+          for f in supabase/migrations/*_sogeukkok_*.sql; do
+            echo "실행: $f"
+            body=$(jq -Rs '{query: .}' "$f")
+            code=$(curl -sS -o out.json -w '%{http_code}' -X POST "$API/database/query" \
+              -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" -d "$body")
+            echo "HTTP $code"; head -c 500 out.json; echo
+            if [ "$code" -ge 300 ]; then exit 1; fi
+          done
+
+      - name: 로그인 뒤 돌아올 주소 등록
+        # 이미 있는 주소는 그대로 두고 소극콕 주소만 더한다. 사이트 기본 주소가 비어 있을 때만 소극콕으로 정한다
+        run: |
+          code=$(curl -sS -o auth.json -w '%{http_code}' "$API/config/auth" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN")
+          echo "읽기 HTTP $code"
+          if [ "$code" != 200 ]; then echo "::warning::로그인 설정을 읽지 못했어요. 대시보드 → Authentication → URL Configuration 에서 https://sogeukkok.com/** 를 직접 넣어 주세요."; exit 0; fi
+          list=$(jq -r '.uri_allow_list // ""' auth.json)
+          for u in "https://sogeukkok.com/**" "https://www.sogeukkok.com/**" "https://45516645sud-stack.github.io/**"; do
+            case ",$list," in *",$u,"*) ;; *) list="${list:+$list,}$u";; esac
+          done
+          site=$(jq -r '.site_url // ""' auth.json)
+          case "$site" in ""|*localhost*) site="https://sogeukkok.com";; esac
+          body=$(jq -n --arg l "$list" --arg s "$site" '{uri_allow_list: $l, site_url: $s}')
+          code=$(curl -sS -o out.json -w '%{http_code}' -X PATCH "$API/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" -d "$body")
+          echo "고치기 HTTP $code"; head -c 300 out.json; echo
+          jq -r '"켜진 로그인: " + ([to_entries[] | select(.key|test("^external_.*_enabled$")) | select(.value==true) | .key] | join(", "))' out.json 2>/dev/null || true
+          if [ "$code" -ge 300 ]; then echo "::warning::돌아올 주소를 등록하지 못했어요."; fi

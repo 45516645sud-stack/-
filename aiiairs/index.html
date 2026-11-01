@@ -8,6 +8,8 @@
 <title>소극콕 | 전국 소극장·소공연 일정</title>
 <meta name="title" content="소극콕 | 전국 소극장·소공연 일정">
 <meta name="description" content="소극콕: 전국 소극장·소공연 일정을 한곳에서 확인하세요. 장르, 지역, 날짜, 관람료로 골라 보고, 보고 싶은 공연을 문장으로 적으면 딱 맞는 무대를 찾아드려요.">
+<meta name="sk-supabase-url" content="https://hzomhheyccapnzuwtzxh.supabase.co">
+<meta name="sk-supabase-key" content="">
 <meta name="naver-site-verification" content="40495405cf3129b4129eb2b699afbf2fc89fb5d7">
 <meta name="keywords" content="소극콕, 소극장, 소극장 공연, 대학로 연극, 소공연, 인디 공연, 재즈 공연, 하우스 콘서트, 무료 공연, 공연 일정">
 <meta name="author" content="정문경">
@@ -314,6 +316,36 @@ legend + *{clear:both}
 .linkish{background:none;border:0;padding:0;font-size:var(--s-1);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .linkish:hover{color:var(--accent)}
 
+
+/* 로그인·찜 (로그인이 켜졌을 때만 보인다) */
+.mast-side{display:flex;align-items:baseline;gap:14px}
+.acct-btn{border:1px solid var(--ink);background:none;padding:3px 12px;font-size:var(--s-1);font-weight:600;border-radius:999px;white-space:nowrap}
+.acct-btn:hover{background:var(--ink);color:var(--bg)}
+.fav{position:absolute;top:8px;right:8px;z-index:2;display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--hair);border-radius:50%;background:rgba(255,255,255,.94);-webkit-tap-highlight-color:transparent}
+.fav svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}
+.fav[aria-pressed="true"] svg{fill:var(--accent);stroke:var(--accent)}
+.fav:hover{border-color:var(--ink)}
+body:not(.acct-on) .fav{display:none}
+.card,.fair{position:relative}
+.acct-on .card-top{padding-right:40px}
+.acct-on .row{padding-right:64px}
+.fav-inline{position:static;width:32px;height:32px}
+.dlg-tools{display:flex;align-items:center;gap:12px}
+.acct{width:min(420px,calc(100% - 32px));padding:22px 22px 18px;border:1px solid var(--hair);border-radius:16px;background:var(--surface);color:var(--ink)}
+.acct::backdrop{background:rgba(20,17,15,.55)}
+.acct-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.acct-head h2{margin:0;font-size:var(--s2)}
+.acct-note,.acct-who{margin:0 0 16px;color:var(--muted);font-size:var(--s-1);line-height:1.6}
+.acct-who{color:var(--ink);font-size:var(--s0)}
+.login-btn{display:flex;justify-content:center;align-items:center;width:100%;margin-top:10px;padding:13px 16px;border:1px solid var(--hair);border-radius:12px;font-weight:700;font-size:var(--s0)}
+.login-kakao{background:#fee500;border-color:#fee500;color:#191919}
+.login-google{background:#fff;color:#1f1f1f}
+.acct-small{margin:14px 0 6px;font-size:var(--s-2);color:var(--muted)}
+.acct-row{display:flex;justify-content:space-between;width:100%;margin-top:8px;padding:14px 16px;border:1px solid var(--hair);border-radius:12px;background:none;font-size:var(--s0);text-align:left}
+.acct-row b{color:var(--accent);font-weight:600}
+.acct-foot{display:flex;justify-content:space-between;margin-top:18px}
+.linkish.muted{color:var(--muted)}
+.empty .btn{margin-top:10px}
 /* 해석 패널 */
 .interp{border:1px solid var(--ink);background:var(--bg);margin-bottom:24px}
 .interp-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 20px;border-bottom:1px solid var(--hair)}
@@ -793,6 +825,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .filters details{border-top:0}
   .filters details:not([open]){border-bottom:0}
   .filters fieldset:first-of-type{border-top:0;padding-top:4px}
+  .acct-on .card-text,.acct-on .group-body .card-text{padding-right:34px}
+  .acct-on .card-top{padding-right:0}
+  .fav{top:10px;right:10px;width:34px;height:34px}
+  .mast-side{width:100%;justify-content:space-between}
   /* 아래 탭 (피드백도 여기로 옮겨 오른쪽 탭은 숨김) */
   .fb-tab{display:none}
   .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:18;background:rgba(255,255,255,.96);border-top:1px solid var(--hair);padding:6px 4px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -813,7 +849,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       <span class="brand-word">소극콕</span>
       <span class="brand-sub">전국 소극장·소공연 일정</span>
     </a>
-    <p class="mast-meta" id="mastMeta"></p>
+    <div class="mast-side"><p class="mast-meta" id="mastMeta"></p><button type="button" class="acct-btn" id="acctBtn" hidden>로그인</button></div>
   </div>
   <nav class="wrap" aria-label="카테고리">
     <div class="rail"><ol id="rail"></ol></div>
@@ -939,6 +975,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 </footer>
 
 <dialog class="dlg" id="fairDialog" aria-labelledby="dlgTitle"></dialog>
+<dialog class="acct" id="acctDialog" aria-labelledby="acctTitle"></dialog>
 
 <button type="button" class="fb-tab" id="fbTab" aria-controls="feedback" hidden>피드백</button>
 <nav class="tabbar" id="tabbar" aria-label="빠른 이동">
@@ -946,6 +983,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   <button type="button" data-tab="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>찾기</button>
   <button type="button" data-tab="filter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>상세 설정</button>
   <button type="button" data-tab="list"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>일정</button>
+  <button type="button" data-tab="me" id="tabMe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-3.8 3.9-6 7.5-6s6.7 2.2 7.5 6"/></svg>MY</button>
   <button type="button" data-tab="fb" id="tabFb" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H10l-4 4v-4H5z"/></svg>피드백</button>
 </nav>
 <aside class="fb" id="feedback" aria-labelledby="fbTitle" aria-live="polite" hidden>
@@ -1134,6 +1172,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
 
   /* ---------------- 상태 ---------------- */
+  // 로그인한 사람이 찜한 공연 id (로그인·찜 부분에서 채운다)
+  const favs = new Set();
+  const favBtn = id => `<button type="button" class="fav" data-act="fav" data-id="${id}" aria-pressed="${favs.has(id)}" aria-label="찜하기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></button>`;
   const state = {
     cat: 'all',
     cost: 'all',
@@ -1146,6 +1187,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     query: '',
     interp: null,
     relaxed: null,      // 조건을 넓혀 찾은 결과일 때 { note, prev }
+    favOnly: false,     // 로그인한 사람이 '찜한 공연만' 볼 때
     noArea: false,      // 동네(홍대 등)를 풀고 그 지역 전체로 볼 때
     openId: null,
     view: (() => { try { return localStorage.getItem('aiiairs.view') === 'list' ? 'list' : 'card'; } catch { return 'card'; } })()
@@ -1501,6 +1543,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   /* ---------------- 필터 ---------------- */
   function passes(f, skip, st = state) {
     if (!st.past && isPast(f)) return false;
+    if (st.favOnly && !favs.has(f.id)) return false;
     if (skip !== 'cost') {
       if (st.cost === 'free' && !f.free) return false;
       if (st.cost === 'paid' && f.free) return false;
@@ -1752,7 +1795,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         `<span class="meta"><span class="c-cat">${CAT[f.cat].ko}</span>` +
         `<span class="c-status ${st.cls}">${st.text}</span>` +
         `<span class="c-fee${f.free ? ' free' : ''}">${won(f.fee)}</span></span>` +
-      `</button>` +
+      `</button>${favBtn(f.id)}` +
       `<div class="detail" id="detail-${f.id}"${open ? '' : ' hidden'}>` +
         `<p>${esc(f.d)}</p>` +
         `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
@@ -1858,7 +1901,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         `<span class="card-foot"><span class="card-date">${f.start.getFullYear()}.${md(f.start)}${endTxt}</span>` +
         `<span class="card-venue">${esc(f.venue)}</span></span></span>` +
         `<span class="card-poster" aria-hidden="true">${posterHTML(f)}</span>` +
-      `</button></li>`;
+      `</button>${favBtn(f.id)}</li>`;
   }
 
   function openDialog(id) {
@@ -1870,7 +1913,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const st = statusOf(f);
     dlg.innerHTML = `<div class="dlg-inner"><div class="dlg-poster">${posterHTML(f, false)}</div>` +
       `<div class="dlg-body"><div class="dlg-bar"><span class="card-cat">${CAT[f.cat].ko}</span>` +
-      `<button type="button" class="dlg-close" data-act="close">닫기</button></div>` +
+      `<span class="dlg-tools">${favBtn(f.id).replace('class="fav"', 'class="fav fav-inline"')}<button type="button" class="dlg-close" data-act="close">닫기</button></span></div>` +
       `<h2 id="dlgTitle">${esc(f.t)}</h2><p class="dlg-status">${st.text} · ${esc(f.region)}</p>` +
       `<p class="desc">${esc(f.d)}</p>` +
       `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
@@ -2184,6 +2227,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (DATA.sample && /^https?:/.test(location.protocol)) {
       html += `<div class="notice is-alert"><p><b>지금 보이는 공연은 예시예요.</b> 실제 일정을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요.</p></div>`;
     }
+    if (state.favOnly) {
+      html += `<div class="notice"><p><b>찜한 공연만 보고 있어요.</b> ${favs.size}개</p><button type="button" class="linkish" data-act="fav-off">전체 공연 보기</button></div>`;
+    }
     if (state.relaxed) {
       html += `<div class="notice"><p><b>원래 조건엔 없어서 넓혀 찾은 결과예요.</b> ${esc(state.relaxed.note)}</p>` +
         `<button type="button" class="linkish" data-act="undo-relax">원래 조건으로</button></div>`;
@@ -2270,7 +2316,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     }
 
     if (!html) {
-      $('sheetTitle').textContent = state.cat === 'all' ? '전체 일정' : `${GROUP[state.cat].ko} 일정`;
+      $('sheetTitle').textContent = state.favOnly ? '찜한 공연' : state.cat === 'all' ? '전체 일정' : `${GROUP[state.cat].ko} 일정`;
       const live = pool.filter(isLive).sort((a, b) => a.end - b.end);
       const next = pool.filter(f => f.start > TODAY).sort((a, b) => a.start - b.start);
       const past = pool.filter(isPast).sort((a, b) => b.start - a.start);
@@ -2284,7 +2330,11 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       if (past.length) html += groupHTML('Past', true, '지난 일정', '최근 순', past);
     }
 
-    if (!pool.length) {
+    if (!pool.length && state.favOnly && !state.interp) {
+      html = `<div class="empty"><p>${favs.size ? '조건에 맞는 찜한 공연이 없어요.' : '아직 찜한 공연이 없어요. 공연 카드의 ♡를 눌러 담아 보세요.'}</p>` +
+        `<button type="button" class="btn btn-sm btn-ghost" data-act="fav-off">전체 공연 보기</button></div>`;
+      shown = 0;
+    } else if (!pool.length) {
       const relax = relaxations(state);
       html = missHTML(state, relax, 0);
       shown = 0;
@@ -2367,6 +2417,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     resetFilters(false);
   }
   function resetFilters(keepQuery) {
+    state.favOnly = false;
     state.cost = 'all';
     state.budget = null;
     state.regions = new Set();
@@ -2530,6 +2581,14 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       case 'reset': resetFilters(false); break;
       case 'relax': applyRelax(act.dataset.i); break;
       case 'refine': applyRefine(act.dataset.i); break;
+      case 'fav': toggleFav(act.dataset.id); break;
+      case 'fav-only': closeAcct(); state.favOnly = true; state.openId = null; render(); $('schedule').scrollIntoView({ block: 'start' }); break;
+      case 'fav-off': state.favOnly = false; render(); break;
+      case 'login': login(act.dataset.p); break;
+      case 'logout': closeAcct(); acct.client && acct.client.auth.signOut(); break;
+      case 'delete-me': deleteMe(); break;
+      case 'acct-close': closeAcct(); break;
+      case 'acct-fb': closeAcct(); $('fbTab').click(); break;
       case 'undo-relax': undoRelax(); break;
       case 'alert-on': addAlert(); break;
       case 'alert-open': openAlert(act.dataset.id); break;
@@ -2645,6 +2704,111 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     box.querySelector('summary').focus({ preventScroll: true });
   });
   $('seeResults').addEventListener('click', () => $('schedule').scrollIntoView({ block: 'start' }));
+
+  /* ---- 로그인·찜 ----
+     놀코와 같은 Supabase 프로젝트로 카카오·구글 로그인. 찜은 sk_favs 표에 (RLS 로 자기 것만).
+     공개 키가 비었거나(사이트 올릴 때 채움) 켜진 로그인 방법이 없으면 이 기능은 통째로 숨겨 둔다. */
+  const acct = { client: null, user: null, providers: [], loaded: false };
+  const SB_URL = document.querySelector('meta[name="sk-supabase-url"]')?.content || '';
+  const SB_KEY = document.querySelector('meta[name="sk-supabase-key"]')?.content || '';
+  const PROVIDER = { kakao: { name: '카카오로 시작하기', cls: 'login-kakao' }, google: { name: 'Google로 시작하기', cls: 'login-google' } };
+  const acctDlg = $('acctDialog');
+  const loadScript = src => new Promise((ok, no) => { const el = document.createElement('script'); el.src = src; el.onload = ok; el.onerror = no; document.head.appendChild(el); });
+  const sGet = k => { try { return sessionStorage.getItem(k); } catch { return null; } };
+  const sSet = (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch { /* 저장 불가 */ } };
+  async function initAccount() {
+    if (!SB_URL || !SB_KEY || !/^https:$/.test(location.protocol)) return;
+    try {
+      const r = await fetch(`${SB_URL}/auth/v1/settings`, { headers: { apikey: SB_KEY } });
+      const ext = (r.ok && (await r.json()).external) || {};
+      acct.providers = ['kakao', 'google'].filter(p => ext[p]);
+      if (!acct.providers.length) return;
+      await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js');
+      acct.client = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', persistSession: true, detectSessionInUrl: true } });
+    } catch { return; }
+    document.body.classList.add('acct-on');
+    $('acctBtn').hidden = false;
+    $('tabMe').hidden = false;
+    $('tabFb').hidden = true;   // 피드백은 MY 창 안으로
+    // 이 콜백 안에서 바로 Supabase 를 부르면 멈출 수 있어 한 박자 뒤에 처리한다
+    acct.client.auth.onAuthStateChange((ev, session) => setTimeout(() => setUser(session ? session.user : null), 0));
+    const { data } = await acct.client.auth.getSession();
+    await setUser(data.session ? data.session.user : null);
+    // 로그인하고 돌아온 주소의 ?code= 는 지운다
+    if (/[?&]code=/.test(location.search)) { const u = new URL(location.href); u.searchParams.delete('code'); history.replaceState(null, '', u); }
+  }
+  async function setUser(u) {
+    if (acct.loaded && (acct.user ? acct.user.id : null) === (u ? u.id : null)) return;
+    acct.user = u;
+    acct.loaded = true;
+    $('acctBtn').textContent = u ? 'MY' : '로그인';
+    favs.clear();
+    if (u) {
+      const { data } = await acct.client.from('sk_favs').select('fair_id').limit(2000);
+      for (const r of data || []) favs.add(r.fair_id);
+      const pend = sGet('sk.pendingFav');
+      if (pend) { sSet('sk.pendingFav', null); await toggleFav(pend, true); }
+    } else state.favOnly = false;
+    refreshFavs(true);
+    if (acctDlg.open) drawAcct();
+  }
+  function refreshFavs(rerender) {
+    document.querySelectorAll('.fav[data-id]').forEach(b => b.setAttribute('aria-pressed', String(favs.has(b.dataset.id))));
+    if (rerender || state.favOnly) render();
+  }
+  async function toggleFav(id, force) {
+    if (!acct.client) return;
+    if (!acct.user) { sSet('sk.pendingFav', id); openAcct('찜하려면 로그인해 주세요. 로그인하면 바로 담아 둘게요.'); return; }
+    const on = force ?? !favs.has(id);
+    if (on) favs.add(id); else favs.delete(id);
+    refreshFavs(false);
+    const { error } = on
+      ? await acct.client.from('sk_favs').upsert({ fair_id: id }, { onConflict: 'user_id,fair_id', ignoreDuplicates: true })
+      : await acct.client.from('sk_favs').delete().eq('fair_id', id);
+    if (error) {
+      if (on) favs.delete(id); else favs.add(id);
+      refreshFavs(false);
+      alert('찜을 저장하지 못했어요. 잠시 뒤 다시 해 주세요.');
+    }
+  }
+  function login(p) {
+    if (!acct.client || !PROVIDER[p]) return;
+    acct.client.auth.signInWithOAuth({ provider: p, options: { redirectTo: location.origin + location.pathname } });
+  }
+  async function deleteMe() {
+    if (!acct.user || !confirm('정말 탈퇴할까요? 찜한 공연도 모두 지워져요.')) return;
+    const { error } = await acct.client.rpc('sk_delete_me');
+    if (error) { alert('탈퇴하지 못했어요. 잠시 뒤 다시 해 주세요.'); return; }
+    await acct.client.auth.signOut();
+    closeAcct();
+    alert('탈퇴했어요. 그동안 고마웠어요.');
+  }
+  function drawAcct(note) {
+    const u = acct.user;
+    const m = (u && u.user_metadata) || {};
+    const who = m.name || m.full_name || m.nickname || m.preferred_username || (u && u.email) || '회원';
+    acctDlg.innerHTML = u
+      ? `<div class="acct-head"><h2 id="acctTitle">MY</h2><button type="button" class="dlg-close" data-act="acct-close">닫기</button></div>` +
+        `<p class="acct-who"><b>${esc(who)}</b>님</p>` +
+        `<button type="button" class="acct-row" data-act="fav-only"><span>찜한 공연</span><b>${favs.size}개 ›</b></button>` +
+        (fbTabOn ? `<button type="button" class="acct-row" data-act="acct-fb"><span>의견 보내기</span><b>›</b></button>` : '') +
+        `<div class="acct-foot"><button type="button" class="linkish" data-act="logout">로그아웃</button>` +
+        `<button type="button" class="linkish muted" data-act="delete-me">회원 탈퇴</button></div>`
+      : `<div class="acct-head"><h2 id="acctTitle">로그인</h2><button type="button" class="dlg-close" data-act="acct-close">닫기</button></div>` +
+        `<p class="acct-note">${esc(note || '로그인하면 찜한 공연을 휴대폰·컴퓨터 어디서나 볼 수 있어요.')}</p>` +
+        acct.providers.map(p => `<button type="button" class="login-btn ${PROVIDER[p].cls}" data-act="login" data-p="${p}">${PROVIDER[p].name}</button>`).join('') +
+        `<p class="acct-small">로그인하면 <a href="privacy.html">개인정보 처리방침</a>에 동의하는 것으로 봐요.</p>` +
+        (fbTabOn ? `<button type="button" class="acct-row" data-act="acct-fb"><span>의견 보내기</span><b>›</b></button>` : '');
+  }
+  function openAcct(note) {
+    if (!acct.client) return;
+    drawAcct(note);
+    if (!acctDlg.open) acctDlg.showModal();
+  }
+  function closeAcct() { if (acctDlg.open) acctDlg.close(); }
+  acctDlg.addEventListener('click', e => { if (e.target === acctDlg) closeAcct(); });
+  acctDlg.addEventListener('close', () => sSet('sk.pendingFav', null));
+  $('acctBtn').addEventListener('click', () => openAcct());
   // 휴대폰 아래 탭: 홈(맨 위), 찾기(검색칸), 상세 설정, 일정 목록, 피드백
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
@@ -2653,6 +2817,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     else if (t === 'filter') $('filterJump').click();
     else if (t === 'list') $('schedule').scrollIntoView({ block: 'start' });
     else if (t === 'fb') $('fbTab').click();
+    else if (t === 'me') openAcct();
   });
 
   /* ---- 앱처럼 설치 (홈 화면에 추가) ----
@@ -2778,6 +2943,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const fbTab = $('fbTab');
   const fbTabOn = /^https:\/\//.test(LOG_ENDPOINT);
   $('tabFb').hidden = !fbTabOn;
+  initAccount();
   fbTab.hidden = !fbTabOn;
   fbTab.addEventListener('click', () => {
     if (fbRating && fbRating !== 'tab' && !fbSent) fbSend($('fbText').value);  // 5분 창에서 고른 평가는 먼저 보낸다
