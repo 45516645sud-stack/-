@@ -93,6 +93,19 @@ jobs:
           ls _site/posters | wc -l
           du -sh _site
 
+      # 로그인(찜)용 Supabase 공개 키를 첫 화면에 넣는다. 공개 키는 원래 브라우저에 보이는 키다 (권한은 표의 RLS 가 막는다).
+      # 시크릿 토큰이 없거나 실패하면 비워 두고, 그러면 사이트는 로그인 없이 지금처럼 돈다
+      - name: 로그인 공개 키
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          [ -z "$SUPABASE_ACCESS_TOKEN" ] && { echo "토큰 없음: 로그인 끔"; exit 0; }
+          key=$(curl -sS -m 20 "https://api.supabase.com/v1/projects/hzomhheyccapnzuwtzxh/api-keys" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            | jq -r '([.[] | select(.name=="anon")] + [.[] | select(.type=="publishable")])[0].api_key // empty' 2>/dev/null || true)
+          if [ -z "$key" ] || ! printf '%s' "$key" | grep -Eq '^[A-Za-z0-9._-]{20,}$'; then echo "::warning::공개 키를 받지 못해 로그인을 꺼 둬요"; exit 0; fi
+          sed -i "s|<meta name=\"sk-supabase-key\" content=\"\">|<meta name=\"sk-supabase-key\" content=\"$key\">|" _site/index.html
+          grep -c 'name="sk-supabase-key" content="."' _site/index.html || echo "::warning::공개 키 자리를 찾지 못했어요"
+
       # 공연마다 페이지(show/<id>.html)와 전체 목록·sitemap.xml: 구글·네이버가 공연 이름으로 찾게 한다.
       # 위에서 포스터 경로를 단 일정을 읽는다. 실패하면 사이트를 올리지 않는다 (sitemap 이 빈 페이지를 가리키지 않게)
       - name: 공연별 페이지
