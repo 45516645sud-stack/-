@@ -150,6 +150,10 @@ class FixtureRunTest(unittest.TestCase):
             self.assertTrue(items["kopis-pf000002"]["info"].endswith("mt20Id=PF000002"))
             self.assertNotIn("url", items["kopis-pf000002"])
             self.assertEqual(items["kopis-pf000001"]["url"], "https://ticket.example.com/PF000001")
+            # 공연 소개 이미지: https 로 바꾸고 웹 주소가 아닌 것은 버린다
+            self.assertEqual(items["kopis-pf000001"]["intro"], ["https://www.kopis.or.kr/upload/pfmIntroImage/PF_PF000001_1.jpg",
+                                                                 "https://www.kopis.or.kr/upload/pfmIntroImage/PF_PF000001_2.jpg"])
+            self.assertNotIn("intro", items["kopis-pf000002"])
             self.assertNotIn("kopis-pf000003", items)
             self.assertEqual(items["kopis-pf000001"]["cat"], "theater")
             self.assertEqual(items["kopis-pf000002"]["cat"], "music")
