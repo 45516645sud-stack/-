@@ -358,10 +358,26 @@ def slim_detail(d: dict) -> dict:
             if url:
                 out["relateurl"] = url
                 break
+    out["intro"] = intro_images(d)
     return {k: v for k, v in out.items() if v}
 
 
-CACHE_VERSION = 3  # 기억하는 항목이 바뀌면 올린다 (예전 기억은 버리고 다시 묻는다). 2: 공연 시간·나이·주소, 3: 출연진·대학로/내한/축제/창작 표시
+def intro_images(d: dict) -> list[str]:
+    """극단이 올린 공연 소개 이미지 (줄거리·등장인물 그림). 웹 주소만, 앞에서 4장까지."""
+    got = d.get("intro")
+    if isinstance(got, list):
+        return [u for u in got if isinstance(u, str) and u.startswith("https://")][:4]
+    els = d.get("styurls")
+    out: list[str] = []
+    if isinstance(els, ET.Element):
+        for el in els:
+            url = https((el.text or "").strip())
+            if url and url not in out:
+                out.append(url)
+    return out[:4]
+
+
+CACHE_VERSION = 4  # 기억하는 항목이 바뀌면 올린다 (예전 기억은 버리고 다시 묻는다). 2: 공연 시간·나이·주소, 3: 출연진·대학로/내한/축제/창작 표시
 
 
 def load_cache(path: Path | None) -> dict:
@@ -592,6 +608,7 @@ def kopis_item(r: dict, d: dict) -> dict | None:
         "age": clip(first(d, "prfage"), 30),                       # 관람 나이 (예: 만 13세 이상)
         "agemin": agemin,                                          # 볼 수 있는 가장 어린 나이 (취향 검색의 '5살 아이' 등)
         "cast": clip(re.sub(r"\s*등$", "", first(d, "prfcast")), 80),  # 출연진 (이름으로 찾기)
+        "intro": intro_images(d) or None,                         # 공연 소개 이미지 (줄거리 그림), 4: 캐시 버전
         "src": "kopis",
     }
 

@@ -23,6 +23,11 @@
     <festival>N</festival>
     <musicalcreate>N</musicalcreate>
     <musicallicense>N</musicallicense>
+    <styurls>
+      <styurl>http://www.kopis.or.kr/upload/pfmIntroImage/PF_PF000001_1.jpg</styurl>
+      <styurl>javascript:alert(1)</styurl>
+      <styurl>http://www.kopis.or.kr/upload/pfmIntroImage/PF_PF000001_2.jpg</styurl>
+    </styurls>
     <relates>
       <relate><relatenm>예시예매처</relatenm><relateurl>http://ticket.example.com/PF000001</relateurl></relate>
     </relates>

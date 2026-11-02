@@ -346,6 +346,15 @@ body:not(.acct-on) .fav{display:none}
 .acct-foot{display:flex;justify-content:space-between;margin-top:18px}
 .linkish.muted{color:var(--muted)}
 .empty .btn{margin-top:10px}
+/* 공연 내용: 소개 이미지 + 후기 검색 */
+.about{margin-top:18px;padding-top:14px;border-top:1px solid var(--hair)}
+.about h3{margin:0 0 10px;font-size:var(--s0);font-weight:700}
+.intro-imgs{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.intro-imgs a{display:block;border-radius:10px;overflow:hidden;background:var(--surface)}
+.intro-imgs img{display:block;width:100%;height:auto}
+.reviews{margin:0 0 10px;font-size:var(--s-1);color:var(--muted)}
+.reviews a{color:var(--accent);font-weight:600}
+.btn-book{background:var(--accent);border-color:var(--accent);color:#fff}
 /* 해석 패널 */
 .interp{border:1px solid var(--ink);background:var(--bg);margin-bottom:24px}
 .interp-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 20px;border-bottom:1px solid var(--hair)}
@@ -1109,6 +1118,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         poster: typeof f.poster === 'string' && /^posters\/[\w.-]+$/.test(f.poster) ? f.poster : null,
         url: isWebUrl(f.url) ? f.url : null,
         info: isWebUrl(f.info) ? f.info : null,
+        // 극단이 올린 공연 소개 이미지 (줄거리·등장인물). https 웹 주소만 4장까지
+        intro: Array.isArray(f.intro) ? f.intro.filter(u => typeof u === 'string' && /^https:\/\//.test(u)).slice(0, 4) : [],
         art: f.art || DEFAULT_ART[cat],
         // 공연 시간·길이·관람 나이·공연장 주소 (KOPIS 에 있을 때만)
         time: typeof f.time === 'string' ? f.time.slice(0, 160) : '',
@@ -1803,7 +1814,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         placeRows(f) +
         `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd>` +
         `<dt>장르</dt><dd>${CAT[f.cat].ko}</dd></dl>` +
-        actionsHTML(f) +
+        actionsHTML(f) + aboutHTML(f) +
       `</div></li>`;
   }
 
@@ -1819,12 +1830,35 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       (f.age ? `<dt>관람 나이</dt><dd>${esc(f.age)}</dd>` : '');
   }
 
+  // 예매처 이름 (주소로 알아본다)
+  const SELLERS = [['interpark', '인터파크'], ['nol.', 'NOL 티켓'], ['booking.naver', '네이버 예약'], ['ticketlink', '티켓링크'],
+    ['melon', '멜론티켓'], ['yes24', '예스24'], ['playticket', '플레이티켓'], ['2tm.', '투티엠'], ['29cm', '29CM']];
+  function sellerName(url) {
+    let host = '';
+    try { host = new URL(url).hostname; } catch { return ''; }
+    return (SELLERS.find(([k]) => host.includes(k)) || [])[1] || '';
+  }
+  // 공연 이름에서 [대학로] 같은 꼬리표를 떼고 후기 검색어로 쓴다
+  function reviewQuery(f) { return `${f.t.replace(/\s*[\[(（].*?[\])）]\s*/g, ' ').trim()} 후기`; }
+  // 공연 내용이 궁금할 때: 극단이 올린 소개 이미지 + 다른 사람 후기 검색
+  function aboutHTML(f) {
+    const q = encodeURIComponent(reviewQuery(f));
+    const imgs = f.intro.length
+      ? `<div class="intro-imgs">${f.intro.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="${esc(f.t)} 소개 ${i + 1}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></a>`).join('')}</div>`
+      : '';
+    return `<section class="about"><h3>공연 내용</h3>` +
+      `<p class="reviews">다른 사람 후기 보기 ` +
+      `<a href="https://search.naver.com/search.naver?ssc=tab.blog.all&query=${q}" target="_blank" rel="noopener">네이버 블로그</a>` +
+      ` · <a href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">유튜브</a></p>${imgs}</section>`;
+  }
+
   function actionsHTML(f) {
     return `<div class="actions">` +
       `<button type="button" class="btn btn-sm" data-act="ics" data-id="${f.id}">캘린더에 담기</button>` +
       `<button type="button" class="btn btn-sm btn-ghost" data-act="copy" data-id="${f.id}">링크 복사</button>` +
       // KOPIS 공연은 예매처(있을 때)와 KOPIS 공식 공연 페이지(항상)를, 직접 넣은 공연은 공식 링크를 보여준다.
-      (f.url ? `<a class="btn btn-sm btn-ghost" href="${esc(f.url)}" target="_blank" rel="noopener">${f.src === 'kopis' ? '예매하기' : '공식 정보 보기'}</a>` : '') +
+      // 예매는 새 탭으로 그 공연 예매 화면에 바로 간다 (소극콕은 그대로 남는다)
+      (f.url ? `<a class="btn btn-sm btn-book" href="${esc(f.url)}" target="_blank" rel="noopener">${f.src === 'kopis' ? `${sellerName(f.url) ? esc(sellerName(f.url)) + '에서 ' : ''}예매하기 ↗` : '공식 정보 보기 ↗'}</a>` : '') +
       (f.info ? `<a class="btn btn-sm btn-ghost" href="${esc(f.info)}" target="_blank" rel="noopener">KOPIS 공연 정보</a>` : '') +
       (state.cat !== GROUP_OF[f.cat] ? `<button type="button" class="linkish" data-act="cat" data-cat="${GROUP_OF[f.cat]}">${GROUP[GROUP_OF[f.cat]].ko} 더 보기</button>` : '') +
       `<span class="done" role="status" data-done="${f.id}"></span>` +
@@ -1920,7 +1954,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `<dl><dt>기간</dt><dd>${f.start.getFullYear()}. ${md(f.start)} (${WD[f.start.getDay()]}) — ${f.openrun ? '오픈런 (끝나는 날 미정)' : `${md(f.end)} (${WD[f.end.getDay()]})`}</dd>` +
       placeRows(f) +
       `<dt>관람료</dt><dd>${won(f.fee)}${f.note ? ` · ${esc(f.note)}` : ''}</dd></dl>` +
-      actionsHTML(f) + `</div></div>`;
+      actionsHTML(f) + aboutHTML(f) + `</div></div>`;
     if (!dlg.open) dlg.showModal();
     dlg.scrollTop = 0;
     syncURL();
