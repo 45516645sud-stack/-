@@ -348,6 +348,7 @@ body:not(.acct-on) .fav{display:none}
 .empty .btn{margin-top:10px}
 /* 날짜 옆 갱신 문구와 숫자 상자는 휴대폰·PC 모두 숨긴다 (첫 화면을 단순하게) */
 .mast-upd,#figures{display:none}
+.intro .lede{align-self:center}
 /* 공연 내용: 소개 이미지 + 후기 검색 */
 .about{margin-top:18px;padding-top:14px;border-top:1px solid var(--hair)}
 .about h3{margin:0 0 10px;font-size:var(--s0);font-weight:700}
@@ -743,10 +744,16 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .detail{padding-left:16px}
   .rail button{padding:10px 12px 11px}
 }
-/* ---------- 휴대폰: 앱처럼 깔끔하게 (흰 바탕, 둥근 카드, 태그, 아래 탭) ---------- */
-@media (max-width:560px){
+/* ---------- 앱처럼 깔끔하게 (흰 바탕, 둥근 카드, 태그) : 휴대폰·PC 공통 ---------- */
+@media all{
   :root{--bg:#ffffff;--wash:#f6f4f1;--hair:#e7e2db;--muted:#7a7068;--f-display:"Pretendard Variable","Pretendard",system-ui,sans-serif}
-  body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  /* 카드: 포스터를 왼쪽 썸네일로 늘 보여준다 (마우스를 올리지 않아도) */
+  .card-btn,.group-body .card-btn{display:flex;aspect-ratio:auto;min-height:0}
+  .card-btn:hover .card-poster{display:block}
+  .card-poster{display:block;position:relative;inset:auto;order:-1;aspect-ratio:4 / 5;align-self:flex-start}
+  .card-top{flex-direction:column;gap:2px}
+  .card-foot{flex-direction:column;align-items:flex-start;gap:2px;padding-top:10px}
+  .card-venue{flex:none;min-width:0;text-align:left;font-weight:500;color:var(--muted)}
   .mast{border-bottom:1px solid var(--hair)}
   /* 장르: 둥근 칩 한 줄 */
   .rail{border-top:0;padding:2px 0 12px}
@@ -822,6 +829,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .dlg{border-radius:16px}
   .interp{border-color:var(--hair);border-radius:16px;overflow:hidden}
   .chip{border-color:var(--hair);border-radius:999px;padding:4px 12px}
+}
+/* ---------- 휴대폰만: 아래 탭, 버튼으로 펼치는 검색·상세 설정 ---------- */
+@media (max-width:560px){
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
   /* 취향으로 검색·상세 설정은 버튼을 눌렀을 때만 펼친다 */
   .m-tools{display:none}
   .m-tools button{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border:1px solid var(--hair);border-radius:12px;background:var(--surface);font-size:var(--s0);font-weight:600;-webkit-tap-highlight-color:transparent}
