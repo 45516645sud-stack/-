@@ -14,7 +14,7 @@
 <meta name="keywords" content="소극콕, 소극장, 소극장 공연, 대학로 연극, 소공연, 인디 공연, 재즈 공연, 하우스 콘서트, 무료 공연, 공연 일정">
 <meta name="author" content="정문경">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#efe8da">
+<meta name="theme-color" content="#111111">
 <!-- 앱처럼 설치 (홈 화면에 추가) -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -321,7 +321,7 @@ legend + *{clear:both}
 .mast-side{display:flex;align-items:baseline;gap:14px}
 .acct-btn{border:1px solid var(--ink);background:none;padding:3px 12px;font-size:var(--s-1);font-weight:600;border-radius:999px;white-space:nowrap}
 .acct-btn:hover{background:var(--ink);color:var(--bg)}
-.fav{position:absolute;top:8px;right:8px;z-index:2;display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--hair);border-radius:50%;background:rgba(255,255,255,.94);-webkit-tap-highlight-color:transparent}
+.fav{position:absolute;top:8px;right:8px;z-index:2;display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--hair);border-radius:50%;background:rgba(27,27,28,.94);-webkit-tap-highlight-color:transparent}
 .fav svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}
 .fav[aria-pressed="true"] svg{fill:var(--accent);stroke:var(--accent)}
 .fav:hover{border-color:var(--ink)}
@@ -746,7 +746,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 }
 /* ---------- 앱처럼 깔끔하게 (흰 바탕, 둥근 카드, 태그) : 휴대폰·PC 공통 ---------- */
 @media all{
-  :root{--bg:#ffffff;--wash:#f6f4f1;--hair:#e7e2db;--muted:#7a7068;--f-display:"Pretendard Variable","Pretendard",system-ui,sans-serif}
+  /* 검은 화면 (다크) */
+  :root{--bg:#111111;--surface:#1b1b1c;--ink:#f3f0eb;--accent:#ff7a3d;--muted:#a49b91;--wash:#232220;--hair:#34312d;--f-display:"Pretendard Variable","Pretendard",system-ui,sans-serif;color-scheme:dark}
   /* 카드: 포스터를 왼쪽 썸네일로 늘 보여준다 (마우스를 올리지 않아도) */
   .card-btn,.group-body .card-btn{display:flex;aspect-ratio:auto;min-height:0}
   .card-btn:hover .card-poster{display:block}
@@ -809,12 +810,12 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .card-text,.group-body .card-text{padding:2px 0 0}
   .card-top{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:6px}
   .card-cat,.card-state .free,.card-state .st{display:inline-block;padding:3px 9px;border-radius:999px;font-size:var(--s-2);font-weight:600;line-height:1.4}
-  .card-cat{order:2;background:#fdeee6;color:var(--accent)}
+  .card-cat{order:2;background:rgba(255,122,61,.16);color:var(--accent)}
   .card-cat::before{content:none}
   .card-state{display:contents}
   .card-state .st{order:1;background:var(--wash);color:var(--ink)}
   .card-state .st.hot{background:var(--accent);color:#fff}
-  .card-state .free{order:3;background:#e8f5ec;color:#1b7a3d}
+  .card-state .free{order:3;background:rgba(52,199,89,.16);color:#5fd27f}
   .card-state .free + .st::before{content:none}
   .card-title,.group-body .card-title{margin-top:8px;font-size:var(--s0);font-weight:700;line-height:1.4}
   .card-foot{padding-top:6px;gap:2px}
@@ -853,7 +854,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .mast-side{width:100%;justify-content:space-between}
   /* 아래 탭 (피드백도 여기로 옮겨 오른쪽 탭은 숨김) */
   .fb-tab{display:none}
-  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:18;background:rgba(255,255,255,.96);border-top:1px solid var(--hair);padding:6px 4px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:18;background:rgba(17,17,17,.96);border-top:1px solid var(--hair);padding:6px 4px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
   .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px 0;font-size:var(--s-2);color:var(--muted);-webkit-tap-highlight-color:transparent}
   .tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
   .tabbar button:active{color:var(--accent)}
