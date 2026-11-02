@@ -347,6 +347,12 @@ body:not(.acct-on) .fav{display:none}
 .acct-foot{display:flex;justify-content:space-between;margin-top:18px}
 .linkish.muted{color:var(--muted)}
 .empty .btn{margin-top:10px}
+/* 카드 장소 줄의 구 이름 */
+.card-venue .pl{min-width:0}
+.card-venue .gu{font-weight:600;color:var(--ink);white-space:nowrap}
+/* 상세 설정은 취향 검색 칸 안에, 일정 목록은 화면 가득 */
+.ask .filters.in-ask{margin-top:20px;padding-top:4px;border-top:1px solid var(--hair)}
+.body .schedule{grid-column:1 / -1}
 /* 날짜 옆 갱신 문구와 숫자 상자는 휴대폰·PC 모두 숨긴다 (첫 화면을 단순하게) */
 .mast-upd,#figures{display:none}
 .intro .lede{align-self:center}
@@ -716,6 +722,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   fieldset{padding:12px 0 14px}
   legend{margin-bottom:8px}
   .checks{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-right:calc(-1 * var(--pad));padding-right:var(--pad)}
+  .ask .checks{margin-right:-14px;padding-right:14px}
   .checks::-webkit-scrollbar{display:none}
   .check{position:relative;flex:none;gap:6px;padding:6px 10px;border:1px solid var(--hair);background:var(--surface)}
   .check input{position:absolute;opacity:0;pointer-events:none}
@@ -841,9 +848,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .m-tools svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .m-tools b{min-width:1.4em;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:var(--s-2);line-height:1.6;text-align:center}
   .m-tools button[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-  body:not(.show-ask) .ask{display:none}
+  body:not(.show-ask):not(.show-filter) .ask{display:none}
   .filter-jump{display:none}  /* 아래 탭과 위 버튼이 같은 일을 한다 */
-  body:not(.show-filter) .filters{display:none}
   .ask-head,.filters summary{display:none}
   .ask.is-compact .ask-body{margin-top:0}
   .filters details{border-top:0}
@@ -919,57 +925,58 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
           <li><button type="button" data-example="홍대에서 2만원 이하 인디 밴드 라이브">홍대에서 2만원 이하 인디 밴드 라이브</button></li>
         </ul>
       </div>
+      <!-- 상세 설정도 취향 검색 칸 안에 둔다 -->
+      <aside class="filters in-ask" aria-label="상세 설정">
+        <details id="filterBox" open>
+          <summary>상세 설정 <span class="sum-state" id="sumState"></span></summary>
+
+          <fieldset>
+            <legend>관람료</legend>
+            <div class="seg" id="costSeg">
+              <label><input type="radio" name="cost" value="all" checked> 전체</label>
+              <label><input type="radio" name="cost" value="free"> 무료만</label>
+              <label><input type="radio" name="cost" value="paid"> 유료만</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>지역 <span class="vh">(여러 곳 선택 가능)</span></legend>
+            <div class="checks" id="regionList"></div>
+          </fieldset>
+
+          <fieldset class="period" id="periodBox">
+            <legend>기간</legend>
+            <div class="presets" id="presets" role="group" aria-label="빠른 기간 선택">
+              <button type="button" data-preset="1m" aria-pressed="false">1개월</button>
+              <button type="button" data-preset="3m" aria-pressed="false">3개월</button>
+              <button type="button" data-preset="6m" aria-pressed="false">6개월</button>
+              <button type="button" data-preset="1y" aria-pressed="false">1년</button>
+            </div>
+            <div class="range">
+              <button type="button" class="date" id="fromBtn" data-pick="from" aria-haspopup="dialog" aria-expanded="false" aria-label="시작일 고르기">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5"/><path d="M1.5 6.5h13M5 1.5v3M11 1.5v3"/></svg>
+                <span id="fromTxt"></span>
+              </button>
+              <span class="range-dash" aria-hidden="true">–</span>
+              <button type="button" class="date" id="toBtn" data-pick="to" aria-haspopup="dialog" aria-expanded="false" aria-label="종료일 고르기">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5"/><path d="M1.5 6.5h13M5 1.5v3M11 1.5v3"/></svg>
+                <span id="toTxt"></span>
+              </button>
+            </div>
+            <p class="range-note" id="rangeNote"></p>
+            <div class="cal" id="cal" role="dialog" aria-label="날짜 고르기" hidden></div>
+          </fieldset>
+
+          <div class="filter-end">
+            <button type="button" class="linkish" id="resetBtn">초기화</button>
+            <button type="button" class="see-results m-only" id="seeResults">결과 보기</button>
+          </div>
+        </details>
+      </aside>
     </form>
   </section>
 
   <section class="wrap grid body" aria-label="공연 일정">
-    <aside class="filters" aria-label="상세 설정">
-      <details id="filterBox" open>
-        <summary>상세 설정 <span class="sum-state" id="sumState"></span></summary>
-
-        <fieldset>
-          <legend>관람료</legend>
-          <div class="seg" id="costSeg">
-            <label><input type="radio" name="cost" value="all" checked> 전체</label>
-            <label><input type="radio" name="cost" value="free"> 무료만</label>
-            <label><input type="radio" name="cost" value="paid"> 유료만</label>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>지역 <span class="vh">(여러 곳 선택 가능)</span></legend>
-          <div class="checks" id="regionList"></div>
-        </fieldset>
-
-        <fieldset class="period" id="periodBox">
-          <legend>기간</legend>
-          <div class="presets" id="presets" role="group" aria-label="빠른 기간 선택">
-            <button type="button" data-preset="1m" aria-pressed="false">1개월</button>
-            <button type="button" data-preset="3m" aria-pressed="false">3개월</button>
-            <button type="button" data-preset="6m" aria-pressed="false">6개월</button>
-            <button type="button" data-preset="1y" aria-pressed="false">1년</button>
-          </div>
-          <div class="range">
-            <button type="button" class="date" id="fromBtn" data-pick="from" aria-haspopup="dialog" aria-expanded="false" aria-label="시작일 고르기">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5"/><path d="M1.5 6.5h13M5 1.5v3M11 1.5v3"/></svg>
-              <span id="fromTxt"></span>
-            </button>
-            <span class="range-dash" aria-hidden="true">–</span>
-            <button type="button" class="date" id="toBtn" data-pick="to" aria-haspopup="dialog" aria-expanded="false" aria-label="종료일 고르기">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5"/><path d="M1.5 6.5h13M5 1.5v3M11 1.5v3"/></svg>
-              <span id="toTxt"></span>
-            </button>
-          </div>
-          <p class="range-note" id="rangeNote"></p>
-          <div class="cal" id="cal" role="dialog" aria-label="날짜 고르기" hidden></div>
-        </fieldset>
-
-        <div class="filter-end">
-          <button type="button" class="linkish" id="resetBtn">초기화</button>
-          <button type="button" class="see-results m-only" id="seeResults">결과 보기</button>
-        </div>
-      </details>
-    </aside>
 
     <div class="schedule" id="schedule" tabindex="-1">
       <div id="notice"></div>
@@ -1832,6 +1839,25 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       `</div></li>`;
   }
 
+  // 카드 아래 장소 줄: '종로구 · 극장 이름'. 주소에서 구(시·군)를 뽑고, 서울이 아니면 도시 이름을 앞에 붙인다.
+  const PROV = { 서울특별시: '서울', 부산광역시: '부산', 대구광역시: '대구', 인천광역시: '인천', 광주광역시: '광주', 대전광역시: '대전',
+    울산광역시: '울산', 세종특별자치시: '세종', 경기도: '경기', 강원도: '강원', 강원특별자치도: '강원', 충청북도: '충북', 충청남도: '충남',
+    전라북도: '전북', 전북특별자치도: '전북', 전라남도: '전남', 경상북도: '경북', 경상남도: '경남', 제주특별자치도: '제주' };
+  function district(f) {
+    const w = (f.addr || '').trim().split(/\s+/);
+    const prov = PROV[w[0]];
+    if (!prov) return '';
+    if (prov === '세종') return '세종';
+    const gu = /^[가-힣]+(구|시|군)$/.test(w[1] || '') ? w[1] : '';
+    if (!gu) return prov;
+    return prov === '서울' ? gu : `${prov} ${gu}`;
+  }
+  function placeLine(f) {
+    const venue = f.venue.replace(/\s*\(.*$/, '') || f.venue;   // 괄호 속 층·관 이름은 카드에서 줄인다
+    const d = district(f);
+    return `<span class="pl">${d ? `<b class="gu">${esc(d)}</b> · ` : ''}${esc(venue)}</span>`;
+  }
+
   // 장소·좌석·주소(+지도)·공연 시간·길이·관람 나이. 목록 펼침과 상세 창이 같이 쓴다.
   function placeRows(f) {
     const q = encodeURIComponent(f.addr || `${f.venue.replace(/\s*\(.*$/, '')} ${f.region === '기타' ? '' : f.region}`.trim());
@@ -1948,7 +1974,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         `<span class="card-title">${esc(f.t)}</span>` +
         (why && why.length ? `<span class="card-why">${why.map(esc).join(' · ')}</span>` : '') +
         `<span class="card-foot"><span class="card-date">${f.start.getFullYear()}.${md(f.start)}${endTxt}</span>` +
-        `<span class="card-venue">${esc(f.venue)}</span></span></span>` +
+        `<span class="card-venue">${placeLine(f)}</span></span></span>` +
         `<span class="card-poster" aria-hidden="true">${posterHTML(f)}</span>` +
       `</button>${favBtn(f.id)}</li>`;
   }
@@ -2881,8 +2907,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
     if (t === 'home') window.scrollTo({ top: 0 });
-    else if (t === 'ask') { showPanel('filter', false); showPanel('ask', true); $('askForm').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
-    else if (t === 'filter') { showPanel('ask', false); $('filterJump').click(); }
+    else if (t === 'ask') { showPanel('ask', true); $('askForm').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
+    else if (t === 'filter') $('filterJump').click();
     else if (t === 'list') $('schedule').scrollIntoView({ block: 'start' });
     else if (t === 'fb') $('fbTab').click();
     else if (t === 'me') openAcct();
