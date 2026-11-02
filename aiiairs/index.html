@@ -346,6 +346,8 @@ body:not(.acct-on) .fav{display:none}
 .acct-foot{display:flex;justify-content:space-between;margin-top:18px}
 .linkish.muted{color:var(--muted)}
 .empty .btn{margin-top:10px}
+/* 날짜 옆 갱신 문구와 숫자 상자는 휴대폰·PC 모두 숨긴다 (첫 화면을 단순하게) */
+.mast-upd,#figures{display:none}
 /* 공연 내용: 소개 이미지 + 후기 검색 */
 .about{margin-top:18px;padding-top:14px;border-top:1px solid var(--hair)}
 .about h3{margin:0 0 10px;font-size:var(--s0);font-weight:700}
@@ -822,7 +824,6 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .chip{border-color:var(--hair);border-radius:999px;padding:4px 12px}
   /* 취향으로 검색·상세 설정은 버튼을 눌렀을 때만 펼친다 */
   .m-tools{display:none}
-  .mast-upd,#figures{display:none}
   .m-tools button{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border:1px solid var(--hair);border-radius:12px;background:var(--surface);font-size:var(--s0);font-weight:600;-webkit-tap-highlight-color:transparent}
   .m-tools svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .m-tools b{min-width:1.4em;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:var(--s-2);line-height:1.6;text-align:center}
