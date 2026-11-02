@@ -22,6 +22,7 @@
 <link rel="apple-touch-icon" href="img/icon-180.png">
 <meta name="apple-mobile-web-app-title" content="소극콕">
 <meta name="mobile-web-app-capable" content="yes">
+<script>/* 로그인하고 돌아온 주소(?code=, ?error=)는 화면이 주소를 다시 쓰기 전에 먼저 받아 둔다 */window.__authReturn=location.search;</script>
 <script>/* 설치 창 신호는 일찍 오므로 먼저 받아 둔다 */window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__installEvt=e;});</script>
 <!-- 결과가 없던 검색을 받을 주소(예: Google Apps Script 웹 앱). 비워 두면 기록하지 않는다. scripts/miss-log.gs 참고 -->
 <meta name="aiiairs-log-endpoint" content="https://script.google.com/macros/s/AKfycbxcaA5GePSxuBfR1ydRw3Q0C1mtjSqF9_Tse2h3TnHU2opXhRw9aUNOVCZJhwY_RSby/exec">
@@ -2772,18 +2773,37 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       acct.providers = ['kakao', 'google'].filter(p => ext[p]);
       if (!acct.providers.length) return;
       await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js');
-      acct.client = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', persistSession: true, detectSessionInUrl: true } });
+      // 주소의 ?code= 는 화면이 이미 지웠을 수 있어, 처음 받아 둔 값으로 직접 로그인을 마친다
+      acct.client = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', persistSession: true, detectSessionInUrl: false } });
     } catch { return; }
     document.body.classList.add('acct-on');
     $('acctBtn').hidden = false;
     $('tabMe').hidden = false;
     $('tabFb').hidden = true;   // 피드백은 MY 창 안으로
     // 이 콜백 안에서 바로 Supabase 를 부르면 멈출 수 있어 한 박자 뒤에 처리한다
-    acct.client.auth.onAuthStateChange((ev, session) => setTimeout(() => setUser(session ? session.user : null), 0));
+    // 알림이 늦게 와서 방금 마친 로그인을 덮어쓰지 않게, 그때마다 지금 상태를 다시 읽는다
+    acct.client.auth.onAuthStateChange(() => setTimeout(async () => {
+      const { data } = await acct.client.auth.getSession();
+      setUser(data.session ? data.session.user : null);
+    }, 0));
+    const ret = new URLSearchParams(window.__authReturn || '');
+    let authErr = ret.get('error_description') || ret.get('error') || '';
+    if (ret.get('code')) {
+      try {
+        const { error } = await acct.client.auth.exchangeCodeForSession(ret.get('code'));
+        if (error) authErr = error.message || '로그인을 마치지 못했어요';
+      } catch (e) { authErr = (e && e.message) || '로그인을 마치지 못했어요'; }
+    }
+    window.__authReturn = '';
     const { data } = await acct.client.auth.getSession();
     await setUser(data.session ? data.session.user : null);
-    // 로그인하고 돌아온 주소의 ?code= 는 지운다
-    if (/[?&]code=/.test(location.search)) { const u = new URL(location.href); u.searchParams.delete('code'); history.replaceState(null, '', u); }
+    // 로그인하고 돌아온 주소의 code·error 는 지운다
+    if (/[?&](code|error|error_description|error_code)=/.test(location.search)) {
+      const u = new URL(location.href);
+      ['code', 'error', 'error_description', 'error_code'].forEach(k => u.searchParams.delete(k));
+      history.replaceState(null, '', u);
+    }
+    if (authErr && !acct.user) openAcct(`로그인이 안 됐어요: ${authErr.slice(0, 120)}`);
   }
   async function setUser(u) {
     if (acct.loaded && (acct.user ? acct.user.id : null) === (u ? u.id : null)) return;
