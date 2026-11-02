@@ -812,7 +812,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   .interp{border-color:var(--hair);border-radius:16px;overflow:hidden}
   .chip{border-color:var(--hair);border-radius:999px;padding:4px 12px}
   /* 취향으로 검색·상세 설정은 버튼을 눌렀을 때만 펼친다 */
-  .m-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;grid-column:1 / -1}
+  .m-tools{display:none}
+  .mast-upd,#figures{display:none}
   .m-tools button{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border:1px solid var(--hair);border-radius:12px;background:var(--surface);font-size:var(--s0);font-weight:600;-webkit-tap-highlight-color:transparent}
   .m-tools svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .m-tools b{min-width:1.4em;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:var(--s-2);line-height:1.6;text-align:center}
@@ -980,7 +981,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 <button type="button" class="fb-tab" id="fbTab" aria-controls="feedback" hidden>피드백</button>
 <nav class="tabbar" id="tabbar" aria-label="빠른 이동">
   <button type="button" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>홈</button>
-  <button type="button" data-tab="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>찾기</button>
+  <button type="button" data-tab="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>취향 검색</button>
   <button type="button" data-tab="filter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>상세 설정</button>
   <button type="button" data-tab="list"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>일정</button>
   <button type="button" data-tab="me" id="tabMe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-3.8 3.9-6 7.5-6s6.7 2.2 7.5 6"/></svg>MY</button>
@@ -1609,8 +1610,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   function renderMast() {
     const d = TODAY;
     $('mastMeta').innerHTML =
-      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b> 기준 · ` +
-      (DATA.sample ? '예시 일정' : `일정 ${updatedText()} 갱신`);
+      `<b>${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())} (${WD[d.getDay()]})</b><span class="mast-upd"> 기준 · ` +
+      (DATA.sample ? '예시 일정' : `일정 ${updatedText()} 갱신`) + '</span>';
     const names = DATA.sources.filter(x => x && x.count).map(x => x.label || x.name);
     $('srcNote').textContent = names.length ? `일정 출처: ${names.join(', ')}` : '';
     const upcoming = FAIRS.filter(f => !isPast(f));
@@ -2699,7 +2700,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('filterToggle').addEventListener('click', () => showPanel('filter', !document.body.classList.contains('show-filter')));
   $('filterJump').addEventListener('click', () => {
     box.open = true;
-    if (phoneNow()) { showPanel('filter', true); $('mTools').scrollIntoView({ block: 'start' }); return; }
+    if (phoneNow()) { showPanel('filter', true); requestAnimationFrame(() => box.closest('.filters').scrollIntoView({ block: 'start' })); return; }
     box.closest('.filters').scrollIntoView({ block: 'start' });
     box.querySelector('summary').focus({ preventScroll: true });
   });
@@ -2813,8 +2814,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
     if (t === 'home') window.scrollTo({ top: 0 });
-    else if (t === 'ask') { showPanel('ask', true); $('mTools').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
-    else if (t === 'filter') $('filterJump').click();
+    else if (t === 'ask') { showPanel('filter', false); showPanel('ask', true); $('askForm').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
+    else if (t === 'filter') { showPanel('ask', false); $('filterJump').click(); }
     else if (t === 'list') $('schedule').scrollIntoView({ block: 'start' });
     else if (t === 'fb') $('fbTab').click();
     else if (t === 'me') openAcct();
