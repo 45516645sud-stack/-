@@ -51,6 +51,8 @@ await page.route(url => !url.href.startsWith(base), r => r.abort());
 await page.clock.setFixedTime(NOW);
 await page.goto(base);
 await page.waitForSelector('.group');
+// 취향 검색 칸은 아래 탭을 눌러야 열린다 (휴대폰·PC 같은 화면)
+await page.evaluate(() => document.body.classList.add('show-ask'));
 
 const results = {};
 for (const q of cases) {
