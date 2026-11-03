@@ -1464,6 +1464,24 @@
    "place": "병방치 스카이워크",
    "stop": "병방치 스카이워크",
    "credit": "한국관광공사"
+  },
+  "daejeon-gyejok": {
+   "img": "img/course/daejeon-gyejok.webp",
+   "place": "계족산 황톳길",
+   "stop": "계족산 황톳길",
+   "credit": "한국관광공사"
+  },
+  "jb-gunsan-eunpa": {
+   "img": "img/course/jb-gunsan-eunpa.webp",
+   "place": "진포해양테마공원",
+   "stop": "진포해양테마공원",
+   "credit": "한국관광공사"
+  },
+  "gw-gangneung-wolhwa": {
+   "img": "img/course/gw-gangneung-wolhwa.webp",
+   "place": "강릉 월화거리",
+   "stop": "월화거리",
+   "credit": "한국관광공사"
   }
  }
 }
