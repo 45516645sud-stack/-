@@ -1,8 +1,36 @@
 {
  "version": 1,
- "updated": "2026-11-05",
+ "updated": "2026-11-06",
  "note": "블로그·카페 글에서 자동으로 찾은 팝업 후보. 관리자가 승인한 것만 앱에 나온다 (scripts/check_popups.py)",
  "items": [
+  {
+   "id": "p-c5e1266d03",
+   "name": "김천김밥축제",
+   "start": "2026-11-06",
+   "end": "2026-11-08",
+   "place": "서울특별시 성동구 연무장15길 11",
+   "address": "서울 성동구 연무장15길 11",
+   "lat": 37.5426445439481,
+   "lng": 127.059573316959,
+   "region": "서울",
+   "url": "https://blog.naver.com/inu9uni/224463401484",
+   "urls": [
+    "https://blog.naver.com/inu9uni/224463401484",
+    "https://blog.naver.com/chio4466/224463375231",
+    "https://blog.naver.com/thesoby/224461909887"
+   ],
+   "titles": [
+    "김천김밥축제 성수 팝업 소개(11/6~11/8)|39주 만삭 김밥 중독자의 먹방| 운영일자·이벤트·김밥...",
+    "김천김밥축제 성수 팝업 11월 6일 오픈! 꼬달이 굿즈·김밥 메뉴·위치 총정리",
+    "김천김밥축제 성수 팝업 11/6~8 정리: 김밥 3종·꼬달이 굿즈"
+   ],
+   "agree": 11,
+   "posts": 11,
+   "sure": true,
+   "state": "now",
+   "kind": "food",
+   "young": true
+  },
   {
    "id": "p-df2a78ee82",
    "name": "산리오 냥냥 클럽 용산",
@@ -69,18 +97,18 @@
    "lat": 37.51260447840551,
    "lng": 127.10255558658325,
    "region": "서울",
-   "url": "https://blog.naver.com/rlaehdms9085/224464187848",
+   "url": "https://blog.naver.com/eahoho/224465408394",
    "urls": [
+    "https://blog.naver.com/eahoho/224465408394",
     "https://blog.naver.com/rlaehdms9085/224464187848",
-    "https://blog.naver.com/godwise100/224464067910",
-    "https://blog.naver.com/wing43100/224462624276"
+    "https://blog.naver.com/godwise100/224464067910"
    ],
    "titles": [
+    "2026 빼빼로데이 할인 총정리｜편의점 4사 2+2·반값 행사 날짜가 다르다",
     "2026 편의점 빼빼로데이 한정판 캐릭터 굿즈 & 2+2 할인 총정리 (GS25 짱구·호빵맨 / CU 포켓몬...",
-    "2026 빼빼로데이 편의점 할인 총정리! CU·GS25·세븐일레븐·이마트24 어디서 사야 가장 저렴할까?",
-    "빼빼로데이 편의점 행사 4가지 2026, 2+2·최대 50% 할인 정리"
+    "2026 빼빼로데이 편의점 할인 총정리! CU·GS25·세븐일레븐·이마트24 어디서 사야 가장 저렴할까?"
    ],
-   "agree": 8,
+   "agree": 7,
    "posts": 8,
    "sure": true,
    "state": "now",
@@ -116,34 +144,6 @@
    "young": true
   },
   {
-   "id": "p-1c65a2bdf8",
-   "name": "아라비카",
-   "start": "2026-10-20",
-   "end": "2026-12-14",
-   "place": "신세계 센텀시티",
-   "address": "부산 해운대구 센텀남대로 35",
-   "lat": 35.16864392798528,
-   "lng": 129.12907174004943,
-   "region": "부산",
-   "url": "https://blog.naver.com/muni_log/224462131470",
-   "urls": [
-    "https://blog.naver.com/muni_log/224462131470",
-    "https://blog.naver.com/minju2644/224462127367",
-    "https://blog.naver.com/kjw4245/224457720126"
-   ],
-   "titles": [
-    "부산 응커피 % 아라비카 신세계백화점 센텀시티점 팝업스토어 교토라떼 라떼맛집 방문 후기",
-    "센텀 신세계 백화점 센텀시티점 응아라비카커피 %아라비카 팝업후기",
-    "센텀 신세계 % 아라비카커피/응커피 팝업 웨이팅 후기"
-   ],
-   "agree": 6,
-   "posts": 6,
-   "sure": true,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
    "id": "p-c3f0d0a78b",
    "name": "2+2·50%",
    "start": "2026-11-04",
@@ -153,47 +153,19 @@
    "lat": 37.51260447840551,
    "lng": 127.10255558658325,
    "region": "서울",
-   "url": "https://blog.naver.com/rlaehdms9085/224464187848",
+   "url": "https://blog.naver.com/eahoho/224465408394",
    "urls": [
+    "https://blog.naver.com/eahoho/224465408394",
     "https://blog.naver.com/rlaehdms9085/224464187848",
-    "https://blog.naver.com/wing43100/224462624276",
-    "https://bikangmin.tistory.com/2"
+    "https://blog.naver.com/wing43100/224462624276"
    ],
    "titles": [
+    "2026 빼빼로데이 할인 총정리｜편의점 4사 2+2·반값 행사 날짜가 다르다",
     "2026 편의점 빼빼로데이 한정판 캐릭터 굿즈 & 2+2 할인 총정리 (GS25 짱구·호빵맨 / CU 포켓몬...",
-    "빼빼로데이 편의점 행사 4가지 2026, 2+2·최대 50% 할인 정리",
-    "GS25 빼빼로데이 행사 2026, 결제수단별 2+2·50% 할인 날짜"
+    "빼빼로데이 편의점 행사 4가지 2026, 2+2·최대 50% 할인 정리"
    ],
    "agree": 6,
-   "posts": 7,
-   "sure": true,
-   "state": "now",
-   "kind": "character",
-   "young": true
-  },
-  {
-   "id": "p-caaa5ca14e",
-   "name": "조앤프렌즈",
-   "start": "2026-10-30",
-   "end": "2026-11-11",
-   "place": "롯데월드몰",
-   "address": "서울 송파구 올림픽로 300",
-   "lat": 37.51260447840551,
-   "lng": 127.10255558658325,
-   "region": "서울",
-   "url": "https://blog.naver.com/rlaehdms9085/224464187848",
-   "urls": [
-    "https://blog.naver.com/rlaehdms9085/224464187848",
-    "https://blog.naver.com/sia_mom2025/224463901069",
-    "https://blog.naver.com/chy8001/224463580492"
-   ],
-   "titles": [
-    "캐릭터 굿즈 & 2+2 할인 총정리 (GS25 짱구·호빵맨 / CU 포켓몬·다마고치 / 세븐일레븐 조앤프렌즈)",
-    "잠실 롯데월드몰 빼빼로데이 팝업｜세븐일레븐×조앤프렌즈 굿즈 가격·특전 총정리 (~11/11)",
-    "세븐일레븐 조앤프렌즈 빼빼로 콜라보 후기｜굿즈 가격부터 피규어말랑이 세트까지(직접결제)"
-   ],
-   "agree": 5,
-   "posts": 5,
+   "posts": 8,
    "sure": true,
    "state": "now",
    "kind": "character",
@@ -228,6 +200,34 @@
    "young": true
   },
   {
+   "id": "p-674017c095",
+   "name": "버버리 170주년",
+   "start": "",
+   "end": "2026-11-08",
+   "place": "신세계백화점 강남점",
+   "address": "서울 서초구 신반포로 176",
+   "lat": 37.505305732081965,
+   "lng": 127.00432032924516,
+   "region": "서울",
+   "url": "https://blog.naver.com/seizetheday8282/224462490241",
+   "urls": [
+    "https://blog.naver.com/seizetheday8282/224462490241",
+    "https://blog.naver.com/banpobilly/224460508606",
+    "https://blog.naver.com/octoberten10/224457331601"
+   ],
+   "titles": [
+    "버버리 170주년 팝업스토어 열려있어요! 신세계 강남에서 만나는 버버리 트렌치코트·겨울 아우터",
+    "🧥 신세계 강남점 버버리 팝업 직접 다녀왔어요 – 트렌치코트 속으로 들어간 듯한 공간 (~11/8까지)",
+    "형사 주혜라 벗고 하얀 코트로.. 정은채, 버버리 170주년 포토콜 룩 봤더니"
+   ],
+   "agree": 5,
+   "posts": 5,
+   "sure": true,
+   "state": "now",
+   "kind": "fashion",
+   "young": true
+  },
+  {
    "id": "p-198ee03c62",
    "name": "리락쿠마x스미코구라시",
    "start": "2026-10-30",
@@ -256,6 +256,62 @@
    "young": true
   },
   {
+   "id": "p-6624a4e00e",
+   "name": "니케",
+   "start": "2026-11-06",
+   "end": "2026-11-19",
+   "place": "무신사 스토어 성수",
+   "address": "서울 성동구 성수이로 74",
+   "lat": 37.541485585740105,
+   "lng": 127.05646070830274,
+   "region": "서울",
+   "url": "https://blog.naver.com/tiltedb/224464200747",
+   "urls": [
+    "https://blog.naver.com/tiltedb/224464200747",
+    "https://lifesocool92.tistory.com/40",
+    "https://blog.naver.com/niji_natsu/224461406532"
+   ],
+   "titles": [
+    "니케×무신사 성수 팝업, 사전예약 없이 가려면 입장 조건부터 봐야겠어요",
+    "니케 × 무신사 성수 팝업 11월 6일 오픈! 도로롱 키링·한정판 굿즈·예약 방법 총정리",
+    "니케 무신사 성수 팝업, 카카오 예약·입장 나이·신분증 준비"
+   ],
+   "agree": 4,
+   "posts": 5,
+   "sure": true,
+   "state": "now",
+   "kind": "fashion",
+   "young": true
+  },
+  {
+   "id": "p-caaa5ca14e",
+   "name": "조앤프렌즈",
+   "start": "2026-10-30",
+   "end": "2026-11-11",
+   "place": "롯데월드몰",
+   "address": "서울 송파구 올림픽로 300",
+   "lat": 37.51260447840551,
+   "lng": 127.10255558658325,
+   "region": "서울",
+   "url": "https://blog.naver.com/rlaehdms9085/224464187848",
+   "urls": [
+    "https://blog.naver.com/rlaehdms9085/224464187848",
+    "https://blog.naver.com/sia_mom2025/224463901069",
+    "https://blog.naver.com/chy8001/224463580492"
+   ],
+   "titles": [
+    "캐릭터 굿즈 & 2+2 할인 총정리 (GS25 짱구·호빵맨 / CU 포켓몬·다마고치 / 세븐일레븐 조앤프렌즈)",
+    "잠실 롯데월드몰 빼빼로데이 팝업｜세븐일레븐×조앤프렌즈 굿즈 가격·특전 총정리 (~11/11)",
+    "세븐일레븐 조앤프렌즈 빼빼로 콜라보 후기｜굿즈 가격부터 피규어말랑이 세트까지(직접결제)"
+   ],
+   "agree": 4,
+   "posts": 4,
+   "sure": true,
+   "state": "now",
+   "kind": "character",
+   "young": true
+  },
+  {
    "id": "p-254ffdd7e0",
    "name": "재혼 황후",
    "start": "2026-11-03",
@@ -276,8 +332,8 @@
     "성수동 재혼황후 팝업스토어 현장 대기 및 프로그램 안내 👑",
     "재혼황후 기본정보 총정리, 등장인물 관계 원작 결말 OTT 공개일 회차정보까지"
    ],
-   "agree": 4,
-   "posts": 5,
+   "agree": 3,
+   "posts": 4,
    "sure": true,
    "state": "now",
    "kind": "character",
@@ -530,32 +586,6 @@
    "young": true
   },
   {
-   "id": "p-7678f9a6d7",
-   "name": "샤넬 홀리데이",
-   "start": "",
-   "end": "2026-12-31",
-   "place": "는 서울",
-   "address": "",
-   "lat": null,
-   "lng": null,
-   "region": "",
-   "url": "https://blog.naver.com/2webdaily/224464502619",
-   "urls": [
-    "https://blog.naver.com/2webdaily/224464502619",
-    "https://blog.naver.com/trends101/224463390864"
-   ],
-   "titles": [
-    "샤넬 홀리데이 팝업 성수, 운영기간과 예약 방법",
-    "2026 샤넬 홀리데이 팝업 성수｜11월 21일 오픈, 생모리츠의 겨울이 서울에 온다"
-   ],
-   "agree": 2,
-   "posts": 2,
-   "sure": true,
-   "state": "now",
-   "kind": "beauty",
-   "young": true
-  },
-  {
    "id": "p-8f68a86fc4",
    "name": "넷플릭스 미친맛집에 나온 후쿠요시카페 신세계",
    "start": "2026-10-20",
@@ -579,110 +609,6 @@
    "sure": true,
    "state": "now",
    "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-6624a4e00e",
-   "name": "니케",
-   "start": "2026-11-06",
-   "end": "2026-11-19",
-   "place": "무신사 스토어 성수",
-   "address": "서울 성동구 성수이로 74",
-   "lat": 37.541485585740105,
-   "lng": 127.05646070830274,
-   "region": "서울",
-   "url": "https://blog.naver.com/tiltedb/224464200747",
-   "urls": [
-    "https://blog.naver.com/tiltedb/224464200747",
-    "https://lifesocool92.tistory.com/40",
-    "https://blog.naver.com/niji_natsu/224461406532"
-   ],
-   "titles": [
-    "니케×무신사 성수 팝업, 사전예약 없이 가려면 입장 조건부터 봐야겠어요",
-    "니케 × 무신사 성수 팝업 11월 6일 오픈! 도로롱 키링·한정판 굿즈·예약 방법 총정리",
-    "니케 무신사 성수 팝업, 카카오 예약·입장 나이·신분증 준비"
-   ],
-   "agree": 4,
-   "posts": 5,
-   "sure": true,
-   "state": "soon",
-   "kind": "fashion",
-   "young": true
-  },
-  {
-   "id": "p-1da8a12d14",
-   "name": "일리오",
-   "start": "2026-11-06",
-   "end": "2026-11-15",
-   "place": "성수 연무장길",
-   "address": "서울 성동구 연무장7길 13",
-   "lat": 37.5441733194254,
-   "lng": 127.054430448058,
-   "region": "서울",
-   "url": "https://blog.naver.com/vuswl57/224464404725",
-   "urls": [
-    "https://blog.naver.com/vuswl57/224464404725"
-   ],
-   "titles": [
-    "일리오 성수 팝업 최대 80% 할인 리퍼브 사은품 총정리"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "etc",
-   "young": true
-  },
-  {
-   "id": "p-c5e1266d03",
-   "name": "김천김밥축제",
-   "start": "2026-11-06",
-   "end": "2026-11-08",
-   "place": "서울특별시 성동구 연무장15길 11",
-   "address": "서울 성동구 연무장15길 11",
-   "lat": 37.5426445439481,
-   "lng": 127.059573316959,
-   "region": "서울",
-   "url": "https://blog.naver.com/inu9uni/224463401484",
-   "urls": [
-    "https://blog.naver.com/inu9uni/224463401484",
-    "https://blog.naver.com/chio4466/224463375231",
-    "https://blog.naver.com/thesoby/224461909887"
-   ],
-   "titles": [
-    "김천김밥축제 성수 팝업 소개(11/6~11/8)|39주 만삭 김밥 중독자의 먹방| 운영일자·이벤트·김밥...",
-    "김천김밥축제 성수 팝업 11월 6일 오픈! 꼬달이 굿즈·김밥 메뉴·위치 총정리",
-    "김천김밥축제 성수 팝업 11/6~8 정리: 김밥 3종·꼬달이 굿즈"
-   ],
-   "agree": 11,
-   "posts": 11,
-   "sure": true,
-   "state": "soon",
-   "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-7a8e2eaecd",
-   "name": "캐리랜드 몬치치",
-   "start": "2026-11-06",
-   "end": "2026-11-08",
-   "place": "신세계 센텀시티",
-   "address": "부산 해운대구 센텀남대로 35",
-   "lat": 35.16864392798528,
-   "lng": 129.12907174004943,
-   "region": "부산",
-   "url": "https://blog.naver.com/mellow_17/224462982939",
-   "urls": [
-    "https://blog.naver.com/mellow_17/224462982939"
-   ],
-   "titles": [
-    "2026 부산 캐리랜드 몬치치 팝업｜신세계 센텀시티 사전예약 링크·굿즈 가격·이벤트"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "soon",
-   "kind": "etc",
    "young": true
   },
   {
@@ -818,6 +744,30 @@
    "young": true
   },
   {
+   "id": "p-8e7878fd3d",
+   "name": "YONEX YEOUIDO OPEN",
+   "start": "2026-11-12",
+   "end": "2026-11-18",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://happy.goodchoiys.com/400",
+   "urls": [
+    "https://happy.goodchoiys.com/400"
+   ],
+   "titles": [
+    "더현대 서울에 배드민턴 코트가? | YONEX YEOUIDO OPEN 팝업"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "soon",
+   "kind": "art",
+   "young": true
+  },
+  {
    "id": "p-5986e89c9c",
    "name": "카비시 콜라보",
    "start": "2026-11-13",
@@ -839,6 +789,60 @@
    "sure": false,
    "state": "soon",
    "kind": "etc",
+   "young": true
+  },
+  {
+   "id": "p-e6d12df7d1",
+   "name": "다마고치",
+   "start": "2026-11-20",
+   "end": "2026-12-03",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://blog.naver.com/wkdqhr73/224464006475",
+   "urls": [
+    "https://blog.naver.com/wkdqhr73/224464006475",
+    "https://blog.naver.com/s2hines2/224463664657",
+    "https://blog.naver.com/rlaehdms9085/224464187848"
+   ],
+   "titles": [
+    "다마고치 30주년 생일 팝업스토어 굿즈 및 특전 총 정리!",
+    "[더현대팝업] 다마고치 파라다이스 30주년 한정특전,굿즈",
+    "캐릭터 굿즈 & 2+2 할인 총정리 (GS25 짱구·호빵맨 / CU 포켓몬·다마고치 / 세븐일레븐 조앤프렌즈)"
+   ],
+   "agree": 4,
+   "posts": 6,
+   "sure": true,
+   "state": "soon",
+   "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-33025f99cb",
+   "name": "라이엇",
+   "start": "2026-10-29",
+   "end": "2026-11-08",
+   "place": "올리브영N 성수",
+   "address": "서울 성동구 연무장7길 13",
+   "lat": 37.5441733194254,
+   "lng": 127.054430448058,
+   "region": "서울",
+   "url": "https://blog.naver.com/date_book/224461778600",
+   "urls": [
+    "https://blog.naver.com/date_book/224461778600",
+    "https://blog.naver.com/opopso002/224458987150"
+   ],
+   "titles": [
+    "성수 라이엇 팝업 11월 8일까지, 운영시간·굿즈 구매 전 확인할 것",
+    "트렌드팟 바이 올리브영N 성수 라이엇 게임즈 뮤직&월즈 2026 팝업스토어 10월~11월 일정(사전 예약X..."
+   ],
+   "agree": 1,
+   "posts": 2,
+   "sure": false,
+   "state": "now",
+   "kind": "beauty",
    "young": true
   },
   {
@@ -905,6 +909,30 @@
    ],
    "titles": [
     "안녕자두야가 코엑스에 나타났다! 2026 특별 콜라보 팝업 기간·위치 총정리"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "etc",
+   "young": true
+  },
+  {
+   "id": "p-7a8e2eaecd",
+   "name": "캐리랜드 몬치치",
+   "start": "2026-11-06",
+   "end": "2026-11-08",
+   "place": "신세계 센텀시티",
+   "address": "부산 해운대구 센텀남대로 35",
+   "lat": 35.16864392798528,
+   "lng": 129.12907174004943,
+   "region": "부산",
+   "url": "https://blog.naver.com/mellow_17/224462982939",
+   "urls": [
+    "https://blog.naver.com/mellow_17/224462982939"
+   ],
+   "titles": [
+    "2026 부산 캐리랜드 몬치치 팝업｜신세계 센텀시티 사전예약 링크·굿즈 가격·이벤트"
    ],
    "agree": 1,
    "posts": 1,
@@ -1139,6 +1167,30 @@
    "sure": false,
    "state": "now",
    "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-1da8a12d14",
+   "name": "일리오",
+   "start": "2026-11-06",
+   "end": "2026-11-15",
+   "place": "성수 연무장길",
+   "address": "서울 성동구 연무장7길 13",
+   "lat": 37.5441733194254,
+   "lng": 127.054430448058,
+   "region": "서울",
+   "url": "https://blog.naver.com/vuswl57/224464404725",
+   "urls": [
+    "https://blog.naver.com/vuswl57/224464404725"
+   ],
+   "titles": [
+    "일리오 성수 팝업 최대 80% 할인 리퍼브 사은품 총정리"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "etc",
    "young": true
   },
   {
