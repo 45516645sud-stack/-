@@ -357,6 +357,8 @@ body:not(.acct-on) .fav{display:none}
 .sg-ring{display:block;width:68px;height:68px;padding:3px;border-radius:50%;background:conic-gradient(#ff7a3d,#ffc24b,#ff4d6d,#ff7a3d)}
 .sg-ring img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg);background:var(--wash)}
 .sg-name{font-size:var(--s-2);font-weight:600}
+.is-seen .sg-ring{background:#55524e}
+.is-seen .sg-name{color:var(--muted);font-weight:500}
 .sv{position:fixed;inset:0;z-index:60;background:#000;color:#fff;user-select:none;-webkit-user-select:none;touch-action:none;overflow:hidden}
 .sv-bg{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(28px) brightness(.45)}
 .sv-img{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
@@ -2943,6 +2945,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const sv = $('storyView');
   let groups = [], cur = { g: 0, i: 0 }, timer = null, paused = false, started = 0, left = 5000;
   const STORY_MS = 5000;
+  const seenStory = new Set((() => { try { return JSON.parse(localStorage.getItem('sk.seenStory') || '[]'); } catch { return []; } })());
   function buildStories() {
     const live = FAIRS.filter(f => !isPast(f) && (f.poster || f.img));
     const dayN = d => Math.round((d - TODAY) / DAY);
@@ -2956,12 +2959,20 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       pick('새로 열림', f => Math.abs(dayN(f.start)) <= 7, (a, b) => b.start - a.start),
       pick('대학로', f => f.tags.includes('대학로'), (a, b) => a.end - b.end)
     ].filter(g => g.list.length);
-    storyRow.innerHTML = groups.map((g, i) => `<li><button type="button" data-sg="${i}"><span class="sg-ring"><img src="${esc(g.list[0].poster || g.list[0].img)}" alt="" loading="lazy"></span><span class="sg-name">${esc(g.label)}</span></button></li>`).join('');
+    // 다 본 묶음은 인스타처럼 회색 테두리로 바꾸고 뒤로 보낸다 (본 포스터는 이 기기에 기억)
+    groups.forEach(g => { g.seen = g.list.every(f => seenStory.has(f.id)); });
+    groups.sort((a, b) => a.seen - b.seen);
+    drawStoryRow();
+  }
+  function drawStoryRow() {
+    groups.forEach(g => { g.seen = g.list.every(f => seenStory.has(f.id)); });
+    storyRow.innerHTML = groups.map((g, i) => `<li><button type="button" data-sg="${i}" class="${g.seen ? 'is-seen' : ''}"><span class="sg-ring"><img src="${esc(g.list[0].poster || g.list[0].img)}" alt="" loading="lazy"></span><span class="sg-name">${esc(g.label)}</span></button></li>`).join('');
     storyRow.hidden = !groups.length;
   }
   function showStory() {
     const g = groups[cur.g], f = g && g.list[cur.i];
     if (!f) return closeStory();
+    if (!seenStory.has(f.id)) { seenStory.add(f.id); try { localStorage.setItem('sk.seenStory', JSON.stringify([...seenStory].slice(-500))); } catch { /* 저장 불가 */ } }
     const src = esc(f.poster || f.img);
     sv.innerHTML = `<div class="sv-bars">${g.list.map((_, k) => `<i class="${k < cur.i ? 'done' : ''}"><b${k === cur.i ? ' class="run"' : ''}></b></i>`).join('')}</div>` +
       `<div class="sv-top"><span>${esc(g.label)}</span><button type="button" class="sv-x" data-sv="close" aria-label="닫기">✕</button></div>` +
@@ -2994,7 +3005,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     cur = { g, i: 0 }; sv.hidden = false; document.body.classList.add('sv-open'); showStory();
     stat('story', groups[g].label);
   }
-  function closeStory() { clearTimeout(timer); sv.hidden = true; sv.innerHTML = ''; document.body.classList.remove('sv-open'); }
+  function closeStory() { clearTimeout(timer); sv.hidden = true; sv.innerHTML = ''; document.body.classList.remove('sv-open'); if (groups.length) drawStoryRow(); }
   storyRow.addEventListener('click', e => { const b = e.target.closest('[data-sg]'); if (b) openStory(Number(b.dataset.sg)); });
   let pressAt = 0;
   sv.addEventListener('pointerdown', e => { if (e.target.closest('[data-sv]')) return; pressAt = Date.now(); pause(); });
