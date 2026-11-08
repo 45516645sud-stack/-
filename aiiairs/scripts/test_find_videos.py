@@ -17,13 +17,20 @@ class FindVideos(unittest.TestCase):
         self.assertEqual(fv.core_title("제5회 서울시니어연극제: 어린노인"), "서울시니어연극제: 어린노인")
 
     def test_match(self):
-        self.assertGreater(fv.match_score("빨간 모자 [대구]", "뮤지컬 <빨간모자> 티저"), fv.match_score("빨간 모자 [대구]", "빨간모자 리뷰"))
+        self.assertGreater(fv.match_score("빨간 모자 [대구]", "뮤지컬 <빨간모자> 티저"), 0)
+        # 하이라이트·티저 같은 말이 없으면(리뷰·커튼콜 팬 영상) 쓰지 않는다
+        self.assertEqual(fv.match_score("빨간 모자 [대구]", "빨간모자 리뷰"), 0)
+        self.assertEqual(fv.match_score("남주를 부탁해", "251024 연극 남주를 부탁해 커튼콜"), 0)
+        # 짧은 이름은 연극·뮤지컬 같은 말이 있어야 한다
+        self.assertEqual(fv.match_score("아이브", "아이브 콘서트 하이라이트"), fv.match_score("아이브", "아이브 콘서트 하이라이트"))
+        self.assertEqual(fv.match_score("세리", "세리 하이라이트 브이로그"), 0)
         self.assertEqual(fv.match_score("빨간 모자 [대구]", "오늘의 날씨"), 0)
         # 축제 이름만 같고 공연 이름이 다르면 쓰지 않는다
         self.assertGreater(fv.match_score("제5회 서울시니어연극제: 어린노인", "연극 어린노인 하이라이트"), 0)
+        self.assertGreater(fv.match_score("옹알스", "(Wow) 옹알스 공연 하이라이트"), 0)
 
     def test_pick(self):
-        got = fv.pick("빨간 모자 [대구]", [item("aaaaaaaaaaa", "다른 영상"), item("bbbbbbbbbbb", "빨간 모자 공식 트레일러"),
+        got = fv.pick("빨간 모자 [대구]", [item("aaaaaaaaaaa", "다른 영상"), item("bbbbbbbbbbb", "빨간 모자 공식 트레일러"), item("ddddddddddd", "빨간 모자 리뷰"),
                                           item("bad", "빨간 모자 티저")])
         self.assertEqual(got["vid"], "bbbbbbbbbbb")
         self.assertIsNone(fv.pick("빨간 모자", [item("ccccccccccc", "파란 바다")]))

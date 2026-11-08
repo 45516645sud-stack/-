@@ -12,6 +12,7 @@ YOUTUBE_API_KEY 가 없으면 아무것도 하지 않고 끝난다.
 from __future__ import annotations
 
 import argparse
+import html
 import datetime as dt
 import json
 import os
@@ -25,8 +26,10 @@ HERE = Path(__file__).resolve().parent
 DATA = HERE.parent / "data"
 API = "https://www.googleapis.com/youtube/v3/search"
 RECHECK_DAYS = 14
+# 하이라이트처럼 좋은 장면만 모은 영상. 이런 말이 제목에 없으면 쓰지 않는다 (리뷰·인터뷰·팬 영상 빼기)
 PROMO = ("티저", "트레일러", "teaser", "trailer", "하이라이트", "highlight", "스팟", "spot", "예고", "프리뷰", "preview",
-         "프레스콜", "콜", "공연 영상", "홍보")
+         "프레스콜", "shorts", "쇼츠", "공식 영상", "홍보 영상", "홍보영상", "mv")
+GENRE = ("연극", "뮤지컬", "공연", "음악극", "인형극", "무용", "콘서트", "낭독", "오페라", "국악")
 ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
 
@@ -48,16 +51,18 @@ def match_score(show_title: str, video_title: str) -> int:
     # 쉼표·콜론 앞부분(축제 이름 등)보다 뒷부분이 진짜 공연 이름인 경우가 많아 둘 다 본다
     parts = [p for p in re.split(r"[,:：]", core) if len(squash(p)) >= 2] or [core]
     v = squash(video_title)
+    low = video_title.lower()
+    if not any(w in low for w in PROMO):
+        return 0
     best = 0
     for p in [core, *parts]:
         k = squash(p)
-        if len(k) >= 3 and k in v:
+        # 짧은 이름(4글자 미만)은 다른 영상과 겹치기 쉬워, 연극·뮤지컬 같은 말이 같이 있어야 한다
+        if len(k) >= 4 and k in v or len(k) >= 2 and k in v and any(g in video_title for g in GENRE):
             best = max(best, 2 + (len(k) >= 6))
     if not best:
         return 0
-    if any(w in video_title.lower() for w in PROMO):
-        best += 2
-    return best
+    return best + 2 + any(w in low for w in ("하이라이트", "highlight", "티저", "teaser", "트레일러", "trailer"))
 
 
 def pick(show_title: str, items: list[dict]) -> dict | None:
@@ -67,9 +72,10 @@ def pick(show_title: str, items: list[dict]) -> dict | None:
         sn = it.get("snippet") or {}
         if not ID_RE.match(vid):
             continue
-        sc = match_score(show_title, sn.get("title") or "")
+        title = html.unescape(sn.get("title") or "")
+        sc = match_score(show_title, title)
         if sc > best:
-            best, top = sc, {"vid": vid, "t": (sn.get("title") or "")[:120], "ch": (sn.get("channelTitle") or "")[:60], "score": sc}
+            best, top = sc, {"vid": vid, "t": title[:120], "ch": html.unescape(sn.get("channelTitle") or "")[:60], "score": sc}
     return top
 
 
@@ -123,10 +129,12 @@ def main(argv: list[str] | None = None) -> int:
     today = dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date()
     live_ids = {f.get("id") for f in items}
     known = {k: v for k, v in known.items() if k in live_ids}   # 목록에서 빠진 공연은 지운다
+    # 예전 규칙으로 찾은 영상 중 하이라이트가 아닌 것은 버리고 다시 찾는다
+    known = {k: v for k, v in known.items() if not v.get("vid") or match_score(next(f["t"] for f in items if f.get("id") == k), v.get("t", ""))}
     found = tried = 0
     for f in candidates(items, known, today, a.limit):
         try:
-            res = search(key, f"{core_title(f['t'])} 공연")
+            res = search(key, f"{core_title(f['t'])} 하이라이트|티저|트레일러")
         except Exception as e:  # 사용량 초과 등: 지금까지 찾은 것만 저장하고 멈춘다
             print(f"검색 멈춤: {e}", file=sys.stderr)
             break

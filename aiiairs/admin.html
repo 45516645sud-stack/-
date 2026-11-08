@@ -405,6 +405,10 @@
     let sb = null, shows = new Map(), auto = {}, picks = new Map(), isAdmin = false, me = null;
     const ytId = s => { const m = String(s || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/|^)([A-Za-z0-9_-]{11})(?:[?&#/]|$)/); return m ? m[1] : ''; };
     const thumb = v => `https://i.ytimg.com/vi/${v}/mqdefault.jpg`;
+    // '1:20' · '80' · '1분 20초' → 80초. 빈칸은 처음부터(null)
+    const toSec = s => { s = String(s || '').trim(); if (!s) return null; const m = s.match(/^(?:(\d+)\s*[:분]\s*)?(\d+)\s*초?$/); return m ? (Number(m[1] || 0) * 60 + Number(m[2])) : NaN; };
+    const mmss = n => n ? `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}` : '';
+    const startBox = (id, n) => `<div class="vrow" style="margin:0;padding:8px 10px;border-top:1px solid var(--hair)"><input data-start="${esc(id)}" value="${mmss(n)}" placeholder="하이라이트 시작 (예: 1:20)" style="flex:1 1 120px"></div>`;
     const say = h => { box.innerHTML = h; };
     async function start() {
       if (!SB_KEY) return say('<p class="vnote">사이트를 올릴 때 Supabase 공개 키가 채워져야 쓸 수 있어요.</p>');
@@ -425,15 +429,16 @@
       } catch (e) { say('<p class="vnote">불러오지 못했어요. 새로고침해 보세요.</p>'); }
     }
     async function loadPicks() {
-      const { data, error } = await sb.from('sk_videos').select('fair_id,vid,status');
+      let { data, error } = await sb.from('sk_videos').select('fair_id,vid,status,start_s');
+      if (error) ({ data, error } = await sb.from('sk_videos').select('fair_id,vid,status'));
       picks = new Map((data || []).map(x => [x.fair_id, x]));
       return !error;
     }
     function login(p) { sb.auth.signInWithOAuth({ provider: p, options: { redirectTo: location.origin + location.pathname } }); }
-    function card(id, vid, sub, btns) {
+    function card(id, vid, sub, btns, start) {
       const f = shows.get(id) || { t: id };
       return `<div class="vid"><a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener"><img src="${thumb(vid)}" alt="" loading="lazy"></a>` +
-        `<div class="vt"><b>${esc(f.t)}</b><small>${esc(sub)}</small></div><div class="va">${btns}</div></div>`;
+        `<div class="vt"><b>${esc(f.t)}</b><small>${esc(sub)}</small></div>${startBox(id, start)}<div class="va">${btns}</div></div>`;
     }
     function draw() {
       if (!me) return say(`<p class="vnote">영상을 고르려면 관리자 계정으로 로그인해 주세요.</p><div class="vrow">
@@ -448,16 +453,24 @@
         .map(x => `<option value="${esc(x.id)}">${esc(x.t)} · ${esc(x.venue || '')}</option>`).join('');
       say(`<h3>확인할 영상 ${pending.length}개</h3>` +
         (pending.length ? `<div class="vids">${pending.map(([id, v]) => card(id, v.vid, `${v.t || ''} · ${v.ch || ''}`,
-          `<button type="button" class="yes" data-v="yes" data-id="${esc(id)}" data-vid="${v.vid}">맞아요</button><button type="button" class="no" data-v="no" data-id="${esc(id)}">아니에요</button>`)).join('')}</div>`
+          `<button type="button" class="yes" data-v="yes" data-id="${esc(id)}" data-vid="${v.vid}">맞아요</button><button type="button" class="no" data-v="no" data-id="${esc(id)}">아니에요</button>`, null)).join('')}</div>`
           : '<p class="vnote">지금은 확인할 영상이 없어요. 매일 새벽에 새로 찾아요.</p>') +
         `<h3>직접 넣기</h3><div class="vrow"><select id="vShow"><option value="">공연 고르기</option>${opts}</select>` +
-        `<input id="vUrl" placeholder="유튜브 링크 붙여 넣기"><button type="button" class="vbtn" data-v="add">넣기</button></div><p class="vnote" id="vMsg"></p>` +
+        `<input id="vUrl" placeholder="유튜브 링크 붙여 넣기"><input id="vStart" placeholder="하이라이트 시작 (예: 1:20)" style="flex:0 1 180px"><button type="button" class="vbtn" data-v="add">넣기</button></div>` +
+        `<p class="vnote" id="vMsg">하이라이트 시작 시각을 적으면 그때부터 15초만 나와요. 비워 두면 처음부터 나와요. 링크에 &t=80 이 있으면 그 시각을 써요.</p>` +
         `<h3>사이트에 나오는 영상 ${ok.length}개</h3>` +
-        (ok.length ? `<div class="vids">${ok.map(p => card(p.fair_id, p.vid, '스토리에 나오는 중', `<button type="button" class="no" data-v="drop" data-id="${esc(p.fair_id)}">빼기</button>`)).join('')}</div>` : '<p class="vnote">아직 없어요.</p>') +
+        (ok.length ? `<div class="vids">${ok.map(p => card(p.fair_id, p.vid, p.start_s ? `스토리에 나오는 중 · ${mmss(p.start_s)}부터 15초` : '스토리에 나오는 중 · 처음부터',
+          `<button type="button" class="yes" data-v="yes" data-id="${esc(p.fair_id)}" data-vid="${p.vid}">시작 저장</button><button type="button" class="no" data-v="drop" data-id="${esc(p.fair_id)}">빼기</button>`, p.start_s)).join('')}</div>` : '<p class="vnote">아직 없어요.</p>') +
         `<div class="vrow"><button type="button" class="vbtn ghost" data-v="logout">로그아웃</button></div>`);
     }
-    async function save(id, vid, status) {
-      const { error } = await sb.from('sk_videos').upsert({ fair_id: id, vid: vid || null, status, updated_at: new Date().toISOString() });
+    async function save(id, vid, status, start) {
+      const row = { fair_id: id, vid: vid || null, status, updated_at: new Date().toISOString() };
+      if (start !== undefined) row.start_s = start;
+      let { error } = await sb.from('sk_videos').upsert(row);
+      if (error && 'start_s' in row && /start_s/.test(error.message)) {
+        alert('시작 시각 칸이 아직 없어요. 안내받은 SQL 한 줄을 먼저 실행해 주세요. 영상은 처음부터 나오게 저장할게요.');
+        delete row.start_s; ({ error } = await sb.from('sk_videos').upsert(row));
+      }
       if (error) { alert('저장하지 못했어요: ' + error.message); return; }
       await loadPicks(); draw();
     }
@@ -466,14 +479,22 @@
       const v = b.dataset.v;
       if (v === 'login') login(b.dataset.p);
       else if (v === 'logout') { await sb.auth.signOut(); me = null; isAdmin = false; draw(); }
-      else if (v === 'yes') save(b.dataset.id, b.dataset.vid, 'ok');
+      else if (v === 'yes') {
+        const inp = b.closest('.vid').querySelector('[data-start]');
+        const st = toSec(inp && inp.value);
+        if (Number.isNaN(st)) { alert('시작 시각은 1:20 이나 80 처럼 적어 주세요.'); return; }
+        save(b.dataset.id, b.dataset.vid, 'ok', st);
+      }
       else if (v === 'no') save(b.dataset.id, null, 'no');
       else if (v === 'drop') save(b.dataset.id, null, 'no');
       else if (v === 'add') {
-        const id = $('vShow').value, vid = ytId($('vUrl').value.trim());
+        const id = $('vShow').value, raw = $('vUrl').value.trim(), vid = ytId(raw);
+        const tq = raw.match(/[?&]t=(\d+)/); let st = toSec($('vStart').value);
+        if (st === null && tq) st = Number(tq[1]);
+        if (Number.isNaN(st)) return ($('vMsg').textContent = '시작 시각은 1:20 이나 80 처럼 적어 주세요.');
         if (!id) return ($('vMsg').textContent = '공연을 먼저 골라 주세요.');
         if (!vid) return ($('vMsg').textContent = '유튜브 링크가 맞는지 확인해 주세요.');
-        save(id, vid, 'ok');
+        save(id, vid, 'ok', st);
       }
     });
     start();
