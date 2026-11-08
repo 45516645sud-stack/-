@@ -361,6 +361,10 @@ body:not(.acct-on) .fav{display:none}
 .is-seen .sg-name{color:var(--muted);font-weight:500}
 .sv{position:fixed;inset:0;z-index:60;background:#000;color:#fff;user-select:none;-webkit-user-select:none;touch-action:none;overflow:hidden}
 .sv-bg{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(28px) brightness(.45)}
+.sv-vid{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);width:100%;aspect-ratio:16 / 9;max-height:100%;border:0;background:#000}
+.sv-tap{position:absolute;inset:0;z-index:1}
+.sv-sound{position:absolute;top:calc(64px + env(safe-area-inset-top));right:12px;z-index:2;padding:7px 12px;border:0;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:var(--s-1);font-weight:600}
+.sg-ring.is-video{background:conic-gradient(#ff2d55,#ff7a3d,#ff2d55)}
 .sv-img{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
 .sv-bars{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;z-index:2;display:flex;gap:4px}
 .sv-bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.35);overflow:hidden}
@@ -2944,15 +2948,29 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   const storyRow = $('storyRow');
   const sv = $('storyView');
   let groups = [], cur = { g: 0, i: 0 }, timer = null, paused = false, started = 0, left = 5000;
-  const STORY_MS = 5000;
+  const STORY_MS = 5000, VIDEO_MS = 15000;
+  let slideMs = STORY_MS;
   const seenStory = new Set((() => { try { return JSON.parse(localStorage.getItem('sk.seenStory') || '[]'); } catch { return []; } })());
+  // 관리자가 '맞아요'를 누른(또는 직접 넣은) 유튜브 홍보 영상: 공연 id → 영상 id
+  const VIDEOS = new Map();
+  const thumbOf = f => f.poster || f.img || (VIDEOS.has(f.id) ? `https://i.ytimg.com/vi/${VIDEOS.get(f.id)}/hqdefault.jpg` : '');
+  async function loadVideos() {
+    if (!SB_URL || !SB_KEY) return;
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/sk_videos?select=fair_id,vid&status=eq.ok&vid=not.is.null`, { headers: { apikey: SB_KEY } });
+      if (!r.ok) return;
+      for (const v of await r.json()) if (/^[\w-]{11}$/.test(v.vid || '') && BY_ID.has(v.fair_id)) VIDEOS.set(v.fair_id, v.vid);
+      if (VIDEOS.size) buildStories();
+    } catch { /* 영상 없이 포스터만 */ }
+  }
   function buildStories() {
-    const live = FAIRS.filter(f => !isPast(f) && (f.poster || f.img));
+    const live = FAIRS.filter(f => !isPast(f) && thumbOf(f));
     const dayN = d => Math.round((d - TODAY) / DAY);
     const sat = new Date(TODAY); sat.setDate(sat.getDate() + ((6 - sat.getDay() + 7) % 7));
     const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
     const pick = (label, fn, sort) => { const l = live.filter(fn); if (sort) l.sort(sort); return { label, list: l.slice(0, 10) }; };
     groups = [
+      pick('영상', f => VIDEOS.has(f.id), (a, b) => a.end - b.end),
       pick('오늘 마감', f => dayN(f.end) === 0),
       pick('이번 주말', f => f.start <= sun && f.end >= sat, (a, b) => b.start - a.start),
       pick('무료', f => f.free, (a, b) => a.end - b.end),
@@ -2966,24 +2984,31 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
   function drawStoryRow() {
     groups.forEach(g => { g.seen = g.list.every(f => seenStory.has(f.id)); });
-    storyRow.innerHTML = groups.map((g, i) => `<li><button type="button" data-sg="${i}" class="${g.seen ? 'is-seen' : ''}"><span class="sg-ring"><img src="${esc(g.list[0].poster || g.list[0].img)}" alt="" loading="lazy"></span><span class="sg-name">${esc(g.label)}</span></button></li>`).join('');
+    storyRow.innerHTML = groups.map((g, i) => `<li><button type="button" data-sg="${i}" class="${g.seen ? 'is-seen' : ''}"><span class="sg-ring${g.label === '영상' ? ' is-video' : ''}"><img src="${esc(thumbOf(g.list[0]))}" alt="" loading="lazy"></span><span class="sg-name">${esc(g.label)}</span></button></li>`).join('');
     storyRow.hidden = !groups.length;
   }
   function showStory() {
     const g = groups[cur.g], f = g && g.list[cur.i];
     if (!f) return closeStory();
     if (!seenStory.has(f.id)) { seenStory.add(f.id); try { localStorage.setItem('sk.seenStory', JSON.stringify([...seenStory].slice(-500))); } catch { /* 저장 불가 */ } }
-    const src = esc(f.poster || f.img);
+    const src = esc(thumbOf(f));
+    const vid = VIDEOS.get(f.id);
+    const yt = m => `https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&mute=${m}&playsinline=1&controls=0&rel=0&modestbranding=1&loop=1&playlist=${vid}`;
     sv.innerHTML = `<div class="sv-bars">${g.list.map((_, k) => `<i class="${k < cur.i ? 'done' : ''}"><b${k === cur.i ? ' class="run"' : ''}></b></i>`).join('')}</div>` +
       `<div class="sv-top"><span>${esc(g.label)}</span><button type="button" class="sv-x" data-sv="close" aria-label="닫기">✕</button></div>` +
-      `<div class="sv-bg" style="background-image:url('${src}')"></div><img class="sv-img" src="${src}" alt="" onerror="this.remove()">` +
+      `<div class="sv-bg" style="background-image:url('${src}')"></div>` +
+      (vid ? `<iframe class="sv-vid" src="${yt(1)}" title="${esc(f.t)} 홍보 영상" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+        : `<img class="sv-img" src="${src}" alt="" onerror="this.remove()">`) +
+      `<div class="sv-tap"></div>` +
+      (vid ? `<button type="button" class="sv-sound" data-sv="sound">🔇 소리 켜기</button>` : '') +
       `<button type="button" class="sv-go" data-sv="open">공연 보기 ›</button>`;
-    left = STORY_MS; paused = false; tick();
+    sv.dataset.yt = vid ? yt(0) : '';
+    left = vid ? VIDEO_MS : STORY_MS; slideMs = left; paused = false; tick();
   }
   function tick() {
     clearTimeout(timer); started = Date.now();
     const bar = sv.querySelector('.run');
-    if (bar) { bar.style.transition = 'none'; bar.style.width = `${(1 - left / STORY_MS) * 100}%`; bar.offsetWidth; bar.style.transition = `width ${left}ms linear`; bar.style.width = '100%'; }
+    if (bar) { bar.style.transition = 'none'; bar.style.width = `${(1 - left / slideMs) * 100}%`; bar.offsetWidth; bar.style.transition = `width ${left}ms linear`; bar.style.width = '100%'; }
     timer = setTimeout(() => step(1), left);
   }
   function pause() {
@@ -3013,6 +3038,10 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const a = e.target.closest('[data-sv]');
     if (a) {
       if (a.dataset.sv === 'close') return closeStory();
+      if (a.dataset.sv === 'sound') {   // 소리 켜기: 누른 뒤라 소리 있는 자동 재생이 허락된다
+        const fr = sv.querySelector('.sv-vid'); if (fr && sv.dataset.yt) fr.src = sv.dataset.yt;
+        a.remove(); left = Math.max(left, VIDEO_MS); return tick();
+      }
       const f = groups[cur.g].list[cur.i]; closeStory(); return openDialog(f.id);
     }
     if (Date.now() - pressAt > 350) return resume();   // 길게 누르면 멈췄다가 손을 떼면 이어 간다
@@ -3267,6 +3296,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   /* ---------------- 시작 ---------------- */
   renderMast();
   buildStories();
+  loadVideos();
   if (LOG_ENDPOINT) $('logNote').textContent = ' 찾는 공연이 없을 때의 검색 조건과 남겨 주신 의견만 익명으로 기록해요.';
   const params = new URLSearchParams(location.search);
   const qp = params.get('q');

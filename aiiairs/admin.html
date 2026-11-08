@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>소극콕 관리</title>
 <meta name="robots" content="noindex,nofollow">
+<!-- 홍보 영상 확인: 사이트와 같은 Supabase. 공개 키는 사이트를 올릴 때 채운다 -->
+<meta name="sk-supabase-url" content="https://hzomhheyccapnzuwtzxh.supabase.co">
+<meta name="sk-supabase-key" content="">
 <meta name="theme-color" content="#14110f">
 <link rel="manifest" href="admin.webmanifest">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -33,6 +36,24 @@
   .top button:hover{border-color:var(--bg)}
   .top .when{font-size:12px;color:var(--hair)}
   .bar-top{position:sticky;top:0;z-index:5}
+  /* 홍보 영상 */
+  .vids{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:10px 0 18px}
+  .vid{border:1px solid var(--hair);background:var(--bg);display:flex;flex-direction:column}
+  .vid img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--wash)}
+  .vid .vt{padding:8px 10px;font-size:13px;flex:1}
+  .vid .vt b{display:block;font-size:14px}
+  .vid .vt small{color:var(--muted)}
+  .vid .va{display:flex;border-top:1px solid var(--hair)}
+  .vid .va button{flex:1;padding:9px;border:0;background:none;cursor:pointer;font-weight:600}
+  .vid .va button + button{border-left:1px solid var(--hair)}
+  .vid .va .yes{color:var(--good)}
+  .vid .va .no{color:var(--accent)}
+  .vrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .vrow input,.vrow select{padding:8px;border:1px solid var(--hair);background:var(--surface);min-width:0;flex:1 1 220px}
+  .vbtn{padding:8px 14px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+  .vbtn.ghost{background:none;color:var(--ink)}
+  .vnote{font-size:13px;color:var(--muted)}
+  .vcode{display:block;padding:10px;background:var(--wash);font-family:ui-monospace,monospace;font-size:12px;word-break:break-all;user-select:all}
   nav.tabs{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--ink);background:var(--bg);scrollbar-width:none}
   nav.tabs::-webkit-scrollbar{display:none}
   nav.tabs a{flex:none;padding:12px 16px;text-decoration:none;font-size:14px;color:var(--muted);border-right:1px solid var(--hair)}
@@ -136,7 +157,7 @@
     </div>
   </header>
   <nav class="tabs" aria-label="바로 가기">
-    <a href="#sum">요약</a><a href="#visits">방문</a><a href="#fb">의견</a><a href="#search">취향 검색</a><a href="#miss">결과 없음</a><a href="#shows">많이 본 공연</a>
+    <a href="#sum">요약</a><a href="#visits">방문</a><a href="#fb">의견</a><a href="#search">취향 검색</a><a href="#miss">결과 없음</a><a href="#shows">많이 본 공연</a><a href="#videos">홍보 영상</a>
   </nav>
   </div>
   <main class="wrap">
@@ -192,6 +213,11 @@
       <h2>많이 본 공연</h2>
       <p class="sub">사람들이 눌러서 자세히 본 공연 순서.</p>
       <ol class="list rank" id="topShows"></ol>
+    </section>
+    <section id="videos">
+      <h2>홍보 영상</h2>
+      <p class="sub">매일 새벽 유튜브에서 공연 이름으로 찾은 영상이에요. '맞아요'를 누른 영상만 사이트 스토리에 나와요. 직접 넣을 수도 있어요.</p>
+      <div class="panel" id="vidBox">불러오는 중…</div>
     </section>
   </main>
 </div>
@@ -368,6 +394,90 @@
     $('missMore').hidden = D.misses.length <= missShown;
   }
   $('missMore').addEventListener('click', () => { missShown += 30; drawMiss(); });
+
+
+  /* ---------- 홍보 영상 (Supabase: 관리자 계정만 고칠 수 있음) ---------- */
+  (() => {
+    const box = $('vidBox');
+    const SB_URL = document.querySelector('meta[name="sk-supabase-url"]').content;
+    const SB_KEY = document.querySelector('meta[name="sk-supabase-key"]').content;
+    const authRet = location.search;
+    let sb = null, shows = new Map(), auto = {}, picks = new Map(), isAdmin = false, me = null;
+    const ytId = s => { const m = String(s || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/|^)([A-Za-z0-9_-]{11})(?:[?&#/]|$)/); return m ? m[1] : ''; };
+    const thumb = v => `https://i.ytimg.com/vi/${v}/mqdefault.jpg`;
+    const say = h => { box.innerHTML = h; };
+    async function start() {
+      if (!SB_KEY) return say('<p class="vnote">사이트를 올릴 때 Supabase 공개 키가 채워져야 쓸 수 있어요.</p>');
+      try {
+        const [f, v] = await Promise.all([fetch('data/fairs.json', { cache: 'no-cache' }).then(r => r.json()),
+          fetch('data/videos.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : { videos: {} }).catch(() => ({ videos: {} }))]);
+        for (const x of f.items || []) shows.set(x.id, x);
+        auto = v.videos || {};
+        await new Promise((ok, no) => { const el = document.createElement('script'); el.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'; el.onload = ok; el.onerror = no; document.head.appendChild(el); });
+        sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce', persistSession: true, detectSessionInUrl: false } });
+        const code = new URLSearchParams(authRet).get('code');
+        if (code) { await sb.auth.exchangeCodeForSession(code).catch(() => {}); history.replaceState(null, '', location.pathname + '#videos'); }
+        const { data } = await sb.auth.getSession();
+        me = data.session ? data.session.user : null;
+        if (me) { const { data: a } = await sb.rpc('sk_is_admin'); isAdmin = a === true; }
+        await loadPicks();
+        draw();
+      } catch (e) { say('<p class="vnote">불러오지 못했어요. 새로고침해 보세요.</p>'); }
+    }
+    async function loadPicks() {
+      const { data, error } = await sb.from('sk_videos').select('fair_id,vid,status');
+      picks = new Map((data || []).map(x => [x.fair_id, x]));
+      return !error;
+    }
+    function login(p) { sb.auth.signInWithOAuth({ provider: p, options: { redirectTo: location.origin + location.pathname } }); }
+    function card(id, vid, sub, btns) {
+      const f = shows.get(id) || { t: id };
+      return `<div class="vid"><a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener"><img src="${thumb(vid)}" alt="" loading="lazy"></a>` +
+        `<div class="vt"><b>${esc(f.t)}</b><small>${esc(sub)}</small></div><div class="va">${btns}</div></div>`;
+    }
+    function draw() {
+      if (!me) return say(`<p class="vnote">영상을 고르려면 관리자 계정으로 로그인해 주세요.</p><div class="vrow">
+        <button type="button" class="vbtn" data-v="login" data-p="kakao">카카오로 로그인</button>
+        <button type="button" class="vbtn ghost" data-v="login" data-p="google">Google로 로그인</button></div>`);
+      if (!isAdmin) return say(`<p class="vnote">이 계정은 아직 관리자로 등록되지 않았어요. Supabase SQL 편집기에서 아래 한 줄을 한 번 실행하고 새로고침해 주세요.</p>
+        <code class="vcode">insert into public.sk_admins (user_id) values ('${esc(me.id)}') on conflict do nothing;</code>
+        <div class="vrow"><button type="button" class="vbtn ghost" data-v="logout">다른 계정으로</button></div>`);
+      const pending = Object.entries(auto).filter(([id, v]) => v && v.vid && shows.has(id) && !picks.has(id));
+      const ok = [...picks.values()].filter(p => p.status === 'ok' && p.vid);
+      const opts = [...shows.values()].filter(x => x.e >= new Date().toISOString().slice(0, 10)).sort((a, b) => a.t.localeCompare(b.t, 'ko'))
+        .map(x => `<option value="${esc(x.id)}">${esc(x.t)} · ${esc(x.venue || '')}</option>`).join('');
+      say(`<h3>확인할 영상 ${pending.length}개</h3>` +
+        (pending.length ? `<div class="vids">${pending.map(([id, v]) => card(id, v.vid, `${v.t || ''} · ${v.ch || ''}`,
+          `<button type="button" class="yes" data-v="yes" data-id="${esc(id)}" data-vid="${v.vid}">맞아요</button><button type="button" class="no" data-v="no" data-id="${esc(id)}">아니에요</button>`)).join('')}</div>`
+          : '<p class="vnote">지금은 확인할 영상이 없어요. 매일 새벽에 새로 찾아요.</p>') +
+        `<h3>직접 넣기</h3><div class="vrow"><select id="vShow"><option value="">공연 고르기</option>${opts}</select>` +
+        `<input id="vUrl" placeholder="유튜브 링크 붙여 넣기"><button type="button" class="vbtn" data-v="add">넣기</button></div><p class="vnote" id="vMsg"></p>` +
+        `<h3>사이트에 나오는 영상 ${ok.length}개</h3>` +
+        (ok.length ? `<div class="vids">${ok.map(p => card(p.fair_id, p.vid, '스토리에 나오는 중', `<button type="button" class="no" data-v="drop" data-id="${esc(p.fair_id)}">빼기</button>`)).join('')}</div>` : '<p class="vnote">아직 없어요.</p>') +
+        `<div class="vrow"><button type="button" class="vbtn ghost" data-v="logout">로그아웃</button></div>`);
+    }
+    async function save(id, vid, status) {
+      const { error } = await sb.from('sk_videos').upsert({ fair_id: id, vid: vid || null, status, updated_at: new Date().toISOString() });
+      if (error) { alert('저장하지 못했어요: ' + error.message); return; }
+      await loadPicks(); draw();
+    }
+    box.addEventListener('click', async e => {
+      const b = e.target.closest('[data-v]'); if (!b) return;
+      const v = b.dataset.v;
+      if (v === 'login') login(b.dataset.p);
+      else if (v === 'logout') { await sb.auth.signOut(); me = null; isAdmin = false; draw(); }
+      else if (v === 'yes') save(b.dataset.id, b.dataset.vid, 'ok');
+      else if (v === 'no') save(b.dataset.id, null, 'no');
+      else if (v === 'drop') save(b.dataset.id, null, 'no');
+      else if (v === 'add') {
+        const id = $('vShow').value, vid = ytId($('vUrl').value.trim());
+        if (!id) return ($('vMsg').textContent = '공연을 먼저 골라 주세요.');
+        if (!vid) return ($('vMsg').textContent = '유튜브 링크가 맞는지 확인해 주세요.');
+        save(id, vid, 'ok');
+      }
+    });
+    start();
+  })();
 
   const saved = store.get();
   if (saved) enter(saved, true).then(ok => { if (!ok) { $('login').hidden = false; } });
