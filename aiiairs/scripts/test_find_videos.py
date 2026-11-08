@@ -24,6 +24,8 @@ class FindVideos(unittest.TestCase):
         # 짧은 이름은 연극·뮤지컬 같은 말이 있어야 한다
         self.assertEqual(fv.match_score("아이브", "아이브 콘서트 하이라이트"), fv.match_score("아이브", "아이브 콘서트 하이라이트"))
         self.assertEqual(fv.match_score("세리", "세리 하이라이트 브이로그"), 0)
+        # 같은 이름의 영화 예고편은 빼기
+        self.assertEqual(fv.match_score("빨간 모자 [대구]", "한글자막 | 「빨간 모자, 여행을 떠나 시체를 만났습니다」 티저 예고편"), 0)
         self.assertEqual(fv.match_score("빨간 모자 [대구]", "오늘의 날씨"), 0)
         # 축제 이름만 같고 공연 이름이 다르면 쓰지 않는다
         self.assertGreater(fv.match_score("제5회 서울시니어연극제: 어린노인", "연극 어린노인 하이라이트"), 0)
