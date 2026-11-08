@@ -2387,6 +2387,37 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     render();
   }
 
+  /* ---- 찜 기반 추천: 찜한 공연과 장르·동네·극장·분위기 태그·가격이 비슷한, 지금 볼 수 있는 공연 ---- */
+  const REC_MIN = 3;
+  const feeBand = f => f.free ? 0 : f.fee == null ? -1 : f.fee <= 20000 ? 1 : f.fee <= 40000 ? 2 : 3;
+  function recommend(limit = 10) {
+    const liked = [...favs].map(id => BY_ID.get(id)).filter(Boolean);
+    if (liked.length < REC_MIN) return [];
+    const cnt = (key) => { const m = new Map(); for (const f of liked) for (const k of [].concat(key(f))) if (k) m.set(k, (m.get(k) || 0) + 1); return m; };
+    const cat = cnt(f => f.cat), gu = cnt(f => district(f)), venue = cnt(f => f.venue), region = cnt(f => f.region),
+      tags = cnt(f => f.tags), fee = cnt(f => String(feeBand(f)));
+    const n = liked.length, share = (m, k) => (m.get(k) || 0) / n;
+    const out = [];
+    for (const f of FAIRS) {
+      if (favs.has(f.id) || isPast(f) || (f.start - TODAY) / DAY > 60) continue;
+      const why = [];
+      let sc = 0;
+      const c = share(cat, f.cat); if (c) { sc += 4 * c; why.push(CAT[f.cat].ko); }
+      const d = district(f), g = d && share(gu, d); if (g) { sc += 2.5 * g; why.push(d); } else if (share(region, f.region)) sc += 0.8 * share(region, f.region);
+      if (share(venue, f.venue)) { sc += 2 * share(venue, f.venue); why.push('찜한 극장'); }
+      const tg = f.tags.filter(t => tags.has(t)).sort((a, b) => tags.get(b) - tags.get(a));
+      if (tg.length) { sc += Math.min(3, tg.reduce((a, t) => a + share(tags, t), 0) * 1.5); why.push(...tg.slice(0, 2)); }
+      sc += 1.2 * share(fee, String(feeBand(f)));
+      if (isLive(f)) sc += 0.3;
+      if (sc >= 3 && why.length) out.push({ f, sc, why: [...new Set(why)].slice(0, 3) });
+    }
+    out.sort((a, b) => b.sc - a.sc || a.f.end - b.f.end);
+    // 한 극장이 추천을 다 차지하지 않게 극장마다 2개까지
+    const perVenue = new Map(), picked = [];
+    for (const x of out) { const k = x.f.venue; if ((perVenue.get(k) || 0) >= 2) continue; perVenue.set(k, (perVenue.get(k) || 0) + 1); picked.push(x); if (picked.length >= limit) break; }
+    return picked;
+  }
+
   function renderList() {
     lastRefine = [];
     const pool = FAIRS.filter(f => passes(f));
@@ -2440,6 +2471,13 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
         html += groupHTML(pad(m), false, `${m}월`, `${MONTH_EN[m - 1]} ${y}`, list, null, !html);
       }
       if (past.length) html += groupHTML('Past', true, '지난 일정', '최근 순', past);
+      // 찜한 공연 아래에 추천
+      if (state.favOnly) {
+        const recs = recommend();
+        html += recs.length
+          ? groupHTML('For you', true, '✨ 이런 공연도 좋아하실 것 같아요', '찜한 공연과 비슷해요', recs.map(x => x.f), new Map(recs.map(x => [x.f.id, x.why])), true)
+          : `<div class="empty rec-hint"><p>✨ 찜을 ${REC_MIN}개 이상 하면 좋아하실 만한 공연을 골라 드려요. (지금 ${favs.size}개)</p></div>`;
+      }
     }
 
     if (!pool.length && state.favOnly && !state.interp) {
@@ -2886,6 +2924,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   }
   function refreshFavs(rerender) {
     document.querySelectorAll('.fav[data-id]').forEach(b => b.setAttribute('aria-pressed', String(favs.has(b.dataset.id))));
+    if (typeof buildStories === 'function' && FAIRS.length) buildStories();   // 찜이 바뀌면 '나를 위한 추천' 스토리도
     if (rerender || state.favOnly) render();
   }
   async function toggleFav(id, force) {
@@ -2975,7 +3014,9 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     const sat = new Date(TODAY); sat.setDate(sat.getDate() + ((6 - sat.getDay() + 7) % 7));
     const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
     const pick = (label, fn, sort) => { const l = live.filter(fn); if (sort) l.sort(sort); return { label, list: l.slice(0, 10) }; };
+    const recIds = new Set(recommend(10).map(x => x.f.id));
     groups = [
+      pick('나를 위한 추천', f => recIds.has(f.id)),
       pick('영상', f => VIDEOS.has(f.id), (a, b) => a.end - b.end),
       pick('오늘 마감', f => dayN(f.end) === 0),
       pick('이번 주말', f => f.start <= sun && f.end >= sat, (a, b) => b.start - a.start),
