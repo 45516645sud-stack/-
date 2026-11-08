@@ -2732,7 +2732,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       case 'relax': applyRelax(act.dataset.i); break;
       case 'refine': applyRefine(act.dataset.i); break;
       case 'fav': toggleFav(act.dataset.id); break;
-      case 'fav-only': closeAcct(); state.favOnly = true; state.openId = null; render(); $('schedule').scrollIntoView({ block: 'start' }); break;
+      case 'fav-only': closeAcct(); showPanel('ask', false); showPanel('filter', false); state.query = ''; state.interp = null; $('askInput').value = ''; state.favOnly = true; state.openId = null; render(); $('schedule').scrollIntoView({ block: 'start' }); break;
       case 'fav-off': state.favOnly = false; render(); break;
       case 'login': login(act.dataset.p); break;
       case 'logout': closeAcct(); acct.client && acct.client.auth.signOut(); break;
@@ -3106,14 +3106,19 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
     if (t === 'home') window.scrollTo({ top: 0 });
-    else if (t === 'ask') { showPanel('ask', true); $('askForm').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
+    else if (t === 'ask') { if (state.favOnly) { state.favOnly = false; render(); } showPanel('ask', true); $('askForm').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
     else if (t === 'filter') $('filterJump').click();
     else if (t === 'fb') $('fbTab').click();
     else if (t === 'me') openAcct();
     else if (t === 'story') openStory(0);
     else if (t === 'fav') {
       if (!acct.user) openAcct('찜한 공연을 모아 보려면 로그인해 주세요.');
-      else { state.favOnly = true; state.openId = null; render(); $('schedule').scrollIntoView({ block: 'start' }); }
+      else {
+        // 찜 화면에는 취향 검색 칸·검색 결과를 빼고 찜한 공연과 추천만
+        showPanel('ask', false); showPanel('filter', false);
+        state.query = ''; state.interp = null; $('askInput').value = '';
+        state.favOnly = true; state.openId = null; render(); $('schedule').scrollIntoView({ block: 'start' });
+      }
     }
   });
 
