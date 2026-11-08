@@ -27,8 +27,10 @@ DATA = HERE.parent / "data"
 API = "https://www.googleapis.com/youtube/v3/search"
 RECHECK_DAYS = 14
 # 하이라이트처럼 좋은 장면만 모은 영상. 이런 말이 제목에 없으면 쓰지 않는다 (리뷰·인터뷰·팬 영상 빼기)
-PROMO = ("티저", "트레일러", "teaser", "trailer", "하이라이트", "highlight", "스팟", "spot", "예고", "프리뷰", "preview",
+PROMO = ("티저", "트레일러", "teaser", "trailer", "하이라이트", "highlight", "스팟", "spot", "프리뷰", "preview",
          "프레스콜", "shorts", "쇼츠", "공식 영상", "홍보 영상", "홍보영상", "mv")
+# 영화·드라마 예고편은 같은 이름이어도 빼기
+NOT_SHOW = ("영화", "movie", "넷플릭스", "netflix", "한글자막", "드라마", "예고편", "official trailer", "애니")
 GENRE = ("연극", "뮤지컬", "공연", "음악극", "인형극", "무용", "콘서트", "낭독", "오페라", "국악")
 ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
@@ -52,7 +54,7 @@ def match_score(show_title: str, video_title: str) -> int:
     parts = [p for p in re.split(r"[,:：]", core) if len(squash(p)) >= 2] or [core]
     v = squash(video_title)
     low = video_title.lower()
-    if not any(w in low for w in PROMO):
+    if not any(w in low for w in PROMO) or any(w in low for w in NOT_SHOW):
         return 0
     best = 0
     for p in [core, *parts]:
