@@ -3105,7 +3105,8 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
-    if (t === 'home') window.scrollTo({ top: 0 });
+    // 홈: 찜 화면이었으면 전체 공연으로 돌아온다 (찜한 공연만 보이는 건 찜 탭에서만)
+    if (t === 'home') { if (state.favOnly) { state.favOnly = false; state.openId = null; render(); } window.scrollTo({ top: 0 }); }
     else if (t === 'ask') { if (state.favOnly) { state.favOnly = false; render(); } showPanel('ask', true); $('askForm').scrollIntoView({ block: 'start' }); $('askInput').focus({ preventScroll: true }); }
     else if (t === 'filter') $('filterJump').click();
     else if (t === 'fb') $('fbTab').click();
