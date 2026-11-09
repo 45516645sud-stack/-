@@ -900,6 +900,41 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
 /* PC도 휴대폰과 같은 화면: 가운데 앱 너비 한 줄 */
 .wrap{max-width:600px}
 .tabbar{max-width:600px;margin:0 auto;border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
+
+/* ================= PC (넓은 화면): 디자인은 휴대폰과 같게, 배치만 넓게 =================
+   위쪽 메뉴줄 · 왼쪽 취향 검색(상세 설정 포함, 늘 펼침) · 오른쪽 공연 카드 여러 줄 */
+@media (min-width:1024px){
+  .wrap{max-width:1280px}
+  body{padding-top:60px;padding-bottom:0}
+  /* 아래 탭 → 위쪽 메뉴줄 */
+  .tabbar{top:0;bottom:auto;max-width:none;margin:0;height:60px;padding:0 max(24px,calc((100vw - 1280px) / 2 + 24px));justify-content:center;gap:4px;
+    border:0;border-bottom:1px solid var(--hair)}
+  .tabbar button{flex:none;flex-direction:row;gap:8px;padding:8px 14px;border-radius:999px;font-size:var(--s-1);color:var(--ink)}
+  .tabbar button:hover{background:var(--wash)}
+  .tabbar svg{width:18px;height:18px}
+  /* 왼쪽 검색 · 오른쪽 목록 */
+  main{display:grid;grid-template-columns:340px minmax(0,1fr);column-gap:32px;max-width:1280px;margin:0 auto;padding:0 24px 64px;align-items:start}
+  main > .wrap:first-child{grid-column:1 / -1;padding:0}
+  main > .intro,main > .body{display:contents}
+  main .lede{grid-column:1 / -1;grid-row:1;padding:24px 0 8px}
+  .lede h1{font-size:var(--s4)}
+  .story-row{gap:18px}
+  .sg-ring{width:76px;height:76px}
+  .ask,body:not(.show-ask):not(.show-filter) .ask{display:block;grid-column:1;grid-row:2 / span 2;position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;margin-top:16px}
+  main .body .schedule{grid-column:2;grid-row:2;margin-top:16px}
+  .cards,.group-body .cards{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+  .card-poster{flex:0 0 84px;max-width:84px}
+  /* 공연 상세: 포스터 왼쪽, 내용 오른쪽 */
+  .dlg{width:min(980px,calc(100% - 48px))}
+  .dlg-inner{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .dlg-poster{aspect-ratio:4 / 5;height:auto;border-bottom:0;border-right:1px solid var(--hair)}
+  /* 스토리: 가운데 세로 화면 */
+  .sv-img{max-width:min(520px,100%)}
+  .sv-bars{left:calc(50% - 260px);right:calc(50% - 260px)}
+  .sv-top{left:calc(50% - 256px);right:calc(50% - 260px)}
+  .sv-vid{left:50%;right:auto;width:min(960px,100%);transform:translate(-50%,-50%)}
+  .foot{max-width:1280px;margin:0 auto}
+}
 </style>
 </head>
 <body>
