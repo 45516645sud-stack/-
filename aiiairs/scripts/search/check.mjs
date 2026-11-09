@@ -44,6 +44,8 @@ const base = `http://127.0.0.1:${server.address().port}/`;
 
 const browser = await playwright.chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+// 처음 온 사람에게 뜨는 사용법 둘러보기는 건너뛴다
+await page.addInitScript(() => { try { localStorage.setItem('sk.tourDone', '1'); } catch {} });
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 // 바깥(글꼴·포스터·구글 기록)은 막는다. 점검은 검색 결과만 본다

@@ -374,6 +374,22 @@ body:not(.acct-on) .fav{display:none}
 .sv-x{background:none;border:0;color:#fff;font-size:22px;padding:8px 10px}
 .sv-go{position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2;padding:10px 22px;border:0;border-radius:999px;background:rgba(255,255,255,.92);color:#111;font-weight:700;font-size:var(--s-1)}
 body.sv-open{overflow:hidden}
+/* 사용법 둘러보기 (한 곳씩 밝게 비추며 설명) */
+.help-btn{padding:5px 12px;border:1px solid var(--hair);border-radius:999px;background:none;color:var(--ink);font-size:var(--s-1);font-weight:600;white-space:nowrap}
+.mast-side{display:flex;align-items:center;gap:8px}
+.tour{position:fixed;inset:0;z-index:2000}
+.tour-hole{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.7);transition:all .25s ease;pointer-events:none}
+.tour-hole.none{width:2px;height:2px;left:50%;top:40%}
+.tour-tip{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;padding:16px;border-radius:16px;background:var(--surface);color:var(--ink);border:1px solid var(--hair);box-shadow:0 10px 30px rgba(0,0,0,.4);transition:top .25s ease}
+.tour-tip .step{font-size:var(--s-2);font-weight:700;color:var(--accent)}
+.tour-tip h3{margin:4px 0 6px;font-size:var(--s1);letter-spacing:-.02em}
+.tour-tip p{margin:0;font-size:var(--s-1);line-height:1.6;word-break:keep-all}
+.tour-bar{display:flex;align-items:center;gap:8px;margin-top:14px}
+.tour-bar .btn{white-space:nowrap;flex:none;border-radius:10px}
+.tour-dots{display:flex;gap:3px;flex:1;min-width:0;overflow:hidden}
+.tour-dots i{flex:none;width:5px;height:5px;border-radius:50%;background:var(--hair)}
+.tour-dots i.on{background:var(--accent);width:14px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){.tour-hole,.tour-tip{transition:none}}
 /* 카드 장소 줄의 구 이름 */
 .card-venue .pl{min-width:0}
 .card-venue .gu{font-weight:600;color:var(--ink);white-space:nowrap}
@@ -948,7 +964,7 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
       <span class="brand-word">소극콕</span>
       <span class="brand-sub">전국 소극장·소공연 일정</span>
     </a>
-    <div class="mast-side"><p class="mast-meta" id="mastMeta"></p><button type="button" class="acct-btn" id="acctBtn" hidden>로그인</button></div>
+    <div class="mast-side"><p class="mast-meta" id="mastMeta"></p><button type="button" class="help-btn" id="helpBtn" aria-label="소극콕 사용법 보기">? 사용법</button><button type="button" class="acct-btn" id="acctBtn" hidden>로그인</button></div>
   </div>
   <nav class="wrap" aria-label="카테고리">
     <div class="rail"><ol id="rail"></ol></div>
@@ -3137,6 +3153,108 @@ noscript p{margin:0;padding:16px var(--pad);border-bottom:1px solid var(--ink);b
     if (sv.hidden) return;
     if (e.key === 'Escape') closeStory(); else if (e.key === 'ArrowRight') step(1); else if (e.key === 'ArrowLeft') step(-1);
   });
+
+
+  /* ---- 사용법 둘러보기 ----
+     처음 온 사람에게 한 번 자동으로, 그 뒤로는 위쪽 '? 사용법' 버튼으로. 화면의 버튼을 하나씩 밝게 비추며 설명한다.
+     지금 화면에 없는 것(로그인을 안 켰을 때의 찜 등)은 건너뛰고, 휴대폰·PC 에서 보이는 쪽을 비춘다 ('a | b' 중 먼저 보이는 것) */
+  const TOUR = [
+    { el: null, title: '소극콕에 오신 걸 환영해요! 👋', text: '전국 소극장·소공연 일정을 한곳에 모은 곳이에요. 30초만 같이 둘러볼까요?' },
+    { el: '#rail', title: '장르 고르기', text: '연극, 뮤지컬, 라이브 음악… 보고 싶은 장르를 누르면 그 공연만 나와요. 옆으로 밀면 더 있어요.' },
+    { el: '#storyRow', title: '스토리', text: '동그라미를 누르면 오늘 마감, 이번 주말, 무료 공연 포스터를 한 장씩 넘겨 봐요. 오른쪽을 누르면 다음, 왼쪽은 이전이에요.' },
+    { el: '#askForm | [data-tab=ask]', title: '취향 검색', text: '"비 오는 날 혼자 보기 좋은 잔잔한 연극"처럼 가고 싶은 분위기만 써도 맞는 공연을 찾아 드려요. 관람료·지역·기간도 여기서 정해요.' },
+    { el: '.card-btn', title: '공연 보기', text: '카드를 누르면 공연 시간, 장소와 지도, 다른 사람 후기, 소개 그림이 나와요. 주황색 버튼으로 바로 예매할 수 있어요.' },
+    { el: '.card .fav', title: '♡ 찜하기', text: '마음에 드는 공연은 하트를 눌러 담아 두세요. 3개 이상 담으면 좋아하실 만한 공연을 골라 드려요.' },
+    { el: '[data-tab=fav]', title: '찜 · 추천', text: '찜한 공연과 나를 위한 추천이 여기 모여요.' },
+    { el: '[data-tab=me] | #acctBtn', title: '로그인 · MY', text: '카카오나 구글로 로그인하면 찜이 휴대폰·컴퓨터 어디서나 그대로 있어요.' },
+    { el: '#helpBtn', title: '다 봤어요! 🎉', text: "다시 보고 싶으면 언제든 위쪽 '? 사용법'을 누르세요." }
+  ];
+  let tourAt = 0, tourSteps = [];
+  const tourBox = () => document.getElementById('tour');
+  function tourTarget(st) {
+    if (!st.el) return null;
+    for (const q of st.el.split('|')) {
+      const el = document.querySelector(q.trim());
+      if (el && !el.hidden && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden') return el;
+    }
+    return null;
+  }
+  function startTour() {
+    stat('tour', 'start');
+    if (!sv.hidden) closeStory();
+    document.querySelectorAll('dialog[open]').forEach(d => d.close());
+    tourSteps = TOUR.filter(st => !st.el || tourTarget(st));
+    tourAt = 0;
+    let box = tourBox();
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'tour'; box.className = 'tour';
+      box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', '소극콕 사용법');
+      box.innerHTML = `<div class="tour-hole"></div><div class="tour-tip"><div class="step"></div><h3></h3><p></p>` +
+        `<div class="tour-bar"><div class="tour-dots"></div><button type="button" class="btn btn-sm btn-ghost" id="tourSkip">건너뛰기</button>` +
+        `<button type="button" class="btn btn-sm btn-ghost" id="tourPrev">이전</button><button type="button" class="btn btn-sm btn-book" id="tourNext">다음</button></div></div>`;
+      document.body.append(box);
+      $('tourSkip').addEventListener('click', endTour);
+      $('tourPrev').addEventListener('click', () => { if (tourAt > 0) { tourAt--; drawTour(); } });
+      $('tourNext').addEventListener('click', () => { if (tourAt < tourSteps.length - 1) { tourAt++; drawTour(); } else endTour(); });
+      addEventListener('resize', () => { if (!box.hidden) placeTour(); });
+      addEventListener('scroll', () => { if (!box.hidden) placeTour(); }, { passive: true });
+      document.addEventListener('keydown', e => {
+        if (box.hidden) return;
+        if (e.key === 'Escape') endTour();
+        if (e.key === 'ArrowRight') $('tourNext').click();
+        if (e.key === 'ArrowLeft') $('tourPrev').click();
+      });
+    }
+    box.hidden = false;
+    drawTour();
+  }
+  function drawTour() {
+    const st = tourSteps[tourAt], box = tourBox();
+    box.querySelector('.step').textContent = `${tourAt + 1} / ${tourSteps.length}`;
+    box.querySelector('h3').textContent = st.title;
+    box.querySelector('p').textContent = st.text;
+    box.querySelector('.tour-dots').innerHTML = tourSteps.map((_, i) => `<i class="${i === tourAt ? 'on' : ''}"></i>`).join('');
+    $('tourPrev').hidden = tourAt === 0;
+    $('tourNext').textContent = tourAt === tourSteps.length - 1 ? '시작하기' : '다음';
+    $('tourSkip').hidden = tourAt === tourSteps.length - 1;
+    const el = tourTarget(st);
+    // 위·아래에 붙어 있는 메뉴줄은 스크롤하지 않고, 화면 안의 것은 가운데로
+    if (el && !el.closest('.tabbar')) el.scrollIntoView({ block: 'center' });
+    placeTour();
+    setTimeout(placeTour, 350);
+    $('tourNext').focus({ preventScroll: true });
+  }
+  function placeTour() {
+    const st = tourSteps[tourAt], box = tourBox();
+    if (!st || !box) return;
+    const hole = box.querySelector('.tour-hole'), tip = box.querySelector('.tour-tip');
+    const el = tourTarget(st);
+    if (!el) {
+      hole.classList.add('none'); hole.removeAttribute('style');
+      tip.style.top = Math.max(16, (innerHeight - tip.offsetHeight) / 2) + 'px';
+      return;
+    }
+    hole.classList.remove('none');
+    const r = el.getBoundingClientRect(), pad = 6;
+    Object.assign(hole.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
+    // 설명 상자는 비춘 곳 아래에 자리가 있으면 아래, 없으면 위
+    const below = r.bottom + pad + 12, h = tip.offsetHeight;
+    tip.style.top = (below + h < innerHeight - 8 ? below : Math.max(8, r.top - pad - 12 - h)) + 'px';
+  }
+  function endTour() {
+    const box = tourBox();
+    if (box) box.hidden = true;
+    try { localStorage.setItem('sk.tourDone', '1'); } catch { /* 저장 불가 */ }
+    window.scrollTo({ top: 0 });
+  }
+  $('helpBtn').addEventListener('click', startTour);
+  // 처음 온 사람에게 한 번: 공유 링크(공연·검색)로 바로 온 경우는 그 화면을 먼저 보게 두고 다음 방문 때
+  setTimeout(() => {
+    let done = false; try { done = localStorage.getItem('sk.tourDone') === '1'; } catch { done = true; }
+    const deep = /[?&](id|q)=/.test(location.search);
+    if (!done && !deep && sv.hidden && !document.querySelector('dialog[open]')) startTour();
+  }, 1800);
 
   $('tabbar').addEventListener('click', e => {
     const t = e.target.closest('button[data-tab]')?.dataset.tab;
