@@ -1482,6 +1482,24 @@
    "place": "강릉 월화거리",
    "stop": "월화거리",
    "credit": "한국관광공사"
+  },
+  "gwangju-songjeong": {
+   "img": "img/course/gwangju-songjeong.webp",
+   "place": "1913송정역시장",
+   "stop": "1913송정역시장",
+   "credit": "한국관광공사"
+  },
+  "gj-1913-night": {
+   "img": "img/course/gj-1913-night.webp",
+   "place": "1913송정역시장",
+   "stop": "1913송정역시장",
+   "credit": "한국관광공사"
+  },
+  "jn-yeosu-cablecar": {
+   "img": "img/course/jn-yeosu-cablecar.webp",
+   "place": "한려해상국립공원 (오동도)",
+   "stop": "오동도",
+   "credit": "한국관광공사"
   }
  }
 }
