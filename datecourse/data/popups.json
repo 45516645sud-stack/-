@@ -1,34 +1,34 @@
 {
  "version": 1,
- "updated": "2026-11-12",
+ "updated": "2026-11-13",
  "note": "블로그·카페 글에서 자동으로 찾은 팝업 후보. 관리자가 승인한 것만 앱에 나온다 (scripts/check_popups.py)",
  "items": [
   {
-   "id": "p-204d395eb3",
-   "name": "올기 찹쌀떡",
-   "start": "2026-10-20",
-   "end": "2026-11-16",
-   "place": "더현대 서울",
-   "address": "서울 영등포구 여의대로 108",
-   "lat": 37.525872071029134,
-   "lng": 126.92844612411159,
+   "id": "p-77592773d2",
+   "name": "메이커스 마크",
+   "start": "2026-11-06",
+   "end": "2026-11-15",
+   "place": "롯데월드몰",
+   "address": "서울 송파구 올림픽로 300",
+   "lat": 37.51260447840551,
+   "lng": 127.10255558658325,
    "region": "서울",
-   "url": "https://blog.naver.com/mild_days/224471189000",
+   "url": "https://journal37764.tistory.com/3",
    "urls": [
-    "https://blog.naver.com/mild_days/224471189000",
-    "https://blog.naver.com/kwakjerry1224/224472035269",
-    "https://blog.naver.com/ddalgijazz/224471945248"
+    "https://journal37764.tistory.com/3",
+    "https://blog.naver.com/xuaniilsang/224472823930",
+    "https://blog.naver.com/vault9/224472404542"
    ],
    "titles": [
-    "올기 찹쌀떡 더현대 서울 팝업 가격과 웨이팅 등록 꿀팁",
-    "초코파이랑 진짜 비슷해?? 더현대 올기 찹쌀초콜릿 5,500원 내돈내산 후기",
-    "더현대 올기 찹쌀떡 팝업 ㅣ 구매꿀팁"
+    "메이커스 마크 팝업 (~11/15) 잠실 롯데월드몰 후기 !",
+    "잠실 롯데월드몰 11월 팝업정보 메이커스마크 독주 스페이스 팝업",
+    "메이커스 마크 위스키 독주 스페이스 잠실 롯데월드몰 팝업스토어 11월 일정 Makers Mark"
    ],
-   "agree": 8,
-   "posts": 8,
+   "agree": 12,
+   "posts": 12,
    "sure": true,
    "state": "now",
-   "kind": "food",
+   "kind": "art",
    "young": true
   },
   {
@@ -41,19 +41,19 @@
    "lat": 37.55780854901018,
    "lng": 126.92640783829829,
    "region": "서울",
-   "url": "https://mayoprince.tistory.com/5",
+   "url": "https://trendpickkorea.tistory.com/1638",
    "urls": [
+    "https://trendpickkorea.tistory.com/1638",
     "https://mayoprince.tistory.com/5",
-    "https://blog.naver.com/siyoonpapa522/224471254202",
-    "https://blog.naver.com/jimni_8/224471590958"
+    "https://blog.naver.com/siyoonpapa522/224471254202"
    ],
    "titles": [
+    "‘진격의 거인 The Final Season’ 팝업 홍대·수원 동시 오픈, 인식표 키링부터 망토 담요까지",
     "진격의거인 팝업 일정, 굿즈, 방문 팁",
-    "수원 진격의 거인 팝업스토어 2026｜AK플라자 굿즈 가격·기간·예약 총정리",
-    "진격의 거인 The Final Season’ 팝업스토어의 MD 리스트 공개"
+    "수원 진격의 거인 팝업스토어 2026｜AK플라자 굿즈 가격·기간·예약 총정리"
    ],
    "agree": 8,
-   "posts": 8,
+   "posts": 9,
    "sure": true,
    "state": "now",
    "kind": "anime",
@@ -88,6 +88,34 @@
    "young": true
   },
   {
+   "id": "p-442b455cbe",
+   "name": "사오리 몽블랑",
+   "start": "2026-11-10",
+   "end": "2026-11-25",
+   "place": "신세계백화점 강남점",
+   "address": "서울 서초구 신반포로 176",
+   "lat": 37.50513905101559,
+   "lng": 127.00418347181899,
+   "region": "서울",
+   "url": "https://blog.naver.com/dalnaradongsookine/224475143789",
+   "urls": [
+    "https://blog.naver.com/dalnaradongsookine/224475143789",
+    "https://blog.naver.com/rien-/224472877022",
+    "https://blog.naver.com/minicar/224472825058"
+   ],
+   "titles": [
+    "성시경 미친맛집 교토 사오리 몽블랑 신세계백화점 강남점 팝업 가격 후기",
+    "신세계 강남점 [사오리] 몽블랑 팝업 후기",
+    "교토 사오리 첫 한국 신세계 강남 팝업 후기 - 1mm 밤 실로 쌓은 몽블랑"
+   ],
+   "agree": 8,
+   "posts": 8,
+   "sure": true,
+   "state": "now",
+   "kind": "food",
+   "young": true
+  },
+  {
    "id": "p-7f35cf7d76",
    "name": "설산도",
    "start": "2026-11-07",
@@ -107,62 +135,6 @@
     "대구 더현대 ‘설산도’ 팝업",
     "더현대 대구 설산도 팝업, 과일 설기 산도 가격과 소마 소금빵·호떡 디저트 팝업 총정리 (11월 19일까지)",
     "더현대 대구 팝업 설기떡의 화려한 변신! 떡 샌드위치 '설산도' 팝업스토어 방문 후기"
-   ],
-   "agree": 7,
-   "posts": 8,
-   "sure": true,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-442b455cbe",
-   "name": "사오리 몽블랑",
-   "start": "2026-11-10",
-   "end": "2026-11-25",
-   "place": "신세계백화점 강남점",
-   "address": "서울 서초구 신반포로 176",
-   "lat": 37.50513905101559,
-   "lng": 127.00418347181899,
-   "region": "서울",
-   "url": "https://blog.naver.com/rien-/224472877022",
-   "urls": [
-    "https://blog.naver.com/rien-/224472877022",
-    "https://blog.naver.com/minicar/224472825058",
-    "https://blog.naver.com/pesca_keun/224471702478"
-   ],
-   "titles": [
-    "신세계 강남점 [사오리] 몽블랑 팝업 후기",
-    "교토 사오리 첫 한국 신세계 강남 팝업 후기 - 1mm 밤 실로 쌓은 몽블랑",
-    "성시경 미친맛집 교토 사오리 몽블랑 신세계 강남 팝업과 방문 후기"
-   ],
-   "agree": 7,
-   "posts": 7,
-   "sure": true,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
-   "id": "p-ee965741fe",
-   "name": "메이커스 마크 위스키 독주 스페이스",
-   "start": "2026-11-06",
-   "end": "2026-11-15",
-   "place": "롯데월드몰",
-   "address": "서울 송파구 올림픽로 300",
-   "lat": 37.51260447840551,
-   "lng": 127.10255558658325,
-   "region": "서울",
-   "url": "https://blog.naver.com/vault9/224472404542",
-   "urls": [
-    "https://blog.naver.com/vault9/224472404542",
-    "https://blog.naver.com/hej_ruru/224472236244",
-    "https://depe.tistory.com/346"
-   ],
-   "titles": [
-    "메이커스 마크 위스키 독주 스페이스 잠실 롯데월드몰 팝업스토어 11월 일정 Makers Mark",
-    "잠실 메이커스 마크 팝업 독주 스페이스 굿즈 보틀 가격 무료 왁스 후기",
-    "[NEWS] 메이커스 마크 독주 스페이스 11/6~11/15 잠실 롯데월드몰"
    ],
    "agree": 7,
    "posts": 8,
@@ -396,32 +368,6 @@
    "young": true
   },
   {
-   "id": "p-0a64c20eef",
-   "name": "카비시",
-   "start": "",
-   "end": "2026-11-26",
-   "place": "AK플라자 홍대",
-   "address": "서울 마포구 양화로 188",
-   "lat": 37.55780854901018,
-   "lng": 126.92640783829829,
-   "region": "서울",
-   "url": "https://blog.naver.com/52shefriends/224471880536",
-   "urls": [
-    "https://blog.naver.com/52shefriends/224471880536",
-    "https://blog.naver.com/noche5250/224470400326"
-   ],
-   "titles": [
-    "홍대 AK플라자 카비시 팝업｜달빛천사 콜라보 굿즈·할인·구매 특전 총정리",
-    "홍대 달빛천사 × 카비시 팝업｜11월 13일 오픈, 풀문 굿즈와 구매 특전"
-   ],
-   "agree": 2,
-   "posts": 2,
-   "sure": true,
-   "state": "now",
-   "kind": "etc",
-   "young": true
-  },
-  {
    "id": "p-e2ea6f500e",
    "name": "포켓몬",
    "start": "2026-11-06",
@@ -444,6 +390,34 @@
    ],
    "agree": 2,
    "posts": 3,
+   "sure": true,
+   "state": "now",
+   "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-7a78ee11ed",
+   "name": "크리스마스",
+   "start": "2026-11-06",
+   "end": "2026-12-31",
+   "place": "더현대 서울",
+   "address": "서울 영등포구 여의대로 108",
+   "lat": 37.525872071029134,
+   "lng": 126.92844612411159,
+   "region": "서울",
+   "url": "https://allseoulreview.tistory.com/1",
+   "urls": [
+    "https://allseoulreview.tistory.com/1",
+    "https://blog.naver.com/hi_youm/224474527903",
+    "https://pbominn.tistory.com/52"
+   ],
+   "titles": [
+    "2026 더현대 서울 크리스마스 연말 선물 추천 BEST 4...여자친구 취향저격 팝업·매장 위치·가격 총정리",
+    "산리오 크리스마스 팝업 용산 아이파크몰 11월 23일 예약 오픈 굿즈 증정 이벤트",
+    "이번 주말 서울 팝업·크리스마스 6곳 동선｜마감 3곳·무료 명동 코스 (11/14~15)"
+   ],
+   "agree": 2,
+   "posts": 5,
    "sure": true,
    "state": "now",
    "kind": "character",
@@ -483,22 +457,48 @@
    "lat": 37.525872071029134,
    "lng": 126.92844612411159,
    "region": "서울",
-   "url": "https://blog.naver.com/guitargoodd/224472723096",
+   "url": "https://siamom2025.tistory.com/23",
    "urls": [
-    "https://blog.naver.com/guitargoodd/224472723096",
-    "https://blog.naver.com/health_spoon/224472903094",
-    "https://blog.naver.com/e_co_no_my/224472721844"
+    "https://siamom2025.tistory.com/23",
+    "https://event-chnag.tistory.com/35",
+    "https://blog.naver.com/guitargoodd/224472723096"
    ],
    "titles": [
-    "치이카와 더현대 서울 팝업, 극장판 226만 흥행 뒤 다시 열리는 배경과 굿즈 가격대",
-    "더현대 치이카와 팝업 일정 및 사전예약 굿즈 정리",
-    "더현대 치이카와 팝업 11월 26일 오픈설, 사전예약은 언제 열릴까"
+    "치이카와 클리닉 더현대 서울 팝업 확정!｜11/27~1/10 기간·위치·일본 굿즈 가격 총정리",
+    "더현대 치이카와 팝업 2026, 11월 27일에 열리고 예약 공지는 아직이에요",
+    "치이카와 더현대 서울 팝업, 극장판 226만 흥행 뒤 다시 열리는 배경과 굿즈 가격대"
    ],
-   "agree": 4,
-   "posts": 7,
+   "agree": 6,
+   "posts": 9,
    "sure": true,
    "state": "soon",
    "kind": "character",
+   "young": true
+  },
+  {
+   "id": "p-f14f77fe0f",
+   "name": "성동",
+   "start": "2026-11-27",
+   "end": "2026-11-29",
+   "place": "성수 연무장길",
+   "address": "서울 성동구 연무장7길 13",
+   "lat": 37.5441733194254,
+   "lng": 127.054430448058,
+   "region": "서울",
+   "url": "https://ddrainbow.tistory.com/39",
+   "urls": [
+    "https://ddrainbow.tistory.com/39",
+    "https://yootothesol.tistory.com/57"
+   ],
+   "titles": [
+    "성동 팝업스토어 본투윈 팝업 | 위치·예약 정보",
+    "성동 팝업스토어 영 이노베이터 드림 프로젝트 2026 팝업 | 위치·예약"
+   ],
+   "agree": 1,
+   "posts": 2,
+   "sure": false,
+   "state": "soon",
+   "kind": "art",
    "young": true
   },
   {
@@ -607,18 +607,20 @@
    "lat": 37.51260447840551,
    "lng": 127.10255558658325,
    "region": "서울",
-   "url": "https://blog.naver.com/0o_eee/224471914444",
+   "url": "https://allseoulreview.tistory.com/1",
    "urls": [
+    "https://allseoulreview.tistory.com/1",
     "https://blog.naver.com/0o_eee/224471914444"
    ],
    "titles": [
+    "2026 더현대 서울 크리스마스 연말 선물 추천 BEST 4 — 20대 30대 여자친구 취향저격 팝업·매장 위치...",
     "제이에스티나 댄싱스톤목걸이 미오엘로 목걸이 귀걸이 추천! 연말선물 잠실팝업 후기"
    ],
    "agree": 1,
-   "posts": 1,
+   "posts": 2,
    "sure": false,
    "state": "now",
-   "kind": "etc",
+   "kind": "food",
    "young": true
   },
   {
@@ -792,6 +794,30 @@
    "young": true
   },
   {
+   "id": "p-0a64c20eef",
+   "name": "카비시",
+   "start": "",
+   "end": "2026-11-26",
+   "place": "AK플라자 홍대",
+   "address": "서울 마포구 양화로 188",
+   "lat": 37.55780854901018,
+   "lng": 126.92640783829829,
+   "region": "서울",
+   "url": "https://blog.naver.com/52shefriends/224471880536",
+   "urls": [
+    "https://blog.naver.com/52shefriends/224471880536"
+   ],
+   "titles": [
+    "홍대 AK플라자 카비시 팝업｜달빛천사 콜라보 굿즈·할인·구매 특전 총정리"
+   ],
+   "agree": 1,
+   "posts": 1,
+   "sure": false,
+   "state": "now",
+   "kind": "etc",
+   "young": true
+  },
+  {
    "id": "p-60d7694be3",
    "name": "서면 본 팬덤스페이스 원피스",
    "start": "2026-10-30",
@@ -864,30 +890,6 @@
    "young": true
   },
   {
-   "id": "p-98bb79d2c3",
-   "name": "커피",
-   "start": "2026-10-20",
-   "end": "2026-12-14",
-   "place": "신세계 센텀시티",
-   "address": "부산 해운대구 센텀남대로 35",
-   "lat": 35.16864392798528,
-   "lng": 129.12907174004943,
-   "region": "부산",
-   "url": "https://anotherapace.tistory.com/83",
-   "urls": [
-    "https://anotherapace.tistory.com/83"
-   ],
-   "titles": [
-    "2026년 부산 11월 데이트 코스 6곳 전시, 빛축제, 드론쇼, 커피팝업"
-   ],
-   "agree": 1,
-   "posts": 1,
-   "sure": false,
-   "state": "now",
-   "kind": "food",
-   "young": true
-  },
-  {
    "id": "p-a132a94fad",
    "name": "고양이",
    "start": "",
@@ -909,32 +911,6 @@
    "sure": false,
    "state": "now",
    "kind": "pet",
-   "young": true
-  },
-  {
-   "id": "p-7a78ee11ed",
-   "name": "크리스마스",
-   "start": "2026-11-06",
-   "end": "2026-12-31",
-   "place": "더현대 대구",
-   "address": "대구 중구 달구벌대로 2077",
-   "lat": 35.86662835745753,
-   "lng": 128.59063111852757,
-   "region": "대구",
-   "url": "https://222.herostar.kr/680",
-   "urls": [
-    "https://222.herostar.kr/680",
-    "https://blog.naver.com/cjy5934/224470374314"
-   ],
-   "titles": [
-    "2026 크리스마스 트리 명소 총정리｜더현대 서울·신세계 본점·롯데월드몰·광화문 위치·일정·예약...",
-    "더현대 대구 크리스마스 팝업 시작! 11월 12월 웨이팅 주말 후기"
-   ],
-   "agree": 1,
-   "posts": 2,
-   "sure": false,
-   "state": "now",
-   "kind": "art",
    "young": true
   }
  ]
