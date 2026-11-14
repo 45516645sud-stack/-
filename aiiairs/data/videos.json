@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13",
+ "updated": "2026-11-14",
  "videos": {
   "kopis-pf147207": {
    "vid": null,
@@ -240,6 +240,10 @@
    "score": 5,
    "at": "2026-11-10"
   },
+  "kopis-pf290652": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf290797": {
    "vid": null,
    "at": "2026-11-11"
@@ -254,6 +258,10 @@
    "ch": "유머러's",
    "score": 4,
    "at": "2026-11-13"
+  },
+  "kopis-pf293457": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf293705": {
    "vid": null,
@@ -292,6 +300,10 @@
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf296725": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf297295": {
    "vid": "xbUlY5y5cIk",
    "t": "#알테르에고 하이라이트🪽",
@@ -321,6 +333,13 @@
    "score": 5,
    "at": "2026-11-11"
   },
+  "kopis-pf297992": {
+   "vid": "X4RA3CYMaJc",
+   "t": "BODY TALES — 〈아기돼지삼형제〉하이라이트",
+   "ch": "Meta Dance Project",
+   "score": 6,
+   "at": "2026-11-14"
+  },
   "kopis-pf298032": {
    "vid": "5Lz3fbUG65A",
    "t": "[#난세] 뮤지컬 난세 : 정도전과 이방원의 이야기 트레일러 영상 공개!",
@@ -342,19 +361,20 @@
    "score": 6,
    "at": "2026-11-11"
   },
-  "kopis-pf298584": {
-   "vid": "GbCWFU2gvPs",
-   "t": "[2025 조선셰프 한상궁 홍보영상] 전주비빔밥 그 맛의 비밀 ｜하이라이트｜전주한옥마을 ｜뮤지컬 ｜댄스뮤지컬",
-   "ch": "조선셰프 한상궁",
-   "score": 6,
-   "at": "2026-11-09"
-  },
   "kopis-pf298792": {
    "vid": "S0mfFGE3l18",
    "t": "[#더뮤지콜] 음악극 〈섬:1933~2019〉 하이라이트 (4k) | 예스24",
    "ch": "THE MUSICAL",
    "score": 6,
    "at": "2026-11-10"
+  },
+  "kopis-pf299008": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf299159": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf299214": {
    "vid": null,
@@ -375,12 +395,27 @@
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf299468": {
+   "vid": "7ccKjDWr9eM",
+   "t": "호두까기인형 하이라이트",
+   "ch": "seo young Yi",
+   "score": 6,
+   "at": "2026-11-14"
+  },
+  "kopis-pf299497": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf299695": {
    "vid": "vpg_lr3pAmU",
    "t": "망원동브라더스  VR티저",
    "ch": "김성규",
    "score": 6,
    "at": "2026-11-11"
+  },
+  "kopis-pf299916": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf300027": {
    "vid": null,
@@ -393,10 +428,6 @@
   "kopis-pf300103": {
    "vid": null,
    "at": "2026-11-11"
-  },
-  "kopis-pf300254": {
-   "vid": null,
-   "at": "2026-11-13"
   },
   "kopis-pf300258": {
    "vid": null,
@@ -413,13 +444,28 @@
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf300456": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf300623": {
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf300653": {
+   "vid": "2NeVJKY17QI",
+   "t": "에일리&김필 콘서트에 놀러오세요 | Magical Holiday Live Concert trailer 🎄",
+   "ch": "GENIE MUSIC",
+   "score": 5,
+   "at": "2026-11-14"
+  },
   "kopis-pf300890": {
    "vid": null,
    "at": "2026-11-10"
+  },
+  "kopis-pf300942": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf301098": {
    "vid": null,
@@ -432,9 +478,9 @@
    "score": 5,
    "at": "2026-11-10"
   },
-  "kopis-pf301417": {
+  "kopis-pf301414": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf301521": {
    "vid": null,
@@ -443,10 +489,6 @@
   "kopis-pf301538": {
    "vid": null,
    "at": "2026-11-10"
-  },
-  "kopis-pf301541": {
-   "vid": null,
-   "at": "2026-11-13"
   },
   "kopis-pf301685": {
    "vid": null,
@@ -459,17 +501,17 @@
    "score": 5,
    "at": "2026-11-10"
   },
+  "kopis-pf301812": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf301816": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf301829": {
+  "kopis-pf301823": {
    "vid": null,
-   "at": "2026-11-13"
-  },
-  "kopis-pf301877": {
-   "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf301963": {
    "vid": null,
@@ -478,6 +520,17 @@
   "kopis-pf302033": {
    "vid": null,
    "at": "2026-11-11"
+  },
+  "kopis-pf302123": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf302156": {
+   "vid": "unQIE93Z6iw",
+   "t": "🎭 제22회 부산국제연극제 K-Stage공개! 🎉《오버더떼창 : 문전본풀이》 티저 대공개‼",
+   "ch": "부산국제연극제 BIPAF",
+   "score": 6,
+   "at": "2026-11-14"
   },
   "kopis-pf302392": {
    "vid": null,
@@ -498,13 +551,32 @@
    "vid": null,
    "at": "2026-11-13"
   },
+  "kopis-pf302526": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf302626": {
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf302686": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf302723": {
    "vid": null,
    "at": "2026-11-10"
+  },
+  "kopis-pf302769": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf302885": {
+   "vid": "sl1nOq5u39w",
+   "t": "2026년 아름다운 이야기할머니 융복합 가족극/아동극 [도란도란 이야기보따리 3기] '요건 내 떡' 홍보 영상",
+   "ch": "[한국국학진흥원]아름다운 이야기할머니",
+   "score": 5,
+   "at": "2026-11-14"
   },
   "kopis-pf302888": {
    "vid": "GywVOsTZ_Ww",
@@ -525,6 +597,10 @@
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf303068": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf303123": {
    "vid": null,
    "at": "2026-11-13"
@@ -539,6 +615,10 @@
    "ch": "SALT Entertainment",
    "score": 5,
    "at": "2026-11-13"
+  },
+  "kopis-pf303293": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf303294": {
    "vid": null,
@@ -573,10 +653,6 @@
    "score": 6,
    "at": "2026-11-11"
   },
-  "kopis-pf303394": {
-   "vid": null,
-   "at": "2026-11-13"
-  },
   "kopis-pf303399": {
    "vid": null,
    "at": "2026-11-10"
@@ -597,17 +673,20 @@
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf303455": {
-   "vid": null,
-   "at": "2026-11-13"
+  "kopis-pf303459": {
+   "vid": "knlF8a-VQU8",
+   "t": "슈베르트 네 손을 위한 환상곡 포핸즈 두 피아니스트의 강렬한 카리스마가 느껴지는 클래식 #Shorts",
+   "ch": "Let's Clay Classical Music 렛츠클레이 클래식",
+   "score": 5,
+   "at": "2026-11-14"
   },
   "kopis-pf303467": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf303575": {
+  "kopis-pf303520": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf303685": {
    "vid": null,
@@ -639,6 +718,10 @@
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf303786": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf303834": {
    "vid": null,
    "at": "2026-11-10"
@@ -647,12 +730,20 @@
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf303883": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf303893": {
    "vid": "XZWWITybdA8",
    "t": "눈의 여왕 Teaser",
    "ch": "오디오코믹스",
    "score": 5,
    "at": "2026-11-10"
+  },
+  "kopis-pf303903": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf303921": {
    "vid": "LEpUwi4Oqfw",
@@ -661,9 +752,13 @@
    "score": 5,
    "at": "2026-11-11"
   },
-  "kopis-pf303983": {
+  "kopis-pf303951": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
+  },
+  "kopis-pf303960": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf304038": {
    "vid": null,
@@ -673,32 +768,48 @@
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf304062": {
+  "kopis-pf304053": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf304137": {
+  "kopis-pf304080": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf304159": {
-   "vid": "L3b1Q62famI",
-   "t": "제 20회 월드 2인극 페스티벌 폐막식 하이라이트",
-   "ch": "훈훈TV",
+  "kopis-pf304094": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304099": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304120": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304122": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304147": {
+   "vid": "7ccKjDWr9eM",
+   "t": "호두까기인형 하이라이트",
+   "ch": "seo young Yi",
    "score": 6,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf304200": {
+  "kopis-pf304194": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf304205": {
+  "kopis-pf304206": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf304223": {
+  "kopis-pf304234": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf304248": {
    "vid": null,
@@ -720,13 +831,32 @@
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf304328": {
+  "kopis-pf304309": {
+   "vid": "78GiFC8G-BA",
+   "t": "나상현 (Sanghyun Nah) - 보통의 나날 (Ordinary Days) MV teaser",
+   "ch": "STONE MUSIC",
+   "score": 5,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304321": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
+  },
+  "kopis-pf304334": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304356": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf304362": {
    "vid": null,
    "at": "2026-11-13"
+  },
+  "kopis-pf304371": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf304394": {
    "vid": "7rHbN48yT-o",
@@ -735,12 +865,20 @@
    "score": 5,
    "at": "2026-11-13"
   },
+  "kopis-pf304397": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf304425": {
    "vid": "_ubJWGdITy8",
    "t": "[책갈피 요정 또보 시즌 2] 기분을 말해봐 하이라이트",
    "ch": "키즈봄  Kids_Bom",
    "score": 6,
    "at": "2026-11-10"
+  },
+  "kopis-pf304448": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf304452": {
    "vid": "yMWRwh_yGaU",
@@ -749,21 +887,29 @@
    "score": 6,
    "at": "2026-11-10"
   },
+  "kopis-pf304460": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf304463": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf304465": {
+  "kopis-pf304466": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
+  },
+  "kopis-pf304481": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf304500": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304534": {
+  "kopis-pf304504": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf304563": {
    "vid": null,
@@ -773,13 +919,25 @@
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304582": {
+  "kopis-pf304571": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf304590": {
    "vid": null,
    "at": "2026-11-10"
+  },
+  "kopis-pf304597": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304598": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304614": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf304635": {
    "vid": null,
@@ -789,17 +947,13 @@
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304670": {
+  "kopis-pf304653": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf304676": {
+  "kopis-pf304708": {
    "vid": null,
-   "at": "2026-11-13"
-  },
-  "kopis-pf304744": {
-   "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf304745": {
    "vid": null,
@@ -816,13 +970,17 @@
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf304798": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf304805": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf304841": {
    "vid": null,
    "at": "2026-11-10"
-  },
-  "kopis-pf304844": {
-   "vid": null,
-   "at": "2026-11-13"
   },
   "kopis-pf304845": {
    "vid": null,
@@ -832,10 +990,6 @@
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf304862": {
-   "vid": null,
-   "at": "2026-11-13"
-  },
   "kopis-pf304957": {
    "vid": null,
    "at": "2026-11-13"
@@ -844,9 +998,24 @@
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf305072": {
+  "kopis-pf305001": {
    "vid": null,
-   "at": "2026-11-11"
+   "at": "2026-11-14"
+  },
+  "kopis-pf305020": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf305055": {
+   "vid": "fBc_Sg91vjM",
+   "t": "[연희컴퍼니유희] 유희노리 하이라이트 영상",
+   "ch": "Uhee Company",
+   "score": 5,
+   "at": "2026-11-14"
+  },
+  "kopis-pf305085": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf305090": {
    "vid": null,
@@ -856,21 +1025,21 @@
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf305171": {
+  "kopis-pf305172": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf305198": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf305233": {
+  "kopis-pf305208": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf305290": {
+  "kopis-pf305308": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf305388": {
    "vid": null,
@@ -895,6 +1064,18 @@
    "vid": null,
    "at": "2026-11-13"
   },
+  "kopis-pf305504": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf305525": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
+  "kopis-pf305532": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf305533": {
    "vid": "ZEzWAtw-9WE",
    "t": "바보히어로 홍보영상",
@@ -906,53 +1087,71 @@
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf305629": {
+  "kopis-pf305573": {
+   "vid": "-_iEJfc68jI",
+   "t": "[제7회 노작홍사용창작단막극제] 본선 하이라이트 '자신의 이름으로' (극단 미스터리)",
+   "ch": "노작튜브[노작홍사용문학관]",
+   "score": 6,
+   "at": "2026-11-14"
+  },
+  "kopis-pf305608": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
+  },
+  "kopis-pf305637": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf305639": {
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf305719": {
+   "vid": null,
+   "at": "2026-11-14"
+  },
   "kopis-pf305720": {
    "vid": null,
    "at": "2026-11-11"
+  },
+  "kopis-pf305724": {
+   "vid": null,
+   "at": "2026-11-14"
   },
   "kopis-pf305738": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf305756": {
+  "kopis-pf305760": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf305884": {
+  "kopis-pf305872": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf305886": {
+  "kopis-pf305883": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf305923": {
+  "kopis-pf305934": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
   "kopis-pf305986": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf305987": {
+  "kopis-pf306099": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-14"
   },
-  "kopis-pf306018": {
-   "vid": null,
-   "at": "2026-11-13"
-  },
-  "kopis-pf306177": {
-   "vid": null,
-   "at": "2026-11-13"
+  "kopis-pf306384": {
+   "vid": "v2eHF0RmLx8",
+   "t": "[제1회 세계여성공연예술축제] 2021 Teaser Video 공개!",
+   "ch": "세계여성공연예술축제",
+   "score": 6,
+   "at": "2026-11-14"
   }
  }
 }
