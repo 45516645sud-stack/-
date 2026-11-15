@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14",
+ "updated": "2026-11-15",
  "videos": {
   "kopis-pf147207": {
    "vid": null,
@@ -99,10 +99,6 @@
    "score": 4,
    "at": "2026-11-13"
   },
-  "kopis-pf239850": {
-   "vid": null,
-   "at": "2026-11-09"
-  },
   "kopis-pf241378": {
    "vid": null,
    "at": "2026-11-11"
@@ -121,6 +117,10 @@
    "score": 5,
    "at": "2026-11-11"
   },
+  "kopis-pf247431": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf248820": {
    "vid": null,
    "at": "2026-11-10"
@@ -129,12 +129,27 @@
    "vid": null,
    "at": "2026-11-13"
   },
+  "kopis-pf249563": {
+   "vid": "3P90rOR4rYM",
+   "t": "[뮤지컬 멤피스] 하이라이트 CLIP - Somedayㅣ썸데이",
+   "ch": "SHOWNOTE",
+   "score": 5,
+   "at": "2026-11-15"
+  },
   "kopis-pf252877": {
    "vid": "82C0n8ZbxAE",
    "t": "청소년 연극 [드립소년단] 홍보 영상",
    "ch": "드립소년단",
    "score": 4,
    "at": "2026-11-09"
+  },
+  "kopis-pf254549": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf254868": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf255313": {
    "vid": null,
@@ -181,12 +196,27 @@
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf284789": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf284880": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf285499": {
    "vid": "78ZZZm0pVRY",
    "t": "[기획공연] 2025 동대문문화재단 와인et멜로디(3월) 공연 하이라이트 영상 with 다니엘린데만 퀸텟",
    "ch": "동대문문화재단",
    "score": 6,
    "at": "2026-11-10"
+  },
+  "kopis-pf285591": {
+   "vid": "xKOLU-69QOw",
+   "t": "오피셜 티저 영상 공개   |   𝐌𝐮𝐬𝐢𝐜𝐚𝐥 [저항: 찬송이 된 사람들]",
+   "ch": "광야아트센터",
+   "score": 6,
+   "at": "2026-11-15"
   },
   "kopis-pf285694": {
    "vid": "gcWZOovvEfs",
@@ -240,13 +270,17 @@
    "score": 5,
    "at": "2026-11-10"
   },
-  "kopis-pf290652": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf290797": {
    "vid": null,
    "at": "2026-11-11"
+  },
+  "kopis-pf290945": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf291398": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf291607": {
    "vid": null,
@@ -258,10 +292,6 @@
    "ch": "유머러's",
    "score": 4,
    "at": "2026-11-13"
-  },
-  "kopis-pf293457": {
-   "vid": null,
-   "at": "2026-11-14"
   },
   "kopis-pf293705": {
    "vid": null,
@@ -296,13 +326,24 @@
    "score": 5,
    "at": "2026-11-11"
   },
+  "kopis-pf295771": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf296139": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf296725": {
+  "kopis-pf296289": {
+   "vid": "PpA3_209MuY",
+   "t": "Mavin - 'Sunday Vibes (Prod. ruask)' Teaser",
+   "ch": "워너뮤직코리아 (Warner Music Korea)",
+   "score": 6,
+   "at": "2026-11-15"
+  },
+  "kopis-pf296863": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf297295": {
    "vid": "xbUlY5y5cIk",
@@ -333,13 +374,6 @@
    "score": 5,
    "at": "2026-11-11"
   },
-  "kopis-pf297992": {
-   "vid": "X4RA3CYMaJc",
-   "t": "BODY TALES — 〈아기돼지삼형제〉하이라이트",
-   "ch": "Meta Dance Project",
-   "score": 6,
-   "at": "2026-11-14"
-  },
   "kopis-pf298032": {
    "vid": "5Lz3fbUG65A",
    "t": "[#난세] 뮤지컬 난세 : 정도전과 이방원의 이야기 트레일러 영상 공개!",
@@ -354,12 +388,20 @@
    "score": 6,
    "at": "2026-11-10"
   },
+  "kopis-pf298289": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf298385": {
    "vid": "VJTJU1cRWLY",
    "t": "[거창문화재단] 나와 할아버지 5분 하이라이트",
    "ch": "거창군",
    "score": 6,
    "at": "2026-11-11"
+  },
+  "kopis-pf298463": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf298792": {
    "vid": "S0mfFGE3l18",
@@ -368,9 +410,9 @@
    "score": 6,
    "at": "2026-11-10"
   },
-  "kopis-pf299008": {
+  "kopis-pf299067": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf299159": {
    "vid": null,
@@ -379,6 +421,10 @@
   "kopis-pf299214": {
    "vid": null,
    "at": "2026-11-10"
+  },
+  "kopis-pf299275": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf299302": {
    "vid": "7ccKjDWr9eM",
@@ -395,16 +441,9 @@
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf299468": {
-   "vid": "7ccKjDWr9eM",
-   "t": "호두까기인형 하이라이트",
-   "ch": "seo young Yi",
-   "score": 6,
-   "at": "2026-11-14"
-  },
-  "kopis-pf299497": {
+  "kopis-pf299576": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf299695": {
    "vid": "vpg_lr3pAmU",
@@ -412,14 +451,6 @@
    "ch": "김성규",
    "score": 6,
    "at": "2026-11-11"
-  },
-  "kopis-pf299916": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf300027": {
-   "vid": null,
-   "at": "2026-11-09"
   },
   "kopis-pf300063": {
    "vid": null,
@@ -444,10 +475,6 @@
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf300456": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf300623": {
    "vid": null,
    "at": "2026-11-10"
@@ -459,17 +486,28 @@
    "score": 5,
    "at": "2026-11-14"
   },
+  "kopis-pf300754": {
+   "vid": "aeDdNIR6Bkg",
+   "t": "강아지똥 공연 실황 하이라이트",
+   "ch": "충주시문화회관",
+   "score": 5,
+   "at": "2026-11-15"
+  },
+  "kopis-pf300768": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf300890": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf300942": {
+  "kopis-pf301208": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf301098": {
+  "kopis-pf301255": {
    "vid": null,
-   "at": "2026-11-09"
+   "at": "2026-11-15"
   },
   "kopis-pf301405": {
    "vid": "3Kp_suLmcFM",
@@ -478,17 +516,17 @@
    "score": 5,
    "at": "2026-11-10"
   },
-  "kopis-pf301414": {
+  "kopis-pf301428": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf301521": {
-   "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
   },
   "kopis-pf301538": {
    "vid": null,
    "at": "2026-11-10"
+  },
+  "kopis-pf301677": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf301685": {
    "vid": null,
@@ -501,29 +539,29 @@
    "score": 5,
    "at": "2026-11-10"
   },
-  "kopis-pf301812": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf301816": {
    "vid": null,
    "at": "2026-11-10"
-  },
-  "kopis-pf301823": {
-   "vid": null,
-   "at": "2026-11-14"
   },
   "kopis-pf301963": {
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf302012": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf302033": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf302123": {
+  "kopis-pf302070": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
+  },
+  "kopis-pf302081": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf302156": {
    "vid": "unQIE93Z6iw",
@@ -531,6 +569,10 @@
    "ch": "부산국제연극제 BIPAF",
    "score": 6,
    "at": "2026-11-14"
+  },
+  "kopis-pf302368": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf302392": {
    "vid": null,
@@ -547,36 +589,25 @@
    "score": 5,
    "at": "2026-11-10"
   },
-  "kopis-pf302498": {
+  "kopis-pf302437": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
   },
-  "kopis-pf302526": {
+  "kopis-pf302612": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf302626": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf302686": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf302723": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf302769": {
+  "kopis-pf302875": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf302885": {
-   "vid": "sl1nOq5u39w",
-   "t": "2026년 아름다운 이야기할머니 융복합 가족극/아동극 [도란도란 이야기보따리 3기] '요건 내 떡' 홍보 영상",
-   "ch": "[한국국학진흥원]아름다운 이야기할머니",
-   "score": 5,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf302888": {
    "vid": "GywVOsTZ_Ww",
@@ -593,19 +624,15 @@
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf303014": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf303018": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf303068": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf303123": {
-   "vid": null,
-   "at": "2026-11-13"
-  },
-  "kopis-pf303254": {
    "vid": null,
    "at": "2026-11-13"
   },
@@ -615,10 +642,6 @@
    "ch": "SALT Entertainment",
    "score": 5,
    "at": "2026-11-13"
-  },
-  "kopis-pf303293": {
-   "vid": null,
-   "at": "2026-11-14"
   },
   "kopis-pf303294": {
    "vid": null,
@@ -637,14 +660,6 @@
    "ch": "일공",
    "score": 6,
    "at": "2026-11-11"
-  },
-  "kopis-pf303374": {
-   "vid": null,
-   "at": "2026-11-13"
-  },
-  "kopis-pf303375": {
-   "vid": null,
-   "at": "2026-11-10"
   },
   "kopis-pf303379": {
    "vid": "5yrJPIG0MnY",
@@ -673,28 +688,37 @@
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf303459": {
-   "vid": "knlF8a-VQU8",
-   "t": "슈베르트 네 손을 위한 환상곡 포핸즈 두 피아니스트의 강렬한 카리스마가 느껴지는 클래식 #Shorts",
-   "ch": "Let's Clay Classical Music 렛츠클레이 클래식",
-   "score": 5,
-   "at": "2026-11-14"
-  },
   "kopis-pf303467": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf303520": {
+  "kopis-pf303469": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf303685": {
+  "kopis-pf303517": {
    "vid": null,
-   "at": "2026-11-10"
+   "at": "2026-11-15"
+  },
+  "kopis-pf303530": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf303548": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf303565": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf303732": {
    "vid": null,
    "at": "2026-11-11"
+  },
+  "kopis-pf303737": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf303744": {
    "vid": null,
@@ -718,10 +742,6 @@
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf303786": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf303834": {
    "vid": null,
    "at": "2026-11-10"
@@ -730,9 +750,13 @@
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf303883": {
+  "kopis-pf303868": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
+  },
+  "kopis-pf303880": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf303893": {
    "vid": "XZWWITybdA8",
@@ -741,9 +765,9 @@
    "score": 5,
    "at": "2026-11-10"
   },
-  "kopis-pf303903": {
+  "kopis-pf303911": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf303921": {
    "vid": "LEpUwi4Oqfw",
@@ -752,64 +776,52 @@
    "score": 5,
    "at": "2026-11-11"
   },
-  "kopis-pf303951": {
+  "kopis-pf303973": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf303960": {
+  "kopis-pf303984": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
+  },
+  "kopis-pf303996": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf304038": {
    "vid": null,
    "at": "2026-11-10"
   },
+  "kopis-pf304041": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf304050": {
    "vid": null,
    "at": "2026-11-10"
-  },
-  "kopis-pf304053": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304080": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304094": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304099": {
-   "vid": null,
-   "at": "2026-11-14"
   },
   "kopis-pf304120": {
    "vid": null,
    "at": "2026-11-14"
   },
-  "kopis-pf304122": {
-   "vid": null,
-   "at": "2026-11-14"
+  "kopis-pf304149": {
+   "vid": "mQdba1x4Tvs",
+   "t": "2인극 지렁지렁 트레일러",
+   "ch": "지렁지렁",
+   "score": 5,
+   "at": "2026-11-15"
   },
-  "kopis-pf304147": {
-   "vid": "7ccKjDWr9eM",
-   "t": "호두까기인형 하이라이트",
-   "ch": "seo young Yi",
-   "score": 6,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304194": {
+  "kopis-pf304184": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf304206": {
+  "kopis-pf304209": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf304234": {
+  "kopis-pf304227": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304248": {
    "vid": null,
@@ -827,9 +839,13 @@
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304306": {
+  "kopis-pf304293": {
    "vid": null,
-   "at": "2026-11-10"
+   "at": "2026-11-15"
+  },
+  "kopis-pf304301": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf304309": {
    "vid": "78GiFC8G-BA",
@@ -838,25 +854,17 @@
    "score": 5,
    "at": "2026-11-14"
   },
-  "kopis-pf304321": {
+  "kopis-pf304327": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304334": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304356": {
-   "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304362": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304371": {
+  "kopis-pf304388": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304394": {
    "vid": "7rHbN48yT-o",
@@ -865,20 +873,9 @@
    "score": 5,
    "at": "2026-11-13"
   },
-  "kopis-pf304397": {
+  "kopis-pf304442": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304425": {
-   "vid": "_ubJWGdITy8",
-   "t": "[책갈피 요정 또보 시즌 2] 기분을 말해봐 하이라이트",
-   "ch": "키즈봄  Kids_Bom",
-   "score": 6,
-   "at": "2026-11-10"
-  },
-  "kopis-pf304448": {
-   "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304452": {
    "vid": "yMWRwh_yGaU",
@@ -887,29 +884,21 @@
    "score": 6,
    "at": "2026-11-10"
   },
-  "kopis-pf304460": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf304463": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf304466": {
+  "kopis-pf304469": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304481": {
-   "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304500": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304504": {
+  "kopis-pf304512": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304563": {
    "vid": null,
@@ -919,41 +908,29 @@
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304571": {
+  "kopis-pf304572": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf304590": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf304597": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304598": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304614": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304635": {
-   "vid": null,
-   "at": "2026-11-13"
-  },
   "kopis-pf304644": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf304653": {
+  "kopis-pf304654": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf304708": {
+  "kopis-pf304691": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
+  },
+  "kopis-pf304723": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf304745": {
    "vid": null,
@@ -966,6 +943,10 @@
    "score": 6,
    "at": "2026-11-13"
   },
+  "kopis-pf304765": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf304783": {
    "vid": null,
    "at": "2026-11-10"
@@ -974,76 +955,77 @@
    "vid": null,
    "at": "2026-11-14"
   },
-  "kopis-pf304805": {
+  "kopis-pf304810": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf304841": {
-   "vid": null,
-   "at": "2026-11-10"
+   "at": "2026-11-15"
   },
   "kopis-pf304845": {
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf304852": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf304860": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf304957": {
+  "kopis-pf304982": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
   },
-  "kopis-pf304993": {
+  "kopis-pf305050": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
   },
-  "kopis-pf305001": {
+  "kopis-pf305054": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf305020": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf305055": {
-   "vid": "fBc_Sg91vjM",
-   "t": "[연희컴퍼니유희] 유희노리 하이라이트 영상",
-   "ch": "Uhee Company",
-   "score": 5,
-   "at": "2026-11-14"
-  },
-  "kopis-pf305085": {
-   "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf305090": {
    "vid": null,
    "at": "2026-11-11"
   },
+  "kopis-pf305095": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
   "kopis-pf305119": {
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf305172": {
+  "kopis-pf305120": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf305198": {
+  "kopis-pf305141": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
   },
-  "kopis-pf305208": {
+  "kopis-pf305179": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf305308": {
+  "kopis-pf305183": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf305388": {
+  "kopis-pf305191": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
+  },
+  "kopis-pf305194": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf305302": {
+   "vid": null,
+   "at": "2026-11-15"
+  },
+  "kopis-pf305336": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf305417": {
    "vid": null,
@@ -1060,15 +1042,15 @@
    "vid": null,
    "at": "2026-11-10"
   },
-  "kopis-pf305456": {
+  "kopis-pf305429": {
    "vid": null,
-   "at": "2026-11-13"
+   "at": "2026-11-15"
+  },
+  "kopis-pf305502": {
+   "vid": null,
+   "at": "2026-11-15"
   },
   "kopis-pf305504": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf305525": {
    "vid": null,
    "at": "2026-11-14"
   },
@@ -1098,60 +1080,33 @@
    "vid": null,
    "at": "2026-11-14"
   },
-  "kopis-pf305637": {
+  "kopis-pf305622": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf305639": {
-   "vid": null,
-   "at": "2026-11-10"
-  },
-  "kopis-pf305719": {
-   "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf305720": {
    "vid": null,
    "at": "2026-11-11"
   },
-  "kopis-pf305724": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
   "kopis-pf305738": {
    "vid": null,
    "at": "2026-11-13"
   },
-  "kopis-pf305760": {
+  "kopis-pf305751": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
   "kopis-pf305872": {
    "vid": null,
    "at": "2026-11-14"
   },
-  "kopis-pf305883": {
+  "kopis-pf305901": {
    "vid": null,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   },
-  "kopis-pf305934": {
+  "kopis-pf306221": {
    "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf305986": {
-   "vid": null,
-   "at": "2026-11-11"
-  },
-  "kopis-pf306099": {
-   "vid": null,
-   "at": "2026-11-14"
-  },
-  "kopis-pf306384": {
-   "vid": "v2eHF0RmLx8",
-   "t": "[제1회 세계여성공연예술축제] 2021 Teaser Video 공개!",
-   "ch": "세계여성공연예술축제",
-   "score": 6,
-   "at": "2026-11-14"
+   "at": "2026-11-15"
   }
  }
 }
