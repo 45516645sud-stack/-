@@ -1,443 +1,403 @@
 {
  "misses": {
-  "bs-busan-station/1": "2026-10-13",
-  "bs-busan-station/2": "2026-10-13",
-  "bs-gijang-osiria/0": "2026-10-13",
-  "bs-gijang-osiria/1": "2026-10-13",
-  "bs-gijang-osiria/2": "2026-10-13",
-  "bs-haeundae-blueline/0": "2026-10-13",
-  "bs-haeundae-blueline/2": "2026-10-13",
-  "busan-beomeosa-sanseong/1": "2026-10-13",
-  "busan-bosu-retro/0": "2026-10-13",
-  "busan-bosu-retro/1": "2026-10-13",
-  "busan-bosu-retro/2": "2026-10-13",
-  "busan-centum-rainy/0": "2026-10-13",
-  "busan-centum-rainy/1": "2026-10-13",
-  "busan-dadaepo/0": "2026-10-13",
-  "busan-eulsukdo/0": "2026-10-13",
-  "busan-eulsukdo/1": "2026-10-13",
-  "busan-gijang-jukseong/1": "2026-10-13",
-  "busan-gijang-jukseong/2": "2026-10-13",
-  "busan-gijang/0": "2026-10-13",
-  "busan-gijang/1": "2026-10-13",
-  "busan-gwangan-night/2": "2026-10-13",
-  "busan-haeridan-marine/0": "2026-10-13",
-  "busan-haeridan-marine/1": "2026-10-13",
-  "busan-haeundae/2": "2026-10-13",
-  "busan-haeundae/3": "2026-10-13",
-  "busan-igidae-oryukdo/1": "2026-10-13",
-  "busan-igidae-oryukdo/2": "2026-10-13",
-  "busan-jeonpo/2": "2026-10-13",
-  "busan-lotteworld/0": "2026-10-13",
-  "busan-lotteworld/1": "2026-10-13",
-  "busan-lotteworld/2": "2026-10-13",
-  "busan-nampo/0": "2026-10-13",
-  "busan-nampo/2": "2026-10-13",
-  "busan-nampo/3": "2026-10-13",
-  "busan-songdo/0": "2026-10-13",
-  "busan-songdo/1": "2026-10-13",
-  "busan-songjeong-ahopsan/1": "2026-10-13",
-  "busan-yeongdo-indoor/1": "2026-10-13",
-  "busan-yeongdo/1": "2026-10-13",
-  "cb-cheongju-craft/0": "2026-10-13",
-  "cb-cheongju-craft/1": "2026-10-13",
-  "cb-cheongju-sangdang/2": "2026-10-13",
-  "cb-cheongju/0": "2026-10-13",
-  "cb-cheongnamdae/1": "2026-10-13",
-  "cb-chungju-lake/1": "2026-10-13",
-  "cb-chungju/0": "2026-10-13",
-  "cb-danyang-cave/1": "2026-10-13",
-  "cb-danyang-cave/2": "2026-10-13",
-  "cb-danyang-night/0": "2026-10-13",
-  "cb-danyang-night/1": "2026-10-13",
-  "cb-danyang-night/2": "2026-10-13",
-  "cb-danyang/1": "2026-10-13",
-  "cb-danyang/2": "2026-10-13",
-  "cb-goesan/0": "2026-10-13",
-  "cb-jecheon/0": "2026-10-13",
-  "cn-asan-sinjeongho/2": "2026-10-13",
-  "cn-asan/0": "2026-10-13",
-  "cn-boryeong/1": "2026-10-13",
-  "cn-buyeo/0": "2026-10-13",
-  "cn-gongju/1": "2026-10-13",
-  "cn-gongju/2": "2026-10-13",
-  "cn-seosan-gaesimsa/0": "2026-10-13",
-  "cn-seosan-gaesimsa/2": "2026-10-13",
-  "cn-seosan/1": "2026-10-13",
-  "cn-taean-tulip/0": "2026-10-13",
-  "cn-taean/0": "2026-10-13",
-  "cn-taean/1": "2026-10-13",
-  "daegu-apsan/0": "2026-10-13",
-  "daegu-apsan/1": "2026-10-13",
-  "daegu-eworld/0": "2026-10-13",
-  "daegu-eworld/2": "2026-10-13",
-  "daegu-hwawon/0": "2026-10-13",
-  "daegu-hyangchon-retro/2": "2026-10-13",
-  "daegu-hyangchon-retro/3": "2026-10-13",
-  "daegu-modern/2": "2026-10-13",
-  "daegu-museum-rainy/0": "2026-10-13",
-  "daegu-museum-rainy/1": "2026-10-13",
-  "daegu-palgongsan/0": "2026-10-13",
-  "daegu-suseong/1": "2026-10-13",
-  "daegu-yangnyeongsi/0": "2026-10-13",
-  "daegu-yangnyeongsi/2": "2026-10-13",
-  "daejeon-bakery/0": "2026-10-13",
-  "daejeon-bakery/2": "2026-10-13",
-  "daejeon-daecheong/0": "2026-10-13",
-  "daejeon-daecheong/1": "2026-10-13",
-  "daejeon-expo/1": "2026-10-13",
-  "daejeon-gyejok/0": "2026-10-13",
-  "daejeon-gyejok/1": "2026-10-13",
-  "dg-alpine-night/0": "2026-10-13",
-  "dg-dongseongno/0": "2026-10-13",
-  "dg-dongseongno/1": "2026-10-13",
-  "dg-dongseongno/2": "2026-10-13",
-  "dg-kim-gwangseok/2": "2026-10-13",
-  "dg-okyeon/0": "2026-10-13",
-  "dg-okyeon/1": "2026-10-13",
-  "dj-daecheong-lake/0": "2026-10-13",
-  "dj-daecheong-lake/2": "2026-10-13",
-  "dj-daedong/1": "2026-10-13",
-  "dj-daedong/2": "2026-10-13",
-  "dj-gyejoksan-sunset/0": "2026-10-13",
-  "dj-gyejoksan-sunset/1": "2026-10-13",
-  "dj-oworld/0": "2026-10-13",
-  "dj-oworld/1": "2026-10-13",
-  "dj-science-expo/2": "2026-10-13",
-  "dj-sungsimdang-2/0": "2026-10-13",
-  "dj-sungsimdang-2/2": "2026-10-13",
-  "dj-yuseong-spa/0": "2026-10-13",
-  "gb-andong-dosan/2": "2026-10-13",
-  "gb-andong/1": "2026-10-13",
-  "gb-cheongsong/0": "2026-10-13",
-  "gb-cheongsong/1": "2026-10-13",
-  "gb-gyeongju-bomun/1": "2026-10-13",
-  "gb-gyeongjuworld/1": "2026-10-13",
-  "gb-mungyeong/1": "2026-10-13",
-  "gb-pohang-guryongpo/0": "2026-10-13",
-  "gb-pohang-guryongpo/2": "2026-10-13",
-  "gb-pohang-yeongildae/1": "2026-10-13",
-  "gb-pohang/0": "2026-10-13",
-  "gb-yecheon/1": "2026-10-13",
-  "gb-yeongdeok/1": "2026-10-13",
-  "gg-anseong/0": "2026-10-13",
-  "gg-anseong/1": "2026-10-13",
-  "gg-bundang-yuldong/0": "2026-10-13",
-  "gg-bundang-yuldong/1": "2026-10-13",
-  "gg-bundang-yuldong/2": "2026-10-13",
-  "gg-daebudo-sunset/0": "2026-10-13",
-  "gg-daebudo-sunset/1": "2026-10-13",
-  "gg-daebudo-sunset/2": "2026-10-13",
-  "gg-gapyeong-railpark/0": "2026-10-13",
-  "gg-gapyeong-railpark/2": "2026-10-13",
-  "gg-gapyeong/0": "2026-10-13",
-  "gg-gapyeong/1": "2026-10-13",
-  "gg-goyang-haengju/1": "2026-10-13",
-  "gg-goyang-haengju/2": "2026-10-13",
-  "gg-gwanggyo/1": "2026-10-13",
-  "gg-gwangmyeong/1": "2026-10-13",
-  "gg-gwangmyeong/2": "2026-10-13",
-  "gg-hanam-misa/2": "2026-10-13",
-  "gg-hwaseong-yunggeonneung/2": "2026-10-13",
-  "gg-ilsan/1": "2026-10-13",
-  "gg-jebudo/2": "2026-10-13",
-  "gg-namyangju/0": "2026-10-13",
-  "gg-namyangju/1": "2026-10-13",
-  "gg-paju-books/0": "2026-10-13",
-  "gg-paju-books/1": "2026-10-13",
-  "gg-paju-odusan-outlet/0": "2026-10-13",
-  "gg-paju-odusan-outlet/1": "2026-10-13",
-  "gg-paju/0": "2026-10-13",
-  "gg-paju/2": "2026-10-13",
-  "gg-pocheon-sanjeong-hantan/1": "2026-10-13",
-  "gg-pocheon/1": "2026-10-13",
-  "gg-seoulland/0": "2026-10-13",
-  "gg-seoulland/1": "2026-10-13",
-  "gg-siheung-gaetgol-oido/0": "2026-10-13",
-  "gg-siheung-gaetgol-oido/1": "2026-10-13",
-  "gg-siheung-gaetgol-oido/2": "2026-10-13",
-  "gg-starfield-suwon/0": "2026-10-13",
-  "gg-starfield-suwon/1": "2026-10-13",
-  "gg-suwon/0": "2026-10-13",
-  "gg-suwon/1": "2026-10-13",
-  "gg-suwon/3": "2026-10-13",
-  "gg-uijeongbu-budae/1": "2026-10-13",
-  "gg-uijeongbu-budae/2": "2026-10-13",
-  "gg-yangpyeong/2": "2026-10-13",
-  "gg-yeoju-silleuksa/1": "2026-10-13",
-  "gg-yeoju-silleuksa/2": "2026-10-13",
-  "gg-yongin-nam-june-paik/0": "2026-10-13",
-  "gg-yongin-nam-june-paik/2": "2026-10-13",
-  "gg-yongin/0": "2026-10-13",
-  "gj-1913-night/0": "2026-10-13",
-  "gj-1913-night/1": "2026-10-13",
-  "gj-1913-night/2": "2026-10-13",
-  "gj-asia-culture/2": "2026-10-13",
-  "gj-familyland/0": "2026-10-13",
-  "gj-familyland/1": "2026-10-13",
-  "gj-mudeung-cafe/0": "2026-10-13",
-  "gj-mudeung-cafe/1": "2026-10-13",
-  "gj-penguin/2": "2026-10-13",
-  "gn-changwon-night/0": "2026-10-13",
-  "gn-changwon-night/2": "2026-10-13",
-  "gn-geoje-north/0": "2026-10-13",
-  "gn-geoje-north/1": "2026-10-13",
-  "gn-geoje/1": "2026-10-13",
-  "gn-geoje/2": "2026-10-13",
-  "gn-hadong-pyeongsari/1": "2026-10-13",
-  "gn-jinhae/1": "2026-10-13",
-  "gn-jinhae/2": "2026-10-13",
-  "gn-jinju/0": "2026-10-13",
-  "gn-jinju/2": "2026-10-13",
-  "gn-masan-robot-jeodo/0": "2026-10-13",
-  "gn-masan-robot-jeodo/1": "2026-10-13",
-  "gn-masan-robot-jeodo/2": "2026-10-13",
-  "gn-miryang/1": "2026-10-13",
-  "gn-namhae-boriam/1": "2026-10-13",
-  "gn-namhae/0": "2026-10-13",
-  "gn-namhae/2": "2026-10-13",
-  "gn-sacheon/0": "2026-10-13",
-  "gn-sacheon/1": "2026-10-13",
-  "gn-tongyeong-mireukdo/0": "2026-10-13",
-  "gn-tongyeong-mireukdo/2": "2026-10-13",
-  "gn-tongyeong/0": "2026-10-13",
-  "gn-tongyeong/1": "2026-10-13",
-  "gn-tongyeong/2": "2026-10-13",
-  "gn-tongyeong/3": "2026-10-13",
-  "gw-chuncheon-kimyujeong/0": "2026-10-13",
-  "gw-chuncheon-kimyujeong/2": "2026-10-13",
-  "gw-chuncheon/0": "2026-10-13",
-  "gw-chuncheon/1": "2026-10-13",
-  "gw-chuncheon/2": "2026-10-13",
-  "gw-donghae/0": "2026-10-13",
-  "gw-donghae/1": "2026-10-13",
-  "gw-donghae/2": "2026-10-13",
-  "gw-gangneung-anmok/0": "2026-10-13",
-  "gw-gangneung-wolhwa/0": "2026-10-13",
-  "gw-gangneung-wolhwa/1": "2026-10-13",
-  "gw-gangneung-wolhwa/2": "2026-10-13",
-  "gw-gangneung/1": "2026-10-13",
-  "gw-gangneung/2": "2026-10-13",
-  "gw-gangneung/3": "2026-10-13",
-  "gw-goseong-hwajinpo/1": "2026-10-13",
-  "gw-jeongdongjin/0": "2026-10-13",
-  "gw-jeongdongjin/2": "2026-10-13",
-  "gw-jeongseon/0": "2026-10-13",
-  "gw-jeongseon/1": "2026-10-13",
-  "gw-jeongseon/2": "2026-10-13",
-  "gw-legoland/0": "2026-10-13",
-  "gw-legoland/1": "2026-10-13",
-  "gw-legoland/2": "2026-10-13",
-  "gw-pyeongchang/0": "2026-10-13",
-  "gw-pyeongchang/1": "2026-10-13",
-  "gw-wonju/0": "2026-10-13",
-  "gw-wonju/1": "2026-10-13",
-  "gw-yangyang/0": "2026-10-13",
-  "gwangju-518-geumnamro/0": "2026-10-13",
-  "gwangju-518-geumnamro/1": "2026-10-13",
-  "gwangju-518-geumnamro/2": "2026-10-13",
-  "gwangju-biennale/1": "2026-10-13",
-  "gwangju-cheomdan-science/1": "2026-10-13",
-  "gwangju-mudeung/0": "2026-10-13",
-  "gwangju-mudeung/1": "2026-10-13",
-  "gwangju-mudeung/2": "2026-10-13",
-  "gwangju-rainy-sangmu/1": "2026-10-13",
-  "gwangju-rainy-sangmu/2": "2026-10-13",
-  "gwangju-sajik-daein/0": "2026-10-13",
-  "gwangju-sajik-daein/1": "2026-10-13",
-  "gwangju-sajik-daein/2": "2026-10-13",
-  "gwangju-songjeong/0": "2026-10-13",
-  "gwangju-songjeong/1": "2026-10-13",
-  "gwangju-yangnim/2": "2026-10-13",
-  "ic-chinatown-wolmi/0": "2026-10-13",
-  "ic-chinatown-wolmi/2": "2026-10-13",
-  "ic-incheon-grand-park/0": "2026-10-13",
-  "ic-incheon-grand-park/1": "2026-10-13",
-  "ic-incheon-grand-park/2": "2026-10-13",
-  "ic-sinseongri/2": "2026-10-13",
-  "incheon-bupyeong/0": "2026-10-13",
-  "incheon-bupyeong/1": "2026-10-13",
-  "incheon-bupyeong/2": "2026-10-13",
-  "incheon-cheongna-sunset/2": "2026-10-13",
-  "incheon-chinatown/0": "2026-10-13",
-  "incheon-eurwangni/0": "2026-10-13",
-  "incheon-ganghwa/1": "2026-10-13",
-  "incheon-gyodong/0": "2026-10-13",
-  "incheon-gyodong/2": "2026-10-13",
-  "incheon-muuido/1": "2026-10-13",
-  "incheon-seokmodo/1": "2026-10-13",
-  "incheon-seokmodo/2": "2026-10-13",
-  "incheon-songdo-letters/1": "2026-10-13",
-  "incheon-songdo-letters/2": "2026-10-13",
-  "incheon-songdo/1": "2026-10-13",
-  "incheon-songdo/2": "2026-10-13",
-  "incheon-sorae/0": "2026-10-13",
-  "incheon-sorae/1": "2026-10-13",
-  "incheon-yeongjong-resort/2": "2026-10-13",
-  "jb-buan-gomso/0": "2026-10-13",
-  "jb-buan-gomso/1": "2026-10-13",
-  "jb-buan-gomso/2": "2026-10-13",
-  "jb-buan/0": "2026-10-13",
-  "jb-gunsan-eunpa/0": "2026-10-13",
-  "jb-gunsan-eunpa/1": "2026-10-13",
-  "jb-gunsan-eunpa/2": "2026-10-13",
-  "jb-gunsan-island/0": "2026-10-13",
-  "jb-gunsan-island/1": "2026-10-13",
-  "jb-gunsan/0": "2026-10-13",
-  "jb-gunsan/2": "2026-10-13",
-  "jb-gunsan/3": "2026-10-13",
-  "jb-iksan/1": "2026-10-13",
-  "jb-imsil/1": "2026-10-13",
-  "jb-jeonju-deokjin/2": "2026-10-13",
-  "jb-jeonju-night/0": "2026-10-13",
-  "jb-jeonju/2": "2026-10-13",
-  "jb-jeonju/3": "2026-10-13",
-  "jb-jinan/1": "2026-10-13",
-  "jb-muju-deogyusan/0": "2026-10-13",
-  "jb-muju-deogyusan/1": "2026-10-13",
-  "jb-namwon/1": "2026-10-13",
-  "jeju-aewol/1": "2026-10-13",
-  "jeju-aewol/2": "2026-10-13",
-  "jeju-east/2": "2026-10-13",
-  "jeju-gujwa-bijarim/1": "2026-10-13",
-  "jeju-hallasan/0": "2026-10-13",
-  "jeju-hallasan/1": "2026-10-13",
-  "jeju-hallasan/2": "2026-10-13",
-  "jeju-oldtown-sarabong/1": "2026-10-13",
-  "jeju-rainy-museum/0": "2026-10-13",
-  "jeju-seogwipo-saeyeon/0": "2026-10-13",
-  "jeju-shinhwa/1": "2026-10-13",
-  "jeju-south/1": "2026-10-13",
-  "jeju-udo/0": "2026-10-13",
-  "jeju-udo/1": "2026-10-13",
-  "jeju-udo/2": "2026-10-13",
-  "jeju-west/0": "2026-10-13",
-  "jj-jeju-night-market/0": "2026-10-13",
-  "jj-jeju-night-market/2": "2026-10-13",
-  "jj-saebyeol-oreum/1": "2026-10-13",
-  "jj-saebyeol-oreum/2": "2026-10-13",
-  "jn-boseong/1": "2026-10-13",
-  "jn-damyang/3": "2026-10-13",
-  "jn-gangjin/0": "2026-10-13",
-  "jn-gurye/1": "2026-10-13",
-  "jn-mokpo-night/2": "2026-10-13",
-  "jn-mokpo/0": "2026-10-13",
-  "jn-mokpo/2": "2026-10-13",
-  "jn-suncheon-retro/1": "2026-10-13",
-  "jn-suncheon-retro/2": "2026-10-13",
-  "jn-suncheon/0": "2026-10-13",
-  "jn-uldolmok/0": "2026-10-13",
-  "jn-uldolmok/1": "2026-10-13",
-  "jn-uldolmok/2": "2026-10-13",
-  "jn-wando/0": "2026-10-13",
-  "jn-yeosu-cablecar/0": "2026-10-13",
-  "jn-yeosu-cablecar/1": "2026-10-13",
-  "jn-yeosu-cablecar/2": "2026-10-13",
-  "jn-yeosu-woongcheon/0": "2026-10-13",
-  "jn-yeosu-woongcheon/2": "2026-10-13",
-  "jn-yeosu/0": "2026-10-13",
-  "jn-yeosu/1": "2026-10-13",
-  "jn-yeosu/2": "2026-10-13",
-  "jn-yeosu/3": "2026-10-13",
-  "sejong-beartree/1": "2026-10-13",
-  "sejong-beartree/2": "2026-10-13",
-  "sejong-bridge/0": "2026-10-13",
-  "sejong-geumgang-forest/0": "2026-10-13",
-  "sejong-geumgang-forest/1": "2026-10-13",
-  "sejong-jochiwon/0": "2026-10-13",
-  "sejong-jochiwon/1": "2026-10-13",
-  "sejong-lake/0": "2026-10-13",
-  "sejong-lake/1": "2026-10-13",
-  "seoul-achasan-hike/0": "2026-10-13",
-  "seoul-achasan-hike/2": "2026-10-13",
-  "seoul-bukchon/1": "2026-10-13",
-  "seoul-bukchon/2": "2026-10-13",
-  "seoul-coex-rain/1": "2026-10-13",
-  "seoul-daehakro-theater/2": "2026-10-13",
-  "seoul-deoksugung-night/1": "2026-10-13",
-  "seoul-dongmyo-retro/0": "2026-10-13",
-  "seoul-euljiro/1": "2026-10-13",
-  "seoul-euljiro/2": "2026-10-13",
-  "seoul-eunpyeong-hanok/0": "2026-10-13",
-  "seoul-garosu-dosan/2": "2026-10-13",
-  "seoul-gwanak-sharosu/0": "2026-10-13",
-  "seoul-gwanghwamun-books/0": "2026-10-13",
-  "seoul-gwanghwamun-books/1": "2026-10-13",
-  "seoul-gwangnaru-bike/0": "2026-10-13",
-  "seoul-gwangnaru-bike/1": "2026-10-13",
-  "seoul-gwangnaru-bike/2": "2026-10-13",
-  "seoul-gyeongchun-forest/0": "2026-10-13",
-  "seoul-gyeongchun-forest/2": "2026-10-13",
-  "seoul-haneul-park/1": "2026-10-13",
-  "seoul-haneul-park/2": "2026-10-13",
-  "seoul-hannam-leeum/0": "2026-10-13",
-  "seoul-hannam-leeum/1": "2026-10-13",
-  "seoul-hannam-leeum/2": "2026-10-13",
-  "seoul-ikseon-night/0": "2026-10-13",
-  "seoul-ikseon-night/1": "2026-10-13",
-  "seoul-ikseon-night/2": "2026-10-13",
-  "seoul-insadong-craft/0": "2026-10-13",
-  "seoul-insadong-craft/1": "2026-10-13",
-  "seoul-jamsil-baseball/1": "2026-10-13",
-  "seoul-jamsil-baseball/2": "2026-10-13",
-  "seoul-jongno-retro/2": "2026-10-13",
-  "seoul-jongno-retro/3": "2026-10-13",
-  "seoul-lotteworld/0": "2026-10-13",
-  "seoul-magok-botanic/2": "2026-10-13",
-  "seoul-mangwon-hip/1": "2026-10-13",
-  "seoul-mangwon-hip/2": "2026-10-13",
-  "seoul-mullae-art/1": "2026-10-13",
-  "seoul-mullae-art/2": "2026-10-13",
-  "seoul-naksan/0": "2026-10-13",
-  "seoul-namdaemun-seoullo/0": "2026-10-13",
-  "seoul-namdaemun-seoullo/1": "2026-10-13",
-  "seoul-namdaemun-seoullo/2": "2026-10-13",
-  "seoul-namsan-night/0": "2026-10-13",
-  "seoul-namsan-night/1": "2026-10-13",
-  "seoul-namsan-night/2": "2026-10-13",
-  "seoul-noryangjin-night/0": "2026-10-13",
-  "seoul-olympicpark/1": "2026-10-13",
-  "seoul-olympicpark/2": "2026-10-13",
-  "seoul-seochon/1": "2026-10-13",
-  "seoul-seochon/2": "2026-10-13",
-  "seoul-seodaemun-ansan/2": "2026-10-13",
-  "seoul-seongbuk-quiet/1": "2026-10-13",
-  "seoul-seongsu-2/1": "2026-10-13",
-  "seoul-sinchon-campus/0": "2026-10-13",
-  "seoul-sinchon-campus/1": "2026-10-13",
-  "seoul-sinchon-campus/2": "2026-10-13",
-  "seoul-uidong-trail/0": "2026-10-13",
-  "seoul-uidong-trail/1": "2026-10-13",
-  "seoul-uidong-trail/2": "2026-10-13",
-  "seoul-yangjae-stream/0": "2026-10-13",
-  "seoul-yangjae-stream/1": "2026-10-13",
-  "seoul-yangjae-stream/2": "2026-10-13",
-  "seoul-yeonnam/1": "2026-10-13",
-  "seoul-yeonnam/2": "2026-10-13",
-  "seoul-yeouido/0": "2026-10-13",
-  "seoul-yongsan-museum/2": "2026-10-13",
-  "sj-arboretum-night/1": "2026-10-13",
-  "sj-arboretum-night/2": "2026-10-13",
-  "sj-jochiwon/0": "2026-10-13",
-  "sj-jochiwon/1": "2026-10-13",
-  "sj-jochiwon/2": "2026-10-13",
-  "sj-library-walk/0": "2026-10-13",
-  "sj-library-walk/1": "2026-10-13",
-  "sj-library-walk/2": "2026-10-13",
-  "ulsan-art-donghun/0": "2026-10-13",
-  "ulsan-art-donghun/2": "2026-10-13",
-  "ulsan-bangudae/2": "2026-10-13",
-  "ulsan-ganwoljae/0": "2026-10-13",
-  "ulsan-ganwoljae/2": "2026-10-13",
-  "ulsan-grandpark/1": "2026-10-13",
-  "ulsan-seuldo-jujeon/1": "2026-10-13",
-  "ulsan-taehwa/1": "2026-10-13",
-  "ulsan-taehwa/2": "2026-10-13",
-  "us-oegosan/0": "2026-10-13",
-  "us-oegosan/1": "2026-10-13",
-  "us-seongnamdong/0": "2026-10-13",
-  "us-seongnamdong/1": "2026-10-13",
-  "us-seongnamdong/2": "2026-10-13"
+  "bs-busan-station/1": "2026-11-17",
+  "bs-gijang-osiria/0": "2026-11-17",
+  "bs-gijang-osiria/1": "2026-11-17",
+  "bs-gijang-osiria/2": "2026-11-17",
+  "bs-haeundae-blueline/0": "2026-11-17",
+  "busan-beomeosa-sanseong/1": "2026-11-17",
+  "busan-bosu-retro/0": "2026-11-17",
+  "busan-bosu-retro/2": "2026-11-17",
+  "busan-centum-rainy/0": "2026-11-17",
+  "busan-centum-rainy/1": "2026-11-17",
+  "busan-dadaepo/0": "2026-11-17",
+  "busan-eulsukdo/0": "2026-11-17",
+  "busan-eulsukdo/1": "2026-11-17",
+  "busan-gijang-jukseong/1": "2026-11-17",
+  "busan-gijang-jukseong/2": "2026-11-17",
+  "busan-gijang/0": "2026-11-17",
+  "busan-gijang/1": "2026-11-17",
+  "busan-haeridan-marine/0": "2026-11-17",
+  "busan-haeridan-marine/1": "2026-11-17",
+  "busan-haeundae/2": "2026-11-17",
+  "busan-igidae-oryukdo/1": "2026-11-17",
+  "busan-igidae-oryukdo/2": "2026-11-17",
+  "busan-jeonpo/2": "2026-11-17",
+  "busan-lotteworld/0": "2026-11-17",
+  "busan-lotteworld/1": "2026-11-17",
+  "busan-lotteworld/2": "2026-11-17",
+  "busan-nampo/0": "2026-11-17",
+  "busan-nampo/2": "2026-11-17",
+  "busan-nampo/3": "2026-11-17",
+  "busan-songdo/0": "2026-11-17",
+  "busan-songdo/1": "2026-11-17",
+  "busan-songjeong-ahopsan/1": "2026-11-17",
+  "busan-yeongdo-indoor/1": "2026-11-17",
+  "busan-yeongdo/1": "2026-11-17",
+  "cb-cheongju-craft/1": "2026-11-17",
+  "cb-cheongju-sangdang/2": "2026-11-17",
+  "cb-cheongju/0": "2026-11-17",
+  "cb-cheongnamdae/1": "2026-11-17",
+  "cb-chungju-lake/1": "2026-11-17",
+  "cb-chungju/0": "2026-11-17",
+  "cb-danyang-cave/2": "2026-11-17",
+  "cb-danyang-night/0": "2026-11-17",
+  "cb-danyang-night/1": "2026-11-17",
+  "cb-danyang-night/2": "2026-11-17",
+  "cb-danyang/1": "2026-11-17",
+  "cb-goesan/0": "2026-11-17",
+  "cb-jecheon/0": "2026-11-17",
+  "cn-asan-sinjeongho/2": "2026-11-17",
+  "cn-asan/0": "2026-11-17",
+  "cn-boryeong/1": "2026-11-17",
+  "cn-buyeo/0": "2026-11-17",
+  "cn-gongju/1": "2026-11-17",
+  "cn-gongju/2": "2026-11-17",
+  "cn-seosan-gaesimsa/2": "2026-11-17",
+  "cn-seosan/1": "2026-11-17",
+  "cn-taean-tulip/0": "2026-11-17",
+  "cn-taean/0": "2026-11-17",
+  "cn-taean/1": "2026-11-17",
+  "daegu-apsan/0": "2026-11-17",
+  "daegu-apsan/1": "2026-11-17",
+  "daegu-eworld/0": "2026-11-17",
+  "daegu-eworld/2": "2026-11-17",
+  "daegu-hwawon/0": "2026-11-17",
+  "daegu-hyangchon-retro/3": "2026-11-17",
+  "daegu-modern/2": "2026-11-17",
+  "daegu-museum-rainy/1": "2026-11-17",
+  "daegu-palgongsan/0": "2026-11-17",
+  "daegu-suseong/1": "2026-11-17",
+  "daegu-yangnyeongsi/0": "2026-11-17",
+  "daegu-yangnyeongsi/2": "2026-11-17",
+  "daejeon-bakery/0": "2026-11-17",
+  "daejeon-bakery/2": "2026-11-17",
+  "daejeon-daecheong/0": "2026-11-17",
+  "daejeon-daecheong/1": "2026-11-17",
+  "daejeon-expo/1": "2026-11-17",
+  "daejeon-gyejok/1": "2026-11-17",
+  "dg-alpine-night/0": "2026-11-17",
+  "dg-dongseongno/0": "2026-11-17",
+  "dg-dongseongno/1": "2026-11-17",
+  "dg-dongseongno/2": "2026-11-17",
+  "dg-kim-gwangseok/2": "2026-11-17",
+  "dg-okyeon/0": "2026-11-17",
+  "dg-okyeon/1": "2026-11-17",
+  "dj-daecheong-lake/0": "2026-11-17",
+  "dj-daecheong-lake/2": "2026-11-17",
+  "dj-daedong/1": "2026-11-17",
+  "dj-daedong/2": "2026-11-17",
+  "dj-gyejoksan-sunset/1": "2026-11-17",
+  "dj-oworld/0": "2026-11-17",
+  "dj-oworld/1": "2026-11-17",
+  "dj-science-expo/2": "2026-11-17",
+  "dj-sungsimdang-2/0": "2026-11-17",
+  "dj-sungsimdang-2/2": "2026-11-17",
+  "dj-yuseong-spa/0": "2026-11-17",
+  "gb-andong/1": "2026-11-17",
+  "gb-cheongsong/0": "2026-11-17",
+  "gb-cheongsong/1": "2026-11-17",
+  "gb-gyeongju-bomun/1": "2026-11-17",
+  "gb-gyeongjuworld/1": "2026-11-17",
+  "gb-mungyeong/1": "2026-11-17",
+  "gb-pohang-guryongpo/0": "2026-11-17",
+  "gb-pohang-yeongildae/1": "2026-11-17",
+  "gb-yecheon/1": "2026-11-17",
+  "gb-yeongdeok/1": "2026-11-17",
+  "gg-anseong/0": "2026-11-17",
+  "gg-anseong/1": "2026-11-17",
+  "gg-bundang-yuldong/0": "2026-11-17",
+  "gg-bundang-yuldong/1": "2026-11-17",
+  "gg-bundang-yuldong/2": "2026-11-17",
+  "gg-daebudo-sunset/0": "2026-11-17",
+  "gg-daebudo-sunset/1": "2026-11-17",
+  "gg-daebudo-sunset/2": "2026-11-17",
+  "gg-gapyeong-railpark/0": "2026-11-17",
+  "gg-gapyeong-railpark/2": "2026-11-17",
+  "gg-gapyeong/0": "2026-11-17",
+  "gg-gapyeong/1": "2026-11-17",
+  "gg-goyang-haengju/1": "2026-11-17",
+  "gg-goyang-haengju/2": "2026-11-17",
+  "gg-gwanggyo/1": "2026-11-17",
+  "gg-gwangmyeong/1": "2026-11-17",
+  "gg-gwangmyeong/2": "2026-11-17",
+  "gg-hanam-misa/2": "2026-11-17",
+  "gg-hwaseong-yunggeonneung/2": "2026-11-17",
+  "gg-ilsan/1": "2026-11-17",
+  "gg-jebudo/2": "2026-11-17",
+  "gg-namyangju/0": "2026-11-17",
+  "gg-namyangju/1": "2026-11-17",
+  "gg-paju-books/0": "2026-11-17",
+  "gg-paju-books/1": "2026-11-17",
+  "gg-paju-odusan-outlet/0": "2026-11-17",
+  "gg-paju-odusan-outlet/1": "2026-11-17",
+  "gg-paju/0": "2026-11-17",
+  "gg-paju/2": "2026-11-17",
+  "gg-pocheon-sanjeong-hantan/1": "2026-11-17",
+  "gg-pocheon/1": "2026-11-17",
+  "gg-seoulland/0": "2026-11-17",
+  "gg-seoulland/1": "2026-11-17",
+  "gg-siheung-gaetgol-oido/0": "2026-11-17",
+  "gg-siheung-gaetgol-oido/1": "2026-11-17",
+  "gg-siheung-gaetgol-oido/2": "2026-11-17",
+  "gg-starfield-suwon/0": "2026-11-17",
+  "gg-starfield-suwon/1": "2026-11-17",
+  "gg-suwon/0": "2026-11-17",
+  "gg-suwon/1": "2026-11-17",
+  "gg-suwon/3": "2026-11-17",
+  "gg-uijeongbu-budae/1": "2026-11-17",
+  "gg-uijeongbu-budae/2": "2026-11-17",
+  "gg-yangpyeong/2": "2026-11-17",
+  "gg-yeoju-silleuksa/1": "2026-11-17",
+  "gg-yeoju-silleuksa/2": "2026-11-17",
+  "gg-yongin-nam-june-paik/0": "2026-11-17",
+  "gg-yongin-nam-june-paik/2": "2026-11-17",
+  "gg-yongin/0": "2026-11-17",
+  "gj-1913-night/1": "2026-11-17",
+  "gj-1913-night/2": "2026-11-17",
+  "gj-asia-culture/2": "2026-11-17",
+  "gj-familyland/0": "2026-11-17",
+  "gj-familyland/1": "2026-11-17",
+  "gj-mudeung-cafe/0": "2026-11-17",
+  "gj-mudeung-cafe/1": "2026-11-17",
+  "gj-penguin/2": "2026-11-17",
+  "gn-changwon-night/2": "2026-11-17",
+  "gn-geoje-north/0": "2026-11-17",
+  "gn-geoje-north/1": "2026-11-17",
+  "gn-geoje/1": "2026-11-17",
+  "gn-geoje/2": "2026-11-17",
+  "gn-hadong-pyeongsari/1": "2026-11-17",
+  "gn-jinhae/1": "2026-11-17",
+  "gn-jinhae/2": "2026-11-17",
+  "gn-jinju/0": "2026-11-17",
+  "gn-jinju/2": "2026-11-17",
+  "gn-masan-robot-jeodo/0": "2026-11-17",
+  "gn-masan-robot-jeodo/1": "2026-11-17",
+  "gn-masan-robot-jeodo/2": "2026-11-17",
+  "gn-namhae-boriam/1": "2026-11-17",
+  "gn-namhae/0": "2026-11-17",
+  "gn-namhae/2": "2026-11-17",
+  "gn-sacheon/0": "2026-11-17",
+  "gn-sacheon/1": "2026-11-17",
+  "gn-tongyeong-mireukdo/0": "2026-11-17",
+  "gn-tongyeong/0": "2026-11-17",
+  "gn-tongyeong/1": "2026-11-17",
+  "gn-tongyeong/2": "2026-11-17",
+  "gn-tongyeong/3": "2026-11-17",
+  "gw-chuncheon-kimyujeong/0": "2026-11-17",
+  "gw-chuncheon-kimyujeong/2": "2026-11-17",
+  "gw-chuncheon/0": "2026-11-17",
+  "gw-chuncheon/1": "2026-11-17",
+  "gw-chuncheon/2": "2026-11-17",
+  "gw-donghae/0": "2026-11-17",
+  "gw-donghae/1": "2026-11-17",
+  "gw-gangneung-anmok/0": "2026-11-17",
+  "gw-gangneung-wolhwa/0": "2026-11-17",
+  "gw-gangneung-wolhwa/2": "2026-11-17",
+  "gw-gangneung/1": "2026-11-17",
+  "gw-gangneung/2": "2026-11-17",
+  "gw-gangneung/3": "2026-11-17",
+  "gw-goseong-hwajinpo/1": "2026-11-17",
+  "gw-jeongdongjin/2": "2026-11-17",
+  "gw-jeongseon/1": "2026-11-17",
+  "gw-jeongseon/2": "2026-11-17",
+  "gw-legoland/0": "2026-11-17",
+  "gw-legoland/1": "2026-11-17",
+  "gw-legoland/2": "2026-11-17",
+  "gw-pyeongchang/0": "2026-11-17",
+  "gw-pyeongchang/1": "2026-11-17",
+  "gw-wonju/0": "2026-11-17",
+  "gw-wonju/1": "2026-11-17",
+  "gwangju-518-geumnamro/0": "2026-11-17",
+  "gwangju-518-geumnamro/1": "2026-11-17",
+  "gwangju-518-geumnamro/2": "2026-11-17",
+  "gwangju-biennale/1": "2026-11-17",
+  "gwangju-cheomdan-science/1": "2026-11-17",
+  "gwangju-mudeung/0": "2026-11-17",
+  "gwangju-mudeung/1": "2026-11-17",
+  "gwangju-mudeung/2": "2026-11-17",
+  "gwangju-rainy-sangmu/1": "2026-11-17",
+  "gwangju-rainy-sangmu/2": "2026-11-17",
+  "gwangju-sajik-daein/0": "2026-11-17",
+  "gwangju-sajik-daein/1": "2026-11-17",
+  "gwangju-sajik-daein/2": "2026-11-17",
+  "gwangju-songjeong/1": "2026-11-17",
+  "gwangju-yangnim/2": "2026-11-17",
+  "ic-chinatown-wolmi/0": "2026-11-17",
+  "ic-chinatown-wolmi/2": "2026-11-17",
+  "ic-incheon-grand-park/0": "2026-11-17",
+  "ic-incheon-grand-park/1": "2026-11-17",
+  "ic-incheon-grand-park/2": "2026-11-17",
+  "ic-sinseongri/2": "2026-11-17",
+  "incheon-bupyeong/0": "2026-11-17",
+  "incheon-bupyeong/1": "2026-11-17",
+  "incheon-bupyeong/2": "2026-11-17",
+  "incheon-cheongna-sunset/2": "2026-11-17",
+  "incheon-chinatown/0": "2026-11-17",
+  "incheon-eurwangni/0": "2026-11-17",
+  "incheon-ganghwa/1": "2026-11-17",
+  "incheon-gyodong/0": "2026-11-17",
+  "incheon-gyodong/2": "2026-11-17",
+  "incheon-muuido/1": "2026-11-17",
+  "incheon-seokmodo/1": "2026-11-17",
+  "incheon-seokmodo/2": "2026-11-17",
+  "incheon-songdo-letters/1": "2026-11-17",
+  "incheon-songdo-letters/2": "2026-11-17",
+  "incheon-songdo/1": "2026-11-17",
+  "incheon-songdo/2": "2026-11-17",
+  "incheon-sorae/0": "2026-11-17",
+  "incheon-sorae/1": "2026-11-17",
+  "incheon-yeongjong-resort/2": "2026-11-17",
+  "jb-buan-gomso/0": "2026-11-17",
+  "jb-buan-gomso/1": "2026-11-17",
+  "jb-buan-gomso/2": "2026-11-17",
+  "jb-buan/0": "2026-11-17",
+  "jb-gunsan-eunpa/1": "2026-11-17",
+  "jb-gunsan-eunpa/2": "2026-11-17",
+  "jb-gunsan-island/0": "2026-11-17",
+  "jb-gunsan-island/1": "2026-11-17",
+  "jb-gunsan/0": "2026-11-17",
+  "jb-gunsan/2": "2026-11-17",
+  "jb-gunsan/3": "2026-11-17",
+  "jb-iksan/1": "2026-11-17",
+  "jb-imsil/1": "2026-11-17",
+  "jb-jeonju-deokjin/2": "2026-11-17",
+  "jb-jeonju-night/0": "2026-11-17",
+  "jb-jeonju/2": "2026-11-17",
+  "jb-jeonju/3": "2026-11-17",
+  "jb-jinan/1": "2026-11-17",
+  "jb-muju-deogyusan/0": "2026-11-17",
+  "jb-muju-deogyusan/1": "2026-11-17",
+  "jb-namwon/1": "2026-11-17",
+  "jeju-aewol/1": "2026-11-17",
+  "jeju-aewol/2": "2026-11-17",
+  "jeju-east/2": "2026-11-17",
+  "jeju-gujwa-bijarim/1": "2026-11-17",
+  "jeju-hallasan/0": "2026-11-17",
+  "jeju-hallasan/1": "2026-11-17",
+  "jeju-hallasan/2": "2026-11-17",
+  "jeju-oldtown-sarabong/1": "2026-11-17",
+  "jeju-rainy-museum/0": "2026-11-17",
+  "jeju-seogwipo-saeyeon/0": "2026-11-17",
+  "jeju-shinhwa/1": "2026-11-17",
+  "jeju-south/1": "2026-11-17",
+  "jeju-udo/0": "2026-11-17",
+  "jeju-udo/1": "2026-11-17",
+  "jeju-udo/2": "2026-11-17",
+  "jeju-west/0": "2026-11-17",
+  "jj-jeju-night-market/0": "2026-11-17",
+  "jj-jeju-night-market/2": "2026-11-17",
+  "jj-saebyeol-oreum/1": "2026-11-17",
+  "jj-saebyeol-oreum/2": "2026-11-17",
+  "jn-boseong/1": "2026-11-17",
+  "jn-damyang/3": "2026-11-17",
+  "jn-gangjin/0": "2026-11-17",
+  "jn-gurye/1": "2026-11-17",
+  "jn-mokpo-night/2": "2026-11-17",
+  "jn-mokpo/0": "2026-11-17",
+  "jn-mokpo/2": "2026-11-17",
+  "jn-suncheon-retro/1": "2026-11-17",
+  "jn-suncheon/0": "2026-11-17",
+  "jn-uldolmok/0": "2026-11-17",
+  "jn-uldolmok/1": "2026-11-17",
+  "jn-uldolmok/2": "2026-11-17",
+  "jn-yeosu-cablecar/0": "2026-11-17",
+  "jn-yeosu-cablecar/2": "2026-11-17",
+  "jn-yeosu-woongcheon/0": "2026-11-17",
+  "jn-yeosu-woongcheon/2": "2026-11-17",
+  "jn-yeosu/1": "2026-11-17",
+  "jn-yeosu/2": "2026-11-17",
+  "jn-yeosu/3": "2026-11-17",
+  "sejong-beartree/1": "2026-11-17",
+  "sejong-beartree/2": "2026-11-17",
+  "sejong-bridge/0": "2026-11-17",
+  "sejong-geumgang-forest/0": "2026-11-17",
+  "sejong-geumgang-forest/1": "2026-11-17",
+  "sejong-jochiwon/0": "2026-11-17",
+  "sejong-jochiwon/1": "2026-11-17",
+  "sejong-lake/0": "2026-11-17",
+  "sejong-lake/1": "2026-11-17",
+  "seoul-achasan-hike/0": "2026-11-17",
+  "seoul-achasan-hike/2": "2026-11-17",
+  "seoul-bukchon/1": "2026-11-17",
+  "seoul-bukchon/2": "2026-11-17",
+  "seoul-coex-rain/1": "2026-11-17",
+  "seoul-daehakro-theater/2": "2026-11-17",
+  "seoul-dongmyo-retro/0": "2026-11-17",
+  "seoul-euljiro/1": "2026-11-17",
+  "seoul-euljiro/2": "2026-11-17",
+  "seoul-eunpyeong-hanok/0": "2026-11-17",
+  "seoul-garosu-dosan/2": "2026-11-17",
+  "seoul-gwanak-sharosu/0": "2026-11-17",
+  "seoul-gwanghwamun-books/0": "2026-11-17",
+  "seoul-gwanghwamun-books/1": "2026-11-17",
+  "seoul-gwangnaru-bike/0": "2026-11-17",
+  "seoul-gwangnaru-bike/1": "2026-11-17",
+  "seoul-gwangnaru-bike/2": "2026-11-17",
+  "seoul-gyeongchun-forest/0": "2026-11-17",
+  "seoul-gyeongchun-forest/2": "2026-11-17",
+  "seoul-haneul-park/1": "2026-11-17",
+  "seoul-hannam-leeum/0": "2026-11-17",
+  "seoul-hannam-leeum/1": "2026-11-17",
+  "seoul-hannam-leeum/2": "2026-11-17",
+  "seoul-ikseon-night/0": "2026-11-17",
+  "seoul-ikseon-night/1": "2026-11-17",
+  "seoul-ikseon-night/2": "2026-11-17",
+  "seoul-insadong-craft/0": "2026-11-17",
+  "seoul-insadong-craft/1": "2026-11-17",
+  "seoul-jamsil-baseball/1": "2026-11-17",
+  "seoul-jamsil-baseball/2": "2026-11-17",
+  "seoul-jongno-retro/3": "2026-11-17",
+  "seoul-lotteworld/0": "2026-11-17",
+  "seoul-magok-botanic/2": "2026-11-17",
+  "seoul-mangwon-hip/2": "2026-11-17",
+  "seoul-mullae-art/1": "2026-11-17",
+  "seoul-mullae-art/2": "2026-11-17",
+  "seoul-naksan/0": "2026-11-17",
+  "seoul-namdaemun-seoullo/0": "2026-11-17",
+  "seoul-namdaemun-seoullo/1": "2026-11-17",
+  "seoul-namdaemun-seoullo/2": "2026-11-17",
+  "seoul-namsan-night/0": "2026-11-17",
+  "seoul-namsan-night/1": "2026-11-17",
+  "seoul-namsan-night/2": "2026-11-17",
+  "seoul-noryangjin-night/0": "2026-11-17",
+  "seoul-olympicpark/2": "2026-11-17",
+  "seoul-seochon/2": "2026-11-17",
+  "seoul-seodaemun-ansan/2": "2026-11-17",
+  "seoul-seongbuk-quiet/1": "2026-11-17",
+  "seoul-seongsu-2/1": "2026-11-17",
+  "seoul-sinchon-campus/0": "2026-11-17",
+  "seoul-sinchon-campus/2": "2026-11-17",
+  "seoul-uidong-trail/0": "2026-11-17",
+  "seoul-uidong-trail/1": "2026-11-17",
+  "seoul-uidong-trail/2": "2026-11-17",
+  "seoul-yangjae-stream/0": "2026-11-17",
+  "seoul-yangjae-stream/1": "2026-11-17",
+  "seoul-yangjae-stream/2": "2026-11-17",
+  "seoul-yeonnam/1": "2026-11-17",
+  "seoul-yeouido/0": "2026-11-17",
+  "seoul-yongsan-museum/2": "2026-11-17",
+  "sj-arboretum-night/1": "2026-11-17",
+  "sj-arboretum-night/2": "2026-11-17",
+  "sj-jochiwon/0": "2026-11-17",
+  "sj-jochiwon/1": "2026-11-17",
+  "sj-jochiwon/2": "2026-11-17",
+  "sj-library-walk/0": "2026-11-17",
+  "sj-library-walk/1": "2026-11-17",
+  "sj-library-walk/2": "2026-11-17",
+  "ulsan-art-donghun/0": "2026-11-17",
+  "ulsan-art-donghun/2": "2026-11-17",
+  "ulsan-bangudae/2": "2026-11-17",
+  "ulsan-ganwoljae/0": "2026-11-17",
+  "ulsan-ganwoljae/2": "2026-11-17",
+  "ulsan-grandpark/1": "2026-11-17",
+  "ulsan-taehwa/1": "2026-11-17",
+  "ulsan-taehwa/2": "2026-11-17",
+  "us-oegosan/0": "2026-11-17",
+  "us-oegosan/1": "2026-11-17",
+  "us-seongnamdong/0": "2026-11-17",
+  "us-seongnamdong/1": "2026-11-17",
+  "us-seongnamdong/2": "2026-11-17"
  },
  "note": "코스 순서 장소 사진: 한국관광공사 TourAPI 대표 사진 (공공누리 제1유형, 출처 표시)",
  "photos": {
@@ -445,12 +405,20 @@
    "0": {
     "img": "img/stop/bs-busan-station-0.webp",
     "place": "초량 이바구길"
+   },
+   "2": {
+    "img": "img/stop/bs-busan-station-2.webp",
+    "place": "부산 차이나타운"
    }
   },
   "bs-haeundae-blueline": {
    "1": {
     "img": "img/stop/bs-haeundae-blueline-1.webp",
     "place": "청사포"
+   },
+   "2": {
+    "img": "img/stop/bs-haeundae-blueline-2.webp",
+    "place": "청사포 다릿돌전망대"
    }
   },
   "busan-beomeosa-sanseong": {
@@ -461,6 +429,12 @@
    "2": {
     "img": "img/stop/busan-beomeosa-sanseong-2.webp",
     "place": "금정산성마을 먹거리촌"
+   }
+  },
+  "busan-bosu-retro": {
+   "1": {
+    "img": "img/stop/busan-bosu-retro-1.webp",
+    "place": "부산근현대역사관 별관"
    }
   },
   "busan-centum-rainy": {
@@ -505,6 +479,10 @@
    "1": {
     "img": "img/stop/busan-gwangan-night-1.webp",
     "place": "민락수변공원"
+   },
+   "2": {
+    "img": "img/stop/busan-gwangan-night-2.webp",
+    "place": "황령산 전망대"
    }
   },
   "busan-haeridan-marine": {
@@ -521,6 +499,10 @@
    "1": {
     "img": "img/stop/busan-haeundae-1.webp",
     "place": "해운대해수욕장"
+   },
+   "3": {
+    "img": "img/stop/busan-haeundae-3.webp",
+    "place": "청사포 다릿돌전망대"
    }
   },
   "busan-igidae-oryukdo": {
@@ -592,6 +574,10 @@
    }
   },
   "cb-cheongju-craft": {
+   "0": {
+    "img": "img/stop/cb-cheongju-craft-0.webp",
+    "place": "국립현대미술관 청주"
+   },
    "2": {
     "img": "img/stop/cb-cheongju-craft-2.webp",
     "place": "청주 성안길"
@@ -633,12 +619,20 @@
    "0": {
     "img": "img/stop/cb-danyang-0.webp",
     "place": "도담삼봉"
+   },
+   "2": {
+    "img": "img/stop/cb-danyang-2.webp",
+    "place": "단양구경시장"
    }
   },
   "cb-danyang-cave": {
    "0": {
     "img": "img/stop/cb-danyang-cave-0.webp",
     "place": "단양 고수동굴"
+   },
+   "1": {
+    "img": "img/stop/cb-danyang-cave-1.webp",
+    "place": "단양구경시장"
    }
   },
   "cb-jecheon": {
@@ -748,6 +742,10 @@
    }
   },
   "cn-seosan-gaesimsa": {
+   "0": {
+    "img": "img/stop/cn-seosan-gaesimsa-0.webp",
+    "place": "서산 용현리 마애여래삼존상"
+   },
    "1": {
     "img": "img/stop/cn-seosan-gaesimsa-1.webp",
     "place": "개심사 가는 길"
@@ -827,6 +825,10 @@
    "1": {
     "img": "img/stop/daegu-hyangchon-retro-1.webp",
     "place": "대구근대역사관"
+   },
+   "2": {
+    "img": "img/stop/daegu-hyangchon-retro-2.webp",
+    "place": "향촌문화관"
    }
   },
   "daegu-modern": {
@@ -840,6 +842,10 @@
    }
   },
   "daegu-museum-rainy": {
+   "0": {
+    "img": "img/stop/daegu-museum-rainy-0.webp",
+    "place": "대구미술관"
+   },
    "2": {
     "img": "img/stop/daegu-museum-rainy-2.webp",
     "place": "국립대구박물관"
@@ -877,6 +883,12 @@
    "2": {
     "img": "img/stop/daejeon-expo-2.webp",
     "place": "엑스포다리"
+   }
+  },
+  "daejeon-gyejok": {
+   "0": {
+    "img": "img/stop/daejeon-gyejok-0.webp",
+    "place": "계족산 황톳길"
    }
   },
   "daejeon-jangtaesan": {
@@ -924,6 +936,10 @@
    }
   },
   "dj-gyejoksan-sunset": {
+   "0": {
+    "img": "img/stop/dj-gyejoksan-sunset-0.webp",
+    "place": "계족산 황톳길"
+   },
    "2": {
     "img": "img/stop/dj-gyejoksan-sunset-2.webp",
     "place": "대동하늘공원"
@@ -979,6 +995,10 @@
    "1": {
     "img": "img/stop/gb-andong-dosan-1.webp",
     "place": "이육사문학관"
+   },
+   "2": {
+    "img": "img/stop/gb-andong-dosan-2.webp",
+    "place": "선성수상길"
    }
   },
   "gb-gyeongju-bomun": {
@@ -1036,6 +1056,10 @@
    }
   },
   "gb-pohang": {
+   "0": {
+    "img": "img/stop/gb-pohang-0.webp",
+    "place": "호미곶 해맞이광장"
+   },
    "1": {
     "img": "img/stop/gb-pohang-1.webp",
     "place": "카페 스페이스워크"
@@ -1049,6 +1073,10 @@
    "1": {
     "img": "img/stop/gb-pohang-guryongpo-1.webp",
     "place": "구룡포항"
+   },
+   "2": {
+    "img": "img/stop/gb-pohang-guryongpo-2.webp",
+    "place": "호미곶 해맞이광장"
    }
   },
   "gb-pohang-yeongildae": {
@@ -1309,6 +1337,12 @@
     "place": "경기도박물관"
    }
   },
+  "gj-1913-night": {
+   "0": {
+    "img": "img/stop/gj-1913-night-0.webp",
+    "place": "1913송정역시장"
+   }
+  },
   "gj-asia-culture": {
    "0": {
     "img": "img/stop/gj-asia-culture-0.webp",
@@ -1336,6 +1370,10 @@
    }
   },
   "gn-changwon-night": {
+   "0": {
+    "img": "img/stop/gn-changwon-night-0.webp",
+    "place": "마산어시장"
+   },
    "1": {
     "img": "img/stop/gn-changwon-night-1.webp",
     "place": "창동예술촌"
@@ -1451,6 +1489,10 @@
    "0": {
     "img": "img/stop/gn-miryang-0.webp",
     "place": "밀양 영남루"
+   },
+   "1": {
+    "img": "img/stop/gn-miryang-1.webp",
+    "place": "위양지(위양지 이팝나무)"
    }
   },
   "gn-namhae": {
@@ -1473,12 +1515,22 @@
    "1": {
     "img": "img/stop/gn-tongyeong-mireukdo-1.webp",
     "place": "통영수산과학관"
+   },
+   "2": {
+    "img": "img/stop/gn-tongyeong-mireukdo-2.webp",
+    "place": "달아공원"
    }
   },
   "gw-chuncheon-kimyujeong": {
    "1": {
     "img": "img/stop/gw-chuncheon-kimyujeong-1.webp",
     "place": "김유정문학촌"
+   }
+  },
+  "gw-donghae": {
+   "2": {
+    "img": "img/stop/gw-donghae-2.webp",
+    "place": "동해 논골담길"
    }
   },
   "gw-gangneung": {
@@ -1497,6 +1549,12 @@
     "place": "강릉 오죽헌·시립박물관"
    }
   },
+  "gw-gangneung-wolhwa": {
+   "1": {
+    "img": "img/stop/gw-gangneung-wolhwa-1.webp",
+    "place": "강릉 월화거리"
+   }
+  },
   "gw-goseong-hwajinpo": {
    "0": {
     "img": "img/stop/gw-goseong-hwajinpo-0.webp",
@@ -1508,9 +1566,19 @@
    }
   },
   "gw-jeongdongjin": {
+   "0": {
+    "img": "img/stop/gw-jeongdongjin-0.webp",
+    "place": "정동진역"
+   },
    "1": {
     "img": "img/stop/gw-jeongdongjin-1.webp",
     "place": "정동심곡 바다부채길"
+   }
+  },
+  "gw-jeongseon": {
+   "0": {
+    "img": "img/stop/gw-jeongseon-0.webp",
+    "place": "병방치 스카이워크"
    }
   },
   "gw-samcheok": {
@@ -1556,6 +1624,10 @@
    }
   },
   "gw-yangyang": {
+   "0": {
+    "img": "img/stop/gw-yangyang-0.webp",
+    "place": "서피비치"
+   },
    "1": {
     "img": "img/stop/gw-yangyang-1.webp",
     "place": "하조대 둘레길"
@@ -1589,6 +1661,12 @@
    "0": {
     "img": "img/stop/gwangju-rainy-sangmu-0.webp",
     "place": "국립광주박물관"
+   }
+  },
+  "gwangju-songjeong": {
+   "0": {
+    "img": "img/stop/gwangju-songjeong-0.webp",
+    "place": "1913송정역시장"
    }
   },
   "gwangju-yangnim": {
@@ -1735,6 +1813,12 @@
    "1": {
     "img": "img/stop/jb-gunsan-1.webp",
     "place": "이성당"
+   }
+  },
+  "jb-gunsan-eunpa": {
+   "0": {
+    "img": "img/stop/jb-gunsan-eunpa-0.webp",
+    "place": "진포해양테마공원"
    }
   },
   "jb-gunsan-island": {
@@ -2015,12 +2099,32 @@
    "0": {
     "img": "img/stop/jn-suncheon-retro-0.webp",
     "place": "순천 드라마촬영장"
+   },
+   "2": {
+    "img": "img/stop/jn-suncheon-retro-2.webp",
+    "place": "순천 문화의거리"
    }
   },
   "jn-wando": {
+   "0": {
+    "img": "img/stop/jn-wando-0.webp",
+    "place": "완도타워"
+   },
    "1": {
     "img": "img/stop/jn-wando-1.webp",
     "place": "신지명사십리해수욕장"
+   }
+  },
+  "jn-yeosu": {
+   "0": {
+    "img": "img/stop/jn-yeosu-0.webp",
+    "place": "한려해상국립공원 (오동도)"
+   }
+  },
+  "jn-yeosu-cablecar": {
+   "1": {
+    "img": "img/stop/jn-yeosu-cablecar-1.webp",
+    "place": "한려해상국립공원 (오동도)"
    }
   },
   "jn-yeosu-woongcheon": {
@@ -2094,6 +2198,10 @@
     "img": "img/stop/seoul-deoksugung-night-0.webp",
     "place": "서울시립미술관 서소문본관"
    },
+   "1": {
+    "img": "img/stop/seoul-deoksugung-night-1.webp",
+    "place": "정동길"
+   },
    "2": {
     "img": "img/stop/seoul-deoksugung-night-2.webp",
     "place": "덕수궁"
@@ -2161,6 +2269,10 @@
    "0": {
     "img": "img/stop/seoul-haneul-park-0.webp",
     "place": "하늘공원"
+   },
+   "2": {
+    "img": "img/stop/seoul-haneul-park-2.webp",
+    "place": "노을공원(서울)"
    }
   },
   "seoul-hangang-picnic": {
@@ -2197,6 +2309,10 @@
    "1": {
     "img": "img/stop/seoul-jongno-retro-1.webp",
     "place": "익선동 한옥거리"
+   },
+   "2": {
+    "img": "img/stop/seoul-jongno-retro-2.webp",
+    "place": "광장시장"
    }
   },
   "seoul-lotteworld": {
@@ -2223,6 +2339,10 @@
    "0": {
     "img": "img/stop/seoul-mangwon-hip-0.webp",
     "place": "망원시장"
+   },
+   "1": {
+    "img": "img/stop/seoul-mangwon-hip-1.webp",
+    "place": "망원한강공원"
    }
   },
   "seoul-mullae-art": {
@@ -2255,12 +2375,20 @@
    "0": {
     "img": "img/stop/seoul-olympicpark-0.webp",
     "place": "올림픽공원"
+   },
+   "1": {
+    "img": "img/stop/seoul-olympicpark-1.webp",
+    "place": "몽촌토성"
    }
   },
   "seoul-seochon": {
    "0": {
     "img": "img/stop/seoul-seochon-0.webp",
     "place": "통인시장"
+   },
+   "1": {
+    "img": "img/stop/seoul-seochon-1.webp",
+    "place": "수성동계곡"
    }
   },
   "seoul-seodaemun-ansan": {
@@ -2335,10 +2463,20 @@
     "place": "몽마르뜨공원"
    }
   },
+  "seoul-sinchon-campus": {
+   "1": {
+    "img": "img/stop/seoul-sinchon-campus-1.webp",
+    "place": "서울 연세대학교 스팀슨관"
+   }
+  },
   "seoul-yeonnam": {
    "0": {
     "img": "img/stop/seoul-yeonnam-0.webp",
     "place": "경의선숲길"
+   },
+   "2": {
+    "img": "img/stop/seoul-yeonnam-2.webp",
+    "place": "망원한강공원"
    }
   },
   "seoul-yeouido": {
@@ -2423,6 +2561,10 @@
    "0": {
     "img": "img/stop/ulsan-seuldo-jujeon-0.webp",
     "place": "슬도"
+   },
+   "1": {
+    "img": "img/stop/ulsan-seuldo-jujeon-1.webp",
+    "place": "방어진항"
    },
    "2": {
     "img": "img/stop/ulsan-seuldo-jujeon-2.webp",
