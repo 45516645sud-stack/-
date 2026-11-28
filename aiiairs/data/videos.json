@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27",
+ "updated": "2026-11-28",
  "videos": {
   "kopis-pf138268": {
    "vid": "3-BA2CtnleM",
@@ -361,13 +361,6 @@
    "vid": null,
    "at": "2026-11-16"
   },
-  "kopis-pf285499": {
-   "vid": "VUbVyANXWL0",
-   "t": "2025 와인et 멜로디 하이라이트 영상",
-   "ch": "동대문문화재단",
-   "score": 6,
-   "at": "2026-11-25"
-  },
   "kopis-pf285591": {
    "vid": "xKOLU-69QOw",
    "t": "오피셜 티저 영상 공개   |   𝐌𝐮𝐬𝐢𝐜𝐚𝐥 [저항: 찬송이 된 사람들]",
@@ -397,10 +390,6 @@
   "kopis-pf286005": {
    "vid": null,
    "at": "2026-11-25"
-  },
-  "kopis-pf286031": {
-   "vid": null,
-   "at": "2026-11-21"
   },
   "kopis-pf286497": {
    "vid": "DGj8kN3j0L4",
@@ -447,6 +436,10 @@
    "score": 5,
    "at": "2026-11-25"
   },
+  "kopis-pf288858": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf289265": {
    "vid": null,
    "at": "2026-11-16"
@@ -457,6 +450,10 @@
    "ch": "티브이데일리",
    "score": 5,
    "at": "2026-11-16"
+  },
+  "kopis-pf290600": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf290797": {
    "vid": null,
@@ -512,6 +509,10 @@
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf293500": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf293558": {
    "vid": null,
    "at": "2026-11-16"
@@ -542,6 +543,10 @@
    "ch": "Mstage Musical",
    "score": 5,
    "at": "2026-11-25"
+  },
+  "kopis-pf295315": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf295357": {
    "vid": null,
@@ -638,6 +643,13 @@
    "vid": null,
    "at": "2026-11-16"
   },
+  "kopis-pf298237": {
+   "vid": "t2XVBDj3P5U",
+   "t": "뮤지컬 털이 뭐길래 ( The Hair ) 하이라이트",
+   "ch": "극단 즐겨찾기",
+   "score": 5,
+   "at": "2026-11-28"
+  },
   "kopis-pf298289": {
    "vid": null,
    "at": "2026-11-15"
@@ -693,10 +705,6 @@
    "score": 6,
    "at": "2026-11-16"
   },
-  "kopis-pf299354": {
-   "vid": null,
-   "at": "2026-11-25"
-  },
   "kopis-pf299408": {
    "vid": null,
    "at": "2026-11-25"
@@ -727,9 +735,17 @@
    "vid": null,
    "at": "2026-11-16"
   },
+  "kopis-pf300356": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf300443": {
    "vid": null,
    "at": "2026-11-25"
+  },
+  "kopis-pf300539": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf300598": {
    "vid": "ubT7oFv_VIs",
@@ -798,6 +814,10 @@
    "vid": null,
    "at": "2026-11-15"
   },
+  "kopis-pf301220": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf301255": {
    "vid": null,
    "at": "2026-11-15"
@@ -858,6 +878,10 @@
    "vid": null,
    "at": "2026-11-16"
   },
+  "kopis-pf301788": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf301826": {
    "vid": "5dWh3iM1Exg",
    "t": "JEAN-MICHEL BASQUIAT 티저 얼리버드 티켓 OPEN (Feat.롯데뮤지엄)",
@@ -868,13 +892,6 @@
   "kopis-pf301866": {
    "vid": null,
    "at": "2026-11-16"
-  },
-  "kopis-pf301889": {
-   "vid": "4YleIy86x6o",
-   "t": "RJ City, Alex & Dasha Preview Tonight's Show from Las Vegas, NV! | AEW Dynamite: Pre-Show, 5/25/22",
-   "ch": "All Elite Wrestling",
-   "score": 5,
-   "at": "2026-11-21"
   },
   "kopis-pf301964": {
    "vid": "R081H6M4nX4",
@@ -899,10 +916,6 @@
    "vid": null,
    "at": "2026-11-19"
   },
-  "kopis-pf302058": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf302128": {
    "vid": null,
    "at": "2026-11-23"
@@ -914,6 +927,13 @@
   "kopis-pf302173": {
    "vid": null,
    "at": "2026-11-23"
+  },
+  "kopis-pf302245": {
+   "vid": "X4RA3CYMaJc",
+   "t": "BODY TALES — 〈아기돼지삼형제〉하이라이트",
+   "ch": "Meta Dance Project",
+   "score": 6,
+   "at": "2026-11-28"
   },
   "kopis-pf302280": {
    "vid": null,
@@ -966,6 +986,10 @@
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf302670": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf302675": {
    "vid": null,
    "at": "2026-11-22"
@@ -986,10 +1010,6 @@
    "vid": null,
    "at": "2026-11-25"
   },
-  "kopis-pf302830": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf302888": {
    "vid": null,
    "at": "2026-11-25"
@@ -1001,6 +1021,10 @@
   "kopis-pf302923": {
    "vid": null,
    "at": "2026-11-21"
+  },
+  "kopis-pf302930": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf303014": {
    "vid": null,
@@ -1028,9 +1052,9 @@
    "vid": null,
    "at": "2026-11-16"
   },
-  "kopis-pf303168": {
+  "kopis-pf303219": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
   },
   "kopis-pf303241": {
    "vid": null,
@@ -1042,6 +1066,10 @@
    "ch": "일공",
    "score": 6,
    "at": "2026-11-25"
+  },
+  "kopis-pf303387": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf303397": {
    "vid": null,
@@ -1077,13 +1105,13 @@
    "vid": null,
    "at": "2026-11-23"
   },
+  "kopis-pf303638": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf303683": {
    "vid": null,
    "at": "2026-11-22"
-  },
-  "kopis-pf303714": {
-   "vid": null,
-   "at": "2026-11-21"
   },
   "kopis-pf303732": {
    "vid": null,
@@ -1103,14 +1131,6 @@
    "score": 6,
    "at": "2026-11-25"
   },
-  "kopis-pf303790": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
-  "kopis-pf303807": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf303816": {
    "vid": null,
    "at": "2026-11-22"
@@ -1118,6 +1138,10 @@
   "kopis-pf303861": {
    "vid": null,
    "at": "2026-11-23"
+  },
+  "kopis-pf303866": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf303871": {
    "vid": null,
@@ -1141,10 +1165,6 @@
    "score": 5,
    "at": "2026-11-25"
   },
-  "kopis-pf303937": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf303955": {
    "vid": null,
    "at": "2026-11-22"
@@ -1157,9 +1177,9 @@
    "vid": null,
    "at": "2026-11-22"
   },
-  "kopis-pf304029": {
+  "kopis-pf303991": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
   },
   "kopis-pf304040": {
    "vid": null,
@@ -1192,10 +1212,6 @@
    "vid": null,
    "at": "2026-11-21"
   },
-  "kopis-pf304199": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf304289": {
    "vid": "48ox6BQuAO0",
    "t": "2024년 어쩌다 보니 천생 밴드 티저 영상(스텔라)",
@@ -1222,6 +1238,10 @@
    "vid": null,
    "at": "2026-11-23"
   },
+  "kopis-pf304382": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf304394": {
    "vid": "7rHbN48yT-o",
    "t": "[연희집단 The 광대] 2025년 국립정동극장 세실창작 ing '52Hz' 하이라이트 영상",
@@ -1237,20 +1257,21 @@
    "vid": null,
    "at": "2026-11-22"
   },
-  "kopis-pf304452": {
-   "vid": "yMWRwh_yGaU",
-   "t": "[TEASER] asraii | ONE HOUR",
-   "ch": "ONE HOUR",
-   "score": 6,
-   "at": "2026-11-25"
-  },
   "kopis-pf304469": {
    "vid": null,
    "at": "2026-11-15"
   },
-  "kopis-pf304489": {
+  "kopis-pf304477": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
+  },
+  "kopis-pf304485": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf304510": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf304512": {
    "vid": null,
@@ -1267,10 +1288,6 @@
    "score": 6,
    "at": "2026-11-23"
   },
-  "kopis-pf304547": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf304558": {
    "vid": null,
    "at": "2026-11-23"
@@ -1286,6 +1303,10 @@
   "kopis-pf304591": {
    "vid": null,
    "at": "2026-11-20"
+  },
+  "kopis-pf304638": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf304682": {
    "vid": null,
@@ -1318,10 +1339,6 @@
    "vid": null,
    "at": "2026-11-15"
   },
-  "kopis-pf304778": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf304795": {
    "vid": null,
    "at": "2026-11-23"
@@ -1333,6 +1350,10 @@
   "kopis-pf304819": {
    "vid": null,
    "at": "2026-11-21"
+  },
+  "kopis-pf304822": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf304828": {
    "vid": null,
@@ -1405,30 +1426,15 @@
    "vid": null,
    "at": "2026-11-22"
   },
-  "kopis-pf305016": {
-   "vid": "m5nrQqqS8HY",
-   "t": "🎭 연극 [붉고, 깊은 파랑 – 머구리] 티저 공개!",
-   "ch": "강원문화TV",
-   "score": 6,
-   "at": "2026-11-21"
-  },
   "kopis-pf305030": {
    "vid": null,
    "at": "2026-11-22"
-  },
-  "kopis-pf305042": {
-   "vid": null,
-   "at": "2026-11-21"
   },
   "kopis-pf305048": {
    "vid": null,
    "at": "2026-11-22"
   },
   "kopis-pf305059": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
-  "kopis-pf305062": {
    "vid": null,
    "at": "2026-11-21"
   },
@@ -1482,10 +1488,6 @@
    "vid": null,
    "at": "2026-11-23"
   },
-  "kopis-pf305187": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf305195": {
    "vid": null,
    "at": "2026-11-22"
@@ -1517,6 +1519,10 @@
    "vid": null,
    "at": "2026-11-16"
   },
+  "kopis-pf305247": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf305275": {
    "vid": null,
    "at": "2026-11-23"
@@ -1533,10 +1539,6 @@
    "vid": null,
    "at": "2026-11-23"
   },
-  "kopis-pf305372": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf305377": {
    "vid": null,
    "at": "2026-11-23"
@@ -1552,13 +1554,6 @@
   "kopis-pf305386": {
    "vid": null,
    "at": "2026-11-22"
-  },
-  "kopis-pf305397": {
-   "vid": "6lHDKhhUQ1w",
-   "t": "홍대 라이브클럽데이 라인업 뮤지션 티저영상 공개! | TUNE UP",
-   "ch": "아지트라이브 AZIT LIVE",
-   "score": 6,
-   "at": "2026-11-21"
   },
   "kopis-pf305415": {
    "vid": "EuAeynn7CEA",
@@ -1583,17 +1578,9 @@
    "vid": null,
    "at": "2026-11-22"
   },
-  "kopis-pf305464": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf305476": {
    "vid": null,
    "at": "2026-11-23"
-  },
-  "kopis-pf305477": {
-   "vid": null,
-   "at": "2026-11-21"
   },
   "kopis-pf305479": {
    "vid": null,
@@ -1606,6 +1593,10 @@
   "kopis-pf305495": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf305497": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf305503": {
    "vid": null,
@@ -1658,10 +1649,6 @@
    "vid": null,
    "at": "2026-11-23"
   },
-  "kopis-pf305616": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf305627": {
    "vid": null,
    "at": "2026-11-22"
@@ -1706,6 +1693,10 @@
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf305729": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf305732": {
    "vid": null,
    "at": "2026-11-21"
@@ -1716,6 +1707,10 @@
    "ch": "Mstage Musical",
    "score": 6,
    "at": "2026-11-16"
+  },
+  "kopis-pf305741": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf305746": {
    "vid": "X4RA3CYMaJc",
@@ -1728,21 +1723,37 @@
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf305763": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf305789": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf305791": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf305799": {
    "vid": null,
    "at": "2026-11-22"
-  },
-  "kopis-pf305805": {
-   "vid": null,
-   "at": "2026-11-21"
   },
   "kopis-pf305820": {
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf305826": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf305827": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf305831": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf305834": {
    "vid": null,
@@ -1780,6 +1791,10 @@
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf305918": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf305925": {
    "vid": null,
    "at": "2026-11-23"
@@ -1809,17 +1824,36 @@
    "score": 5,
    "at": "2026-11-27"
   },
-  "kopis-pf305944": {
+  "kopis-pf305941": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
+  },
+  "kopis-pf305942": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf305946": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf305953": {
    "vid": null,
    "at": "2026-11-23"
   },
+  "kopis-pf305954": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf305979": {
    "vid": null,
    "at": "2026-11-23"
+  },
+  "kopis-pf305991": {
+   "vid": "fzwR5JWfrKY",
+   "t": "초등학생을 위한 실험실 콘서트 티저 l  여수, 익산, 대구 l 과학콘서트",
+   "ch": "스테이지원 | 유못쇼",
+   "score": 6,
+   "at": "2026-11-28"
   },
   "kopis-pf306008": {
    "vid": "fLy0zvWMNv8",
@@ -1827,6 +1861,10 @@
    "ch": "뉴프로덕션",
    "score": 4,
    "at": "2026-11-22"
+  },
+  "kopis-pf306010": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306016": {
    "vid": null,
@@ -1872,17 +1910,25 @@
    "vid": null,
    "at": "2026-11-27"
   },
+  "kopis-pf306108": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306114": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf306137": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306149": {
    "vid": null,
    "at": "2026-11-25"
   },
-  "kopis-pf306150": {
+  "kopis-pf306153": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
   },
   "kopis-pf306158": {
    "vid": null,
@@ -1900,6 +1946,18 @@
    "vid": null,
    "at": "2026-11-23"
   },
+  "kopis-pf306176": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306184": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306195": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306201": {
    "vid": null,
    "at": "2026-11-27"
@@ -1908,17 +1966,9 @@
    "vid": null,
    "at": "2026-11-23"
   },
-  "kopis-pf306206": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf306222": {
    "vid": null,
    "at": "2026-11-27"
-  },
-  "kopis-pf306223": {
-   "vid": null,
-   "at": "2026-11-21"
   },
   "kopis-pf306226": {
    "vid": null,
@@ -1927,6 +1977,10 @@
   "kopis-pf306232": {
    "vid": null,
    "at": "2026-11-22"
+  },
+  "kopis-pf306255": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306260": {
    "vid": null,
@@ -1948,9 +2002,17 @@
    "vid": null,
    "at": "2026-11-23"
   },
+  "kopis-pf306342": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306351": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf306359": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306362": {
    "vid": null,
@@ -1986,6 +2048,14 @@
    "score": 6,
    "at": "2026-11-20"
   },
+  "kopis-pf306456": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306461": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306464": {
    "vid": null,
    "at": "2026-11-22"
@@ -2010,17 +2080,16 @@
    "vid": null,
    "at": "2026-11-27"
   },
-  "kopis-pf306515": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
-  "kopis-pf306517": {
-   "vid": null,
-   "at": "2026-11-21"
-  },
   "kopis-pf306522": {
    "vid": null,
    "at": "2026-11-23"
+  },
+  "kopis-pf306524": {
+   "vid": "Dhsvvhi4PNA",
+   "t": "[극단씨앗] 루돌프와 산타클로스 / 하이라이트",
+   "ch": "극단씨앗",
+   "score": 6,
+   "at": "2026-11-28"
   },
   "kopis-pf306527": {
    "vid": null,
@@ -2058,6 +2127,10 @@
    "vid": null,
    "at": "2026-11-23"
   },
+  "kopis-pf306584": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306587": {
    "vid": null,
    "at": "2026-11-23"
@@ -2066,9 +2139,21 @@
    "vid": null,
    "at": "2026-11-27"
   },
+  "kopis-pf306607": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306632": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306639": {
    "vid": null,
    "at": "2026-11-23"
+  },
+  "kopis-pf306643": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306655": {
    "vid": null,
@@ -2086,9 +2171,21 @@
    "vid": null,
    "at": "2026-11-22"
   },
+  "kopis-pf306690": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf306704": {
    "vid": null,
    "at": "2026-11-23"
+  },
+  "kopis-pf306709": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306713": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306730": {
    "vid": "A2GXfxp58gk",
@@ -2097,17 +2194,21 @@
    "score": 6,
    "at": "2026-11-23"
   },
-  "kopis-pf306731": {
+  "kopis-pf306758": {
    "vid": null,
-   "at": "2026-11-21"
-  },
-  "kopis-pf306738": {
-   "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
   },
   "kopis-pf306764": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf306773": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306781": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306785": {
    "vid": null,
@@ -2129,9 +2230,16 @@
    "vid": null,
    "at": "2026-11-22"
   },
-  "kopis-pf306841": {
+  "kopis-pf306844": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
+  },
+  "kopis-pf306864": {
+   "vid": "k8X9wyWvDqM",
+   "t": "2024 숲속음악대 덩따쿵 시즌2 하이라이트 #shorts",
+   "ch": "국립민속국악원",
+   "score": 6,
+   "at": "2026-11-28"
   },
   "kopis-pf306873": {
    "vid": "akansp381_s",
@@ -2144,9 +2252,17 @@
    "vid": null,
    "at": "2026-11-27"
   },
-  "kopis-pf306931": {
+  "kopis-pf306895": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
+  },
+  "kopis-pf306902": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf306937": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306938": {
    "vid": null,
@@ -2155,6 +2271,10 @@
   "kopis-pf306944": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf306946": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf306959": {
    "vid": null,
@@ -2188,9 +2308,9 @@
    "vid": null,
    "at": "2026-11-23"
   },
-  "kopis-pf307049": {
+  "kopis-pf307044": {
    "vid": null,
-   "at": "2026-11-21"
+   "at": "2026-11-28"
   },
   "kopis-pf307051": {
    "vid": null,
@@ -2204,6 +2324,13 @@
    "vid": null,
    "at": "2026-11-27"
   },
+  "kopis-pf307097": {
+   "vid": "RMqpflRpHSk",
+   "t": "치유음악원의 성탄 뮤지컬 '크리스마스 선물' 하이라이트 ",
+   "ch": "전북기독신문tv",
+   "score": 6,
+   "at": "2026-11-28"
+  },
   "kopis-pf307124": {
    "vid": null,
    "at": "2026-11-25"
@@ -2215,10 +2342,6 @@
   "kopis-pf307144": {
    "vid": null,
    "at": "2026-11-27"
-  },
-  "kopis-pf307174": {
-   "vid": null,
-   "at": "2026-11-25"
   },
   "kopis-pf307199": {
    "vid": null,
@@ -2267,9 +2390,20 @@
    "vid": null,
    "at": "2026-11-27"
   },
+  "kopis-pf307379": {
+   "vid": "U0ai3KUfNXg",
+   "t": "[MV] 김광석 - 어느 60대 노부부 이야기 (님아 그 강을 건너지마오)",
+   "ch": "양리",
+   "score": 5,
+   "at": "2026-11-28"
+  },
   "kopis-pf307384": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf307386": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf307405": {
    "vid": "lrWOPqiukIs",
@@ -2278,9 +2412,32 @@
    "score": 5,
    "at": "2026-11-27"
   },
+  "kopis-pf307410": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf307411": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf307433": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf307480": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf307519": {
+   "vid": "edJyD-D91nA",
+   "t": "번외 '그들의 이야기' - 뮤지컬 [번지점프를 하다] 티저05",
+   "ch": "musicalheaventv",
+   "score": 5,
+   "at": "2026-11-28"
+  },
+  "kopis-pf307528": {
+   "vid": null,
+   "at": "2026-11-28"
   },
   "kopis-pf307537": {
    "vid": null,
@@ -2293,9 +2450,25 @@
    "score": 6,
    "at": "2026-11-27"
   },
+  "kopis-pf307584": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
   "kopis-pf307587": {
    "vid": null,
    "at": "2026-11-27"
+  },
+  "kopis-pf307602": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf307675": {
+   "vid": null,
+   "at": "2026-11-28"
+  },
+  "kopis-pf307713": {
+   "vid": null,
+   "at": "2026-11-28"
   }
  }
 }
